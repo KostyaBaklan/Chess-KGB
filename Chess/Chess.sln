@@ -3,29 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessTest", "ChessTest\ChessTest.csproj", "{7086C3FB-C5FB-4D83-A345-ABFE421AC684}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessLogic", "ChessLogic\ChessLogic.csproj", "{D6C12EC5-98A7-4880-85EF-611209DF3CFD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessGame", "ChessGame\ChessGame.csproj", "{58D816D6-D6AB-478A-BFED-506B900AA5AB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.0", "1.0", "{79393225-75A3-45AD-BA61-F0E59656B0CF}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.0", "2.0", "{ADC4232B-0E9F-4984-BA32-1E1DD9EBD240}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{EE6D5E0B-7ADE-4F6C-B2A6-4A9F5D72AC3D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.Test", "UI.Test\UI.Test.csproj", "{8397592B-3E59-41E9-9AE1-FEFBA3683070}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithms", "Algorithms\Algorithms.csproj", "{D4E34B92-CD46-4DC8-B594-09CF8D0BC512}"
-	ProjectSection(ProjectDependencies) = postProject
-		{EE6D5E0B-7ADE-4F6C-B2A6-4A9F5D72AC3D} = {EE6D5E0B-7ADE-4F6C-B2A6-4A9F5D72AC3D}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTest", "AlgoTest\AlgoTest.csproj", "{00A49E57-CABF-4DDE-95A0-F6F6F3437130}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.0", "3.0", "{797F9ECB-6322-4603-B15E-13F9825E2530}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csproj", "{A910EBD9-3A1D-4835-B97E-FCA54AB03863}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "App\App.csproj", "{319FA3B9-A702-4417-9622-06B4EA2B8C82}"
@@ -40,28 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7086C3FB-C5FB-4D83-A345-ABFE421AC684}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7086C3FB-C5FB-4D83-A345-ABFE421AC684}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6C12EC5-98A7-4880-85EF-611209DF3CFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6C12EC5-98A7-4880-85EF-611209DF3CFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{58D816D6-D6AB-478A-BFED-506B900AA5AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{58D816D6-D6AB-478A-BFED-506B900AA5AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE6D5E0B-7ADE-4F6C-B2A6-4A9F5D72AC3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE6D5E0B-7ADE-4F6C-B2A6-4A9F5D72AC3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE6D5E0B-7ADE-4F6C-B2A6-4A9F5D72AC3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE6D5E0B-7ADE-4F6C-B2A6-4A9F5D72AC3D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8397592B-3E59-41E9-9AE1-FEFBA3683070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8397592B-3E59-41E9-9AE1-FEFBA3683070}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8397592B-3E59-41E9-9AE1-FEFBA3683070}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8397592B-3E59-41E9-9AE1-FEFBA3683070}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D4E34B92-CD46-4DC8-B594-09CF8D0BC512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4E34B92-CD46-4DC8-B594-09CF8D0BC512}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4E34B92-CD46-4DC8-B594-09CF8D0BC512}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4E34B92-CD46-4DC8-B594-09CF8D0BC512}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00A49E57-CABF-4DDE-95A0-F6F6F3437130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00A49E57-CABF-4DDE-95A0-F6F6F3437130}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00A49E57-CABF-4DDE-95A0-F6F6F3437130}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00A49E57-CABF-4DDE-95A0-F6F6F3437130}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A910EBD9-3A1D-4835-B97E-FCA54AB03863}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A910EBD9-3A1D-4835-B97E-FCA54AB03863}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A910EBD9-3A1D-4835-B97E-FCA54AB03863}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -82,70 +37,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{7086C3FB-C5FB-4D83-A345-ABFE421AC684} = {79393225-75A3-45AD-BA61-F0E59656B0CF}
-		{D6C12EC5-98A7-4880-85EF-611209DF3CFD} = {79393225-75A3-45AD-BA61-F0E59656B0CF}
-		{58D816D6-D6AB-478A-BFED-506B900AA5AB} = {79393225-75A3-45AD-BA61-F0E59656B0CF}
-		{EE6D5E0B-7ADE-4F6C-B2A6-4A9F5D72AC3D} = {ADC4232B-0E9F-4984-BA32-1E1DD9EBD240}
-		{8397592B-3E59-41E9-9AE1-FEFBA3683070} = {ADC4232B-0E9F-4984-BA32-1E1DD9EBD240}
-		{D4E34B92-CD46-4DC8-B594-09CF8D0BC512} = {ADC4232B-0E9F-4984-BA32-1E1DD9EBD240}
-		{00A49E57-CABF-4DDE-95A0-F6F6F3437130} = {ADC4232B-0E9F-4984-BA32-1E1DD9EBD240}
-		{A910EBD9-3A1D-4835-B97E-FCA54AB03863} = {797F9ECB-6322-4603-B15E-13F9825E2530}
-		{319FA3B9-A702-4417-9622-06B4EA2B8C82} = {797F9ECB-6322-4603-B15E-13F9825E2530}
-		{29786CC1-91A5-442E-8A8A-BAA92FCAAD2F} = {797F9ECB-6322-4603-B15E-13F9825E2530}
-		{2192061A-873C-43E2-B56D-58147FE4BEAF} = {797F9ECB-6322-4603-B15E-13F9825E2530}
-	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E40CFFF4-B620-4AC6-91AB-65E16FE8EAB7}
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 12
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://kostyabaklan.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = ChessLogic\\ChessLogic.csproj
-		SccProjectTopLevelParentUniqueName1 = Chess.sln
-		SccProjectName1 = ChessLogic
-		SccLocalPath1 = ChessLogic
-		SccProjectUniqueName2 = ChessTest\\ChessTest.csproj
-		SccProjectTopLevelParentUniqueName2 = Chess.sln
-		SccProjectName2 = ChessTest
-		SccLocalPath2 = ChessTest
-		SccProjectUniqueName3 = ChessGame\\ChessGame.csproj
-		SccProjectTopLevelParentUniqueName3 = Chess.sln
-		SccProjectName3 = ChessGame
-		SccLocalPath3 = ChessGame
-		SccProjectUniqueName4 = Infrastructure\\Infrastructure.csproj
-		SccProjectTopLevelParentUniqueName4 = Chess.sln
-		SccProjectName4 = Infrastructure
-		SccLocalPath4 = Infrastructure
-		SccProjectUniqueName5 = UI.Test\\UI.Test.csproj
-		SccProjectTopLevelParentUniqueName5 = Chess.sln
-		SccProjectName5 = UI.Test
-		SccLocalPath5 = UI.Test
-		SccProjectUniqueName6 = Algorithms\\Algorithms.csproj
-		SccProjectTopLevelParentUniqueName6 = Chess.sln
-		SccProjectName6 = Algorithms
-		SccLocalPath6 = Algorithms
-		SccProjectUniqueName7 = AlgoTest\\AlgoTest.csproj
-		SccProjectTopLevelParentUniqueName7 = Chess.sln
-		SccProjectName7 = AlgoTest
-		SccLocalPath7 = AlgoTest
-		SccProjectUniqueName8 = Engine\\Engine.csproj
-		SccProjectTopLevelParentUniqueName8 = Chess.sln
-		SccProjectName8 = Engine
-		SccLocalPath8 = Engine
-		SccProjectUniqueName9 = App\\App.csproj
-		SccProjectTopLevelParentUniqueName9 = Chess.sln
-		SccProjectName9 = App
-		SccLocalPath9 = App
-		SccProjectUniqueName10 = Tools\\Tools.csproj
-		SccProjectTopLevelParentUniqueName10 = Chess.sln
-		SccProjectName10 = Tools
-		SccLocalPath10 = Tools
-		SccProjectUniqueName11 = Tests\\Tests.csproj
-		SccProjectTopLevelParentUniqueName11 = Chess.sln
-		SccProjectName11 = Tests
-		SccLocalPath11 = Tests
 	EndGlobalSection
 EndGlobal
