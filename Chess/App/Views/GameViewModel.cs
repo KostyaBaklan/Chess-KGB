@@ -97,7 +97,7 @@ namespace Kgb.ChessApp.Views
             UndoCommand = new DelegateCommand(UndoCommandExecute);
             SaveHistoryCommand = new DelegateCommand(SaveHistoryCommandExecute);
 
-            _strategy = new AlphaBetaAdvancedStrategy(5,_position);
+            _strategy = new AlphaBetaDifferenceStrategy(5,_position);
         }
 
         private IEnumerable<int> _numbers;
