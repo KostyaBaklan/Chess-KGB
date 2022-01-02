@@ -1,0 +1,22 @@
+﻿using System;
+
+namespace Tests
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Boot.SetUp();
+
+            PerformanceTest.Test(args);
+
+            //PerformanceTest.Test(new[] { "ac", "6", "4" });
+
+            //OpenningsTest.Opennings();
+
+            Console.WriteLine("Finished");
+
+            //Console.ReadLine();
+        }
+    }
+}
