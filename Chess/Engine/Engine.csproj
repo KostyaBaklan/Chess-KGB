@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataStructures\ArrayStack.cs" />
+    <Compile Include="DataStructures\DynamicArray.cs" />
     <Compile Include="DataStructures\Heap.cs" />
     <Compile Include="Models\Boards\PieceBoard.cs" />
     <Compile Include="Models\Helpers\BitBoardExtensions.cs" />

@@ -107,8 +107,8 @@ namespace Engine.Models.Boards
             value = GetValue(Piece.WhitePawn, value,1,  3);
             value = GetValue(Piece.BlackPawn, value,-1,  -3);
 
-            var blockedPawns = GetWhiteBlockedPawns() - GetBlackBlockedPawns();
-            value -= blockedPawns;
+            //var blockedPawns = GetWhiteBlockedPawns() - GetBlackBlockedPawns();
+            //value -= blockedPawns;
 
             if (_pieceCount[Piece.WhiteBishop.AsByte()] < 2)
             {
@@ -167,8 +167,8 @@ namespace Engine.Models.Boards
         {
             int count = 0;
             var pawns = new[] { -1, -1, -1, -1, -1, -1, -1, -1 };
-            var coordinates = _boards[Piece.BlackPawn.AsByte()].Coordinates(_pieceCount[Piece.BlackPawn.AsByte()]);
-            for (var index = 0; index < coordinates.Length; index++)
+            var coordinates = _boards[Piece.BlackPawn.AsByte()].Coordinates();
+            for (var index = 0; index < _pieceCount[Piece.BlackPawn.AsByte()]; index++)
             {
                 var coordinate = coordinates[index];
                 var x = coordinate % 8;
@@ -201,8 +201,8 @@ namespace Engine.Models.Boards
         {
             int count = 0;
             var pawns = new[] { -1, -1, -1, -1, -1, -1, -1, -1 };
-            var coordinates = _boards[Piece.WhitePawn.AsByte()].Coordinates(_pieceCount[Piece.WhitePawn.AsByte()]);
-            for (var index = 0; index < coordinates.Length; index++)
+            var coordinates = _boards[Piece.WhitePawn.AsByte()].Coordinates();
+            for (var index = 0; index < _pieceCount[Piece.WhitePawn.AsByte()]; index++)
             {
                 var coordinate = coordinates[index];
                 var x = coordinate % 8;
@@ -234,8 +234,8 @@ namespace Engine.Models.Boards
         private int GetValue(Piece piece, int value,int doubledPawn, int isolatedPawn)
         {
             var pawns = new int[8];
-            var coordinates = _boards[piece.AsByte()].Coordinates(_pieceCount[piece.AsByte()]);
-            for (var index = 0; index < coordinates.Length; index++)
+            var coordinates = _boards[piece.AsByte()].Coordinates();
+            for (var index = 0; index < _pieceCount[piece.AsByte()]; index++)
             {
                 pawns[coordinates[index] % 8]++;
             }
@@ -372,9 +372,9 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int[] GetPositions(int index)
+        public DynamicArray<int> GetPositions(int index)
         {
-            return _boards[index].Coordinates(_pieceCount[index]);
+            return _boards[index].Coordinates();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -388,8 +388,8 @@ namespace Engine.Models.Boards
         {
             int i = 0;
             Square[] squares = new Square[_pieceCount[piece]];
-            var ints = _boards[piece].Coordinates(_pieceCount[piece]);
-            for (var index = 0; index < ints.Length; index++)
+            var ints = _boards[piece].Coordinates();
+            for (var index = 0; index < _pieceCount[piece]; index++)
             {
                 squares[i++] = new Square(ints[index]);
             }
@@ -593,13 +593,10 @@ namespace Engine.Models.Boards
         public bool CanDoBlackSmallCastle()
         {
             if (!_moveHistory.CanDoBlackSmallCastle() || !_boards[Piece.BlackRook.AsByte()].IsSet(BitBoards.H8) || !_empty.IsSet(_blackSmallCastleCondition)) return false;
-            for (int i = 0; i < 5; i++)
-            {
-                if (_moveProvider.IsUnderAttack(this, i, Squares.E8.AsByte())) return false;
-            }
 
-            return true;
+            var to = Squares.E8.AsByte();
 
+            return CanDoBlackCastle(to);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -607,13 +604,9 @@ namespace Engine.Models.Boards
         {
             if (!_moveHistory.CanDoWhiteSmallCastle() || !_boards[Piece.WhiteRook.AsByte()].IsSet(BitBoards.H1) || !_empty.IsSet(_whiteSmallCastleCondition)) return false;
 
-            for (int i = 6; i < 11; i++)
-            {
-                if (_moveProvider.IsUnderAttack(this, i, Squares.E1.AsByte())) return false;
-            }
+            var to = Squares.E1.AsByte();
 
-            return true;
-
+            return CanDoWhiteCastle(to);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -621,13 +614,9 @@ namespace Engine.Models.Boards
         {
             if (!_moveHistory.CanDoBlackBigCastle() || !_boards[Piece.BlackRook.AsByte()].IsSet(BitBoards.A8) || !_empty.IsSet(_blackBigCastleCondition)) return false;
 
-            for (int i = 0; i < 5; i++)
-            {
-                if (_moveProvider.IsUnderAttack(this, i, Squares.E8.AsByte())) return false;
-            }
+            var to = Squares.E8.AsByte();
 
-            return true;
-
+            return CanDoBlackCastle(to);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -635,13 +624,30 @@ namespace Engine.Models.Boards
         {
             if (!_moveHistory.CanDoWhiteBigCastle() || !_boards[Piece.WhiteRook.AsByte()].IsSet(BitBoards.A1) || !_empty.IsSet(_whiteBigCastleCondition)) return false;
 
-            for (int i = 6; i < 11; i++)
-            {
-                if (_moveProvider.IsUnderAttack(this, i, Squares.E1.AsByte())) return false;
-            }
+            var to = Squares.E1.AsByte();
 
-            return true;
+            return CanDoWhiteCastle(to);
 
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanDoWhiteCastle(byte to)
+        {
+            return !(_moveProvider.IsUnderAttack(this, Piece.BlackBishop.AsByte(), to) ||
+                   _moveProvider.IsUnderAttack(this, Piece.BlackKnight.AsByte(), to) ||
+                   _moveProvider.IsUnderAttack(this, Piece.BlackQueen.AsByte(), to) ||
+                   _moveProvider.IsUnderAttack(this, Piece.BlackRook.AsByte(), to) ||
+                   _moveProvider.IsUnderAttack(this, Piece.BlackPawn.AsByte(), to));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanDoBlackCastle(byte to)
+        {
+            return !(_moveProvider.IsUnderAttack(this, Piece.WhiteBishop.AsByte(), to) ||
+                   _moveProvider.IsUnderAttack(this, Piece.WhiteKnight.AsByte(), to) ||
+                   _moveProvider.IsUnderAttack(this, Piece.WhiteQueen.AsByte(), to) ||
+                   _moveProvider.IsUnderAttack(this, Piece.WhiteRook.AsByte(), to) ||
+                   _moveProvider.IsUnderAttack(this, Piece.WhitePawn.AsByte(), to));
         }
 
         #endregion
@@ -730,11 +736,10 @@ namespace Engine.Models.Boards
 
             foreach (var piece in Enum.GetValues(typeof(Piece)).OfType<Piece>())
             {
-                var coordinates = _boards[piece.AsByte()].Coordinates(_pieceCount[piece.AsByte()]);
-                for (var index = 0; index < coordinates.Length; index++)
+                var coordinates = _boards[piece.AsByte()].Coordinates();
+                for (var index = 0; index < _pieceCount[piece.AsByte()]; index++)
                 {
-                    var coordinate = coordinates[index];
-                    _pieces[coordinate] = piece;
+                    _pieces[coordinates[index]] = piece;
                 }
             }
         }

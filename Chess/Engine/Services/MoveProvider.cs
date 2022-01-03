@@ -1272,31 +1272,31 @@ namespace Engine.Services
         private bool IsWhiteUnderAttack(IBoard board, Square square)
         {
             var to = square.AsByte();
-            for (var index = 6; index < _piecesNumbers; index++)
-            {
-                if (IsUnderAttack(board, index, to)) return true;
-            }
-
-            return false;
+            return IsUnderAttack(board, Piece.BlackBishop.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.BlackKnight.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.BlackQueen.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.BlackRook.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.BlackPawn.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.BlackKing.AsByte(), to);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool IsBlackUnderAttack(IBoard board, Square square)
         {
             var to = square.AsByte();
-            for (var index = 0; index < 6; index++)
-            {
-                if (IsUnderAttack(board, index, to)) return true;
-            }
-
-            return false;
+            return IsUnderAttack(board, Piece.WhiteBishop.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.WhiteKnight.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.WhiteQueen.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.WhiteRook.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.WhitePawn.AsByte(), to) ||
+                   IsUnderAttack(board, Piece.WhiteKing.AsByte(), to);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsUnderAttack(IBoard board, int piece, byte to)
         {
             var positions = board.GetPositions(piece);
-            for (var p = 0; p < positions.Length; p++)
+            for (var p = 0; p < positions.Count; p++)
             {
                 var moveWrappers = _attacksTo[piece][positions[p]][to];
                 if (moveWrappers == null) continue;
@@ -1321,7 +1321,7 @@ namespace Engine.Services
             {
                 var positions = board.GetPositions(index);
 
-                for (var p = 0; p < positions.Length; p++)
+                for (var p = 0; p < positions.Count; p++)
                 {
                     var moves = _attacksTo[index][positions[p]][to];
                     if (moves == null) continue;
@@ -1340,7 +1340,7 @@ namespace Engine.Services
             {
                 var positions = board.GetPositions(index);
 
-                for (var p = 0; p < positions.Length; p++)
+                for (var p = 0; p < positions.Count; p++)
                 {
                     var moves = _attacksTo[index][positions[p]][to];
                     if (moves == null) continue;
@@ -1366,7 +1366,7 @@ namespace Engine.Services
             {
                 var positions = board.GetPositions(index);
 
-                for (var p = 0; p < positions.Length; p++)
+                for (var p = 0; p < positions.Count; p++)
                 {
                     var moves = _attacksTo[index][positions[p]][to];
                     if (moves == null) continue;
@@ -1385,7 +1385,7 @@ namespace Engine.Services
             {
                 var positions = board.GetPositions(index);
 
-                for (var p = 0; p < positions.Length; p++)
+                for (var p = 0; p < positions.Count; p++)
                 {
                     var moves = _attacksTo[index][positions[p]][to];
                     if (moves == null) continue;

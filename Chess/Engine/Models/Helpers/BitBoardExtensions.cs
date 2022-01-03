@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Engine.DataStructures;
 using Engine.Models.Boards;
 
 namespace Engine.Models.Helpers
@@ -11,11 +12,14 @@ namespace Engine.Models.Helpers
     {
         private const ulong _magic = 0x07EDD5E59A4E28C2;
 
-        private static int[] _magicTable;
+        private static readonly int[] _magicTable;
+        private static readonly DynamicArray<int> _positions;
 
         static BitBoardExtensions()
         {
             _magicTable = new int[64];
+            _positions = new DynamicArray<int>();
+
             ulong bit = 1;
             int i = 0;
             do
@@ -55,37 +59,21 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int BitScanForward(this BitBoard b)
         {
-            var lsb = b.Lsb();
-            return _magicTable[(lsb * _magic) >> 58];
+            return _magicTable[(b.Lsb() * _magic) >> 58];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int[] Coordinates(this BitBoard b, int count)
+        public static DynamicArray<int> Coordinates(this BitBoard b)
         {
-            int[] items = new int[count];
-            int i = 0;
+            _positions.Clear();
             while (!b.IsZero())
             {
                 int position = BitScanForward(b);
-                items[i++] = position;
+                _positions.Add(position);
                 b = b.Remove(position);
             }
 
-            return items;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<int> Coordinates(this BitBoard b)
-        {
-            List<int> coordinates = new List<int>(16);
-            while (!b.IsZero())
-            {
-                int position = BitScanForward(b);
-                coordinates.Add(position);
-                b = b.Remove(position);
-            }
-
-            return coordinates;
+            return _positions;
         }
 
         public static string ToBitString(this BitBoard b)

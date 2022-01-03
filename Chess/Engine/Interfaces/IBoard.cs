@@ -1,4 +1,5 @@
-﻿using Engine.Models.Boards;
+﻿using Engine.DataStructures;
+using Engine.Models.Boards;
 using Engine.Models.Enums;
 
 namespace Engine.Interfaces
@@ -32,7 +33,7 @@ namespace Engine.Interfaces
         void Move(Piece piece, Square from,Square to);
         Square GetWhiteKingPosition();
         Square GetBlackKingPosition();
-        int[] GetPositions(int index);
+        DynamicArray<int> GetPositions(int index);
         ulong GetKey();
         Square[] GetPiecePositions(int piece);
         BitBoard GetOccupied();
