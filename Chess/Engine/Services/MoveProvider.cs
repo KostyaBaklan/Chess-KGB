@@ -15,6 +15,7 @@ namespace Engine.Services
         private readonly List<List<MoveBase>>[][] _moves;
         private readonly List<List<MoveBase>>[][] _attacks;
         private readonly List<MoveBase>[][][] _attacksTo;
+        private readonly BitBoard[][] _attackPatterns;
         private static readonly int _squaresNumber = 64;
         private readonly int _piecesNumbers = 12;
 
@@ -22,17 +23,20 @@ namespace Engine.Services
         {
             _moves = new List<List<MoveBase>>[_piecesNumbers][];
             _attacks = new List<List<MoveBase>>[_piecesNumbers][];
+            _attackPatterns = new BitBoard[_piecesNumbers][];
             _attacksTo = new List<MoveBase>[_piecesNumbers][][];
 
             foreach (var piece in Enum.GetValues(typeof(Piece)).OfType<Piece>())
             {
                 _moves[piece.AsByte()] = new List<List<MoveBase>>[_squaresNumber];
                 _attacks[piece.AsByte()] = new List<List<MoveBase>>[_squaresNumber];
+                _attackPatterns[piece.AsByte()] = new BitBoard[_squaresNumber];
                 _attacksTo[piece.AsByte()] = new List<MoveBase>[_squaresNumber][];
                 for (int square = 0; square < _squaresNumber; square++)
                 {
                     _moves[piece.AsByte()][square] = new List<List<MoveBase>>();
                     _attacks[piece.AsByte()][square] = new List<List<MoveBase>>();
+                    _attackPatterns[piece.AsByte()][square] = new BitBoard(0);
                 }
 
                 SetMoves(piece);
@@ -40,7 +44,7 @@ namespace Engine.Services
 
                 for (int i = 0; i < _squaresNumber; i++)
                 {
-                    Dictionary<byte, List<MoveBase>> attacksTo = _attacks[piece.AsByte()][i].SelectMany(m=>m)
+                    Dictionary<byte, List<MoveBase>> attacksTo = _attacks[piece.AsByte()][i].SelectMany(m => m)
                         .GroupBy(g => g.To.AsByte())
                         .ToDictionary(key => key.Key, v => v.ToList());
                     List<MoveBase>[] aTo = new List<MoveBase>[_squaresNumber];
@@ -51,8 +55,14 @@ namespace Engine.Services
                             aTo[q] = list;
                         }
                     }
+
                     _attacksTo[piece.AsByte()][i] = aTo;
                 }
+            }
+
+            foreach (var piece in Enum.GetValues(typeof(Piece)).OfType<Piece>())
+            {
+                SetAttackPatterns(piece);
             }
 
             SetValues();
@@ -83,7 +93,23 @@ namespace Engine.Services
 
                     }
                     move.Static = (short) to;
-                    move.Difference = (short) (to - @from);
+                    move.Difference = (short) (to - from);
+                }
+            }
+        }
+
+        private void SetAttackPatterns(Piece piece)
+        {
+            foreach (List<List<MoveBase>> attacks in _attacks[piece.AsByte()])
+            {
+                if (attacks == null) continue;
+
+                foreach (var moves in attacks)
+                {
+                    foreach (var move in moves)
+                    {
+                        _attackPatterns[piece.AsByte()][move.From.AsByte()] = _attackPatterns[piece.AsByte()][move.From.AsByte()] | move.EmptyBoard|move.To.AsBitBoard();
+                    }
                 }
             }
         }
@@ -368,14 +394,43 @@ namespace Engine.Services
 
         private IEnumerable<int> KingMoves(int f)
         {
-            if (f % 8 < 7) yield return f + 1;
-            if (f % 8 < 7 && f / 8 > 0) yield return f - 7;
-            if (f / 8 > 0) yield return f - 8;
-            if (f % 8 > 0 && f / 8 > 0) yield return f - 9;
-            if (f % 8 > 0) yield return f - 1;
-            if (f % 8 < 7 && f / 8 > 0) yield return f + 7;
-            if (f / 8 < 7) yield return f + 8;
-            if (f / 8 < 7 && f % 8 < 7) yield return f + 9;
+            if (f == 0)
+            {
+                return new[] {1, 9, 8};
+            }
+
+            if (f == 7)
+            {
+                return new[] { 6, 14, 15 };
+            }
+            if (f == 56)
+            {
+                return new[] { 48, 49, 57 };
+            }
+            if (f == 63)
+            {
+                return new[] { 62, 54, 55 };
+            }
+
+            if (f % 8 == 0)
+            {
+                return new[] { f+8, f+9, f+1, f-9,f-8 };
+            }
+            if (f % 8 == 7)
+            {
+                return new[] { f + 8, f + 7, f - 1, f - 7, f - 8 };
+            }
+
+            if (f / 8 == 0)
+            {
+                return new[] { f + 1, f -1, f + 7, f + 9, f + 8 };
+            }
+            if (f / 8 == 7)
+            {
+                return new[] { f + 1, f - 7, f - 1, f - 9, f - 8 };
+            }
+
+            return new[] { f + 8, f + 7, f - 1, f + 9, f + 1, f - 9, f - 7, f - 8 };
         }
 
         #endregion
@@ -1159,14 +1214,17 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IMove> GetAttacks(Piece piece, Square cell, IBoard board)
         {
-            foreach (var list in _attacks[piece.AsByte()][cell.AsByte()])
+            var lists = _attacks[piece.AsByte()][cell.AsByte()];
+            for (var i = 0; i < lists.Count; i++)
             {
-                foreach (var m in list)
+                var list = lists[i];
+                for (var j = 0; j < list.Count; j++)
                 {
+                    var m = list[j];
                     if (m.IsLegal(board))
                         yield return m;
 
-                    else if(!board.IsEmpty(m.EmptyBoard))
+                    else if (!board.IsEmpty(m.EmptyBoard))
                     {
                         break;
                     }
@@ -1177,11 +1235,14 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IMove> GetMoves(Piece piece, Square cell, IBoard board)
         {
-            foreach (var list in _moves[piece.AsByte()][cell.AsByte()])
+            var lists = _moves[piece.AsByte()][cell.AsByte()];
+            for (var i = 0; i < lists.Count; i++)
             {
-                foreach (var m in list)
+                var list = lists[i];
+                for (var j = 0; j < list.Count; j++)
                 {
-                    if(m.IsLegal(board))
+                    var m = list[j];
+                    if (m.IsLegal(board))
                         yield return m;
                     else
                     {
@@ -1195,14 +1256,16 @@ namespace Engine.Services
         public bool AnyBlackCheck(IBoard board)
         {
             var kingPosition = board.GetWhiteKingPosition();
-            return IsWhiteUnderAttack(board, kingPosition);
+
+            return  IsWhiteUnderAttack(board, kingPosition);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool AnyWhiteCheck(IBoard board)
         {
             var kingPosition = board.GetBlackKingPosition();
-            return IsBlackUnderAttack(board, kingPosition);
+
+            return  IsBlackUnderAttack(board, kingPosition);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1230,12 +1293,12 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsUnderAttack(IBoard board, int index, byte to)
+        public bool IsUnderAttack(IBoard board, int piece, byte to)
         {
-            IEnumerable<int> positions = board.GetPositions(index);
-            foreach (var position in positions)
+            var positions = board.GetPositions(piece);
+            for (var p = 0; p < positions.Length; p++)
             {
-                var moveWrappers = _attacksTo[index][position][to];
+                var moveWrappers = _attacksTo[piece][positions[p]][to];
                 if (moveWrappers == null) continue;
 
                 for (var i = 0; i < moveWrappers.Count; i++)
@@ -1258,9 +1321,9 @@ namespace Engine.Services
             {
                 var positions = board.GetPositions(index);
 
-                foreach (var position in positions)
+                for (var p = 0; p < positions.Length; p++)
                 {
-                    var moves = _attacksTo[index][position][to];
+                    var moves = _attacksTo[index][positions[p]][to];
                     if (moves == null) continue;
 
                     for (var i = 0; i < moves.Count; i++)
@@ -1277,9 +1340,9 @@ namespace Engine.Services
             {
                 var positions = board.GetPositions(index);
 
-                foreach (var position in positions)
+                for (var p = 0; p < positions.Length; p++)
                 {
-                    var moves = _attacksTo[index][position][to];
+                    var moves = _attacksTo[index][positions[p]][to];
                     if (moves == null) continue;
 
                     for (var i = 0; i < moves.Count; i++)
@@ -1303,9 +1366,9 @@ namespace Engine.Services
             {
                 var positions = board.GetPositions(index);
 
-                foreach (var position in positions)
+                for (var p = 0; p < positions.Length; p++)
                 {
-                    var moves = _attacksTo[index][position][to];
+                    var moves = _attacksTo[index][positions[p]][to];
                     if (moves == null) continue;
 
                     for (var i = 0; i < moves.Count; i++)
@@ -1322,9 +1385,9 @@ namespace Engine.Services
             {
                 var positions = board.GetPositions(index);
 
-                foreach (var position in positions)
+                for (var p = 0; p < positions.Length; p++)
                 {
-                    var moves = _attacksTo[index][position][to];
+                    var moves = _attacksTo[index][positions[p]][to];
                     if (moves == null) continue;
 
                     for (var i = 0; i < moves.Count; i++)
@@ -1338,6 +1401,12 @@ namespace Engine.Services
             }
 
             return balance;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetAttackPattern(byte piece, int position)
+        {
+            return _attackPatterns[piece][position];
         }
 
         #endregion

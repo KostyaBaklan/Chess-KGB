@@ -88,7 +88,7 @@ namespace Engine.Sorting.Sorters
                 }
                 else
                 {
-                    if (_moveHistoryService.IsAdditionalDebutMove(move))
+                    if (MoveHistoryService.IsAdditionalDebutMove(move))
                     {
                         if (move.Piece == Piece.BlackPawn || move.Piece == Piece.BlackPawn)
                         {
@@ -119,12 +119,12 @@ namespace Engine.Sorting.Sorters
 
         private void ProcessMove(IMove move)
         {
-            var ply = _moveHistoryService.GetPly();
+            var ply = MoveHistoryService.GetPly();
             switch (move.Piece)
             {
                 case Piece.WhiteRook:
-                    if (_moveHistoryService.CanDoWhiteSmallCastle() && move.From == Squares.H1 ||
-                        _moveHistoryService.CanDoWhiteBigCastle() && move.From == Squares.A1)
+                    if (MoveHistoryService.CanDoWhiteSmallCastle() && move.From == Squares.H1 ||
+                        MoveHistoryService.CanDoWhiteBigCastle() && move.From == Squares.A1)
                     {
                         move.Value =  move.Difference - 400;
                     }
@@ -135,8 +135,8 @@ namespace Engine.Sorting.Sorters
 
                     break;
                 case Piece.BlackRook:
-                    if (_moveHistoryService.CanDoBlackSmallCastle() && move.From == Squares.H8 ||
-                        _moveHistoryService.CanDoBlackBigCastle() && move.From == Squares.A8)
+                    if (MoveHistoryService.CanDoBlackSmallCastle() && move.From == Squares.H8 ||
+                        MoveHistoryService.CanDoBlackBigCastle() && move.From == Squares.A8)
                     {
                         move.Value =  move.Difference - 400;
                     }
@@ -152,7 +152,7 @@ namespace Engine.Sorting.Sorters
 
                     break;
                 case Piece.WhiteKing:
-                    if (_moveHistoryService.CanDoWhiteSmallCastle() || _moveHistoryService.CanDoWhiteBigCastle())
+                    if (MoveHistoryService.CanDoWhiteSmallCastle() || MoveHistoryService.CanDoWhiteBigCastle())
                     {
                         move.Value =  move.Difference - 500;
                     }
@@ -163,7 +163,7 @@ namespace Engine.Sorting.Sorters
 
                     break;
                 case Piece.BlackKing:
-                    if (_moveHistoryService.CanDoBlackSmallCastle() || _moveHistoryService.CanDoBlackBigCastle())
+                    if (MoveHistoryService.CanDoBlackSmallCastle() || MoveHistoryService.CanDoBlackBigCastle())
                     {
                         move.Value =  move.Difference - 500;
                     }
@@ -260,7 +260,7 @@ namespace Engine.Sorting.Sorters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetHardPieceMove(IMove move, int ply)
         {
-            move.Value = ply < 12 ? CalculateValue(move,  (move.Difference - 150)) : CalculateValue(move,move.Difference);
+            move.Value = ply < 12 ? CalculateValue(move,  move.Difference - 150) : CalculateValue(move,move.Difference);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

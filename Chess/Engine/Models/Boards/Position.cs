@@ -116,11 +116,11 @@ namespace Engine.Models.Boards
             {
                 var p = enumerable[index];
                 var from = _board.GetPiecePositions(p.AsByte());
-                pieces[p.AsByte()] = @from;
+                pieces[p.AsByte()] = from;
 
-                for (var f = 0; f < @from.Length; f++)
+                for (var f = 0; f < from.Length; f++)
                 {
-                    foreach (var attack in _moveProvider.GetAttacks(p, @from[f], _board))
+                    foreach (var attack in _moveProvider.GetAttacks(p, from[f], _board))
                     {
                         yield return attack;
                     }
@@ -136,9 +136,9 @@ namespace Engine.Models.Boards
                     var p = enumerable[index];
                     Square[] from = pieces[p.AsByte()];
 
-                    for (var f = 0; f < @from.Length; f++)
+                    for (var f = 0; f < from.Length; f++)
                     {
-                        foreach (var move in _moveProvider.GetMoves(p, @from[f], _board))
+                        foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
                         {
                             if (!move.IsCastle())
                             {
@@ -155,9 +155,9 @@ namespace Engine.Models.Boards
                     var p = enumerable[index];
                     Square[] from = pieces[p.AsByte()];
 
-                    for (var f = 0; f < @from.Length; f++)
+                    for (var f = 0; f < from.Length; f++)
                     {
-                        foreach (var move in _moveProvider.GetMoves(p, @from[f], _board))
+                        foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
                         {
                             yield return move;
                         }
@@ -174,9 +174,9 @@ namespace Engine.Models.Boards
                 var p = _black[index];
                 Square[] from = _board.GetPiecePositions(p.AsByte());
 
-                for (var f = 0; f < @from.Length; f++)
+                for (var f = 0; f < from.Length; f++)
                 {
-                    foreach (var attack in _moveProvider.GetAttacks(p, @from[f], _board))
+                    foreach (var attack in _moveProvider.GetAttacks(p, from[f], _board))
                     {
                         yield return attack;
                     }
@@ -192,9 +192,9 @@ namespace Engine.Models.Boards
                 var p = _white[index];
                 Square[] from = _board.GetPiecePositions(p.AsByte());
 
-                for (var f = 0; f < @from.Length; f++)
+                for (var f = 0; f < from.Length; f++)
                 {
-                    foreach (var attack in _moveProvider.GetAttacks(p, @from[f], _board))
+                    foreach (var attack in _moveProvider.GetAttacks(p, from[f], _board))
                     {
                         yield return attack;
                     }
@@ -206,7 +206,9 @@ namespace Engine.Models.Boards
         public bool IsCheck()
         {
             //return _turn != Turn.White ? _checkService.IsBlackCheck(_board.GetKey(), _board) : _checkService.IsWhiteCheck(_board.GetKey(), _board);
-            return _turn != Turn.White? _moveProvider.AnyBlackCheck(_board) : _moveProvider.AnyWhiteCheck(_board);
+            return _turn != Turn.White ? _moveProvider.AnyBlackCheck(_board) : _moveProvider.AnyWhiteCheck(_board);
+
+            //return _turn != Turn.White ? _moveProvider.IsCheckToWhite(_board) : _moveProvider.IsCheckToBlack(_board);
         }
 
         public void Make(IMove move)

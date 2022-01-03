@@ -10,13 +10,13 @@ namespace Engine.Models.Helpers
 
         static SquareExtensions()
         {
-            string Ab = "ABCDEFGH";
+            string ab = "ABCDEFGH";
             string n = "12345678";
 
             int index = 0;
             foreach (var d in n)
             {
-                foreach (var t in Ab)
+                foreach (var t in ab)
                 {
                     _names[index] = $"{t}{d}";
                     index++;

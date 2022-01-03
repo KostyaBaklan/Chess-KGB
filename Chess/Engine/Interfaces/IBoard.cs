@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Engine.Models.Boards;
+﻿using Engine.Models.Boards;
 using Engine.Models.Enums;
 
 namespace Engine.Interfaces
@@ -33,9 +32,9 @@ namespace Engine.Interfaces
         void Move(Piece piece, Square from,Square to);
         Square GetWhiteKingPosition();
         Square GetBlackKingPosition();
-        IEnumerable<int> GetPositions(int index);
+        int[] GetPositions(int index);
         ulong GetKey();
         Square[] GetPiecePositions(int piece);
-        IEnumerable<int> GetPositions(int piece, byte from);
+        BitBoard GetOccupied();
     }
 }

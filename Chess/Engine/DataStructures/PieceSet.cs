@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using Engine.Models.Boards;
 
-
 namespace Engine.DataStructures
 {
     public class PieceSet
