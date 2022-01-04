@@ -27,6 +27,14 @@ namespace Engine.Sorting.Sorters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IMove> Order(IEnumerable<IMove> moves, IMove pvNode, IMove cutMove)
         {
+            //var enumerable = moves.ToArray();
+
+            //var staticSort = enumerable.ToList();
+            //staticSort.Sort(new StaticComparer());
+
+            //var differenceSort = enumerable.ToList();
+            //differenceSort.Sort(new DifferenceComparer());
+
             int depth = MoveHistoryService.GetPly();
             if (depth < 0) return moves;
 

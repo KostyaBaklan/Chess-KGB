@@ -19,8 +19,11 @@ namespace Engine.Services
         private static readonly int _squaresNumber = 64;
         private readonly int _piecesNumbers = 12;
 
-        public MoveProvider()
+        private readonly IEvaluationService _evaluationService;
+
+        public MoveProvider(IEvaluationService evaluationService)
         {
+            _evaluationService = evaluationService;
             _moves = new List<List<MoveBase>>[_piecesNumbers][];
             _attacks = new List<List<MoveBase>>[_piecesNumbers][];
             _attackPatterns = new BitBoard[_piecesNumbers][];
@@ -74,27 +77,39 @@ namespace Engine.Services
         {
             foreach (var move in from lists in _moves from list in lists from moves in list from move in moves select move)
             {
-                if (move.IsPromotion())
-                {
-                    move.Static = (short) (23 - (short)move.Type);
-                    move.Difference = (short)(23 - (short)move.Type);
-                }
-                else if (move.IsCastle())
-                {
-                    move.Static = 5;
-                    move.Difference = 5;
-                }
-                else
-                {
-                    var to = _attacks[move.Piece.AsByte()][move.To.AsByte()].Sum(m => m.Count);
-                    var from = _attacks[move.Piece.AsByte()][move.From.AsByte()].Sum(m => m.Count);
-                    if (Math.Abs(to - from) > 10)
-                    {
+                SetValueForMove(move);
+            }
+        }
 
-                    }
-                    move.Static = (short) to;
-                    move.Difference = (short) (to - from);
+        private void SetValueForMove(MoveBase move)
+        {
+            var value = _evaluationService.GetValue(move.Piece.AsByte(), move.To.AsByte());
+            move.Static = value;
+            move.Difference = value - _evaluationService.GetValue(move.Piece.AsByte(), move.From.AsByte());
+        }
+
+        private void SetMoveValue(MoveBase move)
+        {
+            if (move.IsPromotion())
+            {
+                move.Static =  23 - (short) move.Type;
+                move.Difference =  23 - (short) move.Type;
+            }
+            else if (move.IsCastle())
+            {
+                move.Static = 5;
+                move.Difference = 5;
+            }
+            else
+            {
+                var to = _attacks[move.Piece.AsByte()][move.To.AsByte()].Sum(m => m.Count);
+                var from = _attacks[move.Piece.AsByte()][move.From.AsByte()].Sum(m => m.Count);
+                if (Math.Abs(to - @from) > 10)
+                {
                 }
+
+                move.Static = to;
+                move.Difference =to - @from;
             }
         }
 

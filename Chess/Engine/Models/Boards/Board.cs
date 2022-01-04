@@ -38,11 +38,11 @@ namespace Engine.Models.Boards
         private readonly ZobristHash _hash;
         private BitBoard[] _boards;
         private int[] _pieceCount;
-        private int[] _values;
         private readonly bool[] _overBoard;
         private readonly Piece[] _pieces;
         private readonly IMoveProvider _moveProvider;
         private readonly IMoveHistoryService _moveHistory;
+        private readonly IEvaluationService _evaluationService;
 
         public Board()
         {
@@ -53,12 +53,11 @@ namespace Engine.Models.Boards
 
             SetBoards();
 
-            SetValues();
-
             SetCastles();
 
             _moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
             _moveHistory = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
+            _evaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
 
             _hash = new ZobristHash();
             _hash.Initialize(_boards);
@@ -93,82 +92,124 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetValue()
         {
-            var value = 0;
-            for (int i = 0; i < 6; i++)
-            {
-                value = value + _pieceCount[i] * _values[i];
-            }
+            var value = GetStaticValue();
 
-            for (int i = 6; i < 12; i++)
-            {
-                value = value - _pieceCount[i] * _values[i];
-            }
-
-            value = GetWhitePawnValue(value,1,  3);
-            value = GetBlackPawnValue(value,-1,  -3);
+            value = GetWhitePawnValue(value, _evaluationService.GetPawnValue(2), _evaluationService.GetPawnValue(4));
+            value = GetBlackPawnValue(value,-_evaluationService.GetPawnValue(2),  -_evaluationService.GetPawnValue(4));
 
             if (_pieceCount[Piece.WhiteBishop.AsByte()] < 2)
             {
-                value -= 2;
+                value -= _evaluationService.GetPawnValue(2);
             }
             if (_pieceCount[Piece.BlackBishop.AsByte()] < 2)
             {
-                value += 2;
+                value += _evaluationService.GetPawnValue(2);
             }
 
-            value = EvaluateCastles(value);
+            //value = EvaluateCastles(value);
 
             return value;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetFullValue()
+        {
+            return GetValue(~_boards[Piece.WhitePawn.AsByte()]&_whites) - GetValue(~_boards[Piece.BlackPawn.AsByte()] & _blacks);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetValue(BitBoard bitBoard)
+        {
+            int value = 0;
+            var array = bitBoard.Coordinates();
+            for (var i = 0; i < array.Count; i++)
+            {
+                var coordinate = array[i];
+                value += _evaluationService.GetFullValue(_pieces[coordinate].AsByte(), coordinate);
+            }
+
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetStaticValue()
+        {
+            var value = 0;
+            for (int i = 1; i < 5; i++)
+            {
+                var positions = GetPositions(i);
+                for (var p = 0; p < positions.Count; p++)
+                {
+                    value += _evaluationService.GetFullValue(i, positions[p]);
+                }
+            }
+
+            value += _evaluationService.GetValue(5, _boards[5].BitScanForward());
+
+            for (int i = 7; i < 11; i++)
+            {
+                var positions = GetPositions(i);
+                for (var p = 0; p < positions.Count; p++)
+                {
+                    value -= _evaluationService.GetFullValue(i, positions[p]);
+                }
+            }
+            value -= _evaluationService.GetValue(11, _boards[11].BitScanForward());
+
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int EvaluateCastles(int value)
         {
             if (_isWhiteCastled)
             {
-                value += 2;
+                value += _evaluationService.GetPawnValue(2);
             }
             else
             {
                 if (!_moveHistory.CanDoWhiteSmallCastle())
                 {
-                    value--;
+                    value-= _evaluationService.GetPawnValue();
                 }
 
                 if (!_moveHistory.CanDoWhiteBigCastle())
                 {
-                    value--;
+                    value -= _evaluationService.GetPawnValue();
                 }
             }
 
             if (_isBlackCastled)
             {
-                value -= 2;
+                value -= _evaluationService.GetPawnValue(2);
             }
             else
             {
                 if (!_moveHistory.CanDoBlackSmallCastle())
                 {
-                    value++;
+                    value += _evaluationService.GetPawnValue();
                 }
 
                 if (!_moveHistory.CanDoBlackBigCastle())
                 {
-                    value++;
+                    value += _evaluationService.GetPawnValue();
                 }
             }
 
             return value;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhitePawnValue(int value, int doubledPawn, int isolatedPawn)
         {
             var pawns = new int[8];
-            Piece piece = Piece.WhitePawn;
+            int piece = Piece.WhitePawn.AsByte();
 
-            var coordinates = _boards[piece.AsByte()].Coordinates();
-            for (var index = 0; index < _pieceCount[piece.AsByte()]; index++)
+            var coordinates = _boards[piece].Coordinates();
+            for (var index = 0; index < _pieceCount[piece]; index++)
             {
                 var coordinate = coordinates[index];
+                value += _evaluationService.GetFullValue(piece, coordinate);
                 if (_blacks.IsSet((coordinate + 8).AsBitBoard()))
                 {
                     value = value - doubledPawn;
@@ -179,15 +220,17 @@ namespace Engine.Models.Boards
             return GetPawnValue(value, doubledPawn, isolatedPawn, pawns);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetBlackPawnValue(int value, int doubledPawn, int isolatedPawn)
         {
             var pawns = new int[8];
-            Piece piece = Piece.BlackPawn;
+            int piece = Piece.BlackPawn.AsByte();
 
-            var coordinates = _boards[piece.AsByte()].Coordinates();
-            for (var index = 0; index < _pieceCount[piece.AsByte()]; index++)
+            var coordinates = _boards[piece].Coordinates();
+            for (var index = 0; index < _pieceCount[piece]; index++)
             {
                 var coordinate = coordinates[index];
+                value -= _evaluationService.GetFullValue(piece, coordinate);
                 if (_whites.IsSet((coordinate - 8).AsBitBoard()))
                 {
                     value = value - doubledPawn;
@@ -198,6 +241,7 @@ namespace Engine.Models.Boards
             return GetPawnValue(value, doubledPawn, isolatedPawn, pawns);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int GetPawnValue(int value, int doubledPawn, int isolatedPawn, int[] pawns)
         {
             if (pawns[0] > 0)
@@ -690,24 +734,6 @@ namespace Engine.Models.Boards
             _pieceCount[Piece.BlackBishop.AsByte()] = 2;
             _pieceCount[Piece.BlackQueen.AsByte()] = 1;
             _pieceCount[Piece.BlackKing.AsByte()] = 1;
-        }
-
-        private void SetValues()
-        {
-            _values = new int[12];
-
-            _values[Piece.WhitePawn.AsByte()] = 8;
-            _values[Piece.BlackPawn.AsByte()] = 8;
-            _values[Piece.WhiteKnight.AsByte()] = 25;
-            _values[Piece.BlackKnight.AsByte()] = 25;
-            _values[Piece.WhiteBishop.AsByte()] = 25;
-            _values[Piece.BlackBishop.AsByte()] = 25;
-            _values[Piece.WhiteKing.AsByte()] = 0;
-            _values[Piece.BlackKing.AsByte()] = 0;
-            _values[Piece.WhiteRook.AsByte()] = 39;
-            _values[Piece.BlackRook.AsByte()] = 39;
-            _values[Piece.WhiteQueen.AsByte()] = 79;
-            _values[Piece.BlackQueen.AsByte()] = 79;
         }
 
         private void SetCastles()
