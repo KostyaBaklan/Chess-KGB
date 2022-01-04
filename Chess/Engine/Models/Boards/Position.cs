@@ -87,7 +87,74 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IMove> GetAllMoves(IMoveSorter sorter, IMove pvMove = null, IMove cutMove = null)
         {
-            return sorter.Order(_turn == Turn.White ? PossibleMoves(_white) : PossibleMoves(_black), pvMove, cutMove);
+            if (_turn == Turn.White)
+            {
+                var squares = GetSquares(_white);
+                return sorter.Order(PossibleAttacks(squares, _white), PossibleMoves(squares, _white), pvMove, cutMove);
+            }
+            else
+            {
+                var squares = GetSquares(_black);
+                return sorter.Order(PossibleAttacks(squares, _black), PossibleMoves(squares, _black), pvMove, cutMove);
+            }
+        }
+
+        private IEnumerable<IMove> PossibleMoves(Square[][] squares, Piece[] pieces)
+        {
+            var lastMove = _moveHistoryService.GetLastMove();
+
+            if (lastMove?.IsCheck() == true)
+            {
+                for (var index = 0; index < pieces.Length; index++)
+                {
+                    var p = pieces[index];
+                    Square[] from = squares[p.AsByte()%6];
+
+                    for (var f = 0; f < from.Length; f++)
+                    {
+                        foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
+                        {
+                            if (!move.IsCastle())
+                            {
+                                yield return move;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (var index = 0; index < pieces.Length; index++)
+                {
+                    var p = pieces[index];
+                    Square[] from = squares[p.AsByte()%6];
+
+                    for (var f = 0; f < from.Length; f++)
+                    {
+                        foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
+                        {
+                            yield return move;
+                        }
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<IMove> PossibleAttacks(Square[][] squares, Piece[] pieces)
+        {
+            for (var index = 0; index < pieces.Length; index++)
+            {
+                var p = pieces[index];
+
+                var square = squares[p.AsByte()%6];
+                for (var f = 0; f < square.Length; f++)
+                {
+                    foreach (var attack in _moveProvider.GetAttacks(p, square[f], _board))
+                    {
+                        yield return attack;
+                    }
+                }
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -110,7 +177,7 @@ namespace Engine.Models.Boards
 
         private IEnumerable<IMove> PossibleMoves(Piece[] enumerable)
         {
-            Square[][] pieces = new Square[12][];
+            Square[][] pieces = GetSquares(enumerable);
 
             for (var index = 0; index < enumerable.Length; index++)
             {
@@ -164,6 +231,18 @@ namespace Engine.Models.Boards
                     }
                 }
             }
+        }
+
+        private Square[][] GetSquares(Piece[] pieces)
+        {
+            var squares = new Square[pieces.Length][];
+            for (var i = 0; i < squares.Length; i++)
+            {
+                var p = pieces[i];
+                var from = _board.GetPiecePositions(p.AsByte());
+                squares[p.AsByte()% squares.Length] = from;
+            }
+            return squares;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

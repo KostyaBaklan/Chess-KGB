@@ -90,73 +90,172 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetStaticValue(byte piece)
+        {
+            int value = 0;
+            var b = _boards[piece];
+            for (int i = 0; i < _pieceCount[piece]; i++)
+            {
+                int coordinate = b.BitScanForward();
+                value += _evaluationService.GetFullValue(piece, coordinate);
+                b = b.Remove(coordinate);
+            }
+
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetValue()
         {
-            var value = GetStaticValue();
+            return GetWhiteValue() - GetBlackValue();
+        }
 
-            value = GetWhitePawnValue(value, _evaluationService.GetPawnValue(2), _evaluationService.GetPawnValue(4));
-            value = GetBlackPawnValue(value,-_evaluationService.GetPawnValue(2),  -_evaluationService.GetPawnValue(4));
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetBlackValue()
+        {
+            return GetBlackPawnValue() + GetBlackKnightValue() + GetBlackBishopValue() +
+                   GetBlackRookValue() + GetBlackQueenValue() + GetBlackKingValue();
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetBlackKingValue()
+        {
+            var p = _boards[Piece.BlackKing.AsByte()].BitScanForward();
+            return _evaluationService.GetValue(Piece.BlackKing.AsByte(), p);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetBlackQueenValue()
+        {
+            return GetStaticValue(Piece.BlackQueen.AsByte());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetBlackRookValue()
+        {
+            return GetStaticValue(Piece.BlackRook.AsByte());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetBlackBishopValue()
+        {
+            var value = GetStaticValue(Piece.BlackBishop.AsByte());
+            if (_pieceCount[Piece.BlackBishop.AsByte()] < 2)
+            {
+                value -= _evaluationService.GetPawnValue(2);
+            }
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetBlackKnightValue()
+        {
+            return GetStaticValue(Piece.BlackKnight.AsByte());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetBlackPawnValue()
+        {
+            int value = 0;
+            var pawns = new int[8];
+            var piece = Piece.BlackPawn.AsByte();
+            var b = _boards[piece];
+            for (int i = 0; i < _pieceCount[piece]; i++)
+            {
+                int coordinate = b.BitScanForward();
+                value += _evaluationService.GetFullValue(piece, coordinate);
+                if (_whites.IsSet((coordinate - 8).AsBitBoard()))
+                {
+                    value = value - _evaluationService.GetPawnValue(2);
+                }
+
+                pawns[coordinate % 8]++;
+                b = b.Remove(coordinate);
+            }
+
+            return GetPawnValue(value, _evaluationService.GetPawnValue(2),_evaluationService.GetPawnValue(4), pawns);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetWhiteValue()
+        {
+            return GetWhitePawnValue() + GetWhiteKnightValue() + GetWhiteBishopValue() +
+                   GetWhiteRookValue() + GetWhiteQueenValue() + GetWhiteKingValue();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetWhiteKingValue()
+        {
+            var p = _boards[Piece.WhiteKing.AsByte()].BitScanForward();
+            return _evaluationService.GetValue(Piece.WhiteKing.AsByte(), p);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetWhiteQueenValue()
+        {
+            return GetStaticValue(Piece.WhiteQueen.AsByte());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetWhiteRookValue()
+        {
+            return GetStaticValue(Piece.WhiteRook.AsByte());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetWhiteBishopValue()
+        {
+            var value = GetStaticValue(Piece.WhiteBishop.AsByte());
             if (_pieceCount[Piece.WhiteBishop.AsByte()] < 2)
             {
                 value -= _evaluationService.GetPawnValue(2);
             }
-            if (_pieceCount[Piece.BlackBishop.AsByte()] < 2)
-            {
-                value += _evaluationService.GetPawnValue(2);
-            }
-
-            //value = EvaluateCastles(value);
-
             return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetFullValue()
+        private int GetWhiteKnightValue()
         {
-            return GetValue(~_boards[Piece.WhitePawn.AsByte()]&_whites) - GetValue(~_boards[Piece.BlackPawn.AsByte()] & _blacks);
+            var value = GetStaticValue(Piece.WhiteKnight.AsByte());
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetValue(BitBoard bitBoard)
+        private int GetWhitePawnValue()
         {
             int value = 0;
-            var array = bitBoard.Coordinates();
-            for (var i = 0; i < array.Count; i++)
+            var pawns = new int[8];
+            var piece = Piece.WhitePawn.AsByte();
+            var b = _boards[piece];
+            for (int i = 0; i < _pieceCount[piece]; i++)
             {
-                var coordinate = array[i];
-                value += _evaluationService.GetFullValue(_pieces[coordinate].AsByte(), coordinate);
+                int coordinate = b.BitScanForward();
+                value += _evaluationService.GetFullValue(piece, coordinate);
+                if (_blacks.IsSet((coordinate + 8).AsBitBoard()))
+                {
+                    value = value - _evaluationService.GetPawnValue(2);
+                }
+
+                pawns[coordinate % 8]++;
+                b = b.Remove(coordinate);
             }
 
-            return value;
+            return GetPawnValue(value, _evaluationService.GetPawnValue(2), _evaluationService.GetPawnValue(4), pawns);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetStaticValue()
+        private int[] GetPositionInternal(int piece)
         {
-            var value = 0;
-            for (int i = 1; i < 5; i++)
+            var b = _boards[piece];
+            int[] positions = new int[_pieceCount[piece]];
+            for (var i = 0; i < positions.Length; i++)
             {
-                var positions = GetPositions(i);
-                for (var p = 0; p < positions.Count; p++)
-                {
-                    value += _evaluationService.GetFullValue(i, positions[p]);
-                }
+                var position = b.BitScanForward();
+                positions[i] = position;
+                b = b.Remove(position);
             }
 
-            value += _evaluationService.GetValue(5, _boards[5].BitScanForward());
-
-            for (int i = 7; i < 11; i++)
-            {
-                var positions = GetPositions(i);
-                for (var p = 0; p < positions.Count; p++)
-                {
-                    value -= _evaluationService.GetFullValue(i, positions[p]);
-                }
-            }
-            value -= _evaluationService.GetValue(11, _boards[11].BitScanForward());
-
-            return value;
+            return positions;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -170,7 +269,7 @@ namespace Engine.Models.Boards
             {
                 if (!_moveHistory.CanDoWhiteSmallCastle())
                 {
-                    value-= _evaluationService.GetPawnValue();
+                    value -= _evaluationService.GetPawnValue();
                 }
 
                 if (!_moveHistory.CanDoWhiteBigCastle())
@@ -197,48 +296,6 @@ namespace Engine.Models.Boards
             }
 
             return value;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetWhitePawnValue(int value, int doubledPawn, int isolatedPawn)
-        {
-            var pawns = new int[8];
-            int piece = Piece.WhitePawn.AsByte();
-
-            var coordinates = _boards[piece].Coordinates();
-            for (var index = 0; index < _pieceCount[piece]; index++)
-            {
-                var coordinate = coordinates[index];
-                value += _evaluationService.GetFullValue(piece, coordinate);
-                if (_blacks.IsSet((coordinate + 8).AsBitBoard()))
-                {
-                    value = value - doubledPawn;
-                }
-                pawns[coordinate % 8]++;
-            }
-
-            return GetPawnValue(value, doubledPawn, isolatedPawn, pawns);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetBlackPawnValue(int value, int doubledPawn, int isolatedPawn)
-        {
-            var pawns = new int[8];
-            int piece = Piece.BlackPawn.AsByte();
-
-            var coordinates = _boards[piece].Coordinates();
-            for (var index = 0; index < _pieceCount[piece]; index++)
-            {
-                var coordinate = coordinates[index];
-                value -= _evaluationService.GetFullValue(piece, coordinate);
-                if (_whites.IsSet((coordinate - 8).AsBitBoard()))
-                {
-                    value = value - doubledPawn;
-                }
-                pawns[coordinate % 8]++;
-            }
-
-            return GetPawnValue(value, doubledPawn, isolatedPawn, pawns);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -334,7 +391,7 @@ namespace Engine.Models.Boards
             _hash.Update(square.AsByte(), piece.AsByte());
             _pieceCount[piece.AsByte()]--;
 
-            Remove(piece,square.AsBitBoard());
+            Remove(piece, square.AsBitBoard());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -344,7 +401,7 @@ namespace Engine.Models.Boards
             _pieceCount[piece.AsByte()]++;
             _pieces[square.AsByte()] = piece;
 
-            Add(piece,square.AsBitBoard());
+            Add(piece, square.AsBitBoard());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -353,7 +410,7 @@ namespace Engine.Models.Boards
             _hash.Update(from.AsByte(), to.AsByte(), piece.AsByte());
             _pieces[to.AsByte()] = piece;
 
-            Move(piece, from.AsBitBoard()|to.AsBitBoard());
+            Move(piece, from.AsBitBoard() | to.AsBitBoard());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -371,7 +428,7 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DynamicArray<int> GetPositions(int index)
         {
-            return _boards[index].Coordinates();
+            return _boards[index].Coordinates(index);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -385,7 +442,7 @@ namespace Engine.Models.Boards
         {
             int i = 0;
             Square[] squares = new Square[_pieceCount[piece]];
-            var ints = _boards[piece].Coordinates();
+            var ints = _boards[piece].Coordinates(piece);
             for (var index = 0; index < _pieceCount[piece]; index++)
             {
                 squares[i++] = new Square(ints[index]);
@@ -566,7 +623,8 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanDoBlackSmallCastle()
         {
-            if (!_moveHistory.CanDoBlackSmallCastle() || !_boards[Piece.BlackRook.AsByte()].IsSet(BitBoards.H8) || !_empty.IsSet(_blackSmallCastleCondition)) return false;
+            if (!_moveHistory.CanDoBlackSmallCastle() || !_boards[Piece.BlackRook.AsByte()].IsSet(BitBoards.H8) ||
+                !_empty.IsSet(_blackSmallCastleCondition)) return false;
 
             var to = Squares.E8.AsByte();
 
@@ -576,7 +634,8 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanDoWhiteSmallCastle()
         {
-            if (!_moveHistory.CanDoWhiteSmallCastle() || !_boards[Piece.WhiteRook.AsByte()].IsSet(BitBoards.H1) || !_empty.IsSet(_whiteSmallCastleCondition)) return false;
+            if (!_moveHistory.CanDoWhiteSmallCastle() || !_boards[Piece.WhiteRook.AsByte()].IsSet(BitBoards.H1) ||
+                !_empty.IsSet(_whiteSmallCastleCondition)) return false;
 
             var to = Squares.E1.AsByte();
 
@@ -586,7 +645,8 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanDoBlackBigCastle()
         {
-            if (!_moveHistory.CanDoBlackBigCastle() || !_boards[Piece.BlackRook.AsByte()].IsSet(BitBoards.A8) || !_empty.IsSet(_blackBigCastleCondition)) return false;
+            if (!_moveHistory.CanDoBlackBigCastle() || !_boards[Piece.BlackRook.AsByte()].IsSet(BitBoards.A8) ||
+                !_empty.IsSet(_blackBigCastleCondition)) return false;
 
             var to = Squares.E8.AsByte();
 
@@ -596,7 +656,8 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanDoWhiteBigCastle()
         {
-            if (!_moveHistory.CanDoWhiteBigCastle() || !_boards[Piece.WhiteRook.AsByte()].IsSet(BitBoards.A1) || !_empty.IsSet(_whiteBigCastleCondition)) return false;
+            if (!_moveHistory.CanDoWhiteBigCastle() || !_boards[Piece.WhiteRook.AsByte()].IsSet(BitBoards.A1) ||
+                !_empty.IsSet(_whiteBigCastleCondition)) return false;
 
             var to = Squares.E1.AsByte();
 
@@ -608,20 +669,20 @@ namespace Engine.Models.Boards
         public bool CanDoWhiteCastle(byte to)
         {
             return !(_moveProvider.IsUnderAttack(this, Piece.BlackBishop.AsByte(), to) ||
-                   _moveProvider.IsUnderAttack(this, Piece.BlackKnight.AsByte(), to) ||
-                   _moveProvider.IsUnderAttack(this, Piece.BlackQueen.AsByte(), to) ||
-                   _moveProvider.IsUnderAttack(this, Piece.BlackRook.AsByte(), to) ||
-                   _moveProvider.IsUnderAttack(this, Piece.BlackPawn.AsByte(), to));
+                     _moveProvider.IsUnderAttack(this, Piece.BlackKnight.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(this, Piece.BlackQueen.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(this, Piece.BlackRook.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(this, Piece.BlackPawn.AsByte(), to));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanDoBlackCastle(byte to)
         {
             return !(_moveProvider.IsUnderAttack(this, Piece.WhiteBishop.AsByte(), to) ||
-                   _moveProvider.IsUnderAttack(this, Piece.WhiteKnight.AsByte(), to) ||
-                   _moveProvider.IsUnderAttack(this, Piece.WhiteQueen.AsByte(), to) ||
-                   _moveProvider.IsUnderAttack(this, Piece.WhiteRook.AsByte(), to) ||
-                   _moveProvider.IsUnderAttack(this, Piece.WhitePawn.AsByte(), to));
+                     _moveProvider.IsUnderAttack(this, Piece.WhiteKnight.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(this, Piece.WhiteQueen.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(this, Piece.WhiteRook.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(this, Piece.WhitePawn.AsByte(), to));
         }
 
         #endregion
@@ -657,6 +718,7 @@ namespace Engine.Models.Boards
             {
                 _blacks |= bitBoard;
             }
+
             _empty = ~(_whites | _blacks);
         }
 
@@ -672,6 +734,7 @@ namespace Engine.Models.Boards
             {
                 _blacks ^= bitBoard;
             }
+
             _empty = ~(_whites | _blacks);
         }
 
@@ -692,7 +755,8 @@ namespace Engine.Models.Boards
                       _boards[Piece.WhiteQueen.AsByte()] |
                       _boards[Piece.WhiteKing.AsByte()];
 
-            _boards[Piece.BlackPawn.AsByte()] = _boards[Piece.BlackPawn.AsByte()].Set(Enumerable.Range(48, 8).ToArray());
+            _boards[Piece.BlackPawn.AsByte()] =
+                _boards[Piece.BlackPawn.AsByte()].Set(Enumerable.Range(48, 8).ToArray());
             _boards[Piece.BlackRook.AsByte()] = _boards[Piece.BlackRook.AsByte()].Set(56, 63);
             _boards[Piece.BlackKnight.AsByte()] = _boards[Piece.BlackKnight.AsByte()].Set(57, 62);
             _boards[Piece.BlackBishop.AsByte()] = _boards[Piece.BlackBishop.AsByte()].Set(58, 61);
@@ -710,7 +774,7 @@ namespace Engine.Models.Boards
 
             foreach (var piece in Enum.GetValues(typeof(Piece)).OfType<Piece>())
             {
-                var coordinates = _boards[piece.AsByte()].Coordinates();
+                var coordinates = _boards[piece.AsByte()].Coordinates(piece.AsByte());
                 for (var index = 0; index < _pieceCount[piece.AsByte()]; index++)
                 {
                     _pieces[coordinates[index]] = piece;
@@ -779,22 +843,32 @@ namespace Engine.Models.Boards
 
         public override string ToString()
         {
+            char[] pieceUnicodeChar =
+            {
+                '\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654',
+                '\u265F', '\u265E', '\u265D','\u265C', '\u265B', '\u265A',' '
+            };
+            var piecesNames = pieceUnicodeChar.Select(c => c.ToString()).ToArray();
+
             StringBuilder builder = new StringBuilder();
             for (int y = 7; y >= 0; y--)
             {
-                for (int x = 0; x< 8; x++)
+                for (int x = 0; x < 8; x++)
                 {
                     var i = y * 8 + x;
-                    string v = " ";
+                    string v = piecesNames.Last();
                     if (!_empty.IsSet(i.AsBitBoard()))
                     {
-                        v = _pieces[i].AsString();
+                        //v = _pieces[i].AsString();
+                        v = piecesNames[_pieces[i].AsByte()];
                     }
+
                     builder.Append($"[ {v} ]");
                 }
 
                 builder.AppendLine();
             }
+
             return builder.ToString();
         }
     }

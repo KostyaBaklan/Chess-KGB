@@ -13,12 +13,16 @@ namespace Engine.Models.Helpers
         private const ulong _magic = 0x07EDD5E59A4E28C2;
 
         private static readonly int[] _magicTable;
-        private static readonly DynamicArray<int> _positions;
+        private static readonly DynamicArray<int>[] _positions;
 
         static BitBoardExtensions()
         {
             _magicTable = new int[64];
-            _positions = new DynamicArray<int>();
+            _positions = new DynamicArray<int>[12];
+            for (var x = 0; x < _positions.Length; x++)
+            {
+                _positions[x] = new DynamicArray<int>();
+            }
 
             ulong bit = 1;
             int i = 0;
@@ -63,17 +67,18 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DynamicArray<int> Coordinates(this BitBoard b)
+        public static DynamicArray<int> Coordinates(this BitBoard b, int index)
         {
-            _positions.Clear();
+            var coordinates = _positions[index];
+            coordinates.Clear();
             while (!b.IsZero())
             {
                 int position = BitScanForward(b);
-                _positions.Add(position);
+                coordinates.Add(position);
                 b = b.Remove(position);
             }
 
-            return _positions;
+            return coordinates;
         }
 
         public static string ToBitString(this BitBoard b)

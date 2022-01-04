@@ -47,7 +47,7 @@ namespace Engine.DataStructures
             for (var index = 0; index < map.Length; index++)
             {
                 var set = map[index];
-                var coordinates = set.Coordinates();
+                var coordinates = set.Coordinates(index);
                 for (var i = 0; i < coordinates.Count; i++)
                 {
                     var coordinate = coordinates[i];

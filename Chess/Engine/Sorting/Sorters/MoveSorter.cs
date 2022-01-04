@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
@@ -49,11 +50,36 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<IMove> Order(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, IMove pvNode, IMove cutMove)
+        {
+            int depth = MoveHistoryService.GetPly();
+            if (depth < 0)
+            {
+                var possibleMoves = new List<IMove>(attacks.Concat(moves));
+                possibleMoves.Sort(Comparer);
+                return possibleMoves;
+            }
+
+            if (pvNode != null)
+            {
+                return OrderInternal(attacks,moves, Moves[depth], pvNode, cutMove);
+            }
+
+            if (cutMove != null)
+                return OrderInternal(attacks, moves, Moves[depth], cutMove);
+            return OrderInternal(attacks, moves, Moves[depth]);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Add(IMove move)
         {
             int depth = MoveHistoryService.GetPly();
             Moves[depth].Add(move);
         }
+
+        protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
+        protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode);
+        protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode, IMove cutMove);
 
         protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
         protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove cutMove);
