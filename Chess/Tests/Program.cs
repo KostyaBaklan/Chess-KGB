@@ -10,7 +10,7 @@ namespace Tests
 
             PerformanceTest.Test(args);
 
-            //PerformanceTest.Test(new[] { "ac", "6", "4" });
+            //PerformanceTest.Test(new[] { "ad", "6", "10" });
 
             //OpenningsTest.Opennings();
 

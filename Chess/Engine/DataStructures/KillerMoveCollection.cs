@@ -8,15 +8,15 @@ namespace Engine.DataStructures
 {
     public class KillerMoveCollection
     {
-        private readonly int capacity = 2;
+        private readonly int _capacity = 2;
         private int _index;
         private readonly IMove[] _moves;
         private static readonly IMove _default = new Move();
 
         public KillerMoveCollection()
         {
-            _moves = new IMove[capacity];
-            for (int i = 0; i < capacity; i++)
+            _moves = new IMove[_capacity];
+            for (int i = 0; i < _capacity; i++)
             {
                 _moves[i] = _default;
             }
@@ -33,14 +33,14 @@ namespace Engine.DataStructures
         {
             if (_moves.Contains(move)) return;
 
-            _moves[_index % capacity] = move;
+            _moves[_index % _capacity] = move;
             _index++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ICollection<IMove> GetMoves()
         {
-            HashSet<IMove> set = new HashSet<IMove>(capacity);
+            HashSet<IMove> set = new HashSet<IMove>(_capacity);
             foreach (var move in _moves.Where(move => !move.Equals(_default)))
             {
                 set.Add(move);
@@ -52,7 +52,7 @@ namespace Engine.DataStructures
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ICollection<IMove> GetMoves(IMove cutMove)
         {
-            HashSet<IMove> set = new HashSet<IMove>(capacity + 1);
+            HashSet<IMove> set = new HashSet<IMove>(_capacity + 1);
             foreach (var move in _moves.Where(move => !move.Equals(_default)))
             {
                 set.Add(move);

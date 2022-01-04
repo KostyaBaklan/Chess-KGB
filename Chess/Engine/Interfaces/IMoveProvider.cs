@@ -11,8 +11,9 @@ namespace Engine.Interfaces
         IEnumerable<IMove> GetMoves(Piece piece, Square cell, IBoard board);
         bool AnyBlackCheck(IBoard board);
         bool AnyWhiteCheck(IBoard board);
-        bool IsUnderAttack(IBoard board, int index, byte to);
+        bool IsUnderAttack(IBoard board, int piece, byte to);
         MaterialBalance GetBlackMaterialBalance(IBoard board, byte to);
         MaterialBalance GetWhiteMaterialBalance(IBoard board, byte to);
+        BitBoard GetAttackPattern(byte piece, int position);
     }
 }

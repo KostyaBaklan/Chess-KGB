@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Engine.Models.Boards;
 using Engine.Models.Helpers;
 
 namespace Engine.DataStructures
@@ -40,14 +41,16 @@ namespace Engine.DataStructures
             return _key;
         }
 
-        public void Initialize(PieceSet[] map)
+        public void Initialize(BitBoard[] map)
         {
             _key = 0L;
             for (var index = 0; index < map.Length; index++)
             {
                 var set = map[index];
-                foreach (var coordinate in set.Coordinates())
+                var coordinates = set.Coordinates();
+                for (var i = 0; i < coordinates.Count; i++)
                 {
+                    var coordinate = coordinates[i];
                     _key = _key ^ _table[coordinate][index];
                 }
             }

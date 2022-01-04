@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text;
 using Engine.Models.Helpers;
 
@@ -27,6 +26,12 @@ namespace Engine.Models.Boards
         #endregion
 
         private readonly ulong _value;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard(int value)
+        {
+            _value = (ulong) value;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BitBoard(ulong value)
@@ -93,14 +98,32 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong operator *(BitBoard left, ulong right)
+        {
+            return left._value * right;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BitBoard Set(params int[] bits)
         {
             var v = this;
-            foreach (var bit in bits.Select(b=>b.AsBitBoard()))
+            foreach (var bit in bits)
             {
-                v = v | bit;
+                v = v.Add(bit);
             }
             return v;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard Add(int bit)
+        {
+            return new BitBoard(_value | (1ul << bit));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard Remove(int bit)
+        {
+            return new BitBoard(_value & ~(1ul << bit) );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -113,6 +136,30 @@ namespace Engine.Models.Boards
         public bool IsOff(BitBoard bitBoard)
         {
             return (_value & bitBoard._value) == 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsZero()
+        {
+            return _value == 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ulong Lsb()
+        {
+            return _value&(~_value + 1);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ulong Lsb2()
+        {
+            return _value & (ulong) -(long)_value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ulong And(ulong value)
+        {
+            return _value & value;
         }
 
         #region Overrides of ValueType

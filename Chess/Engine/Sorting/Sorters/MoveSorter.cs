@@ -9,42 +9,42 @@ namespace Engine.Sorting.Sorters
 {
     public abstract class MoveSorter : IMoveSorter
     {
-        protected readonly KillerMoveCollection[] _moves;
-        protected readonly IMoveHistoryService _moveHistoryService;
+        protected readonly KillerMoveCollection[] Moves;
+        protected readonly IMoveHistoryService MoveHistoryService;
         protected IMoveComparer Comparer;
 
         protected MoveSorter()
         {
-            _moves = new KillerMoveCollection[256];
-            for (var i = 0; i < _moves.Length; i++)
+            Moves = new KillerMoveCollection[256];
+            for (var i = 0; i < Moves.Length; i++)
             {
-                _moves[i] = new KillerMoveCollection();
+                Moves[i] = new KillerMoveCollection();
             }
 
-            _moveHistoryService = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
+            MoveHistoryService = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IMove> Order(IEnumerable<IMove> moves, IMove pvNode, IMove cutMove)
         {
-            int depth = _moveHistoryService.GetPly();
+            int depth = MoveHistoryService.GetPly();
             if (depth < 0) return moves;
 
             if (pvNode != null)
             {
-                return OrderInternal(moves, _moves[depth], pvNode, cutMove);
+                return OrderInternal(moves, Moves[depth], pvNode, cutMove);
             }
 
             if (cutMove != null)
-                return OrderInternal(moves, _moves[depth], cutMove);
-            return OrderInternal(moves, _moves[depth]);
+                return OrderInternal(moves, Moves[depth], cutMove);
+            return OrderInternal(moves, Moves[depth]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Add(IMove move)
         {
-            int depth = _moveHistoryService.GetPly();
-            _moves[depth].Add(move);
+            int depth = MoveHistoryService.GetPly();
+            Moves[depth].Add(move);
         }
 
         protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);

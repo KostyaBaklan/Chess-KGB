@@ -5,7 +5,6 @@ using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 
-
 namespace Engine.Services
 {
     public class MoveHistoryService: IMoveHistoryService
