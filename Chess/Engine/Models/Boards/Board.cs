@@ -104,11 +104,8 @@ namespace Engine.Models.Boards
                 value = value - _pieceCount[i] * _values[i];
             }
 
-            value = GetValue(Piece.WhitePawn, value,1,  3);
-            value = GetValue(Piece.BlackPawn, value,-1,  -3);
-
-            //var blockedPawns = GetWhiteBlockedPawns() - GetBlackBlockedPawns();
-            //value -= blockedPawns;
+            value = GetWhitePawnValue(value,1,  3);
+            value = GetBlackPawnValue(value,-1,  -3);
 
             if (_pieceCount[Piece.WhiteBishop.AsByte()] < 2)
             {
@@ -163,83 +160,46 @@ namespace Engine.Models.Boards
             return value;
         }
 
-        private int GetBlackBlockedPawns()
-        {
-            int count = 0;
-            var pawns = new[] { -1, -1, -1, -1, -1, -1, -1, -1 };
-            var coordinates = _boards[Piece.BlackPawn.AsByte()].Coordinates();
-            for (var index = 0; index < _pieceCount[Piece.BlackPawn.AsByte()]; index++)
-            {
-                var coordinate = coordinates[index];
-                var x = coordinate % 8;
-                if (pawns[x] < 0)
-                {
-                    pawns[x] = coordinate;
-                    if (_whites.IsSet((coordinate - 8).AsBitBoard()))
-                    {
-                        count++;
-                    }
-                }
-                else
-                {
-                    if (coordinate < pawns[x])
-                    {
-                        pawns[x] = coordinate;
-                    }
-
-                    if (_whites.IsSet((coordinate - 8).AsBitBoard()))
-                    {
-                        count++;
-                    }
-                }
-            }
-
-            return count;
-        }
-
-        private int GetWhiteBlockedPawns()
-        {
-            int count = 0;
-            var pawns = new[] { -1, -1, -1, -1, -1, -1, -1, -1 };
-            var coordinates = _boards[Piece.WhitePawn.AsByte()].Coordinates();
-            for (var index = 0; index < _pieceCount[Piece.WhitePawn.AsByte()]; index++)
-            {
-                var coordinate = coordinates[index];
-                var x = coordinate % 8;
-                if (pawns[x] < 0)
-                {
-                    pawns[x] = coordinate;
-                    if (_blacks.IsSet((coordinate + 8).AsBitBoard()))
-                    {
-                        count++;
-                    }
-                }
-                else
-                {
-                    if (coordinate < pawns[x])
-                    {
-                        pawns[x] = coordinate;
-                    }
-
-                    if (_blacks.IsSet((coordinate + 8).AsBitBoard()))
-                    {
-                        count++;
-                    }
-                }
-            }
-
-            return count;
-        }
-
-        private int GetValue(Piece piece, int value,int doubledPawn, int isolatedPawn)
+        private int GetWhitePawnValue(int value, int doubledPawn, int isolatedPawn)
         {
             var pawns = new int[8];
+            Piece piece = Piece.WhitePawn;
+
             var coordinates = _boards[piece.AsByte()].Coordinates();
             for (var index = 0; index < _pieceCount[piece.AsByte()]; index++)
             {
-                pawns[coordinates[index] % 8]++;
+                var coordinate = coordinates[index];
+                if (_blacks.IsSet((coordinate + 8).AsBitBoard()))
+                {
+                    value = value - doubledPawn;
+                }
+                pawns[coordinate % 8]++;
             }
 
+            return GetPawnValue(value, doubledPawn, isolatedPawn, pawns);
+        }
+
+        private int GetBlackPawnValue(int value, int doubledPawn, int isolatedPawn)
+        {
+            var pawns = new int[8];
+            Piece piece = Piece.BlackPawn;
+
+            var coordinates = _boards[piece.AsByte()].Coordinates();
+            for (var index = 0; index < _pieceCount[piece.AsByte()]; index++)
+            {
+                var coordinate = coordinates[index];
+                if (_whites.IsSet((coordinate - 8).AsBitBoard()))
+                {
+                    value = value - doubledPawn;
+                }
+                pawns[coordinate % 8]++;
+            }
+
+            return GetPawnValue(value, doubledPawn, isolatedPawn, pawns);
+        }
+
+        private static int GetPawnValue(int value, int doubledPawn, int isolatedPawn, int[] pawns)
+        {
             if (pawns[0] > 0)
             {
                 if (pawns[0] > 1)
@@ -249,7 +209,7 @@ namespace Engine.Models.Boards
 
                 if (pawns[1] == 0)
                 {
-                    value = value - doubledPawn;
+                    value = value - isolatedPawn;
                 }
             }
 
@@ -262,7 +222,7 @@ namespace Engine.Models.Boards
 
                 if (pawns[6] == 0)
                 {
-                    value = value - doubledPawn;
+                    value = value - isolatedPawn;
                 }
             }
 
@@ -327,12 +287,7 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(Piece piece, Square square)
         {
-            //if (piece == Piece.BlackKing || piece == Piece.WhiteKing)
-            //{
-
-            //}
             _hash.Update(square.AsByte(), piece.AsByte());
-           // _boards[piece.AsByte()]=_boards[piece.AsByte()].Off(square.AsByte());
             _pieceCount[piece.AsByte()]--;
 
             Remove(piece,square.AsBitBoard());
@@ -342,7 +297,6 @@ namespace Engine.Models.Boards
         public void Add(Piece piece, Square square)
         {
             _hash.Update(square.AsByte(), piece.AsByte());
-            //_boards[piece.AsByte()] = _boards[piece.AsByte()].Set(square.AsByte());
             _pieceCount[piece.AsByte()]++;
             _pieces[square.AsByte()] = piece;
 
@@ -353,7 +307,6 @@ namespace Engine.Models.Boards
         public void Move(Piece piece, Square from, Square to)
         {
             _hash.Update(from.AsByte(), to.AsByte(), piece.AsByte());
-           // _boards[piece.AsByte()] = _boards[piece.AsByte()].Off(from.AsByte()).Set(to.AsByte());
             _pieces[to.AsByte()] = piece;
 
             Move(piece, from.AsBitBoard()|to.AsBitBoard());
@@ -411,8 +364,6 @@ namespace Engine.Models.Boards
         {
             _pieces[Squares.G1.AsByte()] = Piece.WhiteKing;
             _pieces[Squares.F1.AsByte()] = Piece.WhiteRook;
-           //_boards[Piece.WhiteKing.AsByte()]=_boards[Piece.WhiteKing.AsByte()].Replace(Squares.E1.AsByte(), Squares.G1.AsByte());
-           // _boards[Piece.WhiteRook.AsByte()]=_boards[Piece.WhiteRook.AsByte()].Replace(Squares.H1.AsByte(), Squares.F1.AsByte());
 
             _hash.Update(Squares.H1.AsByte(), Squares.F1.AsByte(), Piece.WhiteRook.AsByte());
             _hash.Update(Squares.E1.AsByte(), Squares.G1.AsByte(), Piece.WhiteKing.AsByte());
@@ -428,9 +379,6 @@ namespace Engine.Models.Boards
             _pieces[Squares.G8.AsByte()] = Piece.BlackKing;
             _pieces[Squares.F8.AsByte()] = Piece.BlackRook;
 
-            //_boards[Piece.BlackKing.AsByte()]=_boards[Piece.BlackKing.AsByte()].Replace(Squares.E8.AsByte(), Squares.G8.AsByte());
-            //_boards[Piece.BlackRook.AsByte()]=_boards[Piece.BlackRook.AsByte()].Replace(Squares.H8.AsByte(), Squares.F8.AsByte());
-
             _hash.Update(Squares.H8.AsByte(), Squares.F8.AsByte(), Piece.BlackRook.AsByte());
             _hash.Update(Squares.E8.AsByte(), Squares.G8.AsByte(), Piece.BlackKing.AsByte());
 
@@ -444,9 +392,6 @@ namespace Engine.Models.Boards
         {
             _pieces[Squares.C8.AsByte()] = Piece.BlackKing;
             _pieces[Squares.D8.AsByte()] = Piece.BlackRook;
-
-            //_boards[Piece.BlackKing.AsByte()] = _boards[Piece.BlackKing.AsByte()].Replace(Squares.E8.AsByte(), Squares.C8.AsByte());
-           //_boards[Piece.BlackRook.AsByte()]=_boards[Piece.BlackRook.AsByte()].Replace(Squares.A8.AsByte(), Squares.D8.AsByte());
 
             _hash.Update(Squares.A8.AsByte(), Squares.D8.AsByte(), Piece.BlackRook.AsByte());
             _hash.Update(Squares.E8.AsByte(), Squares.C8.AsByte(), Piece.BlackKing.AsByte());
@@ -462,9 +407,6 @@ namespace Engine.Models.Boards
             _pieces[Squares.C1.AsByte()] = Piece.WhiteKing;
             _pieces[Squares.D1.AsByte()] = Piece.WhiteRook;
 
-           // _boards[Piece.WhiteKing.AsByte()]=_boards[Piece.WhiteKing.AsByte()].Replace(Squares.E1.AsByte(), Squares.C1.AsByte());
-           // _boards[Piece.WhiteRook.AsByte()]=_boards[Piece.WhiteRook.AsByte()].Replace(Squares.A1.AsByte(), Squares.D1.AsByte());
-
             _hash.Update(Squares.A1.AsByte(), Squares.D1.AsByte(), Piece.WhiteRook.AsByte());
             _hash.Update(Squares.E1.AsByte(), Squares.C1.AsByte(), Piece.WhiteKing.AsByte());
 
@@ -478,9 +420,6 @@ namespace Engine.Models.Boards
         {
             _pieces[Squares.E1.AsByte()] = Piece.WhiteKing;
             _pieces[Squares.H1.AsByte()] = Piece.WhiteRook;
-
-           // _boards[Piece.WhiteKing.AsByte()] = _boards[Piece.WhiteKing.AsByte()].Replace(Squares.G1.AsByte(), Squares.E1.AsByte());
-          //  _boards[Piece.WhiteRook.AsByte()] = _boards[Piece.WhiteRook.AsByte()].Replace(Squares.F1.AsByte(), Squares.H1.AsByte());
 
             _hash.Update(Squares.F1.AsByte(), Squares.H1.AsByte(), Piece.WhiteRook.AsByte());
             _hash.Update(Squares.G1.AsByte(), Squares.E1.AsByte(), Piece.WhiteKing.AsByte());
@@ -496,9 +435,6 @@ namespace Engine.Models.Boards
             _pieces[Squares.E8.AsByte()] = Piece.BlackKing;
             _pieces[Squares.H8.AsByte()] = Piece.BlackRook;
 
-          //  _boards[Piece.BlackKing.AsByte()] =  _boards[Piece.BlackKing.AsByte()].Replace(Squares.G8.AsByte(), Squares.E8.AsByte());
-          //  _boards[Piece.BlackRook.AsByte()] = _boards[Piece.BlackRook.AsByte()].Replace(Squares.F8.AsByte(), Squares.H8.AsByte());
-
             _hash.Update(Squares.F8.AsByte(), Squares.H8.AsByte(), Piece.BlackRook.AsByte());
             _hash.Update(Squares.G8.AsByte(), Squares.E8.AsByte(), Piece.BlackKing.AsByte());
 
@@ -513,9 +449,6 @@ namespace Engine.Models.Boards
             _pieces[Squares.E1.AsByte()] = Piece.WhiteKing;
             _pieces[Squares.A1.AsByte()] = Piece.WhiteRook;
 
-           // _boards[Piece.WhiteKing.AsByte()]=_boards[Piece.WhiteKing.AsByte()].Replace(Squares.C1.AsByte(), Squares.E1.AsByte());
-          //  _boards[Piece.WhiteRook.AsByte()]=_boards[Piece.WhiteRook.AsByte()].Replace(Squares.D1.AsByte(), Squares.A1.AsByte());
-
             _hash.Update(Squares.D1.AsByte(), Squares.A1.AsByte(), Piece.WhiteRook.AsByte());
             _hash.Update(Squares.C1.AsByte(), Squares.E1.AsByte(), Piece.WhiteKing.AsByte());
 
@@ -529,9 +462,6 @@ namespace Engine.Models.Boards
         {
             _pieces[Squares.E8.AsByte()] = Piece.BlackKing;
             _pieces[Squares.A8.AsByte()] = Piece.BlackRook;
-
-         //   _boards[Piece.BlackKing.AsByte()]=_boards[Piece.BlackKing.AsByte()].Replace(Squares.C8.AsByte(), Squares.E8.AsByte());
-          //  _boards[Piece.BlackRook.AsByte()]=_boards[Piece.BlackRook.AsByte()].Replace(Squares.D8.AsByte(), Squares.A8.AsByte());
 
             _hash.Update(Squares.D8.AsByte(), Squares.A8.AsByte(), Piece.BlackRook.AsByte());
             _hash.Update(Squares.C8.AsByte(), Squares.E8.AsByte(), Piece.BlackKing.AsByte());
