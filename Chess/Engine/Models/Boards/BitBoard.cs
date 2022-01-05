@@ -193,5 +193,11 @@ namespace Engine.Models.Boards
 
             return bit;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Any()
+        {
+            return _value > 0;
+        }
     }
 }

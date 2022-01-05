@@ -179,6 +179,7 @@ namespace Engine.Models.Boards
             {
                 value = value + _evaluationService.GetUnitValue(bishops[i].BishopAttacks(~_empty).Count());
             }
+            value = CheckUndeveloped(Piece.BlackBishop.AsByte(), _ranks[7], value);
             return value;
         }
 
@@ -196,10 +197,11 @@ namespace Engine.Models.Boards
                     var pattern = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), pawns[j]);
                     if (!pattern.IsSet(bit)) continue;
 
-                    value += 25;
+                    value += _evaluationService.GetPenaltyValue();
                     break;
                 }
             }
+            value = CheckUndeveloped(Piece.BlackKnight.AsByte(), _ranks[7], value);
             return value;
         }
 
@@ -289,13 +291,15 @@ namespace Engine.Models.Boards
             {
                 value = value + _evaluationService.GetUnitValue(bishops[i].BishopAttacks(~_empty).Count());
             }
+            value = CheckUndeveloped(Piece.WhiteBishop.AsByte(), _ranks[0], value);
             return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhiteKnightValue(int[] knights, int[] pawns)
         {
-            var value = GetStaticValue(Piece.WhiteKnight.AsByte(), knights);
+            var piece = Piece.WhiteKnight.AsByte();
+            var value = GetStaticValue(piece, knights);
 
             value += _evaluationService.GetUnitValue(pawns.Length);
             if (knights.Length <= 0) return value;
@@ -307,10 +311,22 @@ namespace Engine.Models.Boards
                     var pattern = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), pawns[j]);
                     if (!pattern.IsSet(bit)) continue;
 
-                    value += 25;
+                    value += _evaluationService.GetPenaltyValue();
                     break;
                 }
             }
+
+            value = CheckUndeveloped(piece, _ranks[0], value);
+            return value;
+        }
+
+        private int CheckUndeveloped(byte piece, BitBoard rank, int value)
+        {
+            if (_phase == Phase.Middle && (_boards[piece] & rank).Any())
+            {
+                value -= _evaluationService.GetPenaltyValue();
+            }
+
             return value;
         }
 
@@ -579,7 +595,8 @@ namespace Engine.Models.Boards
 
         public void UpdatePhase()
         {
-            _phase = _moveHistory.GetPly() < 16 ? Phase.Opening : Phase.Middle;
+            var ply = _moveHistory.GetPly();
+            _phase = ply < 16 ? Phase.Opening : Phase.Middle;
         }
 
         #endregion

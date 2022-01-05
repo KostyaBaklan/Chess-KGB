@@ -48,10 +48,6 @@ namespace Engine.Services
             _ply++;
             if (_ply > 0)
             {
-                if (_ply > 15)
-                {
-
-                }
                 if (_ply % 2 == 0)
                 {
                     _blackSmallCastleHistory[_ply] = _blackSmallCastleHistory[ply];

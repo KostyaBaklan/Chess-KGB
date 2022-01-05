@@ -8,9 +8,9 @@ namespace Tests
         {
             Boot.SetUp();
 
-            //PerformanceTest.Test(args);
+            PerformanceTest.Test(args);
 
-            PerformanceTest.Test(new[] { "ad", "6", "4",true.ToString() });
+            //PerformanceTest.Test(new[] { "ad", "6", "4",true.ToString() });
 
             //OpenningsTest.Opennings();
 
