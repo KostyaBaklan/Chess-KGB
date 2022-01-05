@@ -50,14 +50,18 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> Order(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, IMove pvNode, IMove cutMove)
+        public IMoveCollection Order(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, IMove pvNode, IMove cutMove)
         {
             int depth = MoveHistoryService.GetPly();
             if (depth < 0)
             {
-                var possibleMoves = new List<IMove>(attacks.Concat(moves));
-                possibleMoves.Sort(Comparer);
-                return possibleMoves;
+                var collection = new MoveCollection(Comparer);
+                foreach (var move in moves)
+                {
+                    collection.AddNonCapture(move);
+                }
+                collection.Build();
+                return collection;
             }
 
             if (pvNode != null)
@@ -77,9 +81,9 @@ namespace Engine.Sorting.Sorters
             Moves[depth].Add(move);
         }
 
-        protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
-        protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode);
-        protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode, IMove cutMove);
+        protected abstract IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
+        protected abstract IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode);
+        protected abstract IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode, IMove cutMove);
 
         protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
         protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove cutMove);

@@ -28,8 +28,9 @@ namespace Engine.Strategies
             Result result = new Result();
 
             var moves = Position.GetAllMoves(Sorter);
-            foreach (var move in moves)
+            for (var i = 0; i < moves.Count; i++)
             {
+                var move = moves[i];
                 try
                 {
                     Position.Make(move);
@@ -71,9 +72,9 @@ namespace Engine.Strategies
 
             int value = int.MinValue;
             var moves = Position.GetAllMoves(Sorter);
-
-            foreach (var move in moves)
+            for (var i = 0; i < moves.Count; i++)
             {
+                var move = moves[i];
                 Position.Make(move);
 
                 var isCheck = Position.IsCheck();

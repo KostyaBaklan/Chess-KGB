@@ -85,7 +85,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> GetAllMoves(IMoveSorter sorter, IMove pvMove = null, IMove cutMove = null)
+        public IMoveCollection GetAllMoves(IMoveSorter sorter, IMove pvMove = null, IMove cutMove = null)
         {
             if (_turn == Turn.White)
             {

@@ -13,129 +13,101 @@ namespace Engine.Sorting.Sorters
             Comparer = comparer;
         }
 
-        protected override IEnumerable<IMove> OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves,
+        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection)
         {
-            var attackMoves = new List<IMove>(attacks);
-            if (attackMoves.Count > 0)
+            MoveCollection collection = new MoveCollection(Comparer);
+            foreach (var attack in attacks)
             {
-                attackMoves.Sort(Comparer);
-                foreach (var move in attackMoves)
-                {
-                    yield return move;
-                }
+                collection.AddTrade(attack);
             }
 
-            var otherMoves = new List<IMove>(64);
             var killer = killerMoveCollection.GetMoves();
 
             foreach (var move in moves)
             {
                 if (killer.Contains(move) || move.IsCastle() || move.IsPromotion())
                 {
-                    yield return move;
+                    collection.AddKillerMove(move);
                 }
                 else
                 {
-                    otherMoves.Add(move);
+                    collection.AddNonCapture(move);
                 }
             }
 
-            otherMoves.Sort(Comparer);
-
-            foreach (var move in otherMoves)
-            {
-                yield return move;
-            }
+            collection.Build();
+            return collection;
         }
 
-        protected override IEnumerable<IMove> OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves,
+        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection,
             IMove cutNode)
         {
-            var attackMoves = new List<IMove>(attacks);
-            if (attackMoves.Count > 0)
+            MoveCollection collection = new MoveCollection(Comparer);
+            foreach (var attack in attacks)
             {
-                attackMoves.Sort(Comparer);
-                foreach (var move in attackMoves)
-                {
-                    yield return move;
-                }
+                collection.AddTrade(attack);
             }
 
-            var otherMoves = new List<IMove>(64);
             var killer = killerMoveCollection.GetMoves(cutNode);
 
             foreach (var move in moves)
             {
                 if (killer.Contains(move) || move.IsCastle() || move.IsPromotion())
                 {
-                    yield return move;
+                    collection.AddKillerMove(move);
                 }
                 else
                 {
-                    otherMoves.Add(move);
+                    collection.AddNonCapture(move);
                 }
             }
 
-            otherMoves.Sort(Comparer);
-
-            foreach (var move in otherMoves)
-            {
-                yield return move;
-            }
+            collection.Build();
+            return collection;
         }
 
-        protected override IEnumerable<IMove> OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves,
+        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection,
             IMove pvNode, IMove cutMove)
         {
-            var attackMoves = new List<IMove>();
+            MoveCollection collection = new MoveCollection(Comparer);
             foreach (var attack in attacks)
             {
                 if (attack.Equals(pvNode))
                 {
-                    yield return attack;
+                    collection.AddHashMove(attack);
                 }
-
-                attackMoves.Add(attack);
-            }
-
-            if (attackMoves.Count > 0)
-            {
-                attackMoves.Sort(Comparer);
-                foreach (var move in attackMoves)
+                else
                 {
-                    yield return move;
+                    collection.AddTrade(attack);
                 }
             }
 
-            var otherMoves = new List<IMove>(64);
             var killer = killerMoveCollection.GetMoves(cutMove);
 
             foreach (var move in moves)
             {
                 if (move.Equals(pvNode))
                 {
-                    yield return move;
-                }
-
-                if (killer.Contains(move) || move.IsCastle() || move.IsPromotion())
-                {
-                    yield return move;
+                    collection.AddHashMove(move);
                 }
                 else
                 {
-                    otherMoves.Add(move);
+                    if (killer.Contains(move) || move.IsCastle() || move.IsPromotion())
+                    {
+                        collection.AddKillerMove(move);
+                    }
+                    else
+                    {
+                        collection.AddNonCapture(move);
+                    }
                 }
             }
 
-            otherMoves.Sort(Comparer);
-
-            foreach (var move in otherMoves)
-            {
-                yield return move;
-            }
+            collection.Build();
+            return collection;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

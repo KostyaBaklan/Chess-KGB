@@ -29,8 +29,9 @@ namespace Engine.Strategies.AlphaBeta
 
             bool isHistoryUpdated = false;
             var moves = Position.GetAllMoves(Sorter, pv, cut);
-            foreach (var move in moves)
+            for (var i = 0; i < moves.Count; i++)
             {
+                var move = moves[i];
                 try
                 {
                     Position.Make(move);
@@ -117,8 +118,9 @@ namespace Engine.Strategies.AlphaBeta
             IMove cutMove = null;
             var moves = Position.GetAllMoves(Sorter, pv, cut);
 
-            foreach (var move in moves)
+            for (var i = 0; i < moves.Count; i++)
             {
+                var move = moves[i];
                 Position.Make(move);
 
                 var isCheck = Position.IsCheck();
