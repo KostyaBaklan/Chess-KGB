@@ -284,7 +284,15 @@ namespace Kgb.ChessApp.Views
                 })
                 .ContinueWith(t =>
                     {
-                        var tResult = t.Result;
+                        Tuple<IMove, TimeSpan> tResult = null;
+                        try
+                        {
+                            tResult = t.Result;
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show($"Error = {exception} !");
+                        }
                         if (tResult != null)
                         {
                             MessageBox.Show($"Elapsed = {tResult.Item2} !");

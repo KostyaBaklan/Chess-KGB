@@ -8,6 +8,8 @@ namespace Engine.Services
 {
     public class EvaluationService: IEvaluationService
     {
+        private readonly int _penaltyValue;
+        private readonly int _unitValue;
         private readonly int _pawnValue;
         private readonly int[] _values;
         private readonly int[][] _staticValues;
@@ -89,11 +91,11 @@ namespace Engine.Services
            -5,  0,  0,  0,  0,  0,  0, -5,
            -5,  0,  0,  0,  0,  0,  0, -5,
            -5,  0,  0,  0,  0,  0,  0, -5,
-            0,  0,  0 ,  5,  5,  4,  0,  0
+            0,  0,  0 ,  5,  5,  0,  0,  0
         };
 
         private static readonly int[] _whiteRookSquareTable = {
-            0,  0,  4,  5,  5,  0,  0,  0,
+            0,  0,  0,  5,  5,  0,  0,  0,
            -5,  0,  0,  0,  0,  0,  0, -5,
            -5,  0,  0,  0,  0,  0,  0, -5,
            -5,  0,  0,  0,  0,  0,  0, -5,
@@ -169,10 +171,13 @@ namespace Engine.Services
             -50,-40,-30,-20,-20,-30,-40,-50
         };
 
+
         #endregion
 
         public EvaluationService()
         {
+            _unitValue = 5;
+            _penaltyValue = 25;
             _pawnValue = 125;
             _values = new int[12];
             _values[Piece.WhitePawn.AsByte()] = 1000;
@@ -189,18 +194,18 @@ namespace Engine.Services
             _values[Piece.BlackQueen.AsByte()] = 9625;
 
             _staticValues = new int[12][];
-            _staticValues[Piece.WhitePawn.AsByte()] = _whitePawnSquareTable;
-            _staticValues[Piece.BlackPawn.AsByte()] = _blackPawnSquareTable;
-            _staticValues[Piece.WhiteKnight.AsByte()] = _whiteKnightSquareTable;
-            _staticValues[Piece.BlackKnight.AsByte()] = _blackKnightSquareTable;
-            _staticValues[Piece.WhiteBishop.AsByte()] = _whiteBishopSquareTable;
-            _staticValues[Piece.BlackBishop.AsByte()] = _blackBishopSquareTable;
-            _staticValues[Piece.WhiteKing.AsByte()] = _whiteKingMiddleGameSquareTable;
-            _staticValues[Piece.BlackKing.AsByte()] = _blackKingMiddleGameSquareTable;
-            _staticValues[Piece.WhiteRook.AsByte()] = _whiteRookSquareTable;
-            _staticValues[Piece.BlackRook.AsByte()] = _blackRookSquareTable;
-            _staticValues[Piece.WhiteQueen.AsByte()] = _whiteQueenSquareTable;
-            _staticValues[Piece.BlackQueen.AsByte()] = _blackQueenSquareTable;
+            _staticValues[Piece.WhitePawn.AsByte()] = _whitePawnSquareTable.Factor(10);
+            _staticValues[Piece.BlackPawn.AsByte()] = _blackPawnSquareTable.Factor(10);
+            _staticValues[Piece.WhiteKnight.AsByte()] = _whiteKnightSquareTable.Factor(10);
+            _staticValues[Piece.BlackKnight.AsByte()] = _blackKnightSquareTable.Factor(10);
+            _staticValues[Piece.WhiteBishop.AsByte()] = _whiteBishopSquareTable.Factor(10);
+            _staticValues[Piece.BlackBishop.AsByte()] = _blackBishopSquareTable.Factor(10);
+            _staticValues[Piece.WhiteKing.AsByte()] = _whiteKingMiddleGameSquareTable.Factor(10);
+            _staticValues[Piece.BlackKing.AsByte()] = _blackKingMiddleGameSquareTable.Factor(10);
+            _staticValues[Piece.WhiteRook.AsByte()] = _whiteRookSquareTable.Factor(10);
+            _staticValues[Piece.BlackRook.AsByte()] = _blackRookSquareTable.Factor(10);
+            _staticValues[Piece.WhiteQueen.AsByte()] = _whiteQueenSquareTable.Factor(10);
+            _staticValues[Piece.BlackQueen.AsByte()] = _blackQueenSquareTable.Factor(10);
 
             _table = new Dictionary<ulong, int>(20000213);
         }
@@ -236,6 +241,18 @@ namespace Engine.Services
         public int GetPawnValue(int factor = 1)
         {
             return _pawnValue * factor;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetPenaltyValue(int factor = 1)
+        {
+            return _penaltyValue * factor;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetUnitValue(int factor = 1)
+        {
+            return _unitValue * factor;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

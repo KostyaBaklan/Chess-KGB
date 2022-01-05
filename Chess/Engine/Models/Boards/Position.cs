@@ -304,6 +304,8 @@ namespace Engine.Models.Boards
 
             move.SetMoveResult(IsCheck());
 
+            _board.UpdatePhase();
+
             SwapTurn();
         }
 
@@ -320,6 +322,8 @@ namespace Engine.Models.Boards
             move.UnMake(_board, _figureHistory);
 
             move.SetMoveResult(false);
+
+            _board.UpdatePhase();
 
             SwapTurn();
         }

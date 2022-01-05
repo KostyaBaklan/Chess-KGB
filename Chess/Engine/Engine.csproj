@@ -46,6 +46,7 @@
     <Compile Include="DataStructures\DynamicArray.cs" />
     <Compile Include="DataStructures\Heap.cs" />
     <Compile Include="Models\Boards\PieceBoard.cs" />
+    <Compile Include="Models\Enums\Phase.cs" />
     <Compile Include="Models\Helpers\BitBoardExtensions.cs" />
     <Compile Include="Models\Helpers\EnumerableExtensions.cs" />
     <Compile Include="Models\Helpers\MagicBitBoardExtensions.cs" />

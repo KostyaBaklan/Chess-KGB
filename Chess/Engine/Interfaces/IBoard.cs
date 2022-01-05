@@ -37,5 +37,6 @@ namespace Engine.Interfaces
         ulong GetKey();
         Square[] GetPiecePositions(int piece);
         BitBoard GetOccupied();
+        void UpdatePhase();
     }
 }

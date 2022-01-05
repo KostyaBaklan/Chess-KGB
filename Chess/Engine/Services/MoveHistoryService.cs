@@ -48,6 +48,10 @@ namespace Engine.Services
             _ply++;
             if (_ply > 0)
             {
+                if (_ply > 15)
+                {
+
+                }
                 if (_ply % 2 == 0)
                 {
                     _blackSmallCastleHistory[_ply] = _blackSmallCastleHistory[ply];
@@ -123,6 +127,18 @@ namespace Engine.Services
         {
             _ply--;
             return _history.Pop();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanDoBlackCastle()
+        {
+            return _ply < 0 || _blackSmallCastleHistory[_ply] || _blackBigCastleHistory[_ply];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanDoWhiteCastle()
+        {
+            return _ply < 0 || _whiteSmallCastleHistory[_ply] || _whiteBigCastleHistory[_ply];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

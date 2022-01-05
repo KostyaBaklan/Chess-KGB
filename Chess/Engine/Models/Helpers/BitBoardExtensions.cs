@@ -67,6 +67,20 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Count(this BitBoard b)
+        {
+            int count = 0;
+            while (!b.IsZero())
+            {
+                int position = BitScanForward(b);
+                count++;
+                b = b.Remove(position);
+            }
+
+            return count;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DynamicArray<int> Coordinates(this BitBoard b, int index)
         {
             var coordinates = _positions[index];

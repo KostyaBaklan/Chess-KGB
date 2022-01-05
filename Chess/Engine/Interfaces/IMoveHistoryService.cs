@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Engine.Models.Enums;
 
 namespace Engine.Interfaces
 {
@@ -8,6 +9,8 @@ namespace Engine.Interfaces
         IMove GetLastMove();
         void Add(IMove move);
         IMove Remove();
+        bool CanDoBlackCastle();
+        bool CanDoWhiteCastle();
         bool CanDoWhiteSmallCastle();
         bool CanDoWhiteBigCastle();
         bool CanDoBlackSmallCastle();

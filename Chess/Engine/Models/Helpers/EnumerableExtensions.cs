@@ -9,5 +9,10 @@ namespace Engine.Models.Helpers
         {
             return source.Skip(start).Take(length).ToArray();
         }
+
+        public static int[] Factor(this int[] array, int factor)
+        {
+            return array.Select(a => a * factor).ToArray();
+        }
     }
 }
