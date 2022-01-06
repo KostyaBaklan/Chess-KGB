@@ -77,10 +77,8 @@ namespace Engine.Models.Moves
         public void Set(params int[] squares)
         {
             BitBoard v = new BitBoard();
-            foreach (var square in squares.Select(s=>s.AsBitBoard()))
-            {
-                v |= square;
-            }
+            v = squares.Select(s => s.AsBitBoard())
+                .Aggregate(v, (current, square) => current | square);
 
             EmptyBoard = EmptyBoard |= v;
         }

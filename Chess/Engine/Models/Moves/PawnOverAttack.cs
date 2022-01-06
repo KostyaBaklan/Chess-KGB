@@ -20,14 +20,9 @@ namespace Engine.Models.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsLegal(IBoard board)
         {
-            if (!board.IsOver(VictimSquare)) return false;
-
-            if (Piece == Piece.WhitePawn)
-            {
-                return board.IsBlackPawn(VictimSquare.AsBitBoard());
-            }
-
-            return board.IsWhitePawn(VictimSquare.AsBitBoard());
+            return board.IsOver(VictimSquare) && (Piece == Piece.WhitePawn
+                       ? board.IsBlackPawn(VictimSquare.AsBitBoard())
+                       : board.IsWhitePawn(VictimSquare.AsBitBoard()));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

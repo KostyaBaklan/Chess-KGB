@@ -151,15 +151,27 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ulong Lsb2()
-        {
-            return _value & (ulong) -(long)_value;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ulong And(ulong value)
         {
             return _value & value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard Or(params int[] squares)
+        {
+            BitBoard bit = squares[0].AsBitBoard();
+            for (int i = 1; i < squares.Length; i++)
+            {
+                bit |= squares[i].AsBitBoard();
+            }
+
+            return bit;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Any()
+        {
+            return _value > 0;
         }
 
         #region Overrides of ValueType
@@ -181,23 +193,5 @@ namespace Engine.Models.Boards
         }
 
         #endregion
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public BitBoard Or(params int[] squares)
-        {
-            BitBoard bit = squares[0].AsBitBoard();
-            for (int i = 1; i < squares.Length; i++)
-            {
-                bit |= squares[i].AsBitBoard();
-            }
-
-            return bit;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Any()
-        {
-            return _value > 0;
-        }
     }
 }

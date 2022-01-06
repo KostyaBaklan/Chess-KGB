@@ -6,7 +6,6 @@ using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
-using Engine.Models.Moves;
 
 namespace Engine.Sorting.Sorters
 {
@@ -21,18 +20,21 @@ namespace Engine.Sorting.Sorters
 
         #region Overrides of MoveSorter
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection)
+        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            KillerMoveCollection killerMoveCollection)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection,
+        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            KillerMoveCollection killerMoveCollection,
             IMove pvNode)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection,
+        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            KillerMoveCollection killerMoveCollection,
             IMove pvNode, IMove cutMove)
         {
             throw new System.NotImplementedException();
@@ -204,43 +206,9 @@ namespace Engine.Sorting.Sorters
                 Position.Make(move);
                 if (move.Piece.IsWhite())
                 {
-                    var materialBalance = _moveProvider.GetBlackMaterialBalance(Position.GetBoard(), move.To.AsByte());
-                    while (materialBalance.Black.Count > 0)
-                    {
-                        if (balance < 0) break;
-
-                        balance -= victimValue;
-                        victimValue = materialBalance.Black.Dequeue().AsValue();
-                        if (materialBalance.White.Count > 0)
-                        {
-                            balance += victimValue;
-                            victimValue = materialBalance.White.Dequeue().AsValue();
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
                 }
                 else
                 {
-                    var materialBalance = _moveProvider.GetWhiteMaterialBalance(Position.GetBoard(), move.To.AsByte());
-                    while (materialBalance.White.Count > 0)
-                    {
-                        if (balance < 0) break;
-
-                        balance -= victimValue;
-                        victimValue = materialBalance.White.Dequeue().AsValue();
-                        if (materialBalance.Black.Count > 0)
-                        {
-                            balance += victimValue;
-                            victimValue = materialBalance.Black.Dequeue().AsValue();
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
                 }
 
                 if (balance < 0)
@@ -291,48 +259,8 @@ namespace Engine.Sorting.Sorters
             }
             else
             {
-                if (!attacksCache.TryGetValue(move.To.AsByte(),out var balance))
+                if (!attacksCache.TryGetValue(move.To.AsByte(), out var balance))
                 {
-                    if (move.Piece.IsBlack())
-                    {
-                        MaterialBalance materialBalance = _moveProvider.GetBlackMaterialBalance(Position.GetBoard(), move.To.AsByte());
-                        while (materialBalance.Black.Count > 0)
-                        {
-                            balance += victimValue;
-                            victimValue = materialBalance.Black.Dequeue().AsValue();
-                            if (materialBalance.White.Count > 0)
-                            {
-                                balance -= victimValue;
-                                victimValue = materialBalance.White.Dequeue().AsValue();
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-
-                        attacksCache[move.To.AsByte()] = balance;
-                    }
-                    else
-                    {
-                        MaterialBalance materialBalance = _moveProvider.GetWhiteMaterialBalance(Position.GetBoard(), move.To.AsByte());
-                        while (materialBalance.White.Count > 0)
-                        {
-                            balance += victimValue;
-                            victimValue = materialBalance.White.Dequeue().AsValue();
-                            if (materialBalance.Black.Count > 0)
-                            {
-                                balance -= victimValue;
-                                victimValue = materialBalance.Black.Dequeue().AsValue();
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-
-                        attacksCache[move.To.AsByte()] = balance;
-                    }
                 }
 
                 if (balance > 0)

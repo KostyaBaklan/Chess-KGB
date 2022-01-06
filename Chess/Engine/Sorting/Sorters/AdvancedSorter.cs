@@ -19,18 +19,21 @@ namespace Engine.Sorting.Sorters
 
         #region Overrides of MoveSorter
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection)
+        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            KillerMoveCollection killerMoveCollection)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection,
+        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            KillerMoveCollection killerMoveCollection,
             IMove pvNode)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection,
+        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            KillerMoveCollection killerMoveCollection,
             IMove pvNode, IMove cutMove)
         {
             throw new System.NotImplementedException();

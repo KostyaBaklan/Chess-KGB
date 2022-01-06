@@ -13,7 +13,7 @@ namespace Engine.Sorting.Sorters
             Comparer = comparer;
         }
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves,
+        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection)
         {
             var sortedAttacks = OrderAttacks(attacks);
@@ -40,7 +40,7 @@ namespace Engine.Sorting.Sorters
             return collection;
         }
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves,
+        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection,
             IMove cutNode)
         {
@@ -68,7 +68,7 @@ namespace Engine.Sorting.Sorters
             return collection;
         }
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves,
+        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection,
             IMove pvNode, IMove cutMove)
         {

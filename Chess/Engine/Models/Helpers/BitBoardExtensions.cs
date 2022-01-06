@@ -52,7 +52,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<int> BitScan(this BitBoard b)
         {
-            while (!b.IsZero())
+            while (b.Any())
             {
                 int position = BitScanForward(b);
                 yield return position;

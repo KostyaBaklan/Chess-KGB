@@ -16,7 +16,7 @@ namespace Engine.Interfaces
         bool IsCheck();
         void UnMake();
 
-        IEnumerable<IMove> GetAllAttacks(Square cell, Piece piece);
+        IEnumerable<IAttack> GetAllAttacks(Square cell, Piece piece);
         IEnumerable<IMove> GetAllMoves(Square cell, Piece piece);
         IMoveCollection GetAllAttacks(IMoveSorter sorter);
         IMoveCollection GetAllMoves(IMoveSorter sorter, IMove pvMove = null, IMove cutMove = null);

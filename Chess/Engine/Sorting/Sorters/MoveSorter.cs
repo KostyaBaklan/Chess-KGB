@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
@@ -61,7 +60,8 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection Order(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, IMove pvNode, IMove cutMove)
+        public IMoveCollection Order(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, IMove pvNode,
+            IMove cutMove)
         {
             int depth = MoveHistoryService.GetPly();
             if (depth < 0)
@@ -85,7 +85,7 @@ namespace Engine.Sorting.Sorters
             return OrderInternal(attacks, moves, Moves[depth]);
         }
 
-        public IMoveCollection Order(IEnumerable<IMove> attacks)
+        public IMoveCollection Order(IEnumerable<IAttack> attacks)
         {
             var sortedAttacks = OrderAttacks(attacks);
 
@@ -97,13 +97,13 @@ namespace Engine.Sorting.Sorters
             return collection;
         }
 
-        protected Dictionary<Square, DynamicSortedList<IAttack>> OrderAttacks(IEnumerable<IMove> attacks)
+        protected Dictionary<Square, DynamicSortedList<IAttack>> OrderAttacks(IEnumerable<IAttack> attacks)
         {
             var board = Position.GetBoard();
             var attackComparer = new AttackComparer();
 
             Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks = new Dictionary<Square, DynamicSortedList<IAttack>>();
-            foreach (var attack in attacks.OfType<IAttack>())
+            foreach (var attack in attacks)
             {
                 attack.Captured = board.GetPiece(attack.To);
                 if (sortedAttacks.TryGetValue(attack.To, out var set))
@@ -176,9 +176,9 @@ namespace Engine.Sorting.Sorters
             }
         }
 
-        protected abstract IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
-        protected abstract IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode);
-        protected abstract IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode, IMove cutMove);
+        protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
+        protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode);
+        protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode, IMove cutMove);
 
         protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
         protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove cutMove);

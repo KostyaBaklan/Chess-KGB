@@ -599,10 +599,14 @@ namespace Engine.Models.Boards
             _phase = ply < 16 ? Phase.Opening : Phase.Middle;
         }
 
+        #endregion
+
+        #region SEE
+
         public int StaticExchange(IAttack attack)
         {
             var boards = new BitBoard[_boards.Length];
-            Array.Copy(_boards,boards, _boards.Length);
+            Array.Copy(_boards, boards, _boards.Length);
             var whites = _whites;
             var blacks = _blacks;
             BitBoard occupied = whites | blacks;
@@ -627,12 +631,12 @@ namespace Engine.Models.Boards
             var factor = 1;
             while (fromSet.Any())
             {
-                v= v+ factor *_evaluationService.GetValue(target.AsByte());
+                v = v + factor * _evaluationService.GetValue(target.AsByte());
                 factor = -factor;
 
                 attackers ^= fromSet; // reset bit in set to traverse
                 occupied ^= fromSet; // reset bit in temporary occupancy (for x-Rays)
-                boards[piece.AsByte()] ^= fromSet|to;
+                boards[piece.AsByte()] ^= fromSet | to;
 
                 if ((fromSet & mayXRay).Any())
                 {
@@ -652,43 +656,49 @@ namespace Engine.Models.Boards
             {
                 foreach (var i in boards[Piece.WhiteBishop.AsByte()].BitScan())
                 {
-                    if((i.BishopAttacks(occupied)&to).Any())
-                        bit = bit.Add(i);
+                    if (!(i.BishopAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(i);
+                    break;
                 }
                 foreach (var i in boards[Piece.WhiteRook.AsByte()].BitScan())
                 {
-                    if ((i.RookAttacks(occupied) & to).Any())
-                        bit = bit.Add(i);
+                    if (!(i.RookAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(i);
+                    break;
                 }
                 foreach (var i in boards[Piece.WhiteQueen.AsByte()].BitScan())
                 {
-                    if ((i.QueenAttacks(occupied) & to).Any())
-                        bit = bit.Add(i);
+                    if (!(i.QueenAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(i);
+                    break;
                 }
             }
             else
             {
                 foreach (var i in boards[Piece.BlackBishop.AsByte()].BitScan())
                 {
-                    if ((i.BishopAttacks(occupied) & to).Any())
-                        bit = bit.Add(i);
+                    if (!(i.BishopAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(i);
+                    break;
                 }
                 foreach (var i in boards[Piece.BlackRook.AsByte()].BitScan())
                 {
-                    if ((i.RookAttacks(occupied) & to).Any())
-                        bit = bit.Add(i);
+                    if (!(i.RookAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(i);
+                    break;
                 }
                 foreach (var i in boards[Piece.BlackQueen.AsByte()].BitScan())
                 {
-                    if ((i.QueenAttacks(occupied) & to).Any())
-                        bit = bit.Add(i);
+                    if (!(i.QueenAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(i);
+                    break;
                 }
             }
 
             return bit;
         }
 
-        private Tuple<BitBoard,Piece> GetNextAttacker(BitBoard attackers, Piece piece, BitBoard[] boards)
+        private Tuple<BitBoard, Piece> GetNextAttacker(BitBoard attackers, Piece piece, BitBoard[] boards)
         {
             int first = 0;
             int last = 6;
@@ -702,15 +712,15 @@ namespace Engine.Models.Boards
                 var bit = attackers & boards[i];
                 if (bit.Any())
                 {
-                    return new Tuple<BitBoard, Piece>(new BitBoard(bit.Lsb()),(Piece) i);
+                    return new Tuple<BitBoard, Piece>(new BitBoard(bit.Lsb()), (Piece)i);
                 }
             }
-            return new Tuple<BitBoard, Piece>(new BitBoard(0),Piece.WhitePawn );
+            return new Tuple<BitBoard, Piece>(new BitBoard(0), Piece.WhitePawn);
         }
 
         private BitBoard GetAttackers(BitBoard to, BitBoard occupied)
         {
-            return GetWhiteAttackers(to, occupied)|GetBlackAttackers(to, occupied);
+            return GetWhiteAttackers(to, occupied) | GetBlackAttackers(to, occupied);
         }
 
         private BitBoard GetBlackAttackers(BitBoard to, BitBoard occupied)
@@ -1015,9 +1025,7 @@ namespace Engine.Models.Boards
             if (!_moveHistory.CanDoBlackSmallCastle() || !_boards[Piece.BlackRook.AsByte()].IsSet(BitBoards.H8) ||
                 !_empty.IsSet(_blackSmallCastleCondition)) return false;
 
-            var to = Squares.E8.AsByte();
-
-            return CanDoBlackCastle(to);
+            return CanDoBlackCastle(Squares.E8.AsByte());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1026,9 +1034,7 @@ namespace Engine.Models.Boards
             if (!_moveHistory.CanDoWhiteSmallCastle() || !_boards[Piece.WhiteRook.AsByte()].IsSet(BitBoards.H1) ||
                 !_empty.IsSet(_whiteSmallCastleCondition)) return false;
 
-            var to = Squares.E1.AsByte();
-
-            return CanDoWhiteCastle(to);
+            return CanDoWhiteCastle(Squares.E1.AsByte());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1037,9 +1043,7 @@ namespace Engine.Models.Boards
             if (!_moveHistory.CanDoBlackBigCastle() || !_boards[Piece.BlackRook.AsByte()].IsSet(BitBoards.A8) ||
                 !_empty.IsSet(_blackBigCastleCondition)) return false;
 
-            var to = Squares.E8.AsByte();
-
-            return CanDoBlackCastle(to);
+            return CanDoBlackCastle(Squares.E8.AsByte());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1048,9 +1052,7 @@ namespace Engine.Models.Boards
             if (!_moveHistory.CanDoWhiteBigCastle() || !_boards[Piece.WhiteRook.AsByte()].IsSet(BitBoards.A1) ||
                 !_empty.IsSet(_whiteBigCastleCondition)) return false;
 
-            var to = Squares.E1.AsByte();
-
-            return CanDoWhiteCastle(to);
+            return CanDoWhiteCastle(Squares.E1.AsByte());
 
         }
 

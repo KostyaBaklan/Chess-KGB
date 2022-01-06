@@ -65,7 +65,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> GetAllAttacks(Square cell, Piece piece)
+        public IEnumerable<IAttack> GetAllAttacks(Square cell, Piece piece)
         {
             return _moveProvider.GetAttacks(piece, cell,_board);
         }
@@ -147,7 +147,7 @@ namespace Engine.Models.Boards
             }
         }
 
-        private IEnumerable<IMove> PossibleAttacks(Square[][] squares, Piece[] pieces)
+        private IEnumerable<IAttack> PossibleAttacks(Square[][] squares, Piece[] pieces)
         {
             for (var index = 0; index < pieces.Length; index++)
             {
@@ -182,64 +182,6 @@ namespace Engine.Models.Boards
             return _moveHistoryService.GetHistory();
         }
 
-        private IEnumerable<IMove> PossibleMoves(Piece[] enumerable)
-        {
-            Square[][] pieces = GetSquares(enumerable);
-
-            for (var index = 0; index < enumerable.Length; index++)
-            {
-                var p = enumerable[index];
-                var from = _board.GetPiecePositions(p.AsByte());
-                pieces[p.AsByte()] = from;
-
-                for (var f = 0; f < from.Length; f++)
-                {
-                    foreach (var attack in _moveProvider.GetAttacks(p, from[f], _board))
-                    {
-                        yield return attack;
-                    }
-                }
-            }
-
-            var lastMove = _moveHistoryService.GetLastMove();
-
-            if (lastMove?.IsCheck() == true)
-            {
-                for (var index = 0; index < enumerable.Length; index++)
-                {
-                    var p = enumerable[index];
-                    Square[] from = pieces[p.AsByte()];
-
-                    for (var f = 0; f < from.Length; f++)
-                    {
-                        foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
-                        {
-                            if (!move.IsCastle())
-                            {
-                                yield return move;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (var index = 0; index < enumerable.Length; index++)
-                {
-                    var p = enumerable[index];
-                    Square[] from = pieces[p.AsByte()];
-
-                    for (var f = 0; f < from.Length; f++)
-                    {
-                        foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
-                        {
-                            yield return move;
-                        }
-                    }
-                }
-            }
-        }
-
         private Square[][] GetSquares(Piece[] pieces)
         {
             var squares = new Square[pieces.Length][];
@@ -253,48 +195,12 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<IMove> GetBlackAttacks()
-        {
-            for (var index = 0; index < _black.Length; index++)
-            {
-                var p = _black[index];
-                Square[] from = _board.GetPiecePositions(p.AsByte());
-
-                for (var f = 0; f < from.Length; f++)
-                {
-                    foreach (var attack in _moveProvider.GetAttacks(p, from[f], _board))
-                    {
-                        yield return attack;
-                    }
-                }
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<IMove> GetWhiteAttacks()
-        {
-            for (var index = 0; index < _white.Length; index++)
-            {
-                var p = _white[index];
-                Square[] from = _board.GetPiecePositions(p.AsByte());
-
-                for (var f = 0; f < from.Length; f++)
-                {
-                    foreach (var attack in _moveProvider.GetAttacks(p, from[f], _board))
-                    {
-                        yield return attack;
-                    }
-                }
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsCheck()
         {
             //return _turn != Turn.White ? _checkService.IsBlackCheck(_board.GetKey(), _board) : _checkService.IsWhiteCheck(_board.GetKey(), _board);
-            return _turn != Turn.White ? _moveProvider.AnyBlackCheck(_board) : _moveProvider.AnyWhiteCheck(_board);
+            //return _turn != Turn.White ? _moveProvider.AnyBlackCheck(_board) : _moveProvider.AnyWhiteCheck(_board);
 
-            //return _turn != Turn.White ? _moveProvider.IsCheckToWhite(_board) : _moveProvider.IsCheckToBlack(_board);
+            return _turn != Turn.White ? _moveProvider.IsCheckToWhite(_board) : _moveProvider.IsCheckToBlack(_board);
         }
 
         public void Make(IMove move)
