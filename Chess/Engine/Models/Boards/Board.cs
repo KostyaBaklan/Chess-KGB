@@ -599,6 +599,252 @@ namespace Engine.Models.Boards
             _phase = ply < 16 ? Phase.Opening : Phase.Middle;
         }
 
+        public int StaticExchange(IAttack attack)
+        {
+            var boards = new BitBoard[_boards.Length];
+            Array.Copy(_boards,boards, _boards.Length);
+            var whites = _whites;
+            var blacks = _blacks;
+            BitBoard occupied = whites | blacks;
+
+            BitBoard mayXRay = boards[Piece.BlackPawn.AsByte()] |
+                               boards[Piece.BlackRook.AsByte()] |
+                               boards[Piece.BlackBishop.AsByte()] |
+                               boards[Piece.BlackQueen.AsByte()] |
+                               boards[Piece.WhitePawn.AsByte()] |
+                               boards[Piece.WhiteBishop.AsByte()] |
+                               boards[Piece.WhiteRook.AsByte()] |
+                               boards[Piece.WhiteQueen.AsByte()];
+
+            BitBoard fromSet = attack.From.AsBitBoard();
+
+            var to = attack.To.AsBitBoard();
+            BitBoard attackers = GetAttackers(to, occupied);
+
+            var piece = attack.Piece;
+            var target = attack.Captured;
+            var v = 0;
+            var factor = 1;
+            while (fromSet.Any())
+            {
+                v= v+ factor *_evaluationService.GetValue(target.AsByte());
+                factor = -factor;
+
+                attackers ^= fromSet; // reset bit in set to traverse
+                occupied ^= fromSet; // reset bit in temporary occupancy (for x-Rays)
+                boards[piece.AsByte()] ^= fromSet|to;
+
+                if ((fromSet & mayXRay).Any())
+                {
+                    attackers |= ConsiderXrays(occupied, to, piece, boards);
+                }
+
+                target = piece;
+                (fromSet, piece) = GetNextAttacker(attackers, piece, boards);
+            }
+            return v;
+        }
+
+        private BitBoard ConsiderXrays(BitBoard occupied, BitBoard to, Piece piece, BitBoard[] boards)
+        {
+            BitBoard bit = new BitBoard(0);
+            if (piece.IsWhite())
+            {
+                foreach (var i in boards[Piece.WhiteBishop.AsByte()].BitScan())
+                {
+                    if((i.BishopAttacks(occupied)&to).Any())
+                        bit = bit.Add(i);
+                }
+                foreach (var i in boards[Piece.WhiteRook.AsByte()].BitScan())
+                {
+                    if ((i.RookAttacks(occupied) & to).Any())
+                        bit = bit.Add(i);
+                }
+                foreach (var i in boards[Piece.WhiteQueen.AsByte()].BitScan())
+                {
+                    if ((i.QueenAttacks(occupied) & to).Any())
+                        bit = bit.Add(i);
+                }
+            }
+            else
+            {
+                foreach (var i in boards[Piece.BlackBishop.AsByte()].BitScan())
+                {
+                    if ((i.BishopAttacks(occupied) & to).Any())
+                        bit = bit.Add(i);
+                }
+                foreach (var i in boards[Piece.BlackRook.AsByte()].BitScan())
+                {
+                    if ((i.RookAttacks(occupied) & to).Any())
+                        bit = bit.Add(i);
+                }
+                foreach (var i in boards[Piece.BlackQueen.AsByte()].BitScan())
+                {
+                    if ((i.QueenAttacks(occupied) & to).Any())
+                        bit = bit.Add(i);
+                }
+            }
+
+            return bit;
+        }
+
+        private Tuple<BitBoard,Piece> GetNextAttacker(BitBoard attackers, Piece piece, BitBoard[] boards)
+        {
+            int first = 0;
+            int last = 6;
+            if (piece.IsWhite())
+            {
+                first = 6;
+                last = 12;
+            }
+            for (int i = first; i < last; i++)
+            {
+                var bit = attackers & boards[i];
+                if (bit.Any())
+                {
+                    return new Tuple<BitBoard, Piece>(new BitBoard(bit.Lsb()),(Piece) i);
+                }
+            }
+            return new Tuple<BitBoard, Piece>(new BitBoard(0),Piece.WhitePawn );
+        }
+
+        private BitBoard GetAttackers(BitBoard to, BitBoard occupied)
+        {
+            return GetWhiteAttackers(to, occupied)|GetBlackAttackers(to, occupied);
+        }
+
+        private BitBoard GetBlackAttackers(BitBoard to, BitBoard occupied)
+        {
+            BitBoard attackers = new BitBoard(0);
+            var positions = GetPositionInternal(Piece.BlackPawn.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = _moveProvider.GetBlackPawnAttackPattern(positions[p]);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.BlackKnight.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = _moveProvider.GetBlackKnightAttackPattern(positions[p]);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.BlackBishop.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = positions[p].GetBlackBishopAttackPattern(occupied);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.BlackRook.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = positions[p].GetBlackRookAttackPattern(occupied);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.BlackQueen.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = positions[p].GetBlackQueenAttackPattern(occupied);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.BlackKing.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = _moveProvider.GetBlackKingAttackPattern(positions[p]);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            return attackers;
+        }
+
+        private BitBoard GetWhiteAttackers(BitBoard to, BitBoard occupied)
+        {
+            BitBoard attackers = new BitBoard(0);
+            var positions = GetPositionInternal(Piece.WhitePawn.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = _moveProvider.GetWhitePawnAttackPattern(positions[p]);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.WhiteKnight.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = _moveProvider.GetWhiteKnightAttackPattern(positions[p]);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.WhiteBishop.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = positions[p].GetWhiteBishopAttackPattern(occupied);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.WhiteRook.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = positions[p].GetWhiteRookAttackPattern(occupied);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.WhiteQueen.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = positions[p].GetWhiteQueenAttackPattern(occupied);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            positions = GetPositionInternal(Piece.WhiteKing.AsByte());
+            for (var p = 0; p < positions.Length; p++)
+            {
+                var pattern = _moveProvider.GetWhiteKingAttackPattern(positions[p]);
+                if (pattern.IsSet(to))
+                {
+                    attackers = attackers.Add(positions[p]);
+                }
+            }
+
+            return attackers;
+        }
+
         #endregion
 
         #region Castle

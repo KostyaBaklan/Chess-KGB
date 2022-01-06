@@ -3,7 +3,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
+using Engine.DataStructures.Moves;
 using Engine.Interfaces;
+using Engine.Models.Boards;
 using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
@@ -13,9 +15,11 @@ namespace Engine.Sorting.Sorters
         protected readonly KillerMoveCollection[] Moves;
         protected readonly IMoveHistoryService MoveHistoryService;
         protected IMoveComparer Comparer;
+        protected readonly IPosition Position;
 
-        protected MoveSorter()
+        protected MoveSorter(IPosition position)
         {
+            Position = position;
             Moves = new KillerMoveCollection[256];
             for (var i = 0; i < Moves.Length; i++)
             {
@@ -23,6 +27,13 @@ namespace Engine.Sorting.Sorters
             }
 
             MoveHistoryService = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void Add(IMove move)
+        {
+            int depth = MoveHistoryService.GetPly();
+            Moves[depth].Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -74,11 +85,95 @@ namespace Engine.Sorting.Sorters
             return OrderInternal(attacks, moves, Moves[depth]);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void Add(IMove move)
+        public IMoveCollection Order(IEnumerable<IMove> attacks)
         {
-            int depth = MoveHistoryService.GetPly();
-            Moves[depth].Add(move);
+            var sortedAttacks = OrderAttacks(attacks);
+
+            AttackCollection collection = new AttackCollection(Comparer);
+
+            OrderAttacks(collection, sortedAttacks);
+
+            collection.Build();
+            return collection;
+        }
+
+        protected Dictionary<Square, DynamicSortedList<IAttack>> OrderAttacks(IEnumerable<IMove> attacks)
+        {
+            var board = Position.GetBoard();
+            var attackComparer = new AttackComparer();
+
+            Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks = new Dictionary<Square, DynamicSortedList<IAttack>>();
+            foreach (var attack in attacks.OfType<IAttack>())
+            {
+                attack.Captured = board.GetPiece(attack.To);
+                if (sortedAttacks.TryGetValue(attack.To, out var set))
+                {
+                    set.Push(attack);
+                }
+                else
+                {
+                    sortedAttacks.Add(attack.To, new DynamicSortedList<IAttack>(attackComparer, attack));
+                }
+            }
+
+            return sortedAttacks;
+        }
+
+        protected void OrderAttacks(MoveCollection collection, Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks, IAttack pv)
+        {
+            var board = Position.GetBoard();
+            foreach (var sortedAttack in sortedAttacks.Values)
+            {
+                while (sortedAttack.Count > 0)
+                {
+                    var attack = sortedAttack.Pop();
+                    if (attack.Equals(pv))
+                    {
+                        collection.AddHashMove(attack);
+                        continue;
+                    }
+
+                    int attackValue = board.StaticExchange(attack);
+                    if (attackValue > 0)
+                    {
+                        collection.AddWinCapture(attack);
+                    }
+                    else if (attackValue < 0)
+                    {
+                        collection.AddLooseCapture(attack);
+                    }
+                    else
+                    {
+                        collection.AddTrade(attack);
+                    }
+                }
+            }
+        }
+
+        protected void OrderAttacks(AttackCollection collection, Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks)
+        {
+            var board = Position.GetBoard();
+            foreach (var sortedAttack in sortedAttacks.Values)
+            {
+                while (sortedAttack.Count > 0)
+                {
+                    var attack = sortedAttack.Pop();
+
+                    int attackValue = board.StaticExchange(attack);
+                    if (attackValue > 0)
+                    {
+                        collection.AddWinCapture(attack);
+                    }
+                    else if (attackValue < 0)
+                    {
+                        collection.AddLooseCapture(attack);
+                    }
+                    else
+                    {
+                        collection.AddTrade(attack);
+                    }
+                }
+            }
         }
 
         protected abstract IMoveCollection OrderInternal(IEnumerable<IMove> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);

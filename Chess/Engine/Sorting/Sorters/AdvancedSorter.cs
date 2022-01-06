@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
+using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
@@ -10,12 +11,10 @@ namespace Engine.Sorting.Sorters
 {
     public class AdvancedSorter : MoveSorter
     {
-        private readonly IPosition _position;
         private readonly IHistoryHeuristic _historyHeuristic = ServiceLocator.Current.GetInstance<IHistoryHeuristic>();
 
-        public AdvancedSorter(IPosition position)
+        public AdvancedSorter(IPosition position) : base(position)
         {
-            _position = position;
         }
 
         #region Overrides of MoveSorter
@@ -220,7 +219,7 @@ namespace Engine.Sorting.Sorters
         private void ProcessAttack(IMove move)
         {
             int value = move.Piece.AsValue();
-            int victimValue = _position.GetPieceValue(move.To);
+            int victimValue = Position.GetPieceValue(move.To);
 
             if (value < victimValue)
             {

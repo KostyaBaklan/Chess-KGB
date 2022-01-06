@@ -4,57 +4,25 @@ using System.Runtime.CompilerServices;
 using Engine.Interfaces;
 using Engine.Sorting.Comparers;
 
-namespace Engine.DataStructures
+namespace Engine.DataStructures.Moves
 {
-    public class MoveCollection:IMoveCollection
+    public class MoveCollection: AttackCollection
     {
-        private List<IMove> _moves;
         private readonly List<IMove> _hashMoves;
-        private readonly List<IMove> _winCaptures;
-        private readonly List<IMove> _trades;
         private readonly List<IMove> _killers;
         private readonly List<IMove> _nonCaptures;
-        private readonly List<IMove> _looseCaptures;
 
-        private readonly IMoveComparer _comparer;
-
-        public MoveCollection(IMoveComparer comparer)
+        public MoveCollection(IMoveComparer comparer) : base(comparer)
         {
-            _comparer = comparer;
             _hashMoves = new List<IMove>();
-            _winCaptures = new List<IMove>();
-            _trades = new List<IMove>();
             _killers = new List<IMove>();
             _nonCaptures = new List<IMove>(48);
-            _looseCaptures = new List<IMove>();
         }
-
-        #region Implementation of IMoveCollection
-
-        public int Count { get; private set; }
-
-        public IMove this[int index] => _moves[index];
-
-        #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddHashMove(IMove move)
         {
             _hashMoves.Add(move);
-            Count++;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddWinCapture(IMove move)
-        {
-            _winCaptures.Add(move);
-            Count++;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddTrade(IMove move)
-        {
-            _trades.Add(move);
             Count++;
         }
 
@@ -73,14 +41,7 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddLooseCapture(IMove move)
-        {
-            _looseCaptures.Add(move);
-            Count++;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Build()
+        public override void Build()
         {
             _moves = new List<IMove>(Count);
 

@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
+using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
@@ -11,12 +12,10 @@ namespace Engine.Sorting.Sorters
 {
     public class ComplexSorter : MoveSorter
     {
-        private readonly IPosition _position;
         private readonly IMoveProvider _moveProvider;
 
-        public ComplexSorter(IPosition position)
+        public ComplexSorter(IPosition position) : base(position)
         {
-            _position = position;
             _moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
         }
 
@@ -202,10 +201,10 @@ namespace Engine.Sorting.Sorters
             {
                 int balance = 0;
                 int victimValue = move.Piece.AsValue();
-                _position.Make(move);
+                Position.Make(move);
                 if (move.Piece.IsWhite())
                 {
-                    var materialBalance = _moveProvider.GetBlackMaterialBalance(_position.GetBoard(), move.To.AsByte());
+                    var materialBalance = _moveProvider.GetBlackMaterialBalance(Position.GetBoard(), move.To.AsByte());
                     while (materialBalance.Black.Count > 0)
                     {
                         if (balance < 0) break;
@@ -225,7 +224,7 @@ namespace Engine.Sorting.Sorters
                 }
                 else
                 {
-                    var materialBalance = _moveProvider.GetWhiteMaterialBalance(_position.GetBoard(), move.To.AsByte());
+                    var materialBalance = _moveProvider.GetWhiteMaterialBalance(Position.GetBoard(), move.To.AsByte());
                     while (materialBalance.White.Count > 0)
                     {
                         if (balance < 0) break;
@@ -253,7 +252,7 @@ namespace Engine.Sorting.Sorters
             }
             finally
             {
-                _position.UnMake();
+                Position.UnMake();
             }
         }
 
@@ -284,7 +283,7 @@ namespace Engine.Sorting.Sorters
         private void ProcessAttack(IMove move, Dictionary<byte, int> attacksCache)
         {
             int value = move.Piece.AsValue();
-            int victimValue = _position.GetPieceValue(move.To);
+            int victimValue = Position.GetPieceValue(move.To);
 
             if (value < victimValue)
             {
@@ -296,7 +295,7 @@ namespace Engine.Sorting.Sorters
                 {
                     if (move.Piece.IsBlack())
                     {
-                        MaterialBalance materialBalance = _moveProvider.GetBlackMaterialBalance(_position.GetBoard(), move.To.AsByte());
+                        MaterialBalance materialBalance = _moveProvider.GetBlackMaterialBalance(Position.GetBoard(), move.To.AsByte());
                         while (materialBalance.Black.Count > 0)
                         {
                             balance += victimValue;
@@ -316,7 +315,7 @@ namespace Engine.Sorting.Sorters
                     }
                     else
                     {
-                        MaterialBalance materialBalance = _moveProvider.GetWhiteMaterialBalance(_position.GetBoard(), move.To.AsByte());
+                        MaterialBalance materialBalance = _moveProvider.GetWhiteMaterialBalance(Position.GetBoard(), move.To.AsByte());
                         while (materialBalance.White.Count > 0)
                         {
                             balance += victimValue;

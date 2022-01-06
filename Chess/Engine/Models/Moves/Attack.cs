@@ -5,8 +5,14 @@ using Engine.Models.Enums;
 
 namespace Engine.Models.Moves
 {
-    public class Attack : MoveBase
+    public class Attack : MoveBase, IAttack
     {
+        #region Implementation of IAttack
+
+        public Piece Captured { get; set; }
+
+        #endregion
+
         #region Overrides of MoveBase
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

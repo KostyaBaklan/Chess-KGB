@@ -13,7 +13,7 @@ namespace Engine.Strategies
         {
             Position = position;
             Depth = 5;
-            Sorter = new SimpleMoveSorter(new DifferenceComparer());
+            Sorter = new SimpleMoveSorter(new DifferenceComparer(),position);
         }
 
         #region Overrides of StrategyBase

@@ -8,7 +8,7 @@ namespace Engine.Strategies.AlphaBeta
     {
         public AlphaBetaDifferenceStrategy(short depth, IPosition position) : base(depth, position)
         {
-            Sorter = new SimpleMoveSorter(new DifferenceComparer());
+            Sorter = new SimpleMoveSorter(new DifferenceComparer(),position);
         }
     }
 }

@@ -13,7 +13,7 @@ using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies;
-using Engine.Strategies.AlphaBeta;
+using Engine.Strategies.AlphaBeta.Extended;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -97,7 +97,7 @@ namespace Kgb.ChessApp.Views
             UndoCommand = new DelegateCommand(UndoCommandExecute);
             SaveHistoryCommand = new DelegateCommand(SaveHistoryCommandExecute);
 
-            _strategy = new AlphaBetaDifferenceStrategy(5,_position);
+            _strategy = new AlphaBetaExtendedDifferenceStrategy(5,_position);
         }
 
         private IEnumerable<int> _numbers;

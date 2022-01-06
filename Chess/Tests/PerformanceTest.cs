@@ -65,6 +65,8 @@ namespace Tests
                 log.WriteLine($"{strategy}. Depth = {depth}");
                 Play(log, iterations, strategy, position, shouldPrintPosition);
             }
+
+            //position.GetBoard().PrintCache(Path.Combine("Log", $"See_Cache_{strategy}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log"));
         }
 
         private static void Play(StreamWriter log, int depth, IStrategy strategy, IPosition position,

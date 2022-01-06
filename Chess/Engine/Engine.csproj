@@ -43,9 +43,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataStructures\ArrayStack.cs" />
+    <Compile Include="DataStructures\DynamicSortedList.cs" />
+    <Compile Include="DataStructures\Moves\AttackCollection.cs" />
     <Compile Include="DataStructures\DynamicArray.cs" />
     <Compile Include="DataStructures\Heap.cs" />
-    <Compile Include="DataStructures\MoveCollection.cs" />
+    <Compile Include="DataStructures\Moves\MoveCollection.cs" />
+    <Compile Include="DataStructures\Moves\MoveCollectionBase.cs" />
+    <Compile Include="Interfaces\IAttack.cs" />
     <Compile Include="Interfaces\IMoveCollection.cs" />
     <Compile Include="Models\Boards\PieceBoard.cs" />
     <Compile Include="Models\Enums\Phase.cs" />
@@ -54,7 +58,7 @@
     <Compile Include="Models\Helpers\MagicBitBoardExtensions.cs" />
     <Compile Include="Models\Helpers\MoveExtensions.cs" />
     <Compile Include="Services\HistoryHeuristic.cs" />
-    <Compile Include="DataStructures\KillerMoveCollection.cs" />
+    <Compile Include="DataStructures\Moves\KillerMoveCollection.cs" />
     <Compile Include="DataStructures\PieceSet.cs" />
     <Compile Include="DataStructures\TranspositionTable.cs" />
     <Compile Include="DataStructures\ZobristDictionary.cs" />
@@ -104,7 +108,9 @@
     <Compile Include="Sorting\Comparers\DifferenceComparer.cs" />
     <Compile Include="Sorting\Comparers\IMoveComparer.cs" />
     <Compile Include="Sorting\Sorters\AdvancedSorter.cs" />
+    <Compile Include="Sorting\Comparers\AttackComparer.cs" />
     <Compile Include="Sorting\Sorters\ComplexSorter.cs" />
+    <Compile Include="Sorting\Sorters\ExtendedSorter.cs" />
     <Compile Include="Sorting\Sorters\IMoveSorter.cs" />
     <Compile Include="Sorting\Comparers\MoveComparerBase.cs" />
     <Compile Include="Sorting\Sorters\MoveSorter.cs" />
@@ -113,6 +119,9 @@
     <Compile Include="Strategies\AlphaBeta\AlphaBetaAdvancedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaComplexStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedStaticStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaStaticStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaStrategy.cs" />
     <Compile Include="Strategies\StrategyBase.cs" />

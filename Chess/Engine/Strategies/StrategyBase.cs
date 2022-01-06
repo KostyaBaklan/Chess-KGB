@@ -37,8 +37,10 @@ namespace Engine.Strategies
             if (alpha < standPat)
                 alpha = standPat;
 
-            foreach (var move in Position.GetAllAttacks())
+            var moves = Position.GetAllAttacks(Sorter);
+            for (var i = 0; i < moves.Count; i++)
             {
+                var move = moves[i];
                 try
                 {
                     Position.Make(move);

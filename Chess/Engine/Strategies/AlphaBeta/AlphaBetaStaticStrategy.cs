@@ -8,7 +8,7 @@ namespace Engine.Strategies.AlphaBeta
     {
         public AlphaBetaStaticStrategy(short depth, IPosition position) : base(depth, position)
         {
-            Sorter = new SimpleMoveSorter(new StaticComparer());
+            Sorter = new SimpleMoveSorter(new StaticComparer(),position);
         }
     }
 }

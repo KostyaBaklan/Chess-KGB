@@ -38,5 +38,6 @@ namespace Engine.Interfaces
         Square[] GetPiecePositions(int piece);
         BitBoard GetOccupied();
         void UpdatePhase();
+        int StaticExchange(IAttack attack);
     }
 }

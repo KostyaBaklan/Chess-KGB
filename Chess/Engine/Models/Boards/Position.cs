@@ -77,11 +77,18 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> GetAllAttacks()
+        public IMoveCollection GetAllAttacks(IMoveSorter sorter)
         {
             if (_turn == Turn.White)
-                return GetWhiteAttacks();
-            return GetBlackAttacks();
+            {
+                var squares = GetSquares(_white);
+                return sorter.Order(PossibleAttacks(squares, _white));
+            }
+            else
+            {
+                var squares = GetSquares(_black);
+                return sorter.Order(PossibleAttacks(squares, _black));
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
