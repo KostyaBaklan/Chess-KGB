@@ -4,9 +4,9 @@ using Engine.Interfaces;
 using Engine.Services;
 using Unity;
 
-namespace Tests
+namespace Common
 {
-    internal class Boot
+    public class Boot
     {
         public static void SetUp()
         {

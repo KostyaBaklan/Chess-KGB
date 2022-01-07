@@ -402,13 +402,13 @@ namespace Engine.Services
                 return new[] { 62, 54, 55 };
             }
 
-            if (f % 8 == 0)
+            if (f % 8 == 0) //B1 => A1,C1,B2,A2,C2
             {
-                return new[] { f+8, f+9, f+1, f-9,f-8 };
+                return new[] { f+8, f+9, f+1, f-7,f-8 };
             }
-            if (f % 8 == 7)
+            if (f % 8 == 7)//B8 => A8,C8,B7,A7,C7
             {
-                return new[] { f + 8, f + 7, f - 1, f - 7, f - 8 };
+                return new[] { f + 8, f + 7, f - 1, f - 9, f - 8 };
             }
 
             if (f / 8 == 0)

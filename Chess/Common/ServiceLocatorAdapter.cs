@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CommonServiceLocator;
 using Unity;
 
-namespace Tests
+namespace Common
 {
     public class ServiceLocatorAdapter : ServiceLocatorImplBase
     {
