@@ -256,6 +256,12 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetMateValue(bool isWhite)
+        {
+            return isWhite ? _values[Piece.WhiteKing.AsByte()] : _values[Piece.BlackKing.AsByte()];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Evaluate(IPosition position)
         {
             if (_table.TryGetValue(position.GetKey(), out var value))

@@ -16,5 +16,8 @@ namespace Engine.Interfaces
         bool CanDoBlackBigCastle();
         bool IsAdditionalDebutMove(IMove move);
         IEnumerable<IMove> GetHistory();
+        bool IsThreefoldRepetition(ulong board);
+        void Add(ulong board);
+        void Remove(ulong board);
     }
 }

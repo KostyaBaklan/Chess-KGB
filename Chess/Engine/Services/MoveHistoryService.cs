@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
@@ -9,12 +10,13 @@ namespace Engine.Services
 {
     public class MoveHistoryService: IMoveHistoryService
     {
+        private int _ply = -1;
         private readonly bool[] _whiteSmallCastleHistory;
         private readonly bool[] _whiteBigCastleHistory;
         private readonly bool[] _blackSmallCastleHistory;
         private readonly bool[] _blackBigCastleHistory;
         private readonly ArrayStack<IMove> _history;
-        private int _ply = -1;
+        private readonly ArrayStack<ulong> _boardHistory;
 
         public MoveHistoryService()
         {
@@ -23,7 +25,8 @@ namespace Engine.Services
             _whiteBigCastleHistory = new bool[historyDepth];
             _blackSmallCastleHistory = new bool[historyDepth];
             _blackBigCastleHistory = new bool[historyDepth];
-            _history = new ArrayStack<IMove>();
+            _history = new ArrayStack<IMove>(historyDepth);
+            _boardHistory = new ArrayStack<ulong>(historyDepth);
         }
 
         #region Implementation of IMoveHistoryService
@@ -187,6 +190,55 @@ namespace Engine.Services
         public IEnumerable<IMove> GetHistory()
         {
             return _history.Items();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsThreefoldRepetition(ulong board)
+        {
+            if (_ply < 6) return false;
+
+            int count = 1;
+            for (var i = _boardHistory.Count - 3; i >= 4; i-=2)
+            {
+                if (_boardHistory[i] != board)
+                {
+                    continue;
+                }
+
+                count++;
+                if (count >= 3)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Add(ulong board)
+        {
+            _boardHistory.Push(board);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Remove(ulong board)
+        {
+            _boardHistory.Pop();
+        }
+
+        #endregion
+
+        #region Overrides of Object
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            for (var i = 0; i < _history.Count; i++)
+            {
+                builder.Append(_history[i]);
+            }
+            return builder.ToString();
         }
 
         #endregion

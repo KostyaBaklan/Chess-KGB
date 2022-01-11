@@ -1,4 +1,5 @@
-﻿using Engine.Interfaces;
+﻿using Engine.DataStructures;
+using Engine.Interfaces;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 

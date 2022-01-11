@@ -5,31 +5,36 @@ namespace Engine.DataStructures
 {
     public class ArrayStack<T>
     {
-        private int _current;
         private readonly T[] _items;
 
-        public ArrayStack()
+        public ArrayStack():this(256)
         {
-            _current = 0;
-            _items = new T[256];
         }
+
+        public ArrayStack(int size)
+        {
+            Count = 0;
+            _items = new T[size];
+        }
+
+        public int Count { get; private set; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Push(T item)
         {
-            _items[_current++] = item;
+            _items[Count++] = item;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Pop()
         {
-            return _items[--_current];
+            return _items[--Count];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Peek()
         {
-            return _current == 0 ? default(T) : _items[_current - 1];
+            return Count == 0 ? default(T) : _items[Count - 1];
         }
 
         public T this[int i]
@@ -39,7 +44,7 @@ namespace Engine.DataStructures
 
         public IEnumerable<T> Items()
         {
-            for (int i = 0; i < _current; i++)
+            for (int i = 0; i < Count; i++)
             {
                 yield return _items[i];
             }

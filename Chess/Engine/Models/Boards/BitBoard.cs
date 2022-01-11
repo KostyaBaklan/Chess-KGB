@@ -86,6 +86,18 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator >(BitBoard left, BitBoard right)
+        {
+            return left._value > right._value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator <(BitBoard left, BitBoard right)
+        {
+            return left._value > right._value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static BitBoard operator >>(BitBoard left, int right)
         {
             return new BitBoard(left._value >> right);

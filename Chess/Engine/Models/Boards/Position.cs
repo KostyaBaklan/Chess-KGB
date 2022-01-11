@@ -219,11 +219,18 @@ namespace Engine.Models.Boards
 
             _board.UpdatePhase();
 
+            //var set = _board.GetBoardSet();
+
+            //_moveHistoryService.Add(set);
+
+            _moveHistoryService.Add(_board.GetKey());
+
             SwapTurn();
         }
 
         public void UnMake()
         {
+            _moveHistoryService.Remove(_board.GetKey());
             IMove move = _moveHistoryService.Remove();
 
             IMove previousMove = _moveHistoryService.GetLastMove();

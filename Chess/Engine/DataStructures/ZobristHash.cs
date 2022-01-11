@@ -5,7 +5,6 @@ using Engine.Models.Helpers;
 
 namespace Engine.DataStructures
 {
-
     public class ZobristHash
     {
         private ulong _key;

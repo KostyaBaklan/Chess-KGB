@@ -39,5 +39,6 @@ namespace Engine.Interfaces
         BitBoard GetOccupied();
         void UpdatePhase();
         int StaticExchange(IAttack attack);
+        Piece[] GetBoardSet();
     }
 }

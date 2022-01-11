@@ -61,6 +61,19 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitScanReverse(this BitBoard b)
+        {
+            b |= b >> 1;
+            b |= b >> 2;
+            b |= b >> 4;
+            b |= b >> 8;
+            b |= b >> 16;
+            b |= b >> 32;
+            b = b & ~(b >> 1);
+            return _magicTable[(b * _magic) >> 58];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int BitScanForward(this BitBoard b)
         {
             return _magicTable[(b.Lsb() * _magic) >> 58];
@@ -93,6 +106,36 @@ namespace Engine.Models.Helpers
             }
 
             return coordinates;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsGreaterRank(this int bit, int coordinate)
+        {
+            return bit / 8 > coordinate / 8;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsLessRank(this int bit, int coordinate)
+        {
+            return bit / 8 < coordinate / 8;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsGreaterRank(this BitBoard bit, int coordinate)
+        {
+            return bit.BitScanForward() / 8 > coordinate / 8;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsLessRank(this BitBoard bit, int coordinate)
+        {
+            return bit.BitScanForward() / 8 < coordinate / 8;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsGreaterFile(this BitBoard bit, int coordinate)
+        {
+            return bit.BitScanForward() % 8 > coordinate % 8;
         }
 
         public static string ToBitString(this BitBoard b)

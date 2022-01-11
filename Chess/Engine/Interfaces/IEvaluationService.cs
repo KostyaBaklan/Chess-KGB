@@ -8,6 +8,7 @@
         int GetPawnValue(int factor = 1);
         int GetPenaltyValue(int factor = 1);
         int GetUnitValue(int factor = 1);
+        int GetMateValue(bool isWhite);
         int Evaluate(IPosition position);
     }
 }

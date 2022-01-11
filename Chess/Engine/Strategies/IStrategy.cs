@@ -1,4 +1,6 @@
-﻿namespace Engine.Strategies
+﻿using Engine.Interfaces;
+
+namespace Engine.Strategies
 {
     public interface IStrategy
     {

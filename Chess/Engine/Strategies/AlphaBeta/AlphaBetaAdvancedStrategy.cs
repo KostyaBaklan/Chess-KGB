@@ -1,4 +1,5 @@
 ﻿using CommonServiceLocator;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Transposition;
 using Engine.Sorting.Sorters;
@@ -79,7 +80,7 @@ namespace Engine.Strategies.AlphaBeta
         {
             if (depth == 0)
             {
-                return Evaluate(alpha: alpha, beta: beta);
+                return Evaluate(alpha, beta);
             }
 
             IMove pv = null;

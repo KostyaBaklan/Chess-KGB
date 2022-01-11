@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommonServiceLocator">
@@ -43,7 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataStructures\ArrayStack.cs" />
+    <Compile Include="DataStructures\BoardSet.cs" />
     <Compile Include="DataStructures\DynamicSortedList.cs" />
+    <Compile Include="DataStructures\GameResult.cs" />
     <Compile Include="DataStructures\Moves\AttackCollection.cs" />
     <Compile Include="DataStructures\DynamicArray.cs" />
     <Compile Include="DataStructures\Heap.cs" />
@@ -123,8 +127,9 @@
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaStaticStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaStrategy.cs" />
+    <Compile Include="DataStructures\Result.cs" />
     <Compile Include="Strategies\StrategyBase.cs" />
-    <Compile Include="Strategies\IResult.cs" />
+    <Compile Include="Interfaces\IResult.cs" />
     <Compile Include="Strategies\IStrategy.cs" />
     <Compile Include="Strategies\TestStrategy.cs" />
   </ItemGroup>
