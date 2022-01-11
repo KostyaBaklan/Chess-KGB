@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Models.Helpers;
 using Engine.Models.Transposition;
 
 namespace Engine.Strategies.AlphaBeta
@@ -8,6 +9,9 @@ namespace Engine.Strategies.AlphaBeta
     public abstract class AlphaBetaStrategy : StrategyBase
     {
         protected readonly TranspositionTable Table;
+
+        protected readonly IMoveHistoryService MoveHistory =
+            CommonServiceLocator.ServiceLocator.Current.GetInstance<IMoveHistoryService>();
 
         protected AlphaBetaStrategy(short depth, IPosition position) : base(depth, position)
         {
@@ -51,10 +55,25 @@ namespace Engine.Strategies.AlphaBeta
                 cut = cutMove;
             }
 
-           // HashSet<IMove> bestMoves = new HashSet<IMove>();
+            // HashSet<IMove> bestMoves = new HashSet<IMove>();
             var moves = Position.GetAllMoves(Sorter, pv, cut);
-            foreach (var move in moves)
+            if (moves.Count == 0)
             {
+                result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
+            }
+
+            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
+            {
+                var v = Evaluate(alpha,beta);
+                if (v < -500)
+                {
+                    result.GameResult = GameResult.ThreefoldRepetition;
+                    return result;
+                }
+            }
+            for (var i = 0; i < moves.Count; i++)
+            {
+                var move = moves[i];
                 try
                 {
                     Position.Make(move);
@@ -119,7 +138,7 @@ namespace Engine.Strategies.AlphaBeta
         {
             if (depth == 0)
             {
-                return Evaluate(alpha: alpha, beta: beta);
+                return Evaluate(alpha, beta);
             }
 
             IMove pv = null;
@@ -155,10 +174,28 @@ namespace Engine.Strategies.AlphaBeta
             int value = int.MinValue;
             IMove bestMove = null;
             IMove cutMove = null;
-            var moves = Position.GetAllMoves(Sorter, pv, cut);
 
-            foreach (var move in moves)
+            var moves = Position.GetAllMoves(Sorter, pv, cut);
+            if (moves.Count == 0)
             {
+                var lastMove = MoveHistory.GetLastMove();
+                return lastMove.IsCheck()
+                    ? EvaluationService.GetMateValue(lastMove.Piece.IsWhite())
+                    : -EvaluationService.Evaluate(Position);
+            }
+
+            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
+            {
+                var v = Evaluate(alpha,beta);
+                if (v < 0)
+                {
+                    return -v;
+                }
+            }
+
+            for (var i = 0; i < moves.Count; i++)
+            {
+                var move = moves[i];
                 Position.Make(move);
 
                 var isCheck = Position.IsCheck();

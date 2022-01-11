@@ -20,8 +20,8 @@ namespace Engine.Models.Moves
 
         #region Implementation of IMove
 
-        public short Static { get; set; }
-        public short Difference { get; set; }
+        public int Static { get; set; }
+        public int Difference { get; set; }
         public int Value { get; set; }
         public Piece Piece { get; set; }
         public Square From { get; set; }
@@ -77,10 +77,8 @@ namespace Engine.Models.Moves
         public void Set(params int[] squares)
         {
             BitBoard v = new BitBoard();
-            foreach (var square in squares.Select(s=>s.AsBitBoard()))
-            {
-                v |= square;
-            }
+            v = squares.Select(s => s.AsBitBoard())
+                .Aggregate(v, (current, square) => current | square);
 
             EmptyBoard = EmptyBoard |= v;
         }

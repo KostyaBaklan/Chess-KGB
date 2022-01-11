@@ -13,12 +13,16 @@ namespace Engine.Models.Helpers
         private const ulong _magic = 0x07EDD5E59A4E28C2;
 
         private static readonly int[] _magicTable;
-        private static readonly DynamicArray<int> _positions;
+        private static readonly DynamicArray<int>[] _positions;
 
         static BitBoardExtensions()
         {
             _magicTable = new int[64];
-            _positions = new DynamicArray<int>();
+            _positions = new DynamicArray<int>[12];
+            for (var x = 0; x < _positions.Length; x++)
+            {
+                _positions[x] = new DynamicArray<int>();
+            }
 
             ulong bit = 1;
             int i = 0;
@@ -48,12 +52,25 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<int> BitScan(this BitBoard b)
         {
-            while (!b.IsZero())
+            while (b.Any())
             {
                 int position = BitScanForward(b);
                 yield return position;
                 b = b.Remove(position);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitScanReverse(this BitBoard b)
+        {
+            b |= b >> 1;
+            b |= b >> 2;
+            b |= b >> 4;
+            b |= b >> 8;
+            b |= b >> 16;
+            b |= b >> 32;
+            b = b & ~(b >> 1);
+            return _magicTable[(b * _magic) >> 58];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,17 +80,62 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DynamicArray<int> Coordinates(this BitBoard b)
+        public static int Count(this BitBoard b)
         {
-            _positions.Clear();
+            int count = 0;
             while (!b.IsZero())
             {
                 int position = BitScanForward(b);
-                _positions.Add(position);
+                count++;
                 b = b.Remove(position);
             }
 
-            return _positions;
+            return count;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DynamicArray<int> Coordinates(this BitBoard b, int index)
+        {
+            var coordinates = _positions[index];
+            coordinates.Clear();
+            while (!b.IsZero())
+            {
+                int position = BitScanForward(b);
+                coordinates.Add(position);
+                b = b.Remove(position);
+            }
+
+            return coordinates;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsGreaterRank(this int bit, int coordinate)
+        {
+            return bit / 8 > coordinate / 8;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsLessRank(this int bit, int coordinate)
+        {
+            return bit / 8 < coordinate / 8;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsGreaterRank(this BitBoard bit, int coordinate)
+        {
+            return bit.BitScanForward() / 8 > coordinate / 8;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsLessRank(this BitBoard bit, int coordinate)
+        {
+            return bit.BitScanForward() / 8 < coordinate / 8;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsGreaterFile(this BitBoard bit, int coordinate)
+        {
+            return bit.BitScanForward() % 8 > coordinate % 8;
         }
 
         public static string ToBitString(this BitBoard b)

@@ -8,12 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies;
-using Engine.Strategies.AlphaBeta;
+using Engine.Strategies.AlphaBeta.Extended;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -97,7 +98,7 @@ namespace Kgb.ChessApp.Views
             UndoCommand = new DelegateCommand(UndoCommandExecute);
             SaveHistoryCommand = new DelegateCommand(SaveHistoryCommandExecute);
 
-            _strategy = new AlphaBetaDifferenceStrategy(5,_position);
+            _strategy = new AlphaBetaExtendedDifferenceStrategy(4,_position);
         }
 
         private IEnumerable<int> _numbers;
@@ -278,17 +279,41 @@ namespace Kgb.ChessApp.Views
                 {
                     var timer = new Stopwatch();
                     timer.Start();
-                    var q = _strategy.GetResult().Move;
+                    var q = _strategy.GetResult();
                     timer.Stop();
-                    return new Tuple<IMove, TimeSpan>(q, timer.Elapsed);
+                    return new Tuple<IResult, TimeSpan>(q, timer.Elapsed);
                 })
                 .ContinueWith(t =>
                     {
-                        var tResult = t.Result;
+                        Tuple<IResult, TimeSpan> tResult = null;
+                        try
+                        {
+                            tResult = t.Result;
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show($"Error = {exception} !");
+                        }
                         if (tResult != null)
                         {
                             MessageBox.Show($"Elapsed = {tResult.Item2} !");
-                            MakeMove(tResult.Item1);
+                            switch (t.Result.Item1.GameResult)
+                            {
+                                case GameResult.Continue:
+                                    MakeMove(tResult.Item1.Move);
+                                    break;
+                                case GameResult.Pat:
+                                    MessageBox.Show("Pat !!!");
+                                    break;
+                                case GameResult.ThreefoldRepetition:
+                                    MessageBox.Show("Threefold Repetition !!!");
+                                    break;
+                                case GameResult.Mate:
+                                    MessageBox.Show("Mate !!!");
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
                         }
                         else
                         {

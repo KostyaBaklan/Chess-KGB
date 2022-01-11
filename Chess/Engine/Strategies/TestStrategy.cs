@@ -1,4 +1,5 @@
-﻿using Engine.Interfaces;
+﻿using Engine.DataStructures;
+using Engine.Interfaces;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 
@@ -13,7 +14,7 @@ namespace Engine.Strategies
         {
             Position = position;
             Depth = 5;
-            Sorter = new SimpleMoveSorter(new DifferenceComparer());
+            Sorter = new SimpleMoveSorter(new DifferenceComparer(),position);
         }
 
         #region Overrides of StrategyBase
@@ -28,8 +29,9 @@ namespace Engine.Strategies
             Result result = new Result();
 
             var moves = Position.GetAllMoves(Sorter);
-            foreach (var move in moves)
+            for (var i = 0; i < moves.Count; i++)
             {
+                var move = moves[i];
                 try
                 {
                     Position.Make(move);
@@ -71,9 +73,9 @@ namespace Engine.Strategies
 
             int value = int.MinValue;
             var moves = Position.GetAllMoves(Sorter);
-
-            foreach (var move in moves)
+            for (var i = 0; i < moves.Count; i++)
             {
+                var move = moves[i];
                 Position.Make(move);
 
                 var isCheck = Position.IsCheck();

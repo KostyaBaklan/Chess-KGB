@@ -6,9 +6,9 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
 {
-    public class SimpleMoveSorter : MoveSorter
+    public class ExtendedSorter : MoveSorter
     {
-        public SimpleMoveSorter(IMoveComparer comparer, IPosition position) : base(position)
+        public ExtendedSorter(IPosition position, IMoveComparer comparer) : base(position)
         {
             Comparer = comparer;
         }
@@ -16,11 +16,11 @@ namespace Engine.Sorting.Sorters
         protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection)
         {
+            var sortedAttacks = OrderAttacks(attacks);
+
             MoveCollection collection = new MoveCollection(Comparer);
-            foreach (var attack in attacks)
-            {
-                collection.AddTrade(attack);
-            }
+
+            OrderAttacks(collection, sortedAttacks);
 
             var killer = killerMoveCollection.GetMoves();
 
@@ -44,11 +44,11 @@ namespace Engine.Sorting.Sorters
             KillerMoveCollection killerMoveCollection,
             IMove cutNode)
         {
+            var sortedAttacks = OrderAttacks(attacks);
+
             MoveCollection collection = new MoveCollection(Comparer);
-            foreach (var attack in attacks)
-            {
-                collection.AddTrade(attack);
-            }
+
+            OrderAttacks(collection, sortedAttacks);
 
             var killer = killerMoveCollection.GetMoves(cutNode);
 
@@ -72,17 +72,17 @@ namespace Engine.Sorting.Sorters
             KillerMoveCollection killerMoveCollection,
             IMove pvNode, IMove cutMove)
         {
+            var sortedAttacks = OrderAttacks(attacks);
+
             MoveCollection collection = new MoveCollection(Comparer);
-            foreach (var attack in attacks)
+
+            if (pvNode is IAttack attack)
             {
-                if (attack.Equals(pvNode))
-                {
-                    collection.AddHashMove(attack);
-                }
-                else
-                {
-                    collection.AddTrade(attack);
-                }
+                OrderAttacks(collection, sortedAttacks, attack); 
+            }
+            else
+            {
+                OrderAttacks(collection, sortedAttacks);
             }
 
             var killer = killerMoveCollection.GetMoves(cutMove);

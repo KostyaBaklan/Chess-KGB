@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using Engine.Interfaces;
 using Engine.Models.Moves;
 
-namespace Engine.DataStructures
+namespace Engine.DataStructures.Moves
 {
     public class KillerMoveCollection
     {

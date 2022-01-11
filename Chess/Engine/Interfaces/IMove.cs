@@ -7,8 +7,8 @@ namespace Engine.Interfaces
 {
     public interface IMove:IComparable<IMove>
     {
-        short Static { get; }
-        short Difference { get; }
+        int Static { get; }
+        int Difference { get; }
         int Value { get; set; }
         Piece Piece { get; }
         Square From { get; }

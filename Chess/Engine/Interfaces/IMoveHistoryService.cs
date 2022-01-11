@@ -8,11 +8,16 @@ namespace Engine.Interfaces
         IMove GetLastMove();
         void Add(IMove move);
         IMove Remove();
+        bool CanDoBlackCastle();
+        bool CanDoWhiteCastle();
         bool CanDoWhiteSmallCastle();
         bool CanDoWhiteBigCastle();
         bool CanDoBlackSmallCastle();
         bool CanDoBlackBigCastle();
         bool IsAdditionalDebutMove(IMove move);
         IEnumerable<IMove> GetHistory();
+        bool IsThreefoldRepetition(ulong board);
+        void Add(ulong board);
+        void Remove(ulong board);
     }
 }

@@ -21,6 +21,7 @@ namespace Tests
 
             var depth = short.Parse(args[1]);
             var iterations = int.Parse(args[2]);
+            bool shouldPrintPosition = args.Length>3 && bool.Parse(args[3]);
             IPosition position = new Position();
 
             Dictionary<string, IStrategy> strategies = new Dictionary<string, IStrategy>
@@ -62,11 +63,14 @@ namespace Tests
             using (var log = new StreamWriter(file))
             {
                 log.WriteLine($"{strategy}. Depth = {depth}");
-                Play(log, iterations, strategy, position);
+                Play(log, iterations, strategy, position, shouldPrintPosition);
             }
+
+            //position.GetBoard().PrintCache(Path.Combine("Log", $"See_Cache_{strategy}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log"));
         }
 
-        private static void Play(StreamWriter log, int depth, IStrategy strategy, IPosition position)
+        private static void Play(StreamWriter log, int depth, IStrategy strategy, IPosition position,
+            bool shouldPrintPosition)
         {
             var formatter = ServiceLocator.Current.GetInstance<IMoveFormatter>();
             var check = ServiceLocator.Current.GetInstance<ICheckService>();
@@ -74,7 +78,10 @@ namespace Tests
 
             var st = new TestStrategy(position);
 
-            log.WriteLine(position);
+            if (shouldPrintPosition)
+            {
+                log.WriteLine(position); 
+            }
             log.WriteLine();
 
             TimeSpan total = TimeSpan.Zero;
@@ -114,7 +121,10 @@ namespace Tests
                 }
                 position.Make(m);
                 log.WriteLine(formatter.Format(m));
-                log.WriteLine(position);
+                if (shouldPrintPosition)
+                {
+                    log.WriteLine(position);
+                }
                 //Console.WriteLine(position);
                 log.WriteLine();
                 // Console.ReadLine();
