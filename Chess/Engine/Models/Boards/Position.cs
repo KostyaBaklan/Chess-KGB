@@ -198,9 +198,9 @@ namespace Engine.Models.Boards
         public bool IsCheck()
         {
             //return _turn != Turn.White ? _checkService.IsBlackCheck(_board.GetKey(), _board) : _checkService.IsWhiteCheck(_board.GetKey(), _board);
-            //return _turn != Turn.White ? _moveProvider.AnyBlackCheck(_board) : _moveProvider.AnyWhiteCheck(_board);
+            return _turn != Turn.White ? _moveProvider.AnyBlackCheck(_board) : _moveProvider.AnyWhiteCheck(_board);
 
-            return _turn != Turn.White ? _moveProvider.IsCheckToWhite(_board) : _moveProvider.IsCheckToBlack(_board);
+            //return _turn != Turn.White ? _moveProvider.IsCheckToWhite(_board) : _moveProvider.IsCheckToBlack(_board);
         }
 
         public void Make(IMove move)
@@ -251,7 +251,7 @@ namespace Engine.Models.Boards
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SwapTurn()
+        public void SwapTurn()
         {
             _turn = _turn == Turn.White ? Turn.Black : Turn.White;
         }

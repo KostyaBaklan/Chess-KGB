@@ -13,6 +13,7 @@ namespace Engine.Sorting.Sorters
             Comparer = comparer;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection)
         {
@@ -40,6 +41,7 @@ namespace Engine.Sorting.Sorters
             return collection;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection,
             IMove cutNode)
@@ -68,6 +70,7 @@ namespace Engine.Sorting.Sorters
             return collection;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection,
             IMove pvNode, IMove cutMove)

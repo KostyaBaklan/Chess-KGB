@@ -15,6 +15,7 @@ namespace Engine.Interfaces
         void Make(IMove move);
         bool IsCheck();
         void UnMake();
+        void SwapTurn();
 
         IEnumerable<IAttack> GetAllAttacks(Square cell, Piece piece);
         IEnumerable<IMove> GetAllMoves(Square cell, Piece piece);

@@ -128,6 +128,12 @@
     <Compile Include="Strategies\AlphaBeta\AlphaBetaStaticStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaStrategy.cs" />
     <Compile Include="DataStructures\Result.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullStaticStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaVerifiedNullDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaVerifiedNullStaticStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaVerifiedNullStrategy.cs" />
     <Compile Include="Strategies\StrategyBase.cs" />
     <Compile Include="Interfaces\IResult.cs" />
     <Compile Include="Strategies\IStrategy.cs" />

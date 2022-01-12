@@ -7,6 +7,8 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Strategies;
 using Engine.Strategies.AlphaBeta;
+using Engine.Strategies.AlphaBeta.Extended;
+using Engine.Strategies.AlphaBeta.Null;
 
 namespace Tests
 {
@@ -29,33 +31,11 @@ namespace Tests
                 {"as", new AlphaBetaStaticStrategy(depth, position)},
                 {"ad", new AlphaBetaDifferenceStrategy(depth, position)},
                 {"ac", new AlphaBetaComplexStrategy(depth, position)},
-                {"aa", new AlphaBetaAdvancedStrategy(depth,position) }
-                //{"av", new AspirationValueStrategy(depth,position)},
-                //{"p", new PvsKillerStrategy(depth,position)},
-                //{"ps", new PvStaticStrategy(depth,position)},
-                //{"pv", new PvValueStrategy(depth,position)},
-                //{"psv", new PvStaticValueStrategy(depth,position)},
-                //{"pvs", new PvValueStaticStrategy(depth,position)},
-                //{"pfs", new PvFigureStaticStrategy(depth,position)},
-                //{"pfv", new PvFigureValueStrategy(depth,position)},
-                //{"mk", new MtdKillerStrategy(depth,position)},
-                //{"mv", new MtdValueStrategy(depth,position)},
-                //{"is", new IterativeStaticStrategy(depth,position)},
-                //{"iv", new IterativeValueStrategy(depth,position)},
-                //{"ifs", new IterativeFigureStaticStrategy(depth,position)},
-                //{"ifv", new IterativeFigureValueStrategy(depth,position)},
-                //{"sv", new ScoutValueStrategy(depth,position)},
-                //{"ss", new ScoutStaticStrategy(depth,position)},
-                //{"svs", new ScoutValueStaticStrategy(depth,position)},
-                //{"ssv", new ScoutStaticValueStrategy(depth,position)},
-                //{"sfv", new ScoutFigureValueStrategy(depth,position)},
-                //{"sfs", new ScoutFigureStaticStrategy(depth,position)},
-                //{"sfvs", new ScoutFigureValueStaticStrategy(depth,position)},
-                //{"sfsv", new ScoutFigureStaticValueStrategy(depth,position)},
-                //{"isv", new IterativeScoutValueStrategy(depth,position)},
-                //{"iss", new IterativeScoutStaticStrategy(depth,position)},
-                //{"isfv", new IterativeScoutFigureValueStrategy(depth,position)},
-                //{"isfs", new IterativeScoutFigureStaticStrategy(depth,position)}
+                {"aa", new AlphaBetaAdvancedStrategy(depth,position) },
+                {"aed", new AlphaBetaExtendedDifferenceStrategy(depth,position)},
+                {"aes", new AlphaBetaExtendedStaticStrategy(depth,position)},
+                {"and", new AlphaBetaNullDifferenceStrategy(depth,position)},
+                {"ans", new AlphaBetaNullStaticStrategy(depth,position)}
             };
 
             IStrategy strategy = strategies[args[0]];
@@ -95,7 +75,6 @@ namespace Tests
                 if (move != null)
                 {
                     position.Make(move);
-                    PrintKey(position, move, log);
                     timer.Stop();
                     log.WriteLine(formatter.Format(move));
                 }
@@ -129,21 +108,6 @@ namespace Tests
                 log.WriteLine();
                 // Console.ReadLine();
             }
-        }
-
-        private static void PrintKey(IPosition position, IMove move, StreamWriter log)
-        {
-            var p1 = position.GetKey();
-            position.UnMake();
-            var p2 = position.GetKey();
-            position.Make(move);
-            var p3 = position.GetKey();
-            if (p1 != p3)
-            {
-                throw new Exception("Pizdetz!!!");
-            }
-            log.WriteLine($"{p1} {p2} {p3}");
-            log.WriteLine();
         }
     }
 }
