@@ -106,6 +106,7 @@ namespace Engine.Models.Boards
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private IEnumerable<IMove> PossibleMoves(Square[][] squares, Piece[] pieces)
         {
             var lastMove = _moveHistoryService.GetLastMove();
@@ -147,6 +148,7 @@ namespace Engine.Models.Boards
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private IEnumerable<IAttack> PossibleAttacks(Square[][] squares, Piece[] pieces)
         {
             for (var index = 0; index < pieces.Length; index++)
@@ -182,6 +184,17 @@ namespace Engine.Models.Boards
             return _moveHistoryService.GetHistory();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsNotLegal(IMove move)
+        {
+            return _turn != Turn.White
+                ? _moveProvider.AnyBlackCheck(_board) || move.IsCastle() &&
+                  _moveProvider.IsWhiteUnderAttack(_board, move.To == Squares.C1 ? Squares.D1 : Squares.F1)
+                : _moveProvider.AnyWhiteCheck(_board) || move.IsCastle() &&
+                  _moveProvider.IsBlackUnderAttack(_board, move.To == Squares.C8 ? Squares.D8 : Squares.F8);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Square[][] GetSquares(Piece[] pieces)
         {
             var squares = new Square[pieces.Length][];
@@ -203,6 +216,7 @@ namespace Engine.Models.Boards
             //return _turn != Turn.White ? _moveProvider.IsCheckToWhite(_board) : _moveProvider.IsCheckToBlack(_board);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Make(IMove move)
         {
             IMove previousMove = _moveHistoryService.GetLastMove();
@@ -228,6 +242,7 @@ namespace Engine.Models.Boards
             SwapTurn();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void UnMake()
         {
             _moveHistoryService.Remove(_board.GetKey());

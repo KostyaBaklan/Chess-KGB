@@ -8,8 +8,8 @@ namespace Engine.Strategies.AlphaBeta.Null
 {
     public abstract class AlphaBetaVerifiedNullStrategy : AlphaBetaNullStrategy
     {
-        protected int MinReduction;
-        protected int MaxReduction;
+        protected int Reduction;
+
         protected AlphaBetaVerifiedNullStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position, comparer)
         {
             Reduction = 4;
@@ -54,7 +54,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                     }
                     Position.Make(move);
 
-                    var isCheck = Position.IsCheck();
+                    var isCheck = Position.IsNotLegal(move);
 
                     if (isCheck) continue;
 
@@ -169,7 +169,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsCheck();
+                var isCheck = Position.IsNotLegal(move);
 
                 if (!isCheck)
                 {

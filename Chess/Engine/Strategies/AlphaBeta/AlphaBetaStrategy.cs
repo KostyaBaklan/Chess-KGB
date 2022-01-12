@@ -80,7 +80,7 @@ namespace Engine.Strategies.AlphaBeta
                 {
                     Position.Make(move);
 
-                    var isCheck = Position.IsCheck();
+                    var isCheck = Position.IsNotLegal(move);
 
                     if (isCheck) continue;
 
@@ -200,7 +200,7 @@ namespace Engine.Strategies.AlphaBeta
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsCheck();
+                var isCheck = Position.IsNotLegal(move);
 
                 if (!isCheck)
                 {

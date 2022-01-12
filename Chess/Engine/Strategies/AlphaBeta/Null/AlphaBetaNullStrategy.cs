@@ -11,13 +11,15 @@ namespace Engine.Strategies.AlphaBeta.Null
     public abstract class AlphaBetaNullStrategy : AlphaBetaStrategy
     {
         protected bool CanUseNull;
-        protected int Reduction;
+        protected int MinReduction;
+        protected int MaxReduction;
         protected int NullWindow;
 
         protected AlphaBetaNullStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position)
         {
             CanUseNull = false;
-            Reduction = 2;
+            MinReduction = 2;
+            MaxReduction = 3;
             NullWindow = EvaluationService.GetPenaltyValue();
             Sorter = new ExtendedSorter(position, comparer);
         }
@@ -54,13 +56,10 @@ namespace Engine.Strategies.AlphaBeta.Null
                 var move = moves[i];
                 try
                 {
-                    if (i > 0)
-                    {
-                        SwitchNull(); 
-                    }
+                    SwitchNull();
                     Position.Make(move);
 
-                    var isCheck = Position.IsCheck();
+                    var isCheck = Position.IsNotLegal(move);
 
                     if (isCheck) continue;
 
@@ -84,10 +83,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 finally
                 {
                     Position.UnMake();
-                    if (i>0)
-                    {
-                        SwitchNull(); 
-                    }
+                    SwitchNull();
                 }
             }
 
@@ -153,10 +149,11 @@ namespace Engine.Strategies.AlphaBeta.Null
                 }
             }
 
-            if (!lastMove.IsCheck() && CanUseNull && beta - alpha > NullWindow)
+            if (depth > 1 && !lastMove.IsCheck() && CanUseNull && beta - alpha > NullWindow)
             {
                 MakeNullMove();
-                var v = -Search(-beta, NullWindow - beta, depth - Reduction - 1);
+                int r = depth > 6 ? MaxReduction : MinReduction;
+                var v = -Search(-beta, NullWindow - beta, depth - r - 1);
                 UndoNullMove();
                 if (v >= beta)
                 {
@@ -170,7 +167,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsCheck();
+                var isCheck = Position.IsNotLegal(move);
 
                 if (!isCheck)
                 {

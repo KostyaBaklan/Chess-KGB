@@ -24,5 +24,6 @@ namespace Engine.Interfaces
         int GetPieceValue(Square square);
         IBoard GetBoard();
         IEnumerable<IMove> GetHistory();
+        bool IsNotLegal(IMove move);
     }
 }

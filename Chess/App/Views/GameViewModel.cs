@@ -99,7 +99,7 @@ namespace Kgb.ChessApp.Views
             UndoCommand = new DelegateCommand(UndoCommandExecute);
             SaveHistoryCommand = new DelegateCommand(SaveHistoryCommandExecute);
 
-            _strategy = new AlphaBetaNullDifferenceStrategy(6,_position);
+            _strategy = new AlphaBetaNullDifferenceStrategy(5,_position);
         }
 
         private IEnumerable<int> _numbers;
@@ -331,7 +331,7 @@ namespace Kgb.ChessApp.Views
             {
                 _position.Make(move);
 
-                var isCheck = _position.IsCheck();
+                var isCheck = _position.IsNotLegal(move);
 
                 _position.UnMake();
 
