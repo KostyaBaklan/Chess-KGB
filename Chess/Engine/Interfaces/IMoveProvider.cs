@@ -12,5 +12,7 @@ namespace Engine.Interfaces
         bool AnyWhiteCheck(IBoard board);
         bool IsUnderAttack(IBoard board, int piece, byte to);
         BitBoard GetAttackPattern(byte piece, int position);
+        bool IsWhiteUnderAttack(IBoard board, Square square);
+        bool IsBlackUnderAttack(IBoard board, Square square);
     }
 }

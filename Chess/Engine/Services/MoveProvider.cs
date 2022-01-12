@@ -1259,7 +1259,7 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsWhiteUnderAttack(IBoard board, Square square)
+        public bool IsWhiteUnderAttack(IBoard board, Square square)
         {
             var to = square.AsByte();
             return IsUnderAttack(board, Piece.BlackBishop.AsByte(), to) ||
@@ -1271,7 +1271,7 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsBlackUnderAttack(IBoard board, Square square)
+        public bool IsBlackUnderAttack(IBoard board, Square square)
         {
             var to = square.AsByte();
             return IsUnderAttack(board, Piece.WhiteBishop.AsByte(), to) ||

@@ -1,53 +1,24 @@
-﻿using System.Collections.Generic;
-using Engine.DataStructures;
+﻿using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Helpers;
 using Engine.Models.Transposition;
+using Engine.Sorting.Comparers;
 
-namespace Engine.Strategies.AlphaBeta
+namespace Engine.Strategies.AlphaBeta.Null
 {
-    public abstract class AlphaBetaStrategy : StrategyBase
+    public abstract class AlphaBetaVerifiedNullStrategy : AlphaBetaNullStrategy
     {
-        protected readonly TranspositionTable Table;
+        protected int Reduction;
 
-        protected readonly IMoveHistoryService MoveHistory =
-            CommonServiceLocator.ServiceLocator.Current.GetInstance<IMoveHistoryService>();
-
-        protected int SearchValue = 1000000;
-
-        protected AlphaBetaStrategy(short depth, IPosition position) : base(depth, position)
+        protected AlphaBetaVerifiedNullStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position, comparer)
         {
-            int capacity;
-            if (depth < 6)
-            {
-                capacity = 1131467;
-            }
-            else if (depth == 6)
-            {
-                capacity = 2263139;
-            }
-            else if (depth == 7)
-            {
-                capacity = 4356733;
-            }
-            else
-            {
-                capacity = 7910731;
-            }
-            Table = new TranspositionTable(capacity);
+            Reduction = 4;
+            MinReduction = 3;
+            MaxReduction = 4;
         }
-
-        public override int Size => Table.Count;
-
-        public override IResult GetResult()
-        {
-            return GetResult(-SearchValue, SearchValue, Depth);
-        }
-
-        #region Overrides of StrategyBase
-
         public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null, IMove cutMove = null)
         {
+            CanUseNull = false;
             Result result = new Result();
 
             IMove pv = pvMove, cut = cutMove;
@@ -57,7 +28,6 @@ namespace Engine.Strategies.AlphaBeta
                 cut = cutMove;
             }
 
-            // HashSet<IMove> bestMoves = new HashSet<IMove>();
             var moves = Position.GetAllMoves(Sorter, pv, cut);
             if (moves.Count == 0)
             {
@@ -66,7 +36,7 @@ namespace Engine.Strategies.AlphaBeta
 
             if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
             {
-                var v = Evaluate(alpha,beta);
+                var v = Evaluate(alpha, beta);
                 if (v < -500)
                 {
                     result.GameResult = GameResult.ThreefoldRepetition;
@@ -78,6 +48,10 @@ namespace Engine.Strategies.AlphaBeta
                 var move = moves[i];
                 try
                 {
+                    if (i > 0)
+                    {
+                        SwitchNull();
+                    }
                     Position.Make(move);
 
                     var isCheck = Position.IsNotLegal(move);
@@ -89,13 +63,7 @@ namespace Engine.Strategies.AlphaBeta
                     {
                         result.Value = value;
                         result.Move = move;
-                        //bestMoves.Clear();
-                        //bestMoves.Add(move);
                     }
-                    //else if (value == result.Value)
-                    //{
-                    //    bestMoves.Add(move);
-                    //}
 
                     if (value > alpha)
                     {
@@ -110,35 +78,19 @@ namespace Engine.Strategies.AlphaBeta
                 finally
                 {
                     Position.UnMake();
+                    if (i > 0)
+                    {
+                        SwitchNull();
+                    }
                 }
             }
 
-            //result.Move = GetBestMove(bestMoves);
             return result;
-        }
-
-        #endregion
-
-        protected virtual IMove GetBestMove(HashSet<IMove> bestMoves)
-        {
-            var heap = new Heap(2,bestMoves.Count);
-            foreach (var move in bestMoves)
-            {
-                Position.Make(move);
-
-                move.Value =  -Evaluate(short.MinValue, short.MaxValue);
-
-                Position.UnMake();
-
-                heap.Insert(move);
-            }
-
-            return heap.Maximum();
         }
 
         public override int Search(int alpha, int beta, int depth)
         {
-            if (depth == 0)
+            if (depth <= 0)
             {
                 return Evaluate(alpha, beta);
             }
@@ -177,10 +129,10 @@ namespace Engine.Strategies.AlphaBeta
             IMove bestMove = null;
             IMove cutMove = null;
 
+            var lastMove = MoveHistory.GetLastMove();
             var moves = Position.GetAllMoves(Sorter, pv, cut);
             if (moves.Count == 0)
             {
-                var lastMove = MoveHistory.GetLastMove();
                 return lastMove.IsCheck()
                     ? EvaluationService.GetMateValue(lastMove.Piece.IsWhite())
                     : -EvaluationService.Evaluate(Position);
@@ -188,11 +140,28 @@ namespace Engine.Strategies.AlphaBeta
 
             if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
             {
-                var v = Evaluate(alpha,beta);
+                var v = Evaluate(alpha, beta);
                 if (v < 0)
                 {
                     return -v;
                 }
+            }
+
+            if (!lastMove.IsCheck() && CanUseNull && beta - alpha > NullWindow)
+            {
+                MakeNullMove();
+                var r = depth > 6 ? MaxReduction : MinReduction;
+                var v = -Search(-beta, NullWindow - beta, depth - r - 1);
+                UndoNullMove();
+                if (v >= beta)
+                {
+                    depth -= Reduction;
+                    if (depth <= 0)
+                    {
+                        return Evaluate(alpha, beta);
+                    }
+                }
+
             }
 
             for (var i = 0; i < moves.Count; i++)
@@ -246,11 +215,6 @@ namespace Engine.Strategies.AlphaBeta
 
             Table.Add(key, te);
             return best;
-        }
-
-        public void Clear()
-        {
-            Table.Clear();
         }
     }
 }

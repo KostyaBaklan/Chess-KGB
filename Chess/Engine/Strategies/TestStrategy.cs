@@ -36,7 +36,7 @@ namespace Engine.Strategies
                 {
                     Position.Make(move);
 
-                    var isCheck = Position.IsCheck();
+                    var isCheck = Position.IsNotLegal(move);
 
                     if (isCheck) continue;
 
@@ -78,7 +78,7 @@ namespace Engine.Strategies
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsCheck();
+                var isCheck = Position.IsNotLegal(move);
 
                 if (!isCheck)
                 {
