@@ -33,44 +33,36 @@ namespace Engine.Strategies.AlphaBeta
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
-                try
+                Position.Make(move);
+
+                var value = -Search(-beta, -alpha, depth - 1);
+
+                Position.UnMake();
+
+                if (value > result.Value)
                 {
-                    Position.Make(move);
-
-                    var isCheck = Position.IsNotLegal(move);
-
-                    if (isCheck) continue;
-
-                    var value = -Search(-beta, -alpha, depth - 1);
-                    if (value > result.Value)
-                    {
-                        result.Value = value;
-                        result.Move = move;
-                        if (result.Value>int.MinValue)
-                        {
-                            _historyHeuristic.Update(move);
-                            isHistoryUpdated = true;
-                        }
-                    }
-
-                    if (value > alpha)
-                    {
-                        alpha = value;
-                    }
-
-                    if (alpha < beta) continue;
-
-                    if (!isHistoryUpdated)
+                    result.Value = value;
+                    result.Move = move;
+                    if (result.Value>int.MinValue)
                     {
                         _historyHeuristic.Update(move);
+                        isHistoryUpdated = true;
                     }
-                    result.Cut = move;
-                    break;
                 }
-                finally
+
+                if (value > alpha)
                 {
-                    Position.UnMake();
+                    alpha = value;
                 }
+
+                if (alpha < beta) continue;
+
+                if (!isHistoryUpdated)
+                {
+                    _historyHeuristic.Update(move);
+                }
+                result.Cut = move;
+                break;
             }
 
             return result;
@@ -124,26 +116,19 @@ namespace Engine.Strategies.AlphaBeta
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsNotLegal(move);
-
-                if (!isCheck)
+                var r = -Search(-beta, -alpha, depth - 1);
+                if (r > value)
                 {
-                    var r = -Search(-beta, -alpha, depth - 1);
-                    if (r > value)
+                    value = r;
+                    bestMove = move;
+                    if (value > int.MinValue)
                     {
-                        value = r;
-                        bestMove = move;
-                        if (value > int.MinValue)
-                        {
-                            _historyHeuristic.Update(move);
-                            isHistoryUpdated = true;
-                        }
+                        _historyHeuristic.Update(move);
+                        isHistoryUpdated = true;
                     }
                 }
 
                 Position.UnMake();
-
-                if (isCheck) continue;
 
                 if (value > alpha)
                 {

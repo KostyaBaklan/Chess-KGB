@@ -83,9 +83,9 @@ namespace Engine.Services
 
         private void SetValueForMove(MoveBase move)
         {
-            var value = _evaluationService.GetValue(move.Piece.AsByte(), move.To.AsByte());
+            var value = _evaluationService.GetValue(move.Piece.AsByte(), move.To.AsByte(), Phase.Opening);
             move.Static = value;
-            move.Difference = value - _evaluationService.GetValue(move.Piece.AsByte(), move.From.AsByte());
+            move.Difference = value - _evaluationService.GetValue(move.Piece.AsByte(), move.From.AsByte(), Phase.Opening);
         }
 
         private void SetAttackPatterns(Piece piece)

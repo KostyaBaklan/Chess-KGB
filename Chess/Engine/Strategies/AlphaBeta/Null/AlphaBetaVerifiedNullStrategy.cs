@@ -46,43 +46,29 @@ namespace Engine.Strategies.AlphaBeta.Null
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
-                try
+                SwitchNull();
+                Position.Make(move);
+
+                var value = -Search(-beta, -alpha, depth - 1);
+
+                Position.UnMake();
+                SwitchNull();
+
+                if (value > result.Value)
                 {
-                    if (i > 0)
-                    {
-                        SwitchNull();
-                    }
-                    Position.Make(move);
-
-                    var isCheck = Position.IsNotLegal(move);
-
-                    if (isCheck) continue;
-
-                    var value = -Search(-beta, -alpha, depth - 1);
-                    if (value > result.Value)
-                    {
-                        result.Value = value;
-                        result.Move = move;
-                    }
-
-                    if (value > alpha)
-                    {
-                        alpha = value;
-                    }
-
-                    if (alpha < beta) continue;
-
-                    result.Cut = move;
-                    break;
+                    result.Value = value;
+                    result.Move = move;
                 }
-                finally
+
+                if (value > alpha)
                 {
-                    Position.UnMake();
-                    if (i > 0)
-                    {
-                        SwitchNull();
-                    }
+                    alpha = value;
                 }
+
+                if (alpha < beta) continue;
+
+                result.Cut = move;
+                break;
             }
 
             return result;
@@ -169,21 +155,14 @@ namespace Engine.Strategies.AlphaBeta.Null
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsNotLegal(move);
-
-                if (!isCheck)
+                var r = -Search(-beta, -alpha, depth - 1);
+                if (r > value)
                 {
-                    var r = -Search(-beta, -alpha, depth - 1);
-                    if (r > value)
-                    {
-                        value = r;
-                        bestMove = move;
-                    }
+                    value = r;
+                    bestMove = move;
                 }
 
                 Position.UnMake();
-
-                if (isCheck) continue;
 
                 if (value > alpha)
                 {

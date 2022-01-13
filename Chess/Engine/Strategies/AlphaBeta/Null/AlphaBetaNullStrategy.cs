@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Transposition;
 using Engine.Sorting.Comparers;
@@ -51,19 +52,19 @@ namespace Engine.Strategies.AlphaBeta.Null
                     return result;
                 }
             }
-            for (var i = 0; i < moves.Count; i++)
+            if (moves.Count>1)
             {
-                var move = moves[i];
-                try
+                for (var i = 0; i < moves.Count; i++)
                 {
+                    var move = moves[i];
                     SwitchNull();
                     Position.Make(move);
 
-                    var isCheck = Position.IsNotLegal(move);
-
-                    if (isCheck) continue;
-
                     var value = -Search(-beta, -alpha, depth - 1);
+
+                    Position.UnMake();
+                    SwitchNull();
+
                     if (value > result.Value)
                     {
                         result.Value = value;
@@ -79,12 +80,11 @@ namespace Engine.Strategies.AlphaBeta.Null
 
                     result.Cut = move;
                     break;
-                }
-                finally
-                {
-                    Position.UnMake();
-                    SwitchNull();
-                }
+                } 
+            }
+            else
+            {
+                result.Move = moves[0];
             }
 
             return result;
@@ -136,7 +136,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             if (moves.Count == 0)
             {
                 return lastMove.IsCheck()
-                    ? EvaluationService.GetMateValue(lastMove.Piece.IsWhite())
+                    ? -EvaluationService.GetMateValue(lastMove.Piece.IsWhite())
                     : -EvaluationService.Evaluate(Position);
             }
 
@@ -149,7 +149,8 @@ namespace Engine.Strategies.AlphaBeta.Null
                 }
             }
 
-            if (depth > 1 && !lastMove.IsCheck() && CanUseNull && beta - alpha > NullWindow)
+            if (Position.GetPhase() != Phase.End && depth > 1 && !lastMove.IsCheck() && CanUseNull &&
+                beta - alpha > NullWindow)
             {
                 MakeNullMove();
                 int r = depth > 6 ? MaxReduction : MinReduction;
@@ -159,7 +160,6 @@ namespace Engine.Strategies.AlphaBeta.Null
                 {
                     return v;
                 }
-
             }
 
             for (var i = 0; i < moves.Count; i++)
@@ -167,21 +167,14 @@ namespace Engine.Strategies.AlphaBeta.Null
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsNotLegal(move);
-
-                if (!isCheck)
+                var r = -Search(-beta, -alpha, depth - 1);
+                if (r > value)
                 {
-                    var r = -Search(-beta, -alpha, depth - 1);
-                    if (r > value)
-                    {
-                        value = r;
-                        bestMove = move;
-                    }
+                    value = r;
+                    bestMove = move;
                 }
 
                 Position.UnMake();
-
-                if (isCheck) continue;
 
                 if (value > alpha)
                 {

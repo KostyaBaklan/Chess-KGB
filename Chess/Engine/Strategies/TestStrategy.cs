@@ -32,33 +32,24 @@ namespace Engine.Strategies
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
-                try
+                Position.Make(move);
+
+                var value = -Find(-beta, -alpha, depth - 1);
+
+                Position.UnMake();
+                if (value > result.Value)
                 {
-                    Position.Make(move);
-
-                    var isCheck = Position.IsNotLegal(move);
-
-                    if (isCheck) continue;
-
-                    var value = -Find(-beta, -alpha, depth - 1);
-                    if (value > result.Value)
-                    {
-                        result.Value = value;
-                        result.Move = move;
-                    }
-
-                    if (value > alpha)
-                    {
-                        alpha = value;
-                    }
-
-                    if (alpha < beta) continue;
-                    break;
+                    result.Value = value;
+                    result.Move = move;
                 }
-                finally
+
+                if (value > alpha)
                 {
-                    Position.UnMake();
+                    alpha = value;
                 }
+
+                if (alpha < beta) continue;
+                break;
             }
 
             return result;
@@ -78,20 +69,13 @@ namespace Engine.Strategies
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsNotLegal(move);
-
-                if (!isCheck)
+                var r = -Find(-beta, -alpha, depth - 1);
+                if (r > value)
                 {
-                    var r = -Find(-beta, -alpha, depth - 1);
-                    if (r > value)
-                    {
-                        value = r;
-                    }
+                    value = r;
                 }
 
                 Position.UnMake();
-
-                if (isCheck) continue;
 
                 if (value > alpha)
                 {

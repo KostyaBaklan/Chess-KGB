@@ -13,7 +13,6 @@ namespace Engine.Interfaces
         bool GetPiece(Square cell, out Piece? piece);
 
         void Make(IMove move);
-        bool IsCheck();
         void UnMake();
         void SwapTurn();
 
@@ -24,6 +23,6 @@ namespace Engine.Interfaces
         int GetPieceValue(Square square);
         IBoard GetBoard();
         IEnumerable<IMove> GetHistory();
-        bool IsNotLegal(IMove move);
+        Phase GetPhase();
     }
 }

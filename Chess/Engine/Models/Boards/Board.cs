@@ -100,7 +100,7 @@ namespace Engine.Models.Boards
             int value = 0;
             for (var i = 0; i < positions.Length; i++)
             {
-                value += _evaluationService.GetFullValue(piece, positions[i]);
+                value += _evaluationService.GetFullValue(piece, positions[i], _phase);
             }
 
             return value;
@@ -128,7 +128,7 @@ namespace Engine.Models.Boards
         private int GetBlackKingValue()
         {
             var p = _boards[Piece.BlackKing.AsByte()].BitScanForward();
-            var value = _evaluationService.GetValue(Piece.BlackKing.AsByte(), p);
+            var value = _evaluationService.GetValue(Piece.BlackKing.AsByte(), p, _phase);
 
             if (_isBlackCastled)
             {
@@ -214,7 +214,7 @@ namespace Engine.Models.Boards
             for (var i = 0; i < positions.Length; i++)
             {
                 int coordinate = positions[i];
-                value += _evaluationService.GetFullValue(piece, coordinate);
+                value += _evaluationService.GetFullValue(piece, coordinate, _phase);
                 if (_whites.IsSet((coordinate - 8).AsBitBoard()))
                 {
                     value -= _evaluationService.GetPawnValue();
@@ -261,7 +261,7 @@ namespace Engine.Models.Boards
         private int GetWhiteKingValue()
         {
             var p = _boards[Piece.WhiteKing.AsByte()].BitScanForward();
-            var value = _evaluationService.GetValue(Piece.WhiteKing.AsByte(), p);
+            var value = _evaluationService.GetValue(Piece.WhiteKing.AsByte(), p, _phase);
 
             if (_isWhiteCastled)
             {
@@ -358,7 +358,7 @@ namespace Engine.Models.Boards
             for (var i = 0; i < positions.Length; i++)
             {
                 int coordinate = positions[i];
-                value += _evaluationService.GetFullValue(piece, coordinate);
+                value += _evaluationService.GetFullValue(piece, coordinate, _phase);
                 if (_blacks.IsSet((coordinate + 8).AsBitBoard()))
                 {
                     value -= _evaluationService.GetPawnValue();
@@ -633,10 +633,80 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdatePhase()
+        public Phase UpdatePhase()
         {
             var ply = _moveHistory.GetPly();
-            _phase = ply < 16 ? Phase.Opening : Phase.Middle;
+            if (ply < 16)
+            {
+                _phase = Phase.Opening;
+            }
+            else
+            {
+                if (ply > 25 && IsEndGame())
+                {
+                    _phase = Phase.End;
+                }
+                else
+                {
+                    _phase = Phase.Middle;
+                }
+            }
+
+            return _phase;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsEndGame()
+        {
+            return IsEndGameForWhite() && IsEndGameForBlack();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsEndGameForBlack()
+        {
+            int count = _pieceCount[Piece.BlackRook.AsByte()] + _pieceCount[Piece.BlackQueen.AsByte()];
+            if (count > 2)
+            {
+                return false;
+            }
+
+            count += _pieceCount[Piece.BlackBishop.AsByte()];
+            if (count > 2)
+            {
+                return false;
+            }
+
+            count += _pieceCount[Piece.BlackKnight.AsByte()];
+            if (count > 2)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsEndGameForWhite()
+        {
+            int count = _pieceCount[Piece.WhiteRook.AsByte()] + _pieceCount[Piece.WhiteQueen.AsByte()];
+            if (count > 2)
+            {
+                return false;
+            }
+
+            count += _pieceCount[Piece.WhiteBishop.AsByte()];
+            if (count > 2)
+            {
+                return false;
+            }
+
+            count += _pieceCount[Piece.WhiteKnight.AsByte()];
+            if (count > 2)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

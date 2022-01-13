@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Transposition;
 
@@ -41,7 +42,12 @@ namespace Engine.Strategies.AlphaBeta
 
         public override IResult GetResult()
         {
-            return GetResult(-SearchValue, SearchValue, Depth);
+            var depth = Depth;
+            if (Position.GetPhase() == Phase.End)
+            {
+                depth++;
+            }
+            return GetResult(-SearchValue, SearchValue, depth);
         }
 
         #region Overrides of StrategyBase
@@ -57,7 +63,6 @@ namespace Engine.Strategies.AlphaBeta
                 cut = cutMove;
             }
 
-            // HashSet<IMove> bestMoves = new HashSet<IMove>();
             var moves = Position.GetAllMoves(Sorter, pv, cut);
             if (moves.Count == 0)
             {
@@ -73,29 +78,21 @@ namespace Engine.Strategies.AlphaBeta
                     return result;
                 }
             }
-            for (var i = 0; i < moves.Count; i++)
+            if (moves.Count > 1)
             {
-                var move = moves[i];
-                try
+                for (var i = 0; i < moves.Count; i++)
                 {
+                    var move = moves[i];
                     Position.Make(move);
 
-                    var isCheck = Position.IsNotLegal(move);
-
-                    if (isCheck) continue;
-
                     var value = -Search(-beta, -alpha, depth - 1);
+
+                    Position.UnMake();
                     if (value > result.Value)
                     {
                         result.Value = value;
                         result.Move = move;
-                        //bestMoves.Clear();
-                        //bestMoves.Add(move);
                     }
-                    //else if (value == result.Value)
-                    //{
-                    //    bestMoves.Add(move);
-                    //}
 
                     if (value > alpha)
                     {
@@ -106,14 +103,13 @@ namespace Engine.Strategies.AlphaBeta
 
                     result.Cut = move;
                     break;
-                }
-                finally
-                {
-                    Position.UnMake();
-                }
+                } 
+            }
+            else
+            {
+                result.Move = moves[0];
             }
 
-            //result.Move = GetBestMove(bestMoves);
             return result;
         }
 
@@ -200,21 +196,14 @@ namespace Engine.Strategies.AlphaBeta
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsNotLegal(move);
-
-                if (!isCheck)
+                var r = -Search(-beta, -alpha, depth - 1);
+                if (r > value)
                 {
-                    var r = -Search(-beta, -alpha, depth - 1);
-                    if (r > value)
-                    {
-                        value = r;
-                        bestMove = move;
-                    }
+                    value = r;
+                    bestMove = move;
                 }
 
                 Position.UnMake();
-
-                if (isCheck) continue;
 
                 if (value > alpha)
                 {

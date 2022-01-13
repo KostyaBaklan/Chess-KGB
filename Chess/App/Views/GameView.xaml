@@ -109,15 +109,17 @@
                     HorizontalAlignment="Center"/>
             <Button Content="Save History" Command="{Binding SaveHistoryCommand, Mode=OneWay}"
                     HorizontalAlignment="Center"/>
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"  CanContentScroll="True">
-                <ItemsControl ItemsSource="{Binding Moves, Mode=OneWay}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="2"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </ScrollViewer>
+            <DataGrid CanUserSortColumns="False" CanUserAddRows="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False"
+                      ItemsSource="{Binding MoveItems, Mode=OneWay}"
+                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="#" Binding="{Binding Number, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="White" Binding="{Binding White, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Black" Binding="{Binding Black, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Memory" Binding="{Binding Memory, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Time" Binding="{Binding Time, Mode=OneWay}"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </StackPanel>
     </Grid>
 </UserControl>

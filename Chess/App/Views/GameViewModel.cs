@@ -93,7 +93,7 @@ namespace Kgb.ChessApp.Views
 
             _position = new Position();
 
-            Moves = new ObservableCollection<string>();
+            MoveItems = new ObservableCollection<MoveModel>();
 
             SelectionCommand = new DelegateCommand<CellViewModel>(SelectionCommandExecute, SelectionCommandCanExecute);
             UndoCommand = new DelegateCommand(UndoCommandExecute);
@@ -126,7 +126,7 @@ namespace Kgb.ChessApp.Views
             set => SetProperty(ref _cells, value);
         }
 
-        public ObservableCollection<string> Moves { get; }
+        public ObservableCollection<MoveModel> MoveItems { get; }
 
         public ICommand SelectionCommand { get; }
 
@@ -199,13 +199,21 @@ namespace Kgb.ChessApp.Views
 
         private void UndoCommandExecute()
         {
-            if (!Moves.Any()) return;
+            if (!MoveItems.Any()) return;
 
             Zero();
 
             _position.UnMake();
 
-            Moves.RemoveAt(Moves.Count - 1);
+            var moveModel = MoveItems.Last();
+            if (string.IsNullOrEmpty(moveModel.Black))
+            {
+                MoveItems.Remove(moveModel);
+            }
+            else
+            {
+                moveModel.Black = null;
+            }
 
             UpdateView();
 
@@ -301,7 +309,7 @@ namespace Kgb.ChessApp.Views
                             switch (t.Result.Item1.GameResult)
                             {
                                 case GameResult.Continue:
-                                    MakeMove(tResult.Item1.Move);
+                                    MakeMove(tResult.Item1.Move, tResult.Item2);
                                     break;
                                 case GameResult.Pat:
                                     MessageBox.Show("Pat !!!");
@@ -327,24 +335,49 @@ namespace Kgb.ChessApp.Views
 
         private IEnumerable<IMove> GetAllMoves(Square cell, Piece piece)
         {
-            foreach (var move in _position.GetAllAttacks(cell, piece).Concat(_position.GetAllMoves(cell, piece)))
-            {
-                _position.Make(move);
-
-                var isCheck = _position.IsNotLegal(move);
-
-                _position.UnMake();
-
-                if (!isCheck)
-                    yield return move;
-            }
+            return _position.GetAllAttacks(cell, piece).Concat(_position.GetAllMoves(cell, piece));
         }
 
-        private void MakeMove(IMove move)
+        private void MakeMove(IMove move, TimeSpan? time = null)
         {
             _position.Make(move);
 
-            Moves.Add($" [{_moveFormatter.Format(move)}][{-_position.GetValue()}] ");
+            var lastModel = MoveItems.LastOrDefault();
+            MoveModel mm = lastModel;
+            if (lastModel == null)
+            {
+                var model = new MoveModel
+                {
+                    Number = 1,
+                    White = $"[{_moveFormatter.Format(move)}][{-_position.GetValue()}]"
+                };
+                MoveItems.Add(model);
+                mm = model;
+            }
+            else
+            {
+                if (_turn == Turn.White)
+                {
+                    var model = new MoveModel
+                    {
+                        Number = lastModel.Number + 1,
+                        White = $"[{_moveFormatter.Format(move)}][{-_position.GetValue()}]"
+                    };
+                    MoveItems.Add(model);
+                    mm = model;
+                }
+                else
+                {
+                    lastModel.Black = $"[{_moveFormatter.Format(move)}][{-_position.GetValue()}]";
+                    var process = Process.GetCurrentProcess();
+                    lastModel.Memory = $"{process.WorkingSet64 / 1024} KB";
+                }
+            }
+
+            if (time != null)
+            {
+                mm.Time = time.Value;
+            }
 
             UpdateView();
 

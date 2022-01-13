@@ -12,7 +12,7 @@ namespace Engine.Services
         private readonly int _unitValue;
         private readonly int _pawnValue;
         private readonly int[] _values;
-        private readonly int[][] _staticValues;
+        private readonly int[][][] _staticValues;
         private readonly Dictionary<ulong,int> _table;
 
         #region Piece-Square Tables
@@ -149,7 +149,7 @@ namespace Engine.Services
             -30,-40,-40,-50,-50,-40,-40,-30
         };
 
-        private static int[] _blackKingEndGameSquareTable = {
+        private static readonly int[] _blackKingEndGameSquareTable = {
             -50,-40,-30,-20,-20,-30,-40,-50,
             -30,-20,-10,  0,  0,-10,-20,-30,
             -30,-10, 20, 30, 30, 20,-10,-30,
@@ -160,7 +160,7 @@ namespace Engine.Services
             -50,-30,-30,-30,-30,-30,-30,-50
         };
 
-        private static int[] _whiteKingEndGameSquareTable = {
+        private static readonly int[] _whiteKingEndGameSquareTable = {
             -50,-30,-30,-30,-30,-30,-30,-50,
             -30,-30,  0,  0,  0,  0,-30,-30,
             -30,-10, 20, 30, 30, 20,-10,-30,
@@ -193,19 +193,31 @@ namespace Engine.Services
             _values[Piece.WhiteQueen.AsByte()] = 9625;
             _values[Piece.BlackQueen.AsByte()] = 9625;
 
-            _staticValues = new int[12][];
-            _staticValues[Piece.WhitePawn.AsByte()] = _whitePawnSquareTable.Factor(10);
-            _staticValues[Piece.BlackPawn.AsByte()] = _blackPawnSquareTable.Factor(10);
-            _staticValues[Piece.WhiteKnight.AsByte()] = _whiteKnightSquareTable.Factor(10);
-            _staticValues[Piece.BlackKnight.AsByte()] = _blackKnightSquareTable.Factor(10);
-            _staticValues[Piece.WhiteBishop.AsByte()] = _whiteBishopSquareTable.Factor(10);
-            _staticValues[Piece.BlackBishop.AsByte()] = _blackBishopSquareTable.Factor(10);
-            _staticValues[Piece.WhiteKing.AsByte()] = _whiteKingMiddleGameSquareTable.Factor(10);
-            _staticValues[Piece.BlackKing.AsByte()] = _blackKingMiddleGameSquareTable.Factor(10);
-            _staticValues[Piece.WhiteRook.AsByte()] = _whiteRookSquareTable.Factor(10);
-            _staticValues[Piece.BlackRook.AsByte()] = _blackRookSquareTable.Factor(10);
-            _staticValues[Piece.WhiteQueen.AsByte()] = _whiteQueenSquareTable.Factor(10);
-            _staticValues[Piece.BlackQueen.AsByte()] = _blackQueenSquareTable.Factor(10);
+            _staticValues = new int[12][][];
+            for (var i = 0; i < _staticValues.Length; i++)
+            {
+                _staticValues[i] = new int[3][];
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                _staticValues[Piece.WhitePawn.AsByte()][i] = _whitePawnSquareTable.Factor(10);
+                _staticValues[Piece.BlackPawn.AsByte()][i] = _blackPawnSquareTable.Factor(10);
+                _staticValues[Piece.WhiteKnight.AsByte()][i] = _whiteKnightSquareTable.Factor(10);
+                _staticValues[Piece.BlackKnight.AsByte()][i] = _blackKnightSquareTable.Factor(10);
+                _staticValues[Piece.WhiteBishop.AsByte()][i] = _whiteBishopSquareTable.Factor(10);
+                _staticValues[Piece.BlackBishop.AsByte()][i] = _blackBishopSquareTable.Factor(10);
+                _staticValues[Piece.WhiteRook.AsByte()][i] = _whiteRookSquareTable.Factor(10);
+                _staticValues[Piece.BlackRook.AsByte()][i] = _blackRookSquareTable.Factor(10);
+                _staticValues[Piece.WhiteQueen.AsByte()][i] = _whiteQueenSquareTable.Factor(10);
+                _staticValues[Piece.BlackQueen.AsByte()][i] = _blackQueenSquareTable.Factor(10);
+                _staticValues[Piece.WhiteKing.AsByte()][i] = i == 2
+                    ? _whiteKingEndGameSquareTable.Factor(10)
+                    : _whiteKingMiddleGameSquareTable.Factor(10);
+                _staticValues[Piece.BlackKing.AsByte()][i] = i == 2
+                    ? _blackKingEndGameSquareTable.Factor(10)
+                    : _blackKingMiddleGameSquareTable.Factor(10);
+            }
 
             _table = new Dictionary<ulong, int>(20000213);
         }
@@ -227,14 +239,14 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetValue(int piece, int square)
+        public int GetValue(int piece, int square, Phase phase)
         {
-            return _staticValues[piece][square];
+            return _staticValues[piece][(int)phase][square];
         }
 
-        public int GetFullValue(int piece, int square)
+        public int GetFullValue(int piece, int square, Phase phase)
         {
-            return _values[piece] + _staticValues[piece][square];
+            return _values[piece] + _staticValues[piece][(int)phase][square];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -258,7 +270,7 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetMateValue(bool isWhite)
         {
-            return isWhite ? _values[Piece.WhiteKing.AsByte()] : _values[Piece.BlackKing.AsByte()];
+            return isWhite ? _values[Piece.WhiteKing.AsByte()] : -_values[Piece.BlackKing.AsByte()];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
