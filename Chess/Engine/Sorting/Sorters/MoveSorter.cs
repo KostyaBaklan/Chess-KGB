@@ -60,8 +60,7 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection Order(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, IMove pvNode,
-            IMove cutMove)
+        public IMoveCollection Order(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, IMove pvNode)
         {
             int depth = MoveHistoryService.GetPly();
             if (depth < 0)
@@ -77,11 +76,9 @@ namespace Engine.Sorting.Sorters
 
             if (pvNode != null)
             {
-                return OrderInternal(attacks,moves, Moves[depth], pvNode, cutMove);
+                return OrderInternal(attacks,moves, Moves[depth], pvNode);
             }
 
-            if (cutMove != null)
-                return OrderInternal(attacks, moves, Moves[depth], cutMove);
             return OrderInternal(attacks, moves, Moves[depth]);
         }
 
@@ -178,7 +175,6 @@ namespace Engine.Sorting.Sorters
 
         protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
         protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode);
-        protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode, IMove cutMove);
 
         protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
         protected abstract IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove cutMove);

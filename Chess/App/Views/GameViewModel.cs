@@ -8,13 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies;
-using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Null;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
@@ -28,7 +28,7 @@ namespace Kgb.ChessApp.Views
         private Turn _turn = Turn.White;
         private readonly IPosition _position;
         private List<IMove> _moves;
-        private readonly IStrategy _strategy;
+        private IStrategy _strategy;
         private readonly Dictionary<string, CellViewModel> _cellsMap;
         private readonly IMoveFormatter _moveFormatter;
 
@@ -98,8 +98,6 @@ namespace Kgb.ChessApp.Views
             SelectionCommand = new DelegateCommand<CellViewModel>(SelectionCommandExecute, SelectionCommandCanExecute);
             UndoCommand = new DelegateCommand(UndoCommandExecute);
             SaveHistoryCommand = new DelegateCommand(SaveHistoryCommandExecute);
-
-            _strategy = new AlphaBetaNullDifferenceStrategy(5,_position);
         }
 
         private IEnumerable<int> _numbers;
@@ -142,6 +140,11 @@ namespace Kgb.ChessApp.Views
             var labels = new[] { "A","B" ,"C","D","E","F","G","H"};
             List<CellViewModel> models = new List<CellViewModel>(64);
             var color = navigationContext.Parameters.GetValue<string>("Color");
+
+            var level = navigationContext.Parameters.GetValue<short>("Level");
+            ServiceLocator.Current.GetInstance<IEvaluationService>().Initialize(level);
+            _strategy = new AlphaBetaNullDifferenceStrategy(level, _position);
+
             if (color == "White")
             {
                 var array = numbers.Reverse().ToArray();

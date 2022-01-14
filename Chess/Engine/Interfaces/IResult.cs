@@ -7,6 +7,5 @@ namespace Engine.Interfaces
         int Value { get; }
         GameResult GameResult { get; }
         IMove Move { get; }
-        IMove Cut { get; }
     }
 }

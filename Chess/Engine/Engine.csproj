@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="DataStructures\ArrayStack.cs" />
     <Compile Include="DataStructures\BoardSet.cs" />
+    <Compile Include="DataStructures\DynamicCollection.cs" />
     <Compile Include="DataStructures\DynamicSortedList.cs" />
     <Compile Include="DataStructures\GameResult.cs" />
     <Compile Include="DataStructures\Moves\AttackCollection.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="DataStructures\Heap.cs" />
     <Compile Include="DataStructures\Moves\MoveCollection.cs" />
     <Compile Include="DataStructures\Moves\MoveCollectionBase.cs" />
+    <Compile Include="DataStructures\Node.cs" />
     <Compile Include="Interfaces\IAttack.cs" />
     <Compile Include="Interfaces\IMoveCollection.cs" />
     <Compile Include="Models\Boards\PieceBoard.cs" />

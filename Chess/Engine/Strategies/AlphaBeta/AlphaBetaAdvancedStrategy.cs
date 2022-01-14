@@ -17,19 +17,18 @@ namespace Engine.Strategies.AlphaBeta
 
         #region Overrides of AlphaBetaStrategy
 
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null, IMove cutMove = null)
+        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
         {
             Result result = new Result();
 
-            IMove pv = pvMove, cut = cutMove;
+            IMove pv = pvMove;
             if (Table.TryGet(Position.GetKey(), out var entry))
             {
                 pv = entry.PvMove;
-                cut = cutMove;
             }
 
             bool isHistoryUpdated = false;
-            var moves = Position.GetAllMoves(Sorter, pv, cut);
+            var moves = Position.GetAllMoves(Sorter, pv);
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
@@ -61,7 +60,6 @@ namespace Engine.Strategies.AlphaBeta
                 {
                     _historyHeuristic.Update(move);
                 }
-                result.Cut = move;
                 break;
             }
 
@@ -76,7 +74,6 @@ namespace Engine.Strategies.AlphaBeta
             }
 
             IMove pv = null;
-            IMove cut = null;
             var key = Position.GetKey();
 
             if (Table.TryGet(key, out var entry))
@@ -102,14 +99,12 @@ namespace Engine.Strategies.AlphaBeta
                 }
 
                 pv = entry.PvMove;
-                cut = entry.CutMove;
             }
 
             bool isHistoryUpdated = false;
             int value = int.MinValue;
             IMove bestMove = null;
-            IMove cutMove = null;
-            var moves = Position.GetAllMoves(Sorter, pv, cut);
+            var moves = Position.GetAllMoves(Sorter, pv);
 
             for (var i = 0; i < moves.Count; i++)
             {
@@ -141,14 +136,14 @@ namespace Engine.Strategies.AlphaBeta
                 {
                     _historyHeuristic.Update(move);
                 }
-                cutMove = move;
+
                 Sorter.Add(move);
                 break;
             }
 
             var best = value == int.MinValue ? short.MinValue : value;
 
-            TranspositionEntry te = new TranspositionEntry { Depth = depth, Value = best, PvMove = bestMove, CutMove = cutMove };
+            TranspositionEntry te = new TranspositionEntry { Depth = (byte) depth, Value = (short) best, PvMove = bestMove };
             if (best <= alpha)
             {
                 te.Type = TranspositionEntryType.LowerBound;

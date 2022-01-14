@@ -14,7 +14,7 @@ namespace Engine.Strategies.AlphaBeta
         protected readonly IMoveHistoryService MoveHistory =
             CommonServiceLocator.ServiceLocator.Current.GetInstance<IMoveHistoryService>();
 
-        protected int SearchValue = 1000000;
+        protected int SearchValue = short.MaxValue;
 
         protected AlphaBetaStrategy(short depth, IPosition position) : base(depth, position)
         {
@@ -52,18 +52,17 @@ namespace Engine.Strategies.AlphaBeta
 
         #region Overrides of StrategyBase
 
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null, IMove cutMove = null)
+        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
         {
             Result result = new Result();
 
-            IMove pv = pvMove, cut = cutMove;
+            IMove pv = pvMove;
             if (Table.TryGet(Position.GetKey(), out var entry))
             {
                 pv = entry.PvMove;
-                cut = cutMove;
             }
 
-            var moves = Position.GetAllMoves(Sorter, pv, cut);
+            var moves = Position.GetAllMoves(Sorter, pv);
             if (moves.Count == 0)
             {
                 result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
@@ -100,8 +99,6 @@ namespace Engine.Strategies.AlphaBeta
                     }
 
                     if (alpha < beta) continue;
-
-                    result.Cut = move;
                     break;
                 } 
             }
@@ -140,7 +137,6 @@ namespace Engine.Strategies.AlphaBeta
             }
 
             IMove pv = null;
-            IMove cut = null;
             var key = Position.GetKey();
 
             if (Table.TryGet(key, out var entry))
@@ -166,14 +162,12 @@ namespace Engine.Strategies.AlphaBeta
                 }
 
                 pv = entry.PvMove;
-                cut = entry.CutMove;
             }
 
             int value = int.MinValue;
             IMove bestMove = null;
-            IMove cutMove = null;
 
-            var moves = Position.GetAllMoves(Sorter, pv, cut);
+            var moves = Position.GetAllMoves(Sorter, pv);
             if (moves.Count == 0)
             {
                 var lastMove = MoveHistory.GetLastMove();
@@ -212,14 +206,13 @@ namespace Engine.Strategies.AlphaBeta
 
                 if (alpha < beta) continue;
 
-                cutMove = move;
                 Sorter.Add(move);
                 break;
             }
 
             var best = value == int.MinValue ? short.MinValue : value;
 
-            TranspositionEntry te = new TranspositionEntry { Depth = depth, Value = best, PvMove = bestMove, CutMove = cutMove };
+            TranspositionEntry te = new TranspositionEntry { Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
             if (best <= alpha)
             {
                 te.Type = TranspositionEntryType.LowerBound;

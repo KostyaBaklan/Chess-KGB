@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
@@ -8,12 +9,17 @@ namespace Engine.Services
 {
     public class EvaluationService: IEvaluationService
     {
+        private bool _useCache;
+        private int _nextDepth;
+
         private readonly int _penaltyValue;
         private readonly int _unitValue;
         private readonly int _pawnValue;
         private readonly int[] _values;
         private readonly int[][][] _staticValues;
-        private readonly Dictionary<ulong,int> _table;
+        private Dictionary<ulong,short> _table;
+        private DynamicCollection<ulong>[] _depthTable;
+        private readonly IMoveHistoryService _moveHistory;
 
         #region Piece-Square Tables
 
@@ -174,24 +180,25 @@ namespace Engine.Services
 
         #endregion
 
-        public EvaluationService()
+        public EvaluationService(IMoveHistoryService moveHistory)
         {
-            _unitValue = 5;
-            _penaltyValue = 25;
-            _pawnValue = 125;
+            _moveHistory = moveHistory;
+            _unitValue = 1;
+            _penaltyValue = 5;
+            _pawnValue = 25;
             _values = new int[12];
-            _values[Piece.WhitePawn.AsByte()] = 1000;
-            _values[Piece.BlackPawn.AsByte()] = 1000;
-            _values[Piece.WhiteKnight.AsByte()] = 3125;
-            _values[Piece.BlackKnight.AsByte()] = 3125;
-            _values[Piece.WhiteBishop.AsByte()] = 3125;
-            _values[Piece.BlackBishop.AsByte()] = 3125;
-            _values[Piece.WhiteKing.AsByte()] = 100000;
-            _values[Piece.BlackKing.AsByte()] = 100000;
-            _values[Piece.WhiteRook.AsByte()] = 4875;
-            _values[Piece.BlackRook.AsByte()] = 4875;
-            _values[Piece.WhiteQueen.AsByte()] = 9625;
-            _values[Piece.BlackQueen.AsByte()] = 9625;
+            _values[Piece.WhitePawn.AsByte()] = 200;
+            _values[Piece.BlackPawn.AsByte()] = 200;
+            _values[Piece.WhiteKnight.AsByte()] = 625;
+            _values[Piece.BlackKnight.AsByte()] = 625;
+            _values[Piece.WhiteBishop.AsByte()] = 625;
+            _values[Piece.BlackBishop.AsByte()] = 625;
+            _values[Piece.WhiteKing.AsByte()] = 6000;
+            _values[Piece.BlackKing.AsByte()] = 6000;
+            _values[Piece.WhiteRook.AsByte()] = 975;
+            _values[Piece.BlackRook.AsByte()] = 975;
+            _values[Piece.WhiteQueen.AsByte()] = 1925;
+            _values[Piece.BlackQueen.AsByte()] = 1925;
 
             _staticValues = new int[12][][];
             for (var i = 0; i < _staticValues.Length; i++)
@@ -199,27 +206,28 @@ namespace Engine.Services
                 _staticValues[i] = new int[3][];
             }
 
+            var factor = 2;
             for (int i = 0; i < 3; i++)
             {
-                _staticValues[Piece.WhitePawn.AsByte()][i] = _whitePawnSquareTable.Factor(10);
-                _staticValues[Piece.BlackPawn.AsByte()][i] = _blackPawnSquareTable.Factor(10);
-                _staticValues[Piece.WhiteKnight.AsByte()][i] = _whiteKnightSquareTable.Factor(10);
-                _staticValues[Piece.BlackKnight.AsByte()][i] = _blackKnightSquareTable.Factor(10);
-                _staticValues[Piece.WhiteBishop.AsByte()][i] = _whiteBishopSquareTable.Factor(10);
-                _staticValues[Piece.BlackBishop.AsByte()][i] = _blackBishopSquareTable.Factor(10);
-                _staticValues[Piece.WhiteRook.AsByte()][i] = _whiteRookSquareTable.Factor(10);
-                _staticValues[Piece.BlackRook.AsByte()][i] = _blackRookSquareTable.Factor(10);
-                _staticValues[Piece.WhiteQueen.AsByte()][i] = _whiteQueenSquareTable.Factor(10);
-                _staticValues[Piece.BlackQueen.AsByte()][i] = _blackQueenSquareTable.Factor(10);
+                _staticValues[Piece.WhitePawn.AsByte()][i] = _whitePawnSquareTable.Factor(factor);
+                _staticValues[Piece.BlackPawn.AsByte()][i] = _blackPawnSquareTable.Factor(factor);
+                _staticValues[Piece.WhiteKnight.AsByte()][i] = _whiteKnightSquareTable.Factor(factor);
+                _staticValues[Piece.BlackKnight.AsByte()][i] = _blackKnightSquareTable.Factor(factor);
+                _staticValues[Piece.WhiteBishop.AsByte()][i] = _whiteBishopSquareTable.Factor(factor);
+                _staticValues[Piece.BlackBishop.AsByte()][i] = _blackBishopSquareTable.Factor(factor);
+                _staticValues[Piece.WhiteRook.AsByte()][i] = _whiteRookSquareTable.Factor(factor);
+                _staticValues[Piece.BlackRook.AsByte()][i] = _blackRookSquareTable.Factor(factor);
+                _staticValues[Piece.WhiteQueen.AsByte()][i] = _whiteQueenSquareTable.Factor(factor);
+                _staticValues[Piece.BlackQueen.AsByte()][i] = _blackQueenSquareTable.Factor(factor);
                 _staticValues[Piece.WhiteKing.AsByte()][i] = i == 2
-                    ? _whiteKingEndGameSquareTable.Factor(10)
-                    : _whiteKingMiddleGameSquareTable.Factor(10);
+                    ? _whiteKingEndGameSquareTable.Factor(factor)
+                    : _whiteKingMiddleGameSquareTable.Factor(factor);
                 _staticValues[Piece.BlackKing.AsByte()][i] = i == 2
-                    ? _blackKingEndGameSquareTable.Factor(10)
-                    : _blackKingMiddleGameSquareTable.Factor(10);
+                    ? _blackKingEndGameSquareTable.Factor(factor)
+                    : _blackKingMiddleGameSquareTable.Factor(factor);
             }
 
-            _table = new Dictionary<ulong, int>(20000213);
+            _table = new Dictionary<ulong, short>(20000213);
         }
 
         #region Implementation of ICacheService
@@ -276,19 +284,57 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Evaluate(IPosition position)
         {
-            if (_table.TryGetValue(position.GetKey(), out var value))
+            short value;
+            if (_useCache)
             {
-                return value;
+                var key = position.GetKey();
+                if (_table.TryGetValue(key, out value))
+                {
+                    return value;
+                }
+
+                if (_table.Count > 10000000)
+                {
+                    var nextDepth = _nextDepth % _depthTable.Length;
+                    var dynamicCollection = _depthTable[nextDepth];
+                    foreach (var k in dynamicCollection)
+                    {
+                        _table.Remove(k);
+                    }
+                    _depthTable[nextDepth].Clear();
+                    _nextDepth++;
+                }
+
+                value = position.GetValue();
+                _table.Add(key, value);
+                var depth = _moveHistory.GetPly();
+                _depthTable[depth % _depthTable.Length].Add(key);
+            }
+            else
+            {
+                value = position.GetValue();
             }
 
-            if (_table.Count > 20000000)
-            {
-                _table.Clear();
-            }
-
-            value = position.GetValue();
-            _table.Add(position.GetKey(), value);
             return value;
+        }
+
+        public void Initialize(short level)
+        {
+            if (level > 6)
+            {
+                _useCache = true;
+                _table = new Dictionary<ulong, short>(20000213);
+                _depthTable = new DynamicCollection<ulong>[12];
+                for (var i = 0; i < _depthTable.Length; i++)
+                {
+                    _depthTable[i] = new DynamicCollection<ulong>();
+                }
+            }
+            else
+            {
+                _useCache = false;
+                _table = new Dictionary<ulong, short>();
+            }
         }
 
         #endregion

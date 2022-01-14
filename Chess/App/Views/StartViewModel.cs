@@ -12,8 +12,8 @@ namespace Kgb.ChessApp.Views
     {
         public StartViewModel()
         {
-            Colors = new []{"White", "Black"};
-            Levels = new[] {1, 2, 3, 4};
+            Colors = new[] { "White", "Black" };
+            Levels = new[] { 1, 2, 3, 4, 5, 6 };
             Color = Colors.FirstOrDefault();
             Level = Levels.First();
 
@@ -43,8 +43,8 @@ namespace Kgb.ChessApp.Views
         private void PlayExecute()
         {
             var regionManager = ServiceLocator.Current.GetInstance<IRegionManager>();
-            var navigationParameters = new NavigationParameters {{"Color", _color}, {"Level", _level}};
-            regionManager.RequestNavigate("Main",typeof(GameView).Name, navigationParameters);
+            var navigationParameters = new NavigationParameters { { "Color", _color }, { "Level", _level + 1 } };
+            regionManager.RequestNavigate("Main", typeof(GameView).Name, navigationParameters);
         }
     }
 }

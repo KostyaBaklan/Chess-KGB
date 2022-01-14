@@ -107,9 +107,9 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetValue()
+        public short GetValue()
         {
-            return GetWhiteValue() - GetBlackValue();
+            return (short) (GetWhiteValue() - GetBlackValue());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -161,7 +161,7 @@ namespace Engine.Models.Boards
         private int GetBlackRookValue(int[] rooks, int[] pawns)
         {
             var value = GetStaticValue(Piece.BlackRook.AsByte(), rooks);
-            value -= _evaluationService.GetPenaltyValue(pawns.Length);
+            //value -= _evaluationService.GetPenaltyValue(pawns.Length);
             if (_phase == Phase.Opening) return value;
 
             return UpdateRookValue(rooks, value);
@@ -175,10 +175,10 @@ namespace Engine.Models.Boards
             {
                 value -= _evaluationService.GetPawnValue(2);
             }
-            for (var i = 0; i < bishops.Length; i++)
-            {
-                value = value + _evaluationService.GetPenaltyValue(bishops[i].BishopAttacks(~_empty).Count());
-            }
+            //for (var i = 0; i < bishops.Length; i++)
+            //{
+            //    value = value + _evaluationService.GetPenaltyValue(bishops[i].BishopAttacks(~_empty).Count());
+            //}
             value = CheckUndeveloped(Piece.BlackBishop.AsByte(), _ranks[7], value);
             return value;
         }
@@ -187,7 +187,7 @@ namespace Engine.Models.Boards
         private int GetBlackKnightValue(int[] knights, int[] pawns)
         {
             var value = GetStaticValue(Piece.BlackKnight.AsByte(), knights);
-            value += _evaluationService.GetPenaltyValue(pawns.Length);
+            //value += _evaluationService.GetPenaltyValue(pawns.Length);
             if (knights.Length <= 0) return value;
             for (var i = 0; i < knights.Length; i++)
             {
@@ -291,7 +291,7 @@ namespace Engine.Models.Boards
         private int GetWhiteRookValue(int[] rooks, int[] pawns)
         {
             var value = GetStaticValue(Piece.WhiteRook.AsByte(),rooks);
-            value -= _evaluationService.GetPenaltyValue(pawns.Length);
+            //value -= _evaluationService.GetPenaltyValue(pawns.Length);
 
             if (_phase == Phase.Opening) return value;
 
@@ -306,10 +306,10 @@ namespace Engine.Models.Boards
             {
                 value -= _evaluationService.GetPawnValue(2);
             }
-            for (var i = 0; i < bishops.Length; i++)
-            {
-                value = value + _evaluationService.GetPenaltyValue(bishops[i].BishopAttacks(~_empty).Count());
-            }
+            //for (var i = 0; i < bishops.Length; i++)
+            //{
+            //    value = value + _evaluationService.GetPenaltyValue(bishops[i].BishopAttacks(~_empty).Count());
+            //}
             value = CheckUndeveloped(Piece.WhiteBishop.AsByte(), _ranks[0], value);
             return value;
         }
@@ -320,7 +320,7 @@ namespace Engine.Models.Boards
             var piece = Piece.WhiteKnight.AsByte();
             var value = GetStaticValue(piece, knights);
 
-            value += _evaluationService.GetPenaltyValue(pawns.Length);
+            //value += _evaluationService.GetPenaltyValue(pawns.Length);
             if (knights.Length <= 0) return value;
             for (var i = 0; i < knights.Length; i++)
             {

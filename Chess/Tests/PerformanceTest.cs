@@ -22,6 +22,8 @@ namespace Tests
             }
 
             var depth = short.Parse(args[1]);
+            ServiceLocator.Current.GetInstance<IEvaluationService>().Initialize(depth);
+
             var iterations = int.Parse(args[2]);
             bool shouldPrintPosition = args.Length>3 && bool.Parse(args[3]);
             IPosition position = new Position();
@@ -89,8 +91,12 @@ namespace Tests
                 total += timerElapsed;
                 var logMessage = $"{i + 1} - Elapsed {timerElapsed}, Total = {total}";
                 log.WriteLine(logMessage);
-                log.WriteLine($"Table = {strategy.Size}, Check = {check.Size}, Evaluation = {evaluation.Size}");
-                Console.WriteLine($"{logMessage} Table = {strategy.Size}, Check = {check.Size}, Evaluation = {evaluation.Size}");
+
+                var currentProcess = Process.GetCurrentProcess();
+                var memory = currentProcess.WorkingSet64;
+
+                log.WriteLine($"Table = {strategy.Size}, Check = {check.Size}, Evaluation = {evaluation.Size}, Memory = {memory}");
+                Console.WriteLine($"{logMessage} Table = {strategy.Size}, Check = {check.Size}, Evaluation = {evaluation.Size}, Memory = {memory}");
 
                 var m = st.Get().Move;
                 if (m == null)
@@ -104,9 +110,8 @@ namespace Tests
                 {
                     log.WriteLine(position);
                 }
-                //Console.WriteLine(position);
+
                 log.WriteLine();
-                // Console.ReadLine();
             }
         }
     }

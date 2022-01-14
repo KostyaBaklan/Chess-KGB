@@ -20,7 +20,7 @@ namespace Engine.Strategies
 
         public abstract IResult GetResult();
 
-        public abstract IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null, IMove cutMove = null);
+        public abstract IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null);
 
         public virtual int Size => 0;
 

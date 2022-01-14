@@ -53,11 +53,11 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetValue()
+        public short GetValue()
         {
             if (_turn == Turn.White)
                 return _board.GetValue();
-            return -_board.GetValue();
+            return (short) -_board.GetValue();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -102,17 +102,17 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection GetAllMoves(IMoveSorter sorter, IMove pvMove = null, IMove cutMove = null)
+        public IMoveCollection GetAllMoves(IMoveSorter sorter, IMove pvMove = null)
         {
             if (_turn == Turn.White)
             {
                 var squares = GetSquares(_white);
-                return sorter.Order(PossibleAttacks(squares, _white), PossibleMoves(squares, _white), pvMove, cutMove);
+                return sorter.Order(PossibleAttacks(squares, _white), PossibleMoves(squares, _white), pvMove);
             }
             else
             {
                 var squares = GetSquares(_black);
-                return sorter.Order(PossibleAttacks(squares, _black), PossibleMoves(squares, _black), pvMove, cutMove);
+                return sorter.Order(PossibleAttacks(squares, _black), PossibleMoves(squares, _black), pvMove);
             }
         }
 

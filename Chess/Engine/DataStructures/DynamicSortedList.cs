@@ -1,18 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Engine.DataStructures
 {
-    class Node<T>
-    {
-        public Node(T value)
-        {
-            Value = value;
-        }
-
-        public T Value { get; }
-        public Node<T> Next { get; set; }
-    }
-
     public class DynamicSortedList<T>
     {
         private Node<T> _root;
@@ -27,6 +17,7 @@ namespace Engine.DataStructures
 
         public int Count { get; private set; }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Pop()
         {
             if (Count <= 0) return default(T);
@@ -38,6 +29,7 @@ namespace Engine.DataStructures
 
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Push(T item)
         {
             var current = _root;

@@ -23,11 +23,9 @@ namespace Engine.Sorting.Sorters
                 collection.AddTrade(attack);
             }
 
-            var killer = killerMoveCollection.GetMoves();
-
             foreach (var move in moves)
             {
-                if (killer.Contains(move) || move.IsCastle() || move.IsPromotion())
+                if (killerMoveCollection.Contains(move) || move.IsCastle() || move.IsPromotion())
                 {
                     collection.AddKillerMove(move);
                 }
@@ -44,36 +42,7 @@ namespace Engine.Sorting.Sorters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection,
-            IMove cutNode)
-        {
-            MoveCollection collection = new MoveCollection(Comparer);
-            foreach (var attack in attacks)
-            {
-                collection.AddTrade(attack);
-            }
-
-            var killer = killerMoveCollection.GetMoves(cutNode);
-
-            foreach (var move in moves)
-            {
-                if (killer.Contains(move) || move.IsCastle() || move.IsPromotion())
-                {
-                    collection.AddKillerMove(move);
-                }
-                else
-                {
-                    collection.AddNonCapture(move);
-                }
-            }
-
-            collection.Build();
-            return collection;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
-            KillerMoveCollection killerMoveCollection,
-            IMove pvNode, IMove cutMove)
+            IMove pvNode)
         {
             MoveCollection collection = new MoveCollection(Comparer);
             foreach (var attack in attacks)
@@ -88,8 +57,6 @@ namespace Engine.Sorting.Sorters
                 }
             }
 
-            var killer = killerMoveCollection.GetMoves(cutMove);
-
             foreach (var move in moves)
             {
                 if (move.Equals(pvNode))
@@ -98,7 +65,7 @@ namespace Engine.Sorting.Sorters
                 }
                 else
                 {
-                    if (killer.Contains(move) || move.IsCastle() || move.IsPromotion())
+                    if (killerMoveCollection.Contains(move) || move.IsCastle() || move.IsPromotion())
                     {
                         collection.AddKillerMove(move);
                     }
@@ -117,11 +84,10 @@ namespace Engine.Sorting.Sorters
         protected override IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection collection)
         {
             var otherMoves = new List<IMove>(64);
-            var killer = collection.GetMoves();
 
             foreach (var move in moves)
             {
-                if (killer.Contains(move))
+                if (collection.Contains(move))
                 {
                     yield return move;
                 }
@@ -148,11 +114,10 @@ namespace Engine.Sorting.Sorters
             IMove cutMove)
         {
             var otherMoves = new List<IMove>(64);
-            var killer = collection.GetMoves(cutMove);
 
             foreach (var move in moves)
             {
-                if (killer.Contains(move))
+                if (collection.Contains(move))
                 {
                     yield return move;
                 }
@@ -182,8 +147,6 @@ namespace Engine.Sorting.Sorters
             var killerMoves = new Queue<IMove>(4);
             var attacks = new Queue<IMove>(12);
 
-            var killer = collection.GetMoves(cutMove);
-
             foreach (var move in moves)
             {
                 if (move.Equals(pvNode))
@@ -191,7 +154,7 @@ namespace Engine.Sorting.Sorters
                     yield return move;
                 }
 
-                if (killer.Contains(move))
+                if (collection.Contains(move))
                 {
                     killerMoves.Enqueue(move);
                 }

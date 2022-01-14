@@ -12,5 +12,6 @@ namespace Engine.Interfaces
         int GetUnitValue(int factor = 1);
         int GetMateValue(bool isWhite);
         int Evaluate(IPosition position);
+        void Initialize(short depth);
     }
 }

@@ -33,20 +33,12 @@ namespace Engine.Sorting.Sorters
             throw new System.NotImplementedException();
         }
 
-        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
-            KillerMoveCollection killerMoveCollection,
-            IMove pvNode, IMove cutMove)
-        {
-            throw new System.NotImplementedException();
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection collection)
         {
             var heap = new Heap(2, 64);
-            var killer = collection.GetMoves();
 
-            ProcessMoves(moves, killer, heap);
+            ProcessMoves(moves, collection, heap);
 
             return OrderInternal(heap);
         }
@@ -55,9 +47,8 @@ namespace Engine.Sorting.Sorters
         protected override IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection collection, IMove cutMove)
         {
             var heap = new Heap(2, 64);
-            var killer = collection.GetMoves(cutMove);
 
-            ProcessMoves(moves, killer, heap);
+            ProcessMoves(moves, collection, heap);
 
             return OrderInternal(heap);
         }
@@ -66,9 +57,8 @@ namespace Engine.Sorting.Sorters
         protected override IEnumerable<IMove> OrderInternal(IEnumerable<IMove> moves, KillerMoveCollection collection, IMove pvNode, IMove cutMove)
         {
             var heap = new Heap(2, 64);
-            var killer = pvNode.Equals(cutMove)? collection.GetMoves() : collection.GetMoves(cutMove);
 
-            ProcessMoves(moves, killer, heap, pvNode);
+            ProcessMoves(moves, collection, heap, pvNode);
 
             return OrderInternal(heap);
         }
@@ -83,7 +73,7 @@ namespace Engine.Sorting.Sorters
             }
         }
 
-        private void ProcessMoves(IEnumerable<IMove> moves, ICollection<IMove> killer, Heap heap, IMove pvNode = null)
+        private void ProcessMoves(IEnumerable<IMove> moves, KillerMoveCollection killer, Heap heap, IMove pvNode = null)
         {
             Dictionary<byte, int> attacksCache = new Dictionary<byte, int>(8);
             foreach (var move in moves)
