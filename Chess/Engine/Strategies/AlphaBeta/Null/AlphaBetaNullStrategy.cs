@@ -129,7 +129,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 pv = entry.PvMove;
             }
 
-            int value = int.MinValue;
+            int value = short.MinValue;
             IMove bestMove = null;
 
             var lastMove = MoveHistory.GetLastMove();
@@ -150,15 +150,18 @@ namespace Engine.Strategies.AlphaBeta.Null
                 }
             }
 
-            if (CanUseNull &&  !lastMove.IsCheck() && isNotEndGame && IsValidWindow(alpha, beta))
+            if (CanUseNull && !lastMove.IsCheck() && isNotEndGame && IsValidWindow(alpha, beta))
             {
-                MakeNullMove();
                 int r = depth > 6 ? MaxReduction : MinReduction;
-                var v = -Search(-beta, NullWindow - beta, depth - r - 1);
-                UndoNullMove();
-                if (v >= beta)
+                if (depth > r)
                 {
-                    return v;
+                    MakeNullMove();
+                    var v = -Search(-beta, NullWindow - beta, depth - r - 1);
+                    UndoNullMove();
+                    if (v >= beta)
+                    {
+                        return v;
+                    } 
                 }
             }
 

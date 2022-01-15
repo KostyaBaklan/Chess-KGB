@@ -54,7 +54,9 @@
     <Compile Include="DataStructures\Heap.cs" />
     <Compile Include="DataStructures\Moves\MoveCollection.cs" />
     <Compile Include="DataStructures\Moves\MoveCollectionBase.cs" />
+    <Compile Include="DataStructures\Moves\MoveWrapper.cs" />
     <Compile Include="DataStructures\Node.cs" />
+    <Compile Include="DataStructures\PriorityQueue.cs" />
     <Compile Include="Interfaces\IAttack.cs" />
     <Compile Include="Interfaces\IMoveCollection.cs" />
     <Compile Include="Models\Boards\PieceBoard.cs" />
@@ -123,11 +125,11 @@
     <Compile Include="Sorting\Comparers\StaticComparer.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaAdvancedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaComplexStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\AlphaBetaDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Simple\AlphaBetaDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedStaticStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\AlphaBetaStaticStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Simple\AlphaBetaStaticStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaStrategy.cs" />
     <Compile Include="DataStructures\Result.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullDifferenceStrategy.cs" />

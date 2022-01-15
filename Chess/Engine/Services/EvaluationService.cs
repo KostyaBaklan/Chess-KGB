@@ -11,6 +11,7 @@ namespace Engine.Services
     {
         private bool _useCache;
         private int _nextDepth;
+        private int _threshold;
 
         private readonly int _penaltyValue;
         private readonly int _unitValue;
@@ -293,7 +294,7 @@ namespace Engine.Services
                     return value;
                 }
 
-                if (_table.Count > 10000000)
+                if (_table.Count > _threshold)
                 {
                     var nextDepth = _nextDepth % _depthTable.Length;
                     var dynamicCollection = _depthTable[nextDepth];
@@ -323,12 +324,19 @@ namespace Engine.Services
             if (level > 6)
             {
                 _useCache = true;
-                _table = new Dictionary<ulong, short>(20000213);
                 _depthTable = new DynamicCollection<ulong>[12];
                 for (var i = 0; i < _depthTable.Length; i++)
                 {
                     _depthTable[i] = new DynamicCollection<ulong>();
                 }
+
+                var capacity = 20000213;
+                if (level > 7)
+                {
+                    capacity = 30000781;
+                }
+                _threshold = capacity / 2;
+                _table = new Dictionary<ulong, short>(capacity);
             }
             else
             {

@@ -2,7 +2,7 @@
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 
-namespace Engine.Strategies.AlphaBeta
+namespace Engine.Strategies.AlphaBeta.Simple
 {
     public class AlphaBetaStaticStrategy : AlphaBetaStrategy
     {
