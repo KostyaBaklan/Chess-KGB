@@ -44,5 +44,21 @@ namespace Kgb.ChessApp.Models
             get => _time;
             set => SetProperty(ref _time, value);
         }
+
+        private int _evaluation;
+
+        public int Evaluation
+        {
+            get => _evaluation;
+            set => SetProperty(ref _evaluation, value);
+        }
+
+        private int _table;
+
+        public int Table
+        {
+            get => _table;
+            set => SetProperty(ref _table, value);
+        }
     }
 }

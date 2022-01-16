@@ -15,9 +15,7 @@ using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies;
-using Engine.Strategies.AlphaBeta.History;
 using Engine.Strategies.AlphaBeta.Null;
-using Engine.Strategies.AlphaBeta.Simple;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -33,6 +31,7 @@ namespace Kgb.ChessApp.Views
         private IStrategy _strategy;
         private readonly Dictionary<string, CellViewModel> _cellsMap;
         private readonly IMoveFormatter _moveFormatter;
+        private readonly IEvaluationService _evaluationService;
 
         public GameViewModel(IMoveFormatter moveFormatter)
         {
@@ -100,6 +99,7 @@ namespace Kgb.ChessApp.Views
             SelectionCommand = new DelegateCommand<CellViewModel>(SelectionCommandExecute, SelectionCommandCanExecute);
             UndoCommand = new DelegateCommand(UndoCommandExecute);
             SaveHistoryCommand = new DelegateCommand(SaveHistoryCommandExecute);
+            _evaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
         }
 
         private IEnumerable<int> _numbers;
@@ -144,7 +144,7 @@ namespace Kgb.ChessApp.Views
             var color = navigationContext.Parameters.GetValue<string>("Color");
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
-            ServiceLocator.Current.GetInstance<IEvaluationService>().Initialize(level, 10);
+            _evaluationService.Initialize(level, 10);
             _strategy = new AlphaBetaNullDifferenceStrategy(level, _position);
 
             if (color == "White")
@@ -376,6 +376,8 @@ namespace Kgb.ChessApp.Views
                     lastModel.Black = $"[{_moveFormatter.Format(move)}][{-_position.GetValue()}]";
                     var process = Process.GetCurrentProcess();
                     lastModel.Memory = $"{process.WorkingSet64 / 1024} KB";
+                    lastModel.Evaluation = _evaluationService.Size;
+                    lastModel.Table = _strategy.Size;
                 }
             }
 

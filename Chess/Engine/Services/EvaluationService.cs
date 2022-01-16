@@ -298,20 +298,18 @@ namespace Engine.Services
 
                 if (_table.Count > _threshold)
                 {
-                    var nextDepth = _nextDepth % _depthTable.Length;
-                    var dynamicCollection = _depthTable[nextDepth];
+                    var dynamicCollection = _depthTable[_nextDepth];
                     foreach (var k in dynamicCollection)
                     {
                         _table.Remove(k);
                     }
-                    _depthTable[nextDepth].Clear();
+                    _depthTable[_nextDepth].Clear();
                     _nextDepth++;
                 }
 
                 value = position.GetValue();
                 _table.Add(key, value);
-                var depth = _moveHistory.GetPly();
-                _depthTable[depth % _depthTable.Length].Add(key);
+                _depthTable[_moveHistory.GetPly()].Add(key);
             }
             else
             {
@@ -328,7 +326,7 @@ namespace Engine.Services
             if (level > 6)
             {
                 _useCache = true;
-                _depthTable = new DynamicCollection<ulong>[12];
+                _depthTable = new DynamicCollection<ulong>[256];
                 for (var i = 0; i < _depthTable.Length; i++)
                 {
                     _depthTable[i] = new DynamicCollection<ulong>();

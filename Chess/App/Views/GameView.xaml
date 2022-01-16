@@ -128,8 +128,10 @@
                     <DataGridTextColumn Header="#" Binding="{Binding Number, Mode=OneWay}"/>
                     <DataGridTextColumn Header="White" Binding="{Binding White, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Black" Binding="{Binding Black, Mode=OneWay}"/>
-                    <DataGridTextColumn Header="Memory" Binding="{Binding Memory, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Time" Binding="{Binding Time, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Memory" Binding="{Binding Memory, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Evaluation" Binding="{Binding Evaluation, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Table" Binding="{Binding Table, Mode=OneWay}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
