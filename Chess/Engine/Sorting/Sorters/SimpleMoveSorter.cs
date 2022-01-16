@@ -65,7 +65,7 @@ namespace Engine.Sorting.Sorters
                 }
                 else
                 {
-                    if (killerMoveCollection.Contains(move) || move.IsCastle() || move.IsPromotion())
+                    if (killerMoveCollection.Contains(move) ||  move.IsPromotion())
                     {
                         collection.AddKillerMove(move);
                     }

@@ -10,6 +10,7 @@ namespace Engine.Interfaces
         int Static { get; }
         int Difference { get; }
         int Value { get; set; }
+        int History { get; set; }
         Piece Piece { get; }
         Square From { get; }
         Square To { get; }

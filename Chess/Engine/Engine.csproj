@@ -125,6 +125,9 @@
     <Compile Include="Sorting\Comparers\StaticComparer.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaAdvancedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\AlphaBetaComplexStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\History\AlphaBetaExtendedHistoryStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\History\AlphaBetaHistoryStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\History\AlphaBetaSimpleHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Simple\AlphaBetaDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedStaticStrategy.cs" />

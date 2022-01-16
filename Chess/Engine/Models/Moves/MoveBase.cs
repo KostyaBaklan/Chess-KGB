@@ -23,6 +23,7 @@ namespace Engine.Models.Moves
         public int Static { get; set; }
         public int Difference { get; set; }
         public int Value { get; set; }
+        public int History { get; set; }
         public Piece Piece { get; set; }
         public Square From { get; set; }
         public Square To { get; set; }

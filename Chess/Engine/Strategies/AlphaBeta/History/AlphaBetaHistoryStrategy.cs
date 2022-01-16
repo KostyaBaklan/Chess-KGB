@@ -1,53 +1,15 @@
-﻿using System.Collections.Generic;
-using Engine.DataStructures;
+﻿using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Transposition;
 
-namespace Engine.Strategies.AlphaBeta
+namespace Engine.Strategies.AlphaBeta.History
 {
-    public abstract class AlphaBetaStrategy : StrategyBase
+    public abstract class AlphaBetaHistoryStrategy : AlphaBetaStrategy
     {
-        protected readonly TranspositionTable Table;
-
-        protected readonly IMoveHistoryService MoveHistory =
-            CommonServiceLocator.ServiceLocator.Current.GetInstance<IMoveHistoryService>();
-
-        protected int SearchValue = short.MaxValue;
-
-        protected AlphaBetaStrategy(short depth, IPosition position) : base(depth, position)
+        protected AlphaBetaHistoryStrategy(short depth, IPosition position) : base(depth, position)
         {
-            int capacity;
-            if (depth < 6)
-            {
-                capacity = 1131467;
-            }
-            else if (depth == 6)
-            {
-                capacity = 2263139;
-            }
-            else if (depth == 7)
-            {
-                capacity = 4356733;
-            }
-            else
-            {
-                capacity = 7910731;
-            }
-            Table = new TranspositionTable(capacity);
-        }
-
-        public override int Size => Table.Count;
-
-        public override IResult GetResult()
-        {
-            var depth = Depth;
-            if (Position.GetPhase() == Phase.End)
-            {
-                depth++;
-            }
-            return GetResult(-SearchValue, SearchValue, depth);
         }
 
         #region Overrides of StrategyBase
@@ -70,7 +32,7 @@ namespace Engine.Strategies.AlphaBeta
 
             if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
             {
-                var v = Evaluate(alpha,beta);
+                var v = Evaluate(alpha, beta);
                 if (v < -500)
                 {
                     result.GameResult = GameResult.ThreefoldRepetition;
@@ -100,34 +62,19 @@ namespace Engine.Strategies.AlphaBeta
 
                     if (alpha < beta) continue;
                     break;
-                } 
+                }
             }
             else
             {
                 result.Move = moves[0];
             }
 
+            result.Move.History++;
+
             return result;
         }
 
         #endregion
-
-        protected virtual IMove GetBestMove(HashSet<IMove> bestMoves)
-        {
-            var heap = new Heap(2,bestMoves.Count);
-            foreach (var move in bestMoves)
-            {
-                Position.Make(move);
-
-                move.Value =  -Evaluate(short.MinValue, short.MaxValue);
-
-                Position.UnMake();
-
-                heap.Insert(move);
-            }
-
-            return heap.Maximum();
-        }
 
         public override int Search(int alpha, int beta, int depth)
         {
@@ -139,7 +86,9 @@ namespace Engine.Strategies.AlphaBeta
             IMove pv = null;
             var key = Position.GetKey();
 
-            if (Table.TryGet(key, out var entry))
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+
+            if (isNotEndGame && Table.TryGet(key, out var entry))
             {
                 if (entry.Depth >= depth)
                 {
@@ -178,7 +127,7 @@ namespace Engine.Strategies.AlphaBeta
 
             if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
             {
-                var v = Evaluate(alpha,beta);
+                var v = Evaluate(alpha, beta);
                 if (v < 0)
                 {
                     return -v;
@@ -210,9 +159,21 @@ namespace Engine.Strategies.AlphaBeta
                 break;
             }
 
-            var best = value == int.MinValue ? short.MinValue : value;
 
-            TranspositionEntry te = new TranspositionEntry { Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
+            int best;
+            if (bestMove == null)
+            {
+                best = short.MinValue;
+            }
+            else
+            {
+                bestMove.History += 1 << depth;
+                best = value;
+            }
+
+            if (!isNotEndGame) return best;
+
+            TranspositionEntry te = new TranspositionEntry { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
             if (best <= alpha)
             {
                 te.Type = TranspositionEntryType.LowerBound;
@@ -228,11 +189,6 @@ namespace Engine.Strategies.AlphaBeta
 
             Table.Add(key, te);
             return best;
-        }
-
-        public void Clear()
-        {
-            Table.Clear();
         }
     }
 }

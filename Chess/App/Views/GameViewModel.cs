@@ -15,7 +15,9 @@ using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies;
+using Engine.Strategies.AlphaBeta.History;
 using Engine.Strategies.AlphaBeta.Null;
+using Engine.Strategies.AlphaBeta.Simple;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -142,7 +144,7 @@ namespace Kgb.ChessApp.Views
             var color = navigationContext.Parameters.GetValue<string>("Color");
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
-            ServiceLocator.Current.GetInstance<IEvaluationService>().Initialize(level);
+            ServiceLocator.Current.GetInstance<IEvaluationService>().Initialize(level, 10);
             _strategy = new AlphaBetaNullDifferenceStrategy(level, _position);
 
             if (color == "White")
