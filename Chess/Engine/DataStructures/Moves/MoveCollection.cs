@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Engine.Interfaces;
 using Engine.Sorting.Comparers;
@@ -53,26 +52,32 @@ namespace Engine.DataStructures.Moves
 
             _moves.AddRange(_killers);
 
-            for (var i = 0; i < Math.Min(5,_nonCaptures.Count - 1); i++)
+            if (_nonCaptures.Count < 6)
             {
-                int index = i;
-                var min = _nonCaptures[i];
-                for (int j = i+1; j < _nonCaptures.Count; j++)
+                _nonCaptures.Sort(_comparer);
+            }
+            else
+            {
+                for (var i = 0; i < _nonCaptures.Count/3; i++)
                 {
-                    if (_comparer.Compare(_nonCaptures[j], min) < 0)
+                    int index = i;
+                    var min = _nonCaptures[i];
+                    for (int j = i + 1; j < _nonCaptures.Count; j++)
                     {
+                        if (_comparer.Compare(_nonCaptures[j], min) >= 0) continue;
+
                         min = _nonCaptures[j];
                         index = j;
                     }
-                }
 
-                if (index != i)
-                {
+                    if (index == i) continue;
+
                     var temp = _nonCaptures[index];
                     _nonCaptures[index] = _nonCaptures[i];
                     _nonCaptures[i] = temp;
                 }
             }
+
             _moves.AddRange(_nonCaptures);
 
             _moves.AddRange(_looseCaptures);

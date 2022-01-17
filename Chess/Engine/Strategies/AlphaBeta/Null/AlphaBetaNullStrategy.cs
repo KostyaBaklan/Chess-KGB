@@ -1,16 +1,19 @@
 ﻿using System.Runtime.CompilerServices;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Transposition;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
+using Engine.Strategies.AlphaBeta.Simple;
 
 namespace Engine.Strategies.AlphaBeta.Null
 {
     public abstract class AlphaBetaNullStrategy : AlphaBetaStrategy
     {
         protected bool CanUseNull;
+        protected bool IsNull;
         protected int MinReduction;
         protected int MaxReduction;
         protected int NullWindow;
@@ -24,19 +27,20 @@ namespace Engine.Strategies.AlphaBeta.Null
             Sorter = new ExtendedSorter(position, comparer);
         }
 
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null, IMove cutMove = null)
+        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
         {
             CanUseNull = false;
             Result result = new Result();
 
-            IMove pv = pvMove, cut = cutMove;
-            if (Table.TryGet(Position.GetKey(), out var entry))
+            IMove pv = pvMove;
+
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (isNotEndGame && Table.TryGet(Position.GetKey(), out var entry))
             {
                 pv = entry.PvMove;
-                cut = cutMove;
             }
 
-            var moves = Position.GetAllMoves(Sorter, pv, cut);
+            var moves = Position.GetAllMoves(Sorter, pv);
             if (moves.Count == 0)
             {
                 result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
@@ -51,19 +55,21 @@ namespace Engine.Strategies.AlphaBeta.Null
                     return result;
                 }
             }
-            for (var i = 0; i < moves.Count; i++)
+
+            if (moves.Count > 1)
             {
-                var move = moves[i];
-                try
+                for (var i = 0; i < moves.Count; i++)
                 {
+                    IsNull = false;
+                    var move = moves[i];
                     SwitchNull();
                     Position.Make(move);
 
-                    var isCheck = Position.IsNotLegal(move);
-
-                    if (isCheck) continue;
-
                     var value = -Search(-beta, -alpha, depth - 1);
+
+                    Position.UnMake();
+                    SwitchNull();
+
                     if (value > result.Value)
                     {
                         result.Value = value;
@@ -76,16 +82,15 @@ namespace Engine.Strategies.AlphaBeta.Null
                     }
 
                     if (alpha < beta) continue;
-
-                    result.Cut = move;
                     break;
                 }
-                finally
-                {
-                    Position.UnMake();
-                    SwitchNull();
-                }
             }
+            else
+            {
+                result.Move = moves[0];
+            }
+
+            result.Move.History++;
 
             return result;
         }
@@ -98,10 +103,11 @@ namespace Engine.Strategies.AlphaBeta.Null
             }
 
             IMove pv = null;
-            IMove cut = null;
             var key = Position.GetKey();
 
-            if (Table.TryGet(key, out var entry))
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+
+            if (!IsNull && isNotEndGame && Table.TryGet(key, out var entry))
             {
                 if (entry.Depth >= depth)
                 {
@@ -124,23 +130,21 @@ namespace Engine.Strategies.AlphaBeta.Null
                 }
 
                 pv = entry.PvMove;
-                cut = entry.CutMove;
             }
 
-            int value = int.MinValue;
+            int value = short.MinValue;
             IMove bestMove = null;
-            IMove cutMove = null;
 
             var lastMove = MoveHistory.GetLastMove();
-            var moves = Position.GetAllMoves(Sorter, pv, cut);
+            var moves = Position.GetAllMoves(Sorter, pv);
             if (moves.Count == 0)
             {
                 return lastMove.IsCheck()
-                    ? EvaluationService.GetMateValue(lastMove.Piece.IsWhite())
+                    ? -EvaluationService.GetMateValue(lastMove.Piece.IsWhite())
                     : -EvaluationService.Evaluate(Position);
             }
 
-            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
+            if (MoveHistory.IsThreefoldRepetition(key))
             {
                 var v = Evaluate(alpha, beta);
                 if (v < 0)
@@ -149,39 +153,34 @@ namespace Engine.Strategies.AlphaBeta.Null
                 }
             }
 
-            if (depth > 1 && !lastMove.IsCheck() && CanUseNull && beta - alpha > NullWindow)
+            if (CanUseNull && !lastMove.IsCheck() && isNotEndGame && IsValidWindow(alpha, beta))
             {
-                MakeNullMove();
                 int r = depth > 6 ? MaxReduction : MinReduction;
-                var v = -Search(-beta, NullWindow - beta, depth - r - 1);
-                UndoNullMove();
-                if (v >= beta)
+                if (depth > r)
                 {
-                    return v;
+                    MakeNullMove();
+                    var v = -Search(-beta, NullWindow - beta, depth - r - 1);
+                    UndoNullMove();
+                    if (v >= beta)
+                    {
+                        return v;
+                    }
                 }
-
             }
 
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
+
                 Position.Make(move);
-
-                var isCheck = Position.IsNotLegal(move);
-
-                if (!isCheck)
-                {
-                    var r = -Search(-beta, -alpha, depth - 1);
-                    if (r > value)
-                    {
-                        value = r;
-                        bestMove = move;
-                    }
-                }
-
+                var r = -Search(-beta, -alpha, depth - 1);
                 Position.UnMake();
 
-                if (isCheck) continue;
+                if (r > value)
+                {
+                    value = r;
+                    bestMove = move;
+                }
 
                 if (value > alpha)
                 {
@@ -190,14 +189,25 @@ namespace Engine.Strategies.AlphaBeta.Null
 
                 if (alpha < beta) continue;
 
-                cutMove = move;
                 Sorter.Add(move);
                 break;
             }
 
-            var best = value == int.MinValue ? short.MinValue : value;
+            if (IsNull || !isNotEndGame) return value;
 
-            TranspositionEntry te = new TranspositionEntry { Depth = depth, Value = best, PvMove = bestMove, CutMove = cutMove };
+            int best;
+            if (bestMove == null)
+            {
+                best = short.MinValue;
+            }
+            else
+            {
+                bestMove.History += 1 << depth;
+                best = value;
+            }
+
+            TranspositionEntry te = new TranspositionEntry
+                {Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
             if (best <= alpha)
             {
                 te.Type = TranspositionEntryType.LowerBound;
@@ -216,10 +226,17 @@ namespace Engine.Strategies.AlphaBeta.Null
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsValidWindow(int alpha, int beta)
+        {
+            return beta < SearchValue && beta - alpha > NullWindow;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void UndoNullMove()
         {
             SwitchNull();
             Position.SwapTurn();
+            IsNull = false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -227,6 +244,7 @@ namespace Engine.Strategies.AlphaBeta.Null
         {
             SwitchNull();
             Position.SwapTurn();
+            IsNull = true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

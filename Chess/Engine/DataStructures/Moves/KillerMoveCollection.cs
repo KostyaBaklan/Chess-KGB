@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Engine.Interfaces;
 using Engine.Models.Moves;
 
@@ -25,45 +23,18 @@ namespace Engine.DataStructures.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(IMove move)
         {
-            return _moves.Contains(move);
+            for (int i = 0; i < _capacity; i++)
+            {
+                if (_moves[i].Equals(move)) return true;
+            }
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(IMove move)
         {
-            if (_moves.Contains(move)) return;
-
             _moves[_index % _capacity] = move;
             _index++;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ICollection<IMove> GetMoves()
-        {
-            HashSet<IMove> set = new HashSet<IMove>(_capacity);
-            foreach (var move in _moves.Where(move => !move.Equals(_default)))
-            {
-                set.Add(move);
-            }
-
-            return set;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ICollection<IMove> GetMoves(IMove cutMove)
-        {
-            HashSet<IMove> set = new HashSet<IMove>(_capacity + 1);
-            foreach (var move in _moves.Where(move => !move.Equals(_default)))
-            {
-                set.Add(move);
-            }
-
-            if (cutMove != null)
-            {
-                set.Add(cutMove);
-            }
-
-            return set;
         }
     }
 }

@@ -1,4 +1,10 @@
-tests.exe ad 7 16
-REM tests.exe aed 7 16
-tests.exe and 7 16
+tests.exe ab_ss_hc 7 16 10
+tests.exe ab_ss_dc 7 16 10
+tests.exe ab_ss_dhc 7 16 10
+tests.exe ab_es_hc 7 16 10
+tests.exe ab_es_dc 7 16 10
+tests.exe ab_es_dhc 7 16 10
+tests.exe abn_es_hc 7 16 10
+tests.exe abn_es_dc 7 16 10
+tests.exe abn_es_dhc 7 16 10
 pause

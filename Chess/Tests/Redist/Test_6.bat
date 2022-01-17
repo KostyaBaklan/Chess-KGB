@@ -1,7 +1,10 @@
-tests.exe ad 6 16 true
-REM tests.exe as 6 16 true
-tests.exe aed 6 16 true
-REM tests.exe aes 6 16 true
-tests.exe and 6 16 true
-REM tests.exe ans 6 16 true
+tests.exe ab_ss_hc 6 16 10
+tests.exe ab_ss_dc 6 16 10
+tests.exe ab_ss_dhc 6 16 10
+tests.exe ab_es_hc 6 16 10
+tests.exe ab_es_dc 6 16 10
+tests.exe ab_es_dhc 6 16 10
+tests.exe abn_es_hc 6 16 10
+tests.exe abn_es_dc 6 16 10
+tests.exe abn_es_dhc 6 16 10
 pause

@@ -20,7 +20,7 @@ namespace Engine.Strategies
 
         public abstract IResult GetResult();
 
-        public abstract IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null, IMove cutMove = null);
+        public abstract IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null);
 
         public virtual int Size => 0;
 
@@ -41,28 +41,19 @@ namespace Engine.Strategies
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
-                try
+                Position.Make(move);
+
+                int score = -Evaluate(-beta, -alpha);
+
+                Position.UnMake();
+
+                if (score >= beta)
                 {
-                    Position.Make(move);
-
-                    var isCheck = Position.IsCheck();
-
-                    if (isCheck) continue;
-
-                    int score = -Evaluate(-beta, -alpha);
-
-                    if (score >= beta)
-                    {
-                        return beta;
-                    }
-
-                    if (score > alpha)
-                        alpha = score;
+                    return beta;
                 }
-                finally
-                {
-                    Position.UnMake();
-                }
+
+                if (score > alpha)
+                    alpha = score;
             }
 
             return alpha;

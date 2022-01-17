@@ -3,8 +3,9 @@ using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Transposition;
 using Engine.Sorting.Sorters;
+using Engine.Strategies.AlphaBeta.Simple;
 
-namespace Engine.Strategies.AlphaBeta
+namespace Engine.Strategies.AlphaBeta.Temp
 {
     public class AlphaBetaAdvancedStrategy : AlphaBetaStrategy
     {
@@ -17,60 +18,50 @@ namespace Engine.Strategies.AlphaBeta
 
         #region Overrides of AlphaBetaStrategy
 
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null, IMove cutMove = null)
+        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
         {
             Result result = new Result();
 
-            IMove pv = pvMove, cut = cutMove;
+            IMove pv = pvMove;
             if (Table.TryGet(Position.GetKey(), out var entry))
             {
                 pv = entry.PvMove;
-                cut = cutMove;
             }
 
             bool isHistoryUpdated = false;
-            var moves = Position.GetAllMoves(Sorter, pv, cut);
+            var moves = Position.GetAllMoves(Sorter, pv);
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
-                try
+                Position.Make(move);
+
+                var value = -Search(-beta, -alpha, depth - 1);
+
+                Position.UnMake();
+
+                if (value > result.Value)
                 {
-                    Position.Make(move);
-
-                    var isCheck = Position.IsNotLegal(move);
-
-                    if (isCheck) continue;
-
-                    var value = -Search(-beta, -alpha, depth - 1);
-                    if (value > result.Value)
-                    {
-                        result.Value = value;
-                        result.Move = move;
-                        if (result.Value>int.MinValue)
-                        {
-                            _historyHeuristic.Update(move);
-                            isHistoryUpdated = true;
-                        }
-                    }
-
-                    if (value > alpha)
-                    {
-                        alpha = value;
-                    }
-
-                    if (alpha < beta) continue;
-
-                    if (!isHistoryUpdated)
+                    result.Value = value;
+                    result.Move = move;
+                    if (result.Value>int.MinValue)
                     {
                         _historyHeuristic.Update(move);
+                        isHistoryUpdated = true;
                     }
-                    result.Cut = move;
-                    break;
                 }
-                finally
+
+                if (value > alpha)
                 {
-                    Position.UnMake();
+                    alpha = value;
                 }
+
+                if (alpha < beta) continue;
+
+                if (!isHistoryUpdated)
+                {
+                    _historyHeuristic.Update(move);
+                }
+                break;
             }
 
             return result;
@@ -84,7 +75,6 @@ namespace Engine.Strategies.AlphaBeta
             }
 
             IMove pv = null;
-            IMove cut = null;
             var key = Position.GetKey();
 
             if (Table.TryGet(key, out var entry))
@@ -110,40 +100,31 @@ namespace Engine.Strategies.AlphaBeta
                 }
 
                 pv = entry.PvMove;
-                cut = entry.CutMove;
             }
 
             bool isHistoryUpdated = false;
             int value = int.MinValue;
             IMove bestMove = null;
-            IMove cutMove = null;
-            var moves = Position.GetAllMoves(Sorter, pv, cut);
+            var moves = Position.GetAllMoves(Sorter, pv);
 
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
                 Position.Make(move);
 
-                var isCheck = Position.IsNotLegal(move);
-
-                if (!isCheck)
+                var r = -Search(-beta, -alpha, depth - 1);
+                if (r > value)
                 {
-                    var r = -Search(-beta, -alpha, depth - 1);
-                    if (r > value)
+                    value = r;
+                    bestMove = move;
+                    if (value > int.MinValue)
                     {
-                        value = r;
-                        bestMove = move;
-                        if (value > int.MinValue)
-                        {
-                            _historyHeuristic.Update(move);
-                            isHistoryUpdated = true;
-                        }
+                        _historyHeuristic.Update(move);
+                        isHistoryUpdated = true;
                     }
                 }
 
                 Position.UnMake();
-
-                if (isCheck) continue;
 
                 if (value > alpha)
                 {
@@ -156,14 +137,14 @@ namespace Engine.Strategies.AlphaBeta
                 {
                     _historyHeuristic.Update(move);
                 }
-                cutMove = move;
+
                 Sorter.Add(move);
                 break;
             }
 
             var best = value == int.MinValue ? short.MinValue : value;
 
-            TranspositionEntry te = new TranspositionEntry { Depth = depth, Value = best, PvMove = bestMove, CutMove = cutMove };
+            TranspositionEntry te = new TranspositionEntry { Depth = (byte) depth, Value = (short) best, PvMove = bestMove };
             if (best <= alpha)
             {
                 te.Type = TranspositionEntryType.LowerBound;

@@ -1,9 +1,23 @@
 REM tests.exe aa 5 16
 REM tests.exe ad 5 16
-tests.exe ad 5 16 true
-REM tests.exe as 5 16 true
-tests.exe aed 5 16 true
-REM tests.exe aes 5 16 true
-tests.exe and 5 16 true
-REM tests.exe ans 5 16 true
+tests.exe ab_ss_hc 5 16 0
+tests.exe ab_ss_dc 5 16 0
+tests.exe ab_ss_dhc 5 16 0
+tests.exe ab_es_hc 5 16 0
+tests.exe ab_es_dc 5 16 0
+tests.exe ab_es_dhc 5 16 0
+tests.exe abn_es_hc 5 16 0
+tests.exe abn_es_dc 5 16 0
+tests.exe abn_es_dhc 5 16 0
+
+
+tests.exe ab_ss_hc 5 16 10
+tests.exe ab_ss_dc 5 16 10
+tests.exe ab_ss_dhc 5 16 10
+tests.exe ab_es_hc 5 16 10
+tests.exe ab_es_dc 5 16 10
+tests.exe ab_es_dhc 5 16 10
+tests.exe abn_es_hc 5 16 10
+tests.exe abn_es_dc 5 16 10
+tests.exe abn_es_dhc 5 16 10
 pause

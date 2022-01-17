@@ -15,7 +15,6 @@ namespace Engine.DataStructures
         public int Value { get; set; }
         public GameResult GameResult { get; set; }
         public IMove Move { get; set; }
-        public IMove Cut { get; set; }
 
         #endregion
     }

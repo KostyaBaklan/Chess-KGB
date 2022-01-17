@@ -34,6 +34,13 @@
     <Reference Include="CommonServiceLocator">
       <HintPath>..\App\Libs\CommonServiceLocator.dll</HintPath>
     </Reference>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\App\Libs\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\App\Libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Unity.Abstractions">
@@ -45,8 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Boot.cs" />
+    <Compile Include="MoveModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceLocatorAdapter.cs" />
+    <Compile Include="TestModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.csproj">

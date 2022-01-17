@@ -96,6 +96,7 @@
       <DependentUpon>GameView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GameViewModel.cs" />
+    <Compile Include="Models\MoveModel.cs" />
     <Compile Include="Views\StartView.xaml.cs">
       <DependentUpon>StartView.xaml</DependentUpon>
     </Compile>

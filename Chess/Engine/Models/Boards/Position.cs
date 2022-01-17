@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using CommonServiceLocator;
@@ -13,6 +14,7 @@ namespace Engine.Models.Boards
     public class Position : IPosition
     {
         private Turn _turn;
+        private Phase _phase;
         private readonly ArrayStack<Piece?> _figureHistory;
 
         private readonly Piece[] _white;
@@ -51,11 +53,11 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetValue()
+        public short GetValue()
         {
             if (_turn == Turn.White)
                 return _board.GetValue();
-            return -_board.GetValue();
+            return (short) -_board.GetValue();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -67,13 +69,21 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IAttack> GetAllAttacks(Square cell, Piece piece)
         {
-            return _moveProvider.GetAttacks(piece, cell,_board);
+            var attacks = _moveProvider.GetAttacks(piece, cell,_board);
+            foreach (var attack in attacks.Where(IsLigal))
+            {
+                yield return attack;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IMove> GetAllMoves(Square cell, Piece piece)
         {
-            return _moveProvider.GetMoves(piece, cell, _board);
+            var moves = _moveProvider.GetMoves(piece, cell, _board);
+            foreach (var move in moves.Where(IsLigal))
+            {
+                yield return move;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,54 +102,33 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection GetAllMoves(IMoveSorter sorter, IMove pvMove = null, IMove cutMove = null)
+        public IMoveCollection GetAllMoves(IMoveSorter sorter, IMove pvMove = null)
         {
             if (_turn == Turn.White)
             {
                 var squares = GetSquares(_white);
-                return sorter.Order(PossibleAttacks(squares, _white), PossibleMoves(squares, _white), pvMove, cutMove);
+                return sorter.Order(PossibleAttacks(squares, _white), PossibleMoves(squares, _white), pvMove);
             }
             else
             {
                 var squares = GetSquares(_black);
-                return sorter.Order(PossibleAttacks(squares, _black), PossibleMoves(squares, _black), pvMove, cutMove);
+                return sorter.Order(PossibleAttacks(squares, _black), PossibleMoves(squares, _black), pvMove);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private IEnumerable<IMove> PossibleMoves(Square[][] squares, Piece[] pieces)
         {
-            var lastMove = _moveHistoryService.GetLastMove();
-
-            if (lastMove?.IsCheck() == true)
+            for (var index = 0; index < pieces.Length; index++)
             {
-                for (var index = 0; index < pieces.Length; index++)
-                {
-                    var p = pieces[index];
-                    Square[] from = squares[p.AsByte()%6];
+                var p = pieces[index];
+                Square[] from = squares[p.AsByte() % 6];
 
-                    for (var f = 0; f < from.Length; f++)
-                    {
-                        foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
-                        {
-                            if (!move.IsCastle())
-                            {
-                                yield return move;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (var index = 0; index < pieces.Length; index++)
+                for (var f = 0; f < from.Length; f++)
                 {
-                    var p = pieces[index];
-                    Square[] from = squares[p.AsByte()%6];
-
-                    for (var f = 0; f < from.Length; f++)
+                    foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
                     {
-                        foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
+                        if (IsLigal(move))
                         {
                             yield return move;
                         }
@@ -155,12 +144,15 @@ namespace Engine.Models.Boards
             {
                 var p = pieces[index];
 
-                var square = squares[p.AsByte()%6];
+                var square = squares[p.AsByte() % 6];
                 for (var f = 0; f < square.Length; f++)
                 {
                     foreach (var attack in _moveProvider.GetAttacks(p, square[f], _board))
                     {
-                        yield return attack;
+                        if (IsLigal(attack))
+                        {
+                            yield return attack;
+                        }
                     }
                 }
             }
@@ -195,6 +187,12 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Phase GetPhase()
+        {
+            return _phase;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Square[][] GetSquares(Piece[] pieces)
         {
             var squares = new Square[pieces.Length][];
@@ -211,9 +209,9 @@ namespace Engine.Models.Boards
         public bool IsCheck()
         {
             //return _turn != Turn.White ? _checkService.IsBlackCheck(_board.GetKey(), _board) : _checkService.IsWhiteCheck(_board.GetKey(), _board);
-            return _turn != Turn.White ? _moveProvider.AnyBlackCheck(_board) : _moveProvider.AnyWhiteCheck(_board);
-
             //return _turn != Turn.White ? _moveProvider.IsCheckToWhite(_board) : _moveProvider.IsCheckToBlack(_board);
+
+            return _turn != Turn.White ? _moveProvider.AnyBlackCheck(_board) : _moveProvider.AnyWhiteCheck(_board);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -231,7 +229,7 @@ namespace Engine.Models.Boards
 
             move.SetMoveResult(IsCheck());
 
-            _board.UpdatePhase();
+            _phase = _board.UpdatePhase();
 
             //var set = _board.GetBoardSet();
 
@@ -258,12 +256,33 @@ namespace Engine.Models.Boards
 
             move.SetMoveResult(false);
 
-            _board.UpdatePhase();
+            _phase = _board.UpdatePhase();
 
             SwapTurn();
         }
 
         #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsLigal(IMove move)
+        {
+            move.Make(_board, _figureHistory);
+
+            SwapTurn();
+
+            bool isLegal = !IsNotLegal(move);
+
+            if (!isLegal)
+            {
+
+            }
+
+            move.UnMake(_board, _figureHistory);
+
+            SwapTurn();
+
+            return isLegal;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SwapTurn()

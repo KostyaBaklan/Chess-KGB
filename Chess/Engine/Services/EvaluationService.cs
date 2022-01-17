@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
@@ -8,12 +9,19 @@ namespace Engine.Services
 {
     public class EvaluationService: IEvaluationService
     {
+        private bool _useCache;
+        private int _nextDepth;
+        private int _threshold;
+
         private readonly int _penaltyValue;
         private readonly int _unitValue;
+        private int _mobilityValue;
         private readonly int _pawnValue;
         private readonly int[] _values;
-        private readonly int[][] _staticValues;
-        private readonly Dictionary<ulong,int> _table;
+        private readonly int[][][] _staticValues;
+        private Dictionary<ulong,short> _table;
+        private DynamicCollection<ulong>[] _depthTable;
+        private readonly IMoveHistoryService _moveHistory;
 
         #region Piece-Square Tables
 
@@ -149,7 +157,7 @@ namespace Engine.Services
             -30,-40,-40,-50,-50,-40,-40,-30
         };
 
-        private static int[] _blackKingEndGameSquareTable = {
+        private static readonly int[] _blackKingEndGameSquareTable = {
             -50,-40,-30,-20,-20,-30,-40,-50,
             -30,-20,-10,  0,  0,-10,-20,-30,
             -30,-10, 20, 30, 30, 20,-10,-30,
@@ -160,7 +168,7 @@ namespace Engine.Services
             -50,-30,-30,-30,-30,-30,-30,-50
         };
 
-        private static int[] _whiteKingEndGameSquareTable = {
+        private static readonly int[] _whiteKingEndGameSquareTable = {
             -50,-30,-30,-30,-30,-30,-30,-50,
             -30,-30,  0,  0,  0,  0,-30,-30,
             -30,-10, 20, 30, 30, 20,-10,-30,
@@ -171,43 +179,58 @@ namespace Engine.Services
             -50,-40,-30,-20,-20,-30,-40,-50
         };
 
+        private bool _useMobility;
 
         #endregion
 
-        public EvaluationService()
+        public EvaluationService(IMoveHistoryService moveHistory)
         {
-            _unitValue = 5;
-            _penaltyValue = 25;
-            _pawnValue = 125;
+            _moveHistory = moveHistory;
+            _unitValue = 1;
+            _penaltyValue = 5;
+            _pawnValue = 25;
             _values = new int[12];
-            _values[Piece.WhitePawn.AsByte()] = 1000;
-            _values[Piece.BlackPawn.AsByte()] = 1000;
-            _values[Piece.WhiteKnight.AsByte()] = 3125;
-            _values[Piece.BlackKnight.AsByte()] = 3125;
-            _values[Piece.WhiteBishop.AsByte()] = 3125;
-            _values[Piece.BlackBishop.AsByte()] = 3125;
-            _values[Piece.WhiteKing.AsByte()] = 100000;
-            _values[Piece.BlackKing.AsByte()] = 100000;
-            _values[Piece.WhiteRook.AsByte()] = 4875;
-            _values[Piece.BlackRook.AsByte()] = 4875;
-            _values[Piece.WhiteQueen.AsByte()] = 9625;
-            _values[Piece.BlackQueen.AsByte()] = 9625;
+            _values[Piece.WhitePawn.AsByte()] = 200;
+            _values[Piece.BlackPawn.AsByte()] = 200;
+            _values[Piece.WhiteKnight.AsByte()] = 625;
+            _values[Piece.BlackKnight.AsByte()] = 625;
+            _values[Piece.WhiteBishop.AsByte()] = 625;
+            _values[Piece.BlackBishop.AsByte()] = 625;
+            _values[Piece.WhiteKing.AsByte()] = 6000;
+            _values[Piece.BlackKing.AsByte()] = 6000;
+            _values[Piece.WhiteRook.AsByte()] = 975;
+            _values[Piece.BlackRook.AsByte()] = 975;
+            _values[Piece.WhiteQueen.AsByte()] = 1925;
+            _values[Piece.BlackQueen.AsByte()] = 1925;
 
-            _staticValues = new int[12][];
-            _staticValues[Piece.WhitePawn.AsByte()] = _whitePawnSquareTable.Factor(10);
-            _staticValues[Piece.BlackPawn.AsByte()] = _blackPawnSquareTable.Factor(10);
-            _staticValues[Piece.WhiteKnight.AsByte()] = _whiteKnightSquareTable.Factor(10);
-            _staticValues[Piece.BlackKnight.AsByte()] = _blackKnightSquareTable.Factor(10);
-            _staticValues[Piece.WhiteBishop.AsByte()] = _whiteBishopSquareTable.Factor(10);
-            _staticValues[Piece.BlackBishop.AsByte()] = _blackBishopSquareTable.Factor(10);
-            _staticValues[Piece.WhiteKing.AsByte()] = _whiteKingMiddleGameSquareTable.Factor(10);
-            _staticValues[Piece.BlackKing.AsByte()] = _blackKingMiddleGameSquareTable.Factor(10);
-            _staticValues[Piece.WhiteRook.AsByte()] = _whiteRookSquareTable.Factor(10);
-            _staticValues[Piece.BlackRook.AsByte()] = _blackRookSquareTable.Factor(10);
-            _staticValues[Piece.WhiteQueen.AsByte()] = _whiteQueenSquareTable.Factor(10);
-            _staticValues[Piece.BlackQueen.AsByte()] = _blackQueenSquareTable.Factor(10);
+            _staticValues = new int[12][][];
+            for (var i = 0; i < _staticValues.Length; i++)
+            {
+                _staticValues[i] = new int[3][];
+            }
 
-            _table = new Dictionary<ulong, int>(20000213);
+            var factor = 2;
+            for (int i = 0; i < 3; i++)
+            {
+                _staticValues[Piece.WhitePawn.AsByte()][i] = _whitePawnSquareTable.Factor(factor);
+                _staticValues[Piece.BlackPawn.AsByte()][i] = _blackPawnSquareTable.Factor(factor);
+                _staticValues[Piece.WhiteKnight.AsByte()][i] = _whiteKnightSquareTable.Factor(factor);
+                _staticValues[Piece.BlackKnight.AsByte()][i] = _blackKnightSquareTable.Factor(factor);
+                _staticValues[Piece.WhiteBishop.AsByte()][i] = _whiteBishopSquareTable.Factor(factor);
+                _staticValues[Piece.BlackBishop.AsByte()][i] = _blackBishopSquareTable.Factor(factor);
+                _staticValues[Piece.WhiteRook.AsByte()][i] = _whiteRookSquareTable.Factor(factor);
+                _staticValues[Piece.BlackRook.AsByte()][i] = _blackRookSquareTable.Factor(factor);
+                _staticValues[Piece.WhiteQueen.AsByte()][i] = _whiteQueenSquareTable.Factor(factor);
+                _staticValues[Piece.BlackQueen.AsByte()][i] = _blackQueenSquareTable.Factor(factor);
+                _staticValues[Piece.WhiteKing.AsByte()][i] = i == 2
+                    ? _whiteKingEndGameSquareTable.Factor(factor)
+                    : _whiteKingMiddleGameSquareTable.Factor(factor);
+                _staticValues[Piece.BlackKing.AsByte()][i] = i == 2
+                    ? _blackKingEndGameSquareTable.Factor(factor)
+                    : _blackKingMiddleGameSquareTable.Factor(factor);
+            }
+
+            _table = new Dictionary<ulong, short>(20000213);
         }
 
         #region Implementation of ICacheService
@@ -227,14 +250,14 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetValue(int piece, int square)
+        public int GetValue(int piece, int square, Phase phase)
         {
-            return _staticValues[piece][square];
+            return _staticValues[piece][(int)phase][square];
         }
 
-        public int GetFullValue(int piece, int square)
+        public int GetFullValue(int piece, int square, Phase phase)
         {
-            return _values[piece] + _staticValues[piece][square];
+            return _values[piece] + _staticValues[piece][(int)phase][square];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -258,25 +281,82 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetMateValue(bool isWhite)
         {
-            return isWhite ? _values[Piece.WhiteKing.AsByte()] : _values[Piece.BlackKing.AsByte()];
+            return isWhite ? _values[Piece.WhiteKing.AsByte()] : -_values[Piece.BlackKing.AsByte()];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Evaluate(IPosition position)
         {
-            if (_table.TryGetValue(position.GetKey(), out var value))
+            short value;
+            if (_useCache)
             {
-                return value;
+                var key = position.GetKey();
+                if (_table.TryGetValue(key, out value))
+                {
+                    return value;
+                }
+
+                if (_table.Count > _threshold)
+                {
+                    var dynamicCollection = _depthTable[_nextDepth];
+                    foreach (var k in dynamicCollection)
+                    {
+                        _table.Remove(k);
+                    }
+                    _depthTable[_nextDepth].Clear();
+                    _nextDepth++;
+                }
+
+                value = position.GetValue();
+                _table.Add(key, value);
+                _depthTable[_moveHistory.GetPly()].Add(key);
+            }
+            else
+            {
+                value = position.GetValue();
             }
 
-            if (_table.Count > 20000000)
-            {
-                _table.Clear();
-            }
-
-            value = position.GetValue();
-            _table.Add(position.GetKey(), value);
             return value;
+        }
+
+        public void Initialize(short level, int mobility)
+        {
+            _mobilityValue = mobility;
+            _useMobility = _mobilityValue > 0;
+            if (level > 6)
+            {
+                _useCache = true;
+                _depthTable = new DynamicCollection<ulong>[256];
+                for (var i = 0; i < _depthTable.Length; i++)
+                {
+                    _depthTable[i] = new DynamicCollection<ulong>();
+                }
+
+                var capacity = 20000213;
+                if (level > 7)
+                {
+                    capacity = 30000781;
+                }
+                _threshold = capacity / 2;
+                _table = new Dictionary<ulong, short>(capacity);
+            }
+            else
+            {
+                _useCache = false;
+                _table = new Dictionary<ulong, short>();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetMobilityValue()
+        {
+            return _mobilityValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ShouldUseMobility()
+        {
+            return _useMobility;
         }
 
         #endregion
