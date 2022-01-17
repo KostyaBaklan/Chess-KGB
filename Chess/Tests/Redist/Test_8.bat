@@ -1,5 +1,4 @@
-tests.exe and 8 4
-tests.exe and 8 8
-tests.exe and 8 12
-tests.exe and 8 16
+tests.exe abn_es_hc 8 16 10
+tests.exe abn_es_dc 8 16 10
+tests.exe abn_es_dhc 8 16 10
 pause

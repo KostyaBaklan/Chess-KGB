@@ -6,6 +6,7 @@ using Engine.Models.Helpers;
 using Engine.Models.Transposition;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
+using Engine.Strategies.AlphaBeta.Simple;
 
 namespace Engine.Strategies.AlphaBeta.Null
 {
@@ -89,6 +90,8 @@ namespace Engine.Strategies.AlphaBeta.Null
                 result.Move = moves[0];
             }
 
+            result.Move.History++;
+
             return result;
         }
 
@@ -161,23 +164,23 @@ namespace Engine.Strategies.AlphaBeta.Null
                     if (v >= beta)
                     {
                         return v;
-                    } 
+                    }
                 }
             }
 
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
-                Position.Make(move);
 
+                Position.Make(move);
                 var r = -Search(-beta, -alpha, depth - 1);
+                Position.UnMake();
+
                 if (r > value)
                 {
                     value = r;
                     bestMove = move;
                 }
-
-                Position.UnMake();
 
                 if (value > alpha)
                 {
@@ -190,9 +193,18 @@ namespace Engine.Strategies.AlphaBeta.Null
                 break;
             }
 
-            if (IsNull||!isNotEndGame) return value;
+            if (IsNull || !isNotEndGame) return value;
 
-            var best = value;
+            int best;
+            if (bestMove == null)
+            {
+                best = short.MinValue;
+            }
+            else
+            {
+                bestMove.History += 1 << depth;
+                best = value;
+            }
 
             TranspositionEntry te = new TranspositionEntry
                 {Depth = (byte) depth, Value = (short) best, PvMove = bestMove};

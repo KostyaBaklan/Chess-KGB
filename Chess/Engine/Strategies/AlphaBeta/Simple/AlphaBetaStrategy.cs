@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using Engine.DataStructures;
+﻿using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Transposition;
 
-namespace Engine.Strategies.AlphaBeta
+namespace Engine.Strategies.AlphaBeta.Simple
 {
     public abstract class AlphaBetaStrategy : StrategyBase
     {
@@ -57,7 +56,8 @@ namespace Engine.Strategies.AlphaBeta
             Result result = new Result();
 
             IMove pv = pvMove;
-            if (Table.TryGet(Position.GetKey(), out var entry))
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (isNotEndGame && Table.TryGet(Position.GetKey(), out var entry))
             {
                 pv = entry.PvMove;
             }
@@ -100,34 +100,19 @@ namespace Engine.Strategies.AlphaBeta
 
                     if (alpha < beta) continue;
                     break;
-                } 
+                }
             }
             else
             {
                 result.Move = moves[0];
             }
 
+            result.Move.History++;
+
             return result;
         }
 
         #endregion
-
-        protected virtual IMove GetBestMove(HashSet<IMove> bestMoves)
-        {
-            var heap = new Heap(2,bestMoves.Count);
-            foreach (var move in bestMoves)
-            {
-                Position.Make(move);
-
-                move.Value =  -Evaluate(short.MinValue, short.MaxValue);
-
-                Position.UnMake();
-
-                heap.Insert(move);
-            }
-
-            return heap.Maximum();
-        }
 
         public override int Search(int alpha, int beta, int depth)
         {
@@ -139,7 +124,9 @@ namespace Engine.Strategies.AlphaBeta
             IMove pv = null;
             var key = Position.GetKey();
 
-            if (Table.TryGet(key, out var entry))
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+
+            if (isNotEndGame && Table.TryGet(key, out var entry))
             {
                 if (entry.Depth >= depth)
                 {
@@ -210,7 +197,18 @@ namespace Engine.Strategies.AlphaBeta
                 break;
             }
 
-            var best = value == int.MinValue ? short.MinValue : value;
+            int best;
+            if (bestMove == null)
+            {
+                best = short.MinValue;
+            }
+            else
+            {
+                bestMove.History += 1 << depth;
+                best = value;
+            }
+
+            if (!isNotEndGame) return best;
 
             TranspositionEntry te = new TranspositionEntry { Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
             if (best <= alpha)

@@ -5,14 +5,25 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:views="clr-namespace:TestViewer.Views"
              xmlns:mvvm="http://prismlibrary.com/"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              d:DataContext="{d:DesignInstance views:TestViewModel}"
              mvvm:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Border>
-            <TabControl ItemsSource="{Binding Tests, Mode=OneWay}">
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Loaded">
+                <i:InvokeCommandAction Command="{Binding LoadedCommand, Mode=OneWay}"/>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+        <TabControl ItemsSource="{Binding Tests, Mode=OneWay}">
                 <TabControl.ContentTemplate>
                     <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
                         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding TestItems, Mode=OneWay}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Strategy" Binding="{Binding Strategy, Mode=OneWay}"/>
@@ -27,7 +38,15 @@
                                 <DataGridTextColumn Header="Memory" Binding="{Binding Memory, Mode=OneWay}"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                    </DataTemplate>
+                        <DataGrid Grid.Row="1" AutoGenerateColumns="False" ItemsSource="{Binding TestResults, Mode=OneWay}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Category" Binding="{Binding Category, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="Min" Binding="{Binding Min, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="Max" Binding="{Binding Max, Mode=OneWay}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </DataTemplate>
             </TabControl.ContentTemplate>
             <TabControl.ItemTemplate>
                 <DataTemplate>

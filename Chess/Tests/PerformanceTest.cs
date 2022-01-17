@@ -9,7 +9,6 @@ using Engine.Models.Boards;
 using Engine.Strategies;
 using Engine.Strategies.AlphaBeta;
 using Engine.Strategies.AlphaBeta.Extended;
-using Engine.Strategies.AlphaBeta.History;
 using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.AlphaBeta.Simple;
 using Newtonsoft.Json;
@@ -41,16 +40,17 @@ namespace Tests
 
             Dictionary<string, IStrategy> strategies = new Dictionary<string, IStrategy>
             {
-                {"as", new AlphaBetaStaticStrategy(depth, position)},
-                {"ad", new AlphaBetaDifferenceStrategy(depth, position)},
-                {"ac", new AlphaBetaComplexStrategy(depth, position)},
-                {"aa", new AlphaBetaAdvancedStrategy(depth,position) },
-                {"aed", new AlphaBetaExtendedDifferenceStrategy(depth,position)},
-                {"aes", new AlphaBetaExtendedStaticStrategy(depth,position)},
-                {"and", new AlphaBetaNullDifferenceStrategy(depth,position)},
-                {"ans", new AlphaBetaNullStaticStrategy(depth,position)},
-                {"ahs", new AlphaBetaSimpleHistoryStrategy(depth,position)},
-                {"ahe", new AlphaBetaExtendedHistoryStrategy(depth,position)}
+                {"ab_ss_hc", new AlphaBetaHistoryStrategy(depth, position)},
+                {"ab_ss_dc", new AlphaBetaDifferenceStrategy(depth, position)},
+                {"ab_ss_dhc", new AlphaBetaDifferenceHistoryStrategy(depth, position)},
+
+                {"ab_es_hc", new AlphaBetaExtendedHistoryStrategy(depth, position)},
+                {"ab_es_dc", new AlphaBetaExtendedDifferenceStrategy(depth, position)},
+                {"ab_es_dhc", new AlphaBetaExtendedDifferenceHistoryStrategy(depth, position)},
+
+                {"abn_es_hc", new AlphaBetaNullHistoryStrategy(depth, position)},
+                {"abn_es_dc", new AlphaBetaNullDifferenceStrategy(depth, position)},
+                {"abn_es_dhc", new AlphaBetaNullDifferenceHistoryStrategy(depth, position)},
             };
 
             IStrategy strategy = strategies[args[0]];

@@ -2,8 +2,10 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows.Input;
 using Common;
 using Newtonsoft.Json;
+using Prism.Commands;
 
 namespace TestViewer.Views
 {
@@ -11,8 +13,6 @@ namespace TestViewer.Views
     {
         public TestViewModel()
         {
-            Tests = new ObservableCollection<TestItemViewModel>();
-
             var files = Directory.GetFiles(@"..\..\..\Tests\Redist\Log", "*.log", SearchOption.TopDirectoryOnly);
             List<TestModel> models = new List<TestModel>(files.Length);
             foreach (var file in files)
@@ -22,18 +22,39 @@ namespace TestViewer.Views
                 models.Add(testModel);
             }
 
-            var map = models.GroupBy(m => m.Depth).ToDictionary(k => k.Key, v => v.ToList());
+            var map = models.GroupBy(m => m.Depth)
+                .ToDictionary(k => k.Key, v => v.ToList());
+
+            var t = new List<TestItemViewModel>();
+
             foreach (var pair in map)
             {
-                TestItemViewModel testItemViewModel = new TestItemViewModel(pair.Key);
+                var ti = new List<TestModel>();
                 foreach (var testModel in pair.Value)
                 {
-                    testItemViewModel.TestItems.Add(testModel);
+                    ti.Add(testModel);
                 }
-                Tests.Add(testItemViewModel);
+
+                TestItemViewModel testItemViewModel = new TestItemViewModel(pair.Key,ti);
+                t.Add(testItemViewModel);
             }
+
+            Tests = new List<TestItemViewModel>(t);
+
+            LoadedCommand = new DelegateCommand(OnLoaded);
         }
 
-        public ObservableCollection<TestItemViewModel> Tests { get; }
+        public ICollection<TestItemViewModel> Tests { get; }
+
+        public ICommand LoadedCommand { get; }
+
+        private void OnLoaded()
+        {
+            var tests = Tests.ToArray();
+            foreach (var testItemViewModel in tests)
+            {
+                testItemViewModel.CreateResults();
+            }
+        }
     }
 }

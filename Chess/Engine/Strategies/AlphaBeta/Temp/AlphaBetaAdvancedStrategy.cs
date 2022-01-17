@@ -3,8 +3,9 @@ using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Transposition;
 using Engine.Sorting.Sorters;
+using Engine.Strategies.AlphaBeta.Simple;
 
-namespace Engine.Strategies.AlphaBeta
+namespace Engine.Strategies.AlphaBeta.Temp
 {
     public class AlphaBetaAdvancedStrategy : AlphaBetaStrategy
     {

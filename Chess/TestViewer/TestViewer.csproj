@@ -52,6 +52,10 @@
       <HintPath>..\App\Libs\Prism.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Dev\Hawk\CT_SW_PHYSICS_FRAMEWORK\Tools\WPF\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -74,6 +78,7 @@
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TestItemViewModel.cs" />
+    <Compile Include="Views\TestResultViewModel.cs" />
     <Compile Include="Views\TestView.xaml.cs">
       <DependentUpon>TestView.xaml</DependentUpon>
     </Compile>
