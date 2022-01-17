@@ -7,7 +7,6 @@ using CommonServiceLocator;
 using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Strategies;
-using Engine.Strategies.AlphaBeta;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.AlphaBeta.Simple;

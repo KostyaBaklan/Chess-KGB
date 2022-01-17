@@ -49,6 +49,8 @@
     <Compile Include="DataStructures\DynamicCollection.cs" />
     <Compile Include="DataStructures\DynamicSortedList.cs" />
     <Compile Include="DataStructures\GameResult.cs" />
+    <Compile Include="DataStructures\Hash\DynamicHash.cs" />
+    <Compile Include="DataStructures\Hash\IDynamicHash.cs" />
     <Compile Include="DataStructures\Moves\AttackCollection.cs" />
     <Compile Include="DataStructures\DynamicArray.cs" />
     <Compile Include="DataStructures\Heap.cs" />
@@ -68,9 +70,9 @@
     <Compile Include="Services\HistoryHeuristic.cs" />
     <Compile Include="DataStructures\Moves\KillerMoveCollection.cs" />
     <Compile Include="DataStructures\PieceSet.cs" />
-    <Compile Include="DataStructures\TranspositionTable.cs" />
-    <Compile Include="DataStructures\ZobristDictionary.cs" />
-    <Compile Include="DataStructures\ZobristHash.cs" />
+    <Compile Include="DataStructures\Hash\TranspositionTable.cs" />
+    <Compile Include="DataStructures\Hash\ZobristDictionary.cs" />
+    <Compile Include="DataStructures\Hash\ZobristHash.cs" />
     <Compile Include="Interfaces\IBoard.cs" />
     <Compile Include="Interfaces\ICacheService.cs" />
     <Compile Include="Interfaces\ICheckService.cs" />
