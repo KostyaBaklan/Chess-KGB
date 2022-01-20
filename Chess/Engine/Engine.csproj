@@ -146,6 +146,9 @@
     <Compile Include="DataStructures\Result.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullStrategy.cs" />
+    <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceHistoryStrategy.cs" />
+    <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceStrategy.cs" />
+    <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\IdStrategyBase.cs" />
     <Compile Include="Strategies\StrategyBase.cs" />
     <Compile Include="Interfaces\IResult.cs" />

@@ -17,6 +17,8 @@ using Engine.Models.Helpers;
 using Engine.Strategies;
 using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
+using Engine.Strategies.IterativeDeeping;
+using Engine.Strategies.IterativeDeeping.Extended;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -146,7 +148,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level, 10);
-            _strategy = new AlphaBetaAdvancedDifferenceStrategy(level, _position);
+            _strategy = new IdExtendedDifferenceStrategy(level, _position);
 
             if (color == "White")
             {

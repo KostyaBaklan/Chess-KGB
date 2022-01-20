@@ -52,10 +52,13 @@ namespace Engine.Strategies.AlphaBeta.Simple
             Result result = new Result();
 
             IMove pv = pvMove;
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (isNotEndGame && Table.TryGet(Position.GetKey(), out var entry))
+            if (pv == null)
             {
-                pv = entry.PvMove;
+                var isNotEndGame = Position.GetPhase() != Phase.End;
+                if (isNotEndGame && Table.TryGet(Position.GetKey(), out var entry))
+                {
+                    pv = entry.PvMove;
+                } 
             }
 
             var moves = Position.GetAllMoves(Sorter, pv);
