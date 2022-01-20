@@ -21,8 +21,9 @@
                     <DataTemplate>
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding TestItems, Mode=OneWay}">
                             <DataGrid.Columns>
@@ -38,7 +39,8 @@
                                 <DataGridTextColumn Header="Memory" Binding="{Binding Memory, Mode=OneWay}"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                        <DataGrid Grid.Row="1" AutoGenerateColumns="False" ItemsSource="{Binding TestResults, Mode=OneWay}">
+                        <GridSplitter Grid.Row="1"/>
+                        <DataGrid Grid.Row="2" AutoGenerateColumns="False" ItemsSource="{Binding TestResults, Mode=OneWay}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Category" Binding="{Binding Category, Mode=OneWay}"/>
                                 <DataGridTextColumn Header="Min" Binding="{Binding Min, Mode=OneWay}"/>

@@ -11,11 +11,6 @@ namespace Engine.Strategies.AlphaBeta.Simple
     {
         protected readonly TranspositionTable Table;
 
-        protected readonly IMoveHistoryService MoveHistory =
-            CommonServiceLocator.ServiceLocator.Current.GetInstance<IMoveHistoryService>();
-
-        protected int SearchValue = short.MaxValue;
-
         protected AlphaBetaStrategy(short depth, IPosition position) : base(depth, position)
         {
             int capacity;
@@ -67,6 +62,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
             if (moves.Count == 0)
             {
                 result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
+                return result;
             }
 
             if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))

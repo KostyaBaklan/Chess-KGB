@@ -15,6 +15,7 @@ namespace Engine.Interfaces
         bool CanDoWhiteBigCastle();
         bool IsOpposite(BitBoard square, Piece piece);
         short GetValue();
+        int GetStaticValue();
         Piece GetPiece(Square cell);
         Piece GetPiece(int cell);
         bool GetPiece(Square cell, out Piece? piece);
@@ -37,6 +38,8 @@ namespace Engine.Interfaces
         ulong GetKey();
         Square[] GetPiecePositions(int piece);
         BitBoard GetOccupied();
+        BitBoard GetPieceBits(Piece piece);
+        BitBoard GetPerimeter();
         Phase UpdatePhase();
         int StaticExchange(IAttack attack);
         Piece[] GetBoardSet();

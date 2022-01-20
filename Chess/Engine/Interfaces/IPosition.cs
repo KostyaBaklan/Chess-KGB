@@ -9,11 +9,14 @@ namespace Engine.Interfaces
     {
         ulong GetKey();
         short GetValue();
+        int GetStaticValue();
         Turn GetTurn();
         bool GetPiece(Square cell, out Piece? piece);
 
         void Make(IMove move);
         void UnMake();
+        void Do(IMove move);
+        void UnDo(IMove move);
         void SwapTurn();
 
         IEnumerable<IAttack> GetAllAttacks(Square cell, Piece piece);

@@ -44,6 +44,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             if (moves.Count == 0)
             {
                 result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
+                return result;
             }
 
             if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))

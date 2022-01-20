@@ -50,12 +50,7 @@ namespace Engine.Sorting.Sorters
                 return collection;
             }
 
-            if (pvNode != null)
-            {
-                return OrderInternal(attacks,moves, Moves[depth], pvNode);
-            }
-
-            return OrderInternal(attacks, moves, Moves[depth]);
+            return pvNode != null ? OrderInternal(attacks, moves, Moves[depth], pvNode) : OrderInternal(attacks, moves, Moves[depth]);
         }
 
         public IMoveCollection Order(IEnumerable<IAttack> attacks)
@@ -92,8 +87,12 @@ namespace Engine.Sorting.Sorters
             return sortedAttacks;
         }
 
-        protected void OrderAttacks(MoveCollection collection, Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks, IAttack pv)
+        protected void OrderAttacks(AttackCollection collection, Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks, IAttack pv)
         {
+            List<IMove> moves = new List<IMove>(8);
+            var maxValue = 0;
+            int maxIndex = -1;
+            var index = 0;
             var board = Position.GetBoard();
             foreach (var sortedAttack in sortedAttacks.Values)
             {
@@ -109,7 +108,13 @@ namespace Engine.Sorting.Sorters
                     int attackValue = board.StaticExchange(attack);
                     if (attackValue > 0)
                     {
-                        collection.AddWinCapture(attack);
+                        if (attackValue > maxValue)
+                        {
+                            maxValue = attackValue;
+                            maxIndex = index;
+                        }
+                        moves.Add(attack);
+                        index++;
                     }
                     else if (attackValue < 0)
                     {
@@ -121,10 +126,17 @@ namespace Engine.Sorting.Sorters
                     }
                 }
             }
+
+            AddWinCaptures(collection, moves, maxIndex);
         }
 
-        protected void OrderAttacks(AttackCollection collection, Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks)
+        protected void OrderAttacks(AttackCollection collection,
+            Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks)
         {
+            List<IMove> moves = new List<IMove>(8);
+            var maxValue = 0;
+            int maxIndex = -1;
+            var index = 0;
             var board = Position.GetBoard();
             foreach (var sortedAttack in sortedAttacks.Values)
             {
@@ -135,7 +147,13 @@ namespace Engine.Sorting.Sorters
                     int attackValue = board.StaticExchange(attack);
                     if (attackValue > 0)
                     {
-                        collection.AddWinCapture(attack);
+                        if (attackValue > maxValue)
+                        {
+                            maxValue = attackValue;
+                            maxIndex = index;
+                        }
+                        moves.Add(attack);
+                        index++;
                     }
                     else if (attackValue < 0)
                     {
@@ -143,10 +161,33 @@ namespace Engine.Sorting.Sorters
                     }
                     else
                     {
-                        collection.AddTrade(attack);
+                        DecideTrade(collection, attack);
                     }
                 }
             }
+
+            AddWinCaptures(collection, moves, maxIndex);
+        }
+
+        private static void AddWinCaptures(AttackCollection collection, List<IMove> moves, int maxIndex)
+        {
+            if (moves.Count <= 0) return;
+            if (maxIndex != 0)
+            {
+                var temp = moves[0];
+                moves[0] = moves[maxIndex];
+                moves[maxIndex] = temp;
+            }
+
+            for (var i = 0; i < moves.Count; i++)
+            {
+                collection.AddWinCapture(moves[i]);
+            }
+        }
+
+        protected virtual void DecideTrade(AttackCollection collection, IAttack attack)
+        {
+            collection.AddTrade(attack);
         }
 
         protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);

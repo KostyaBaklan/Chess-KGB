@@ -24,7 +24,6 @@ namespace Kgb.ChessApp
             containerRegistry.RegisterSingleton(typeof(IMoveHistoryService), typeof(MoveHistoryService));
             containerRegistry.RegisterSingleton(typeof(IEvaluationService), typeof(EvaluationService));
             containerRegistry.RegisterSingleton(typeof(ICheckService), typeof(CheckService));
-            containerRegistry.RegisterSingleton(typeof(IHistoryHeuristic), typeof(HistoryHeuristic));
 
             containerRegistry.RegisterSingleton(typeof(StartViewModel));
             containerRegistry.RegisterSingleton(typeof(GameViewModel));

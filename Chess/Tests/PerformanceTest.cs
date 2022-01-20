@@ -7,6 +7,7 @@ using CommonServiceLocator;
 using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Strategies;
+using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.AlphaBeta.Simple;
@@ -46,6 +47,10 @@ namespace Tests
                 {"ab_es_hc", new AlphaBetaExtendedHistoryStrategy(depth, position)},
                 {"ab_es_dc", new AlphaBetaExtendedDifferenceStrategy(depth, position)},
                 {"ab_es_dhc", new AlphaBetaExtendedDifferenceHistoryStrategy(depth, position)},
+
+                {"ab_as_hc", new AlphaBetaAdvancedHistoryStrategy(depth, position)},
+                {"ab_as_dc", new AlphaBetaAdvancedDifferenceStrategy(depth, position)},
+                {"ab_as_dhc", new AlphaBetaAdvancedDifferenceHistoryStrategy(depth, position)},
 
                 {"abn_es_hc", new AlphaBetaNullHistoryStrategy(depth, position)},
                 {"abn_es_dc", new AlphaBetaNullDifferenceStrategy(depth, position)},

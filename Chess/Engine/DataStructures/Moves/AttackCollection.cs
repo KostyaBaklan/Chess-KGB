@@ -10,12 +10,14 @@ namespace Engine.DataStructures.Moves
         protected readonly List<IMove> _winCaptures;
         protected readonly List<IMove> _trades;
         protected readonly List<IMove> _looseCaptures;
+        protected readonly List<IMove> _hashMoves;
 
         public AttackCollection(IMoveComparer comparer) : base(comparer)
         {
             _winCaptures = new List<IMove>();
             _trades = new List<IMove>();
             _looseCaptures = new List<IMove>();
+            _hashMoves = new List<IMove>();
         }
 
         #region Implementation of IMoveCollection
@@ -44,9 +46,18 @@ namespace Engine.DataStructures.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddHashMove(IMove move)
+        {
+            _hashMoves.Add(move);
+            Count++;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Build()
         {
             _moves = new List<IMove>(Count);
+
+            _moves.AddRange(_hashMoves);
 
             _moves.AddRange(_winCaptures);
 

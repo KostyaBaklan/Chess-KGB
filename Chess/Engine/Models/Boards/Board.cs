@@ -142,6 +142,36 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetStaticValue()
+        {
+            return GetWhiteStaticValue() - GetBlackStaticValue();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetBlackStaticValue()
+        {
+            int value = 0;
+            for (int i = 6; i < 11; i++)
+            {
+                value += _evaluationService.GetValue(i) * _pieceCount[i];
+            }
+
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetWhiteStaticValue()
+        {
+            int value = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                value += _evaluationService.GetValue(i) * _pieceCount[i];
+            }
+
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public short GetValue()
         {
             return (short) (GetWhiteValue() - GetBlackValue());
@@ -714,6 +744,18 @@ namespace Engine.Models.Boards
         public BitBoard GetOccupied()
         {
             return ~_empty;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetPieceBits(Piece piece)
+        {
+            return _boards[piece.AsByte()];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetPerimeter()
+        {
+            return _ranks[0] | _ranks[7] | _files[0] | _files[7];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

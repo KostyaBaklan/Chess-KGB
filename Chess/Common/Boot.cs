@@ -22,7 +22,6 @@ namespace Common
             container.RegisterSingleton(typeof(IMoveHistoryService), typeof(MoveHistoryService));
             container.RegisterSingleton(typeof(IEvaluationService), typeof(EvaluationService));
             container.RegisterSingleton(typeof(ICheckService), typeof(CheckService));
-            container.RegisterSingleton(typeof(IHistoryHeuristic), typeof(HistoryHeuristic));
         }
     }
 }
