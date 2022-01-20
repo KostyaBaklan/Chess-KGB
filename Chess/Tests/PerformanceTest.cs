@@ -11,6 +11,7 @@ using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.AlphaBeta.Simple;
+using Engine.Strategies.IterativeDeeping.Extended;
 using Newtonsoft.Json;
 
 namespace Tests
@@ -55,17 +56,16 @@ namespace Tests
                 {"abn_es_hc", new AlphaBetaNullHistoryStrategy(depth, position)},
                 {"abn_es_dc", new AlphaBetaNullDifferenceStrategy(depth, position)},
                 {"abn_es_dhc", new AlphaBetaNullDifferenceHistoryStrategy(depth, position)},
+
+                {"id_es_hc", new IdExtendedHistoryStrategy(depth, position)},
+                {"id_es_dc", new IdExtendedDifferenceStrategy(depth, position)},
+                {"id_es_dhc", new IdExtendedDifferenceHistoryStrategy(depth, position)}
             };
 
             IStrategy strategy = strategies[args[0]];
             _model.Strategy = strategy.ToString();
 
             var file = Path.Combine("Log", $"{strategy}_D{depth}_M{mobility}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log");
-            //using (var log = new StreamWriter(file))
-            //{
-            //    log.WriteLine($"{strategy}. Depth = {depth}");
-            //    Play(log, iterations, strategy, position, shouldPrintPosition);
-            //}
 
             Play(iterations, strategy, position);
 

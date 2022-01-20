@@ -1,7 +1,6 @@
 ﻿using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
-using Engine.Strategies.AlphaBeta.Extended;
 
 namespace Engine.Strategies.IterativeDeeping
 {
@@ -24,10 +23,11 @@ namespace Engine.Strategies.IterativeDeeping
                 depth++;
             }
 
-            var result = GetResult(-SearchValue, SearchValue, 3);
+            var x = depth - 2;
+            var result = GetResult(-SearchValue, SearchValue, x);
             if (result.GameResult == GameResult.Continue)
             {
-                for (int d = 4; d <= depth; d++)
+                for (int d = x+1; d <= depth; d++)
                 {
                     result = GetResult(-SearchValue, SearchValue, d, result.Move);
                     if (result.GameResult != GameResult.Continue) break;
@@ -46,30 +46,8 @@ namespace Engine.Strategies.IterativeDeeping
             return InternalStrategy.Search(alpha, beta, depth);
         }
 
+        public override int Size => InternalStrategy.Size;
+
         #endregion
-    }
-
-    public class IdExtendedHistoryStrategy : IdStrategyBase
-    {
-        public IdExtendedHistoryStrategy(short depth, IPosition position) 
-            : base(depth, position, new AlphaBetaExtendedHistoryStrategy(depth,position))
-        {
-        }
-    }
-
-    public class IdExtendedDifferenceStrategy : IdStrategyBase
-    {
-        public IdExtendedDifferenceStrategy(short depth, IPosition position)
-            : base(depth, position, new AlphaBetaExtendedDifferenceStrategy(depth, position))
-        {
-        }
-    }
-
-    public class IdExtendedDifferenceHistoryStrategy : IdStrategyBase
-    {
-        public IdExtendedDifferenceHistoryStrategy(short depth, IPosition position)
-            : base(depth, position, new AlphaBetaExtendedDifferenceHistoryStrategy(depth, position))
-        {
-        }
     }
 }
