@@ -61,6 +61,14 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetStaticValue()
+        {
+            if (_turn == Turn.White)
+                return _board.GetStaticValue();
+            return (short)-_board.GetStaticValue();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Turn GetTurn()
         {
             return _turn;
@@ -261,6 +269,22 @@ namespace Engine.Models.Boards
             SwapTurn();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Do(IMove move)
+        {
+            move.Make(_board, _figureHistory);
+
+            SwapTurn();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UnDo(IMove move)
+        {
+            move.UnMake(_board, _figureHistory);
+
+            SwapTurn();
+        }
+
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -271,11 +295,6 @@ namespace Engine.Models.Boards
             SwapTurn();
 
             bool isLegal = !IsNotLegal(move);
-
-            if (!isLegal)
-            {
-
-            }
 
             move.UnMake(_board, _figureHistory);
 

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Engine.DataStructures
+namespace Engine.DataStructures.Hash
 {
-    public class ZobristDictionary<T>
+    public class ZobristDictionary<T>: IDynamicHash<T>
     {
         protected readonly Dictionary<ulong, T> Table;
 
@@ -41,6 +41,11 @@ namespace Engine.DataStructures
         public bool TryGet(ulong key, out T item)
         {
             return Table.TryGetValue(key, out item);
+        }
+
+        public bool Remove(ulong key)
+        {
+            throw new System.NotImplementedException();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

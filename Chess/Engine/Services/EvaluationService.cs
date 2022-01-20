@@ -7,7 +7,7 @@ using Engine.Models.Helpers;
 
 namespace Engine.Services
 {
-    public class EvaluationService: IEvaluationService
+    public class EvaluationService : IEvaluationService
     {
         private bool _useCache;
         private int _nextDepth;
@@ -19,7 +19,7 @@ namespace Engine.Services
         private readonly int _pawnValue;
         private readonly int[] _values;
         private readonly int[][][] _staticValues;
-        private Dictionary<ulong,short> _table;
+        private Dictionary<ulong, short> _table;
         private DynamicCollection<ulong>[] _depthTable;
         private readonly IMoveHistoryService _moveHistory;
 
@@ -229,8 +229,6 @@ namespace Engine.Services
                     ? _blackKingEndGameSquareTable.Factor(factor)
                     : _blackKingMiddleGameSquareTable.Factor(factor);
             }
-
-            _table = new Dictionary<ulong, short>(20000213);
         }
 
         #region Implementation of ICacheService
@@ -298,13 +296,7 @@ namespace Engine.Services
 
                 if (_table.Count > _threshold)
                 {
-                    var dynamicCollection = _depthTable[_nextDepth];
-                    foreach (var k in dynamicCollection)
-                    {
-                        _table.Remove(k);
-                    }
-                    _depthTable[_nextDepth].Clear();
-                    _nextDepth++;
+                    ClearOnThreshold();
                 }
 
                 value = position.GetValue();
@@ -317,6 +309,19 @@ namespace Engine.Services
             }
 
             return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ClearOnThreshold()
+        {
+            var dynamicCollection = _depthTable[_nextDepth % _depthTable.Length];
+            foreach (var k in dynamicCollection)
+            {
+                _table.Remove(k);
+            }
+
+            dynamicCollection.Clear();
+            _nextDepth++;
         }
 
         public void Initialize(short level, int mobility)
@@ -332,18 +337,27 @@ namespace Engine.Services
                     _depthTable[i] = new DynamicCollection<ulong>();
                 }
 
-                var capacity = 20000213;
-                if (level > 7)
+                int capacity;
+                if (level ==7)
+                {
+                    capacity = 20000213;
+                }
+                else if(level ==8)
                 {
                     capacity = 30000781;
                 }
-                _threshold = capacity / 2;
+                else
+                {
+                    capacity = 40000651;
+                }
+
+                _threshold = 2*capacity / 3;
                 _table = new Dictionary<ulong, short>(capacity);
             }
             else
             {
                 _useCache = false;
-                _table = new Dictionary<ulong, short>();
+                _table = new Dictionary<ulong, short>(0);
             }
         }
 

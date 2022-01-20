@@ -1,4 +1,5 @@
 ﻿using Engine.DataStructures;
+using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
@@ -9,11 +10,6 @@ namespace Engine.Strategies.AlphaBeta.Simple
     public abstract class AlphaBetaStrategy : StrategyBase
     {
         protected readonly TranspositionTable Table;
-
-        protected readonly IMoveHistoryService MoveHistory =
-            CommonServiceLocator.ServiceLocator.Current.GetInstance<IMoveHistoryService>();
-
-        protected int SearchValue = short.MaxValue;
 
         protected AlphaBetaStrategy(short depth, IPosition position) : base(depth, position)
         {
@@ -66,6 +62,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
             if (moves.Count == 0)
             {
                 result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
+                return result;
             }
 
             if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))

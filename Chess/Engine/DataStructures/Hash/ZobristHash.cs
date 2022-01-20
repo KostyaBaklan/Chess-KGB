@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using Engine.Models.Boards;
 using Engine.Models.Helpers;
 
-namespace Engine.DataStructures
+namespace Engine.DataStructures.Hash
 {
     public class ZobristHash
     {

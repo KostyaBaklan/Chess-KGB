@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Engine.Models.Transposition;
 
-namespace Engine.DataStructures
+namespace Engine.DataStructures.Hash
 {
     public class TranspositionTable : ZobristDictionary<TranspositionEntry>
     {

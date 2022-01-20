@@ -7,6 +7,9 @@ namespace Engine.Interfaces
     public interface IMoveProvider
     {
         IEnumerable<IAttack> GetAttacks(Piece piece, Square cell, IBoard board);
+        IEnumerable<IAttack> GetAttacks(Piece piece, int @from, IBoard board);
+        IEnumerable<IAttack> GetAttacks(Piece piece, Square from, int to);
+        IEnumerable<IAttack> GetAttacks(Piece piece, int from, int to);
         IEnumerable<IMove> GetMoves(Piece piece, Square cell, IBoard board);
         bool AnyBlackCheck(IBoard board);
         bool AnyWhiteCheck(IBoard board);

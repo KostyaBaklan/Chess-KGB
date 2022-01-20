@@ -9,13 +9,17 @@ namespace Engine.Strategies
         protected short Depth;
         protected MoveSorter Sorter;
         protected IPosition Position;
+        protected int SearchValue = short.MaxValue;
+
         protected IEvaluationService EvaluationService;
+        protected readonly IMoveHistoryService MoveHistory;
 
         protected StrategyBase(short depth, IPosition position)
         {
             Depth = depth;
             Position = position;
             EvaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
+            MoveHistory = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
         }
 
         public abstract IResult GetResult();
