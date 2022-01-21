@@ -15,9 +15,11 @@ namespace Engine.Sorting.Sorters
         protected readonly IMoveHistoryService MoveHistoryService;
         protected IMoveComparer Comparer;
         protected readonly IPosition Position;
+        private readonly List<IMove> _moves;
 
         protected MoveSorter(IPosition position)
         {
+            _moves = new List<IMove>(8);
             Position = position;
             Moves = new KillerMoveCollection[256];
             for (var i = 0; i < Moves.Length; i++)
@@ -53,6 +55,7 @@ namespace Engine.Sorting.Sorters
             return pvNode != null ? OrderInternal(attacks, moves, Moves[depth], pvNode) : OrderInternal(attacks, moves, Moves[depth]);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IMoveCollection Order(IEnumerable<IAttack> attacks)
         {
             var sortedAttacks = OrderAttacks(attacks);
@@ -65,7 +68,8 @@ namespace Engine.Sorting.Sorters
             return collection;
         }
 
-        protected Dictionary<Square, DynamicSortedList<IAttack>> OrderAttacks(IEnumerable<IAttack> attacks)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual Dictionary<Square, DynamicSortedList<IAttack>> OrderAttacks(IEnumerable<IAttack> attacks)
         {
             var board = Position.GetBoard();
             var attackComparer = new AttackComparer();
@@ -87,9 +91,10 @@ namespace Engine.Sorting.Sorters
             return sortedAttacks;
         }
 
-        protected void OrderAttacks(AttackCollection collection, Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks, IAttack pv)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void OrderAttacks(AttackCollection collection, Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks, IAttack pv)
         {
-            List<IMove> moves = new List<IMove>(8);
+            _moves.Clear();
             var maxValue = 0;
             int maxIndex = -1;
             var index = 0;
@@ -113,7 +118,7 @@ namespace Engine.Sorting.Sorters
                             maxValue = attackValue;
                             maxIndex = index;
                         }
-                        moves.Add(attack);
+                        _moves.Add(attack);
                         index++;
                     }
                     else if (attackValue < 0)
@@ -127,13 +132,14 @@ namespace Engine.Sorting.Sorters
                 }
             }
 
-            AddWinCaptures(collection, moves, maxIndex);
+            AddWinCaptures(collection, maxIndex);
         }
 
-        protected void OrderAttacks(AttackCollection collection,
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void OrderAttacks(AttackCollection collection,
             Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks)
         {
-            List<IMove> moves = new List<IMove>(8);
+            _moves.Clear();
             var maxValue = 0;
             int maxIndex = -1;
             var index = 0;
@@ -152,7 +158,7 @@ namespace Engine.Sorting.Sorters
                             maxValue = attackValue;
                             maxIndex = index;
                         }
-                        moves.Add(attack);
+                        _moves.Add(attack);
                         index++;
                     }
                     else if (attackValue < 0)
@@ -166,25 +172,27 @@ namespace Engine.Sorting.Sorters
                 }
             }
 
-            AddWinCaptures(collection, moves, maxIndex);
+            AddWinCaptures(collection,  maxIndex);
         }
 
-        private static void AddWinCaptures(AttackCollection collection, List<IMove> moves, int maxIndex)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AddWinCaptures(AttackCollection collection,int maxIndex)
         {
-            if (moves.Count <= 0) return;
+            if (_moves.Count <= 0) return;
             if (maxIndex != 0)
             {
-                var temp = moves[0];
-                moves[0] = moves[maxIndex];
-                moves[maxIndex] = temp;
+                var temp = _moves[0];
+                _moves[0] = _moves[maxIndex];
+                _moves[maxIndex] = temp;
             }
 
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < _moves.Count; i++)
             {
-                collection.AddWinCapture(moves[i]);
+                collection.AddWinCapture(_moves[i]);
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void DecideTrade(AttackCollection collection, IAttack attack)
         {
             collection.AddTrade(attack);

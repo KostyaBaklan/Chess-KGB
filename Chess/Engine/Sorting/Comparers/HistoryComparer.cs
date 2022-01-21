@@ -11,7 +11,7 @@ namespace Engine.Sorting.Comparers
         public int Compare(IMove x, IMove y)
         {
             var comparision = y.History.CompareTo(x.History);
-            return comparision != 0 || x.History > 0 ? comparision : y.Difference.CompareTo(x.Difference);
+            return comparision != 0 ? comparision : y.Difference.CompareTo(x.Difference);
         }
 
         #endregion

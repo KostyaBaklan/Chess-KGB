@@ -15,7 +15,6 @@ namespace Common
 
         public string Strategy { get; set; }
         public int Depth { get; set; }
-        public int Mobility { get; set; }
         public TimeSpan Total { get; set; }
         public TimeSpan Min { get; set; }
         public TimeSpan Max { get; set; }

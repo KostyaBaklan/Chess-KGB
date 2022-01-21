@@ -28,7 +28,6 @@
                         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding TestItems, Mode=OneWay}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Strategy" Binding="{Binding Strategy, Mode=OneWay}"/>
-                                <DataGridTextColumn Header="Mobility" Binding="{Binding Mobility, Mode=OneWay}"/>
                                 <DataGridTextColumn Header="Total" Binding="{Binding Total, Mode=OneWay}"/>
                                 <DataGridTextColumn Header="Min" Binding="{Binding Min, Mode=OneWay}"/>
                                 <DataGridTextColumn Header="Max" Binding="{Binding Max, Mode=OneWay}"/>

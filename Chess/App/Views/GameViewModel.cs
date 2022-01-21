@@ -17,6 +17,8 @@ using Engine.Models.Helpers;
 using Engine.Strategies;
 using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
+using Engine.Strategies.AlphaBeta.Extended.Heap;
+using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.IterativeDeeping;
 using Engine.Strategies.IterativeDeeping.Extended;
 using Kgb.ChessApp.Models;
@@ -147,8 +149,8 @@ namespace Kgb.ChessApp.Views
             var color = navigationContext.Parameters.GetValue<string>("Color");
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
-            _evaluationService.Initialize(level, 10);
-            _strategy = new IdExtendedDifferenceStrategy(level, _position);
+            _evaluationService.Initialize(level);
+            _strategy = new AlphaBetaNullHistoryStrategy(level, _position);
 
             if (color == "White")
             {

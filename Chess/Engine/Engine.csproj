@@ -55,10 +55,11 @@
     <Compile Include="DataStructures\Moves\AdvancedMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\AttackCollection.cs" />
     <Compile Include="DataStructures\DynamicArray.cs" />
-    <Compile Include="DataStructures\Heap.cs" />
+    <Compile Include="DataStructures\MaxHeap.cs" />
     <Compile Include="DataStructures\Moves\AttackWrapper.cs" />
     <Compile Include="DataStructures\Moves\MoveCollection.cs" />
     <Compile Include="DataStructures\Moves\MoveCollectionBase.cs" />
+    <Compile Include="DataStructures\Moves\MoveHeap.cs" />
     <Compile Include="DataStructures\Moves\MoveWrapper.cs" />
     <Compile Include="DataStructures\Node.cs" />
     <Compile Include="DataStructures\PriorityQueue.cs" />
@@ -121,7 +122,7 @@
     <Compile Include="Sorting\Comparers\IMoveComparer.cs" />
     <Compile Include="Sorting\Sorters\AdvancedSorter.cs" />
     <Compile Include="Sorting\Comparers\AttackComparer.cs" />
-    <Compile Include="Sorting\Sorters\ComplexSorter.cs" />
+    <Compile Include="Sorting\Sorters\ExtendedHeapSorter.cs" />
     <Compile Include="Sorting\Sorters\ExtendedSorter.cs" />
     <Compile Include="Sorting\Sorters\IMoveSorter.cs" />
     <Compile Include="Sorting\Comparers\HistoryComparer.cs" />
@@ -132,8 +133,11 @@
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Temp\AlphaBetaComplexStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapDifferenceHistoryStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapHistoryStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedHistoryStrategy.cs" />

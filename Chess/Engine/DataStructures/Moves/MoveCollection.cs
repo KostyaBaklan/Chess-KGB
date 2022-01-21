@@ -13,7 +13,7 @@ namespace Engine.DataStructures.Moves
         public MoveCollection(IMoveComparer comparer) : base(comparer)
         {
             _killers = new List<IMove>();
-            _nonCaptures = new List<IMove>(48);
+            _nonCaptures = new List<IMove>(64);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

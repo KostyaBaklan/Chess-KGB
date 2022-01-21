@@ -12,8 +12,6 @@ namespace Engine.Interfaces
         int GetUnitValue(int factor = 1);
         int GetMateValue(bool isWhite);
         int Evaluate(IPosition position);
-        void Initialize(short depth, int mobility);
-        int GetMobilityValue();
-        bool ShouldUseMobility();
+        void Initialize(short depth);
     }
 }

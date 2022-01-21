@@ -15,7 +15,6 @@ namespace Engine.Services
 
         private readonly int _penaltyValue;
         private readonly int _unitValue;
-        private int _mobilityValue;
         private readonly int _pawnValue;
         private readonly int[] _values;
         private readonly int[][][] _staticValues;
@@ -179,8 +178,6 @@ namespace Engine.Services
             -50,-40,-30,-20,-20,-30,-40,-50
         };
 
-        private bool _useMobility;
-
         #endregion
 
         public EvaluationService(IMoveHistoryService moveHistory)
@@ -324,10 +321,8 @@ namespace Engine.Services
             _nextDepth++;
         }
 
-        public void Initialize(short level, int mobility)
+        public void Initialize(short level)
         {
-            _mobilityValue = mobility;
-            _useMobility = _mobilityValue > 0;
             if (level > 6)
             {
                 _useCache = true;
@@ -359,18 +354,6 @@ namespace Engine.Services
                 _useCache = false;
                 _table = new Dictionary<ulong, short>(0);
             }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetMobilityValue()
-        {
-            return _mobilityValue;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ShouldUseMobility()
-        {
-            return _useMobility;
         }
 
         #endregion
