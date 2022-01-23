@@ -11,5 +11,7 @@ namespace Common
         public long Memory { get; set; }
         public string White { get; set; }
         public string Black { get; set; }
+        public int Material { get; set; }
+        public int StaticValue { get; set; }
     }
 }

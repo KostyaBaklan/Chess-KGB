@@ -2,7 +2,6 @@
 using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
-using Engine.Models.Helpers;
 using Engine.Models.Transposition;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
@@ -141,7 +140,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             if (moves.Count == 0)
             {
                 return lastMove.IsCheck()
-                    ? -EvaluationService.GetMateValue(lastMove.Piece.IsWhite())
+                    ? -EvaluationService.GetMateValue()
                     : -EvaluationService.Evaluate(Position);
             }
 

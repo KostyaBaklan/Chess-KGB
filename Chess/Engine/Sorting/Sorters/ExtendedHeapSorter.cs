@@ -10,13 +10,13 @@ namespace Engine.Sorting.Sorters
 {
     public class ExtendedHeapSorter : MoveSorter
     {
-        private int _heapSize = 16;
-        private readonly MaxHeap _winHeap;
+        private readonly int _heapSize = 16;
+        private readonly PriorityQueue _winHeap;
 
         public ExtendedHeapSorter(IPosition position, IMoveComparer comparer) : base(position)
         {
             Comparer = comparer;
-            _winHeap = new MaxHeap(_heapSize, Comparer);
+            _winHeap = new PriorityQueue(_heapSize);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -103,7 +103,7 @@ namespace Engine.Sorting.Sorters
                     int attackValue = board.StaticExchange(attack);
                     if (attackValue > 0)
                     {
-                        _winHeap.Insert(attack);
+                        _winHeap.Insert(new MoveWrapper(attackValue,attack));
                     }
                     else if (attackValue < 0)
                     {
@@ -138,7 +138,7 @@ namespace Engine.Sorting.Sorters
                     int attackValue = board.StaticExchange(attack);
                     if (attackValue > 0)
                     {
-                        _winHeap.Insert(attack);
+                        _winHeap.Insert(new MoveWrapper(attackValue,attack));
                     }
                     else if (attackValue < 0)
                     {

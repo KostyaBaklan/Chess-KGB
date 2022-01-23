@@ -11,6 +11,7 @@ using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Extended.Heap;
 using Engine.Strategies.AlphaBeta.Null;
+using Engine.Strategies.AlphaBeta.Null.Heap;
 using Engine.Strategies.AlphaBeta.Simple;
 using Engine.Strategies.IterativeDeeping.Extended;
 using Newtonsoft.Json;
@@ -59,6 +60,10 @@ namespace Tests
                 {"abn_es_hc", new AlphaBetaNullHistoryStrategy(depth, position)},
                 {"abn_es_dc", new AlphaBetaNullDifferenceStrategy(depth, position)},
                 {"abn_es_dhc", new AlphaBetaNullDifferenceHistoryStrategy(depth, position)},
+
+                {"abn_hs_hc", new NullHeapHistoryStrategy(depth, position)},
+                {"abn_hs_dc", new NullHeapDifferenceStrategy(depth, position)},
+                {"abn_hs_dhc", new NullHeapDifferenceHistoryStrategy(depth, position)},
 
                 {"id_es_hc", new IdExtendedHistoryStrategy(depth, position)},
                 {"id_es_dc", new IdExtendedDifferenceStrategy(depth, position)},
@@ -135,6 +140,8 @@ namespace Tests
                 }
                 position.Make(m);
 
+                moveModel.StaticValue = position.GetValue();
+                moveModel.Material = position.GetStaticValue();
 
                 moveModel.White = formatter.Format(move);
                 moveModel.Black = formatter.Format(m);

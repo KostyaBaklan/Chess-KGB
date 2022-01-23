@@ -22,6 +22,18 @@ namespace Common
         public TimeSpan Std { get; set; }
 
         [JsonIgnore]
+        public int Material
+        {
+            get { return Moves.Select(m => m.Material).Last(); }
+        }
+
+        [JsonIgnore]
+        public int StaticValue
+        {
+            get { return Moves.Select(m => m.StaticValue).Last(); }
+        }
+
+        [JsonIgnore]
         public long Table
         {
             get { return Moves.Max(m => m.Table); }

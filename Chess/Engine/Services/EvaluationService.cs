@@ -274,9 +274,9 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetMateValue(bool isWhite)
+        public int GetMateValue()
         {
-            return isWhite ? _values[Piece.WhiteKing.AsByte()] : -_values[Piece.BlackKing.AsByte()];
+            return _values[Piece.WhiteKing.AsByte()];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

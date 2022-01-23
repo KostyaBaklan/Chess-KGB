@@ -1,63 +1,41 @@
-﻿using Engine.DataStructures;
-using Engine.DataStructures.Hash;
+﻿using System.Runtime.CompilerServices;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
+using Engine.Sorting.Comparers;
+using Engine.Sorting.Sorters;
+using Engine.Strategies.AlphaBeta.Simple;
 
-namespace Engine.Strategies.AlphaBeta.Simple
+namespace Engine.Strategies.AlphaBeta.Null.Heap
 {
-    public abstract class AlphaBetaStrategy : StrategyBase
+    public abstract class AlphaBetaNullHeapStrategy : AlphaBetaStrategy
     {
-        protected readonly TranspositionTable Table;
+        protected bool CanUseNull;
+        protected bool IsNull;
+        protected int MinReduction;
+        protected int MaxReduction;
+        protected int NullWindow;
 
-        protected AlphaBetaStrategy(short depth, IPosition position) : base(depth, position)
+        protected AlphaBetaNullHeapStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position)
         {
-            int capacity;
-            if (depth < 6)
-            {
-                capacity = 1131467;
-            }
-            else if (depth == 6)
-            {
-                capacity = 2263139;
-            }
-            else if (depth == 7)
-            {
-                capacity = 4356733;
-            }
-            else
-            {
-                capacity = 7910731;
-            }
-            Table = new TranspositionTable(capacity);
+            CanUseNull = false;
+            MinReduction = 2;
+            MaxReduction = 3;
+            NullWindow = EvaluationService.GetPenaltyValue();
+            Sorter = new ExtendedHeapSorter(position, comparer);
         }
-
-        public override int Size => Table.Count;
-
-        public override IResult GetResult()
-        {
-            var depth = Depth;
-            if (Position.GetPhase() == Phase.End)
-            {
-                depth++;
-            }
-            return GetResult(-SearchValue, SearchValue, depth);
-        }
-
-        #region Overrides of StrategyBase
-
         public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
         {
+            CanUseNull = false;
             Result result = new Result();
 
             IMove pv = pvMove;
-            if (pv == null)
+
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (isNotEndGame && Table.TryGet(Position.GetKey(), out var entry))
             {
-                var isNotEndGame = Position.GetPhase() != Phase.End;
-                if (isNotEndGame && Table.TryGet(Position.GetKey(), out var entry))
-                {
-                    pv = entry.PvMove;
-                } 
+                pv = entry.PvMove;
             }
 
             var moves = Position.GetAllMoves(Sorter, pv);
@@ -69,23 +47,28 @@ namespace Engine.Strategies.AlphaBeta.Simple
 
             if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
             {
-                var v = Evaluate(alpha,beta);
+                var v = Evaluate(alpha, beta);
                 if (v < -500)
                 {
                     result.GameResult = GameResult.ThreefoldRepetition;
                     return result;
                 }
             }
+
             if (moves.Count > 1)
             {
                 for (var i = 0; i < moves.Count; i++)
                 {
+                    IsNull = false;
                     var move = moves[i];
+                    SwitchNull();
                     Position.Make(move);
 
                     var value = -Search(-beta, -alpha, depth - 1);
 
                     Position.UnMake();
+                    SwitchNull();
+
                     if (value > result.Value)
                     {
                         result.Value = value;
@@ -111,11 +94,9 @@ namespace Engine.Strategies.AlphaBeta.Simple
             return result;
         }
 
-        #endregion
-
         public override int Search(int alpha, int beta, int depth)
         {
-            if (depth == 0)
+            if (depth <= 0)
             {
                 return Evaluate(alpha, beta);
             }
@@ -125,7 +106,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
 
             var isNotEndGame = Position.GetPhase() != Phase.End;
 
-            if (isNotEndGame && Table.TryGet(key, out var entry))
+            if (!IsNull && isNotEndGame && Table.TryGet(key, out var entry))
             {
                 if (entry.Depth >= depth)
                 {
@@ -150,40 +131,55 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 pv = entry.PvMove;
             }
 
-            int value = int.MinValue;
+            int value = short.MinValue;
             IMove bestMove = null;
 
+            var lastMove = MoveHistory.GetLastMove();
             var moves = Position.GetAllMoves(Sorter, pv);
             if (moves.Count == 0)
             {
-                var lastMove = MoveHistory.GetLastMove();
                 return lastMove.IsCheck()
                     ? -EvaluationService.GetMateValue()
                     : -EvaluationService.Evaluate(Position);
             }
 
-            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
+            if (MoveHistory.IsThreefoldRepetition(key))
             {
-                var v = Evaluate(alpha,beta);
+                var v = Evaluate(alpha, beta);
                 if (v < 0)
                 {
                     return -v;
                 }
             }
 
+            if (CanUseNull && !lastMove.IsCheck() && isNotEndGame && IsValidWindow(alpha, beta))
+            {
+                int r = depth > 6 ? MaxReduction : MinReduction;
+                if (depth > r)
+                {
+                    MakeNullMove();
+                    var v = -Search(-beta, NullWindow - beta, depth - r - 1);
+                    UndoNullMove();
+                    if (v >= beta)
+                    {
+                        return v;
+                    }
+                }
+            }
+
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
-                Position.Make(move);
 
+                Position.Make(move);
                 var r = -Search(-beta, -alpha, depth - 1);
+                Position.UnMake();
+
                 if (r > value)
                 {
                     value = r;
                     bestMove = move;
                 }
-
-                Position.UnMake();
 
                 if (value > alpha)
                 {
@@ -196,6 +192,8 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 break;
             }
 
+            if (IsNull || !isNotEndGame) return value;
+
             int best;
             if (bestMove == null)
             {
@@ -207,9 +205,8 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 best = value;
             }
 
-            if (!isNotEndGame) return best;
-
-            TranspositionEntry te = new TranspositionEntry { Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
+            TranspositionEntry te = new TranspositionEntry
+            { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
             if (best <= alpha)
             {
                 te.Type = TranspositionEntryType.LowerBound;
@@ -227,9 +224,32 @@ namespace Engine.Strategies.AlphaBeta.Simple
             return best;
         }
 
-        public void Clear()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsValidWindow(int alpha, int beta)
         {
-            Table.Clear();
+            return beta < SearchValue && beta - alpha > NullWindow;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void UndoNullMove()
+        {
+            SwitchNull();
+            Position.SwapTurn();
+            IsNull = false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void MakeNullMove()
+        {
+            SwitchNull();
+            Position.SwapTurn();
+            IsNull = true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void SwitchNull()
+        {
+            CanUseNull = !CanUseNull;
         }
     }
 }

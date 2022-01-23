@@ -8,7 +8,7 @@ namespace Engine.DataStructures.Hash
         private struct HashEntry<T>: IEquatable<HashEntry<T>>
         {
             public readonly ulong Key;
-            public T Item;
+            public readonly T Item;
 
             public HashEntry(ulong key, T item)
             {

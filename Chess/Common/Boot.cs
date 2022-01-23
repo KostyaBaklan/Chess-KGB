@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using CommonServiceLocator;
 using Engine.Interfaces;
+using Engine.Models;
 using Engine.Services;
+using Newtonsoft.Json;
 using Unity;
 
 namespace Common
@@ -13,9 +16,14 @@ namespace Common
             IUnityContainer container = new UnityContainer();
             ServiceLocatorAdapter serviceLocatorAdapter = new ServiceLocatorAdapter(container);
 
+            var s = File.ReadAllText(@"Config\Configuration.json");
+            var configuration = JsonConvert.DeserializeObject<Configuration>(s);
+
             ServiceLocator.SetLocatorProvider(() => serviceLocatorAdapter);
             container.RegisterInstance<IServiceLocator>(serviceLocatorAdapter);
             container.RegisterInstance<IServiceProvider>(serviceLocatorAdapter);
+
+            container.RegisterInstance<IConfiguration>(configuration);
 
             container.RegisterSingleton(typeof(IMoveProvider), typeof(MoveProvider));
             container.RegisterSingleton(typeof(IMoveFormatter), typeof(MoveFormatter));

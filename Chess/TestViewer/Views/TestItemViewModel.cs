@@ -79,6 +79,18 @@ namespace TestViewer.Views
                         new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
                             new KeyValuePair<IComparable, string>(i.Memory, $"{i.Strategy}"))
                             .OrderBy(k=>k.Key))
+                    },
+                    {
+                        "Material",
+                        new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
+                                new KeyValuePair<IComparable, string>(i.Material, $"{i.Strategy}"))
+                            .OrderByDescending(k=>k.Key))
+                    },
+                    {
+                        "Static Value",
+                        new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
+                                new KeyValuePair<IComparable, string>(i.StaticValue, $"{i.Strategy}"))
+                            .OrderByDescending(k=>k.Key))
                     }
                 };
 

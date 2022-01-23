@@ -34,6 +34,8 @@
                                 <DataGridTextColumn Header="Average" Binding="{Binding Average, Mode=OneWay}"/>
                                 <DataGridTextColumn Header="Std" Binding="{Binding Std, Mode=OneWay}"/>
                                 <DataGridTextColumn Header="Table" Binding="{Binding Table, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="Material" Binding="{Binding Material, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="Static Value" Binding="{Binding StaticValue, Mode=OneWay}"/>
                                 <DataGridTextColumn Header="Evaluation" Binding="{Binding Evaluation, Mode=OneWay}"/>
                                 <DataGridTextColumn Header="Memory" Binding="{Binding Memory, Mode=OneWay}"/>
                             </DataGrid.Columns>
@@ -42,8 +44,8 @@
                         <DataGrid Grid.Row="2" AutoGenerateColumns="False" ItemsSource="{Binding TestResults, Mode=OneWay}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Category" Binding="{Binding Category, Mode=OneWay}"/>
-                                <DataGridTextColumn Header="Min" Binding="{Binding Min, Mode=OneWay}"/>
-                                <DataGridTextColumn Header="Max" Binding="{Binding Max, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="Best" Binding="{Binding Min, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="Worst" Binding="{Binding Max, Mode=OneWay}"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

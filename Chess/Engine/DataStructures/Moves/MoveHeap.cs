@@ -13,7 +13,7 @@ namespace Engine.DataStructures.Moves
         public MoveHeap(IMoveComparer comparer) : base(comparer)
         {
             _killers = new List<IMove>();
-            _nonCaptures = new MaxHeap(64,comparer);
+            _nonCaptures = new MaxHeap(64, comparer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,7 +44,6 @@ namespace Engine.DataStructures.Moves
             _moves.AddRange(_killers);
 
             _nonCaptures.GetOrderedItems(_moves);
-            //_nonCaptures.GetItems(_moves);
 
             _moves.AddRange(_looseCaptures);
         }

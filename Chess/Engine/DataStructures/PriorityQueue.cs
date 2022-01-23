@@ -8,27 +8,25 @@ namespace Engine.DataStructures
     public class PriorityQueue
     {
         private int _size;
-        private readonly int _degree;
-        private readonly MoveWrapper[] _elements;
+        private MoveWrapper[] _elements;
 
-        public PriorityQueue() : this(2, 128) { }
+        public PriorityQueue() : this( 128) { }
 
-        public PriorityQueue(int degree, int size)
+        public PriorityQueue( int size)
         {
-            _degree = degree;
             _elements = new MoveWrapper[size];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int Parent(int i)
         {
-            return (i - 1) / _degree;
+            return (i - 1) / 2;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int Left(int i)
         {
-            return i * _degree + 1;
+            return i * 2 + 1;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -57,14 +55,18 @@ namespace Engine.DataStructures
             var left = Left(index);
             if (left >= _size) return;
 
-            var last = Math.Min(left + _degree, _size);
             var largest = index;
-            for (var i = left; i < last; i++)
+            if (_elements[left].CompareTo(_elements[largest]) > 0)
             {
-                if (_elements[i].CompareTo(_elements[largest]) > 0)
-                {
-                    largest = i;
-                }
+                largest = left;
+            }
+
+            var right = left + 1;
+            if (right >= _size) return;
+
+            if (_elements[right].CompareTo(_elements[largest]) > 0)
+            {
+                largest = right;
             }
 
             if (largest == index) return;
@@ -82,8 +84,22 @@ namespace Engine.DataStructures
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Insert(MoveWrapper element)
         {
+            if (_elements.Length == _size)
+            {
+                MoveWrapper[] elements = new MoveWrapper[_size + _size];
+                Array.Copy(_elements, elements, _size);
+                _elements = elements;
+            }
+
             _elements[_size] = element;
-            BubbleUp(_size++, element.Value);
+            var i = _size++;
+            var parent = Parent(i);
+            while (i > 0 && element.Value >  _elements[parent].Value)
+            {
+                Swap(i, parent);
+                i = parent;
+                parent = Parent(parent);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -93,6 +109,16 @@ namespace Engine.DataStructures
             Swap(0, _size);
             Heapify(0);
             return _elements[_size].Move;
+        }
+
+        public void Clear()
+        {
+            _size = 0;
+        }
+
+        public IMove this[int index]
+        {
+            get { return _elements[index].Move; }
         }
     }
 }

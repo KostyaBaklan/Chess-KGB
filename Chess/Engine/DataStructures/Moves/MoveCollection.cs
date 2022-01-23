@@ -43,13 +43,10 @@ namespace Engine.DataStructures.Moves
 
             _moves.AddRange(_killers);
 
-            if (_nonCaptures.Count < 6)
+            if (_nonCaptures.Count > 1)
             {
-                _nonCaptures.Sort(_comparer);
-            }
-            else
-            {
-                for (var i = 0; i < _nonCaptures.Count / 3; i++)
+                var capturesCount = _nonCaptures.Count < 6 ? _nonCaptures.Count / 2 : _nonCaptures.Count / 3;
+                for (var i = 0; i < capturesCount; i++)
                 {
                     int index = i;
                     var min = _nonCaptures[i];

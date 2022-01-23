@@ -16,6 +16,7 @@ namespace Engine.Sorting.Sorters
         protected IMoveComparer Comparer;
         protected readonly IPosition Position;
         private readonly List<IMove> _moves;
+        protected readonly IConfiguration Configuration;
 
         protected MoveSorter(IPosition position)
         {
@@ -28,6 +29,7 @@ namespace Engine.Sorting.Sorters
             }
 
             MoveHistoryService = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
+            Configuration = ServiceLocator.Current.GetInstance<IConfiguration>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,4 +1,5 @@
-﻿using Engine.DataStructures;
+﻿using CommonServiceLocator;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 
@@ -7,10 +8,12 @@ namespace Engine.Strategies.IterativeDeeping
     public abstract  class IdStrategyBase:StrategyBase
     {
         protected StrategyBase InternalStrategy;
+        private readonly int _initialDepth;
 
         protected IdStrategyBase(short depth, IPosition position, StrategyBase strategy) : base(depth, position)
         {
             InternalStrategy = strategy;
+            _initialDepth = ServiceLocator.Current.GetInstance<IConfiguration>().InitialDepth;
         }
 
         #region Overrides of StrategyBase
@@ -23,11 +26,10 @@ namespace Engine.Strategies.IterativeDeeping
                 depth++;
             }
 
-            var x = depth - 2;
-            var result = GetResult(-SearchValue, SearchValue, x);
+            var result = GetResult(-SearchValue, SearchValue, _initialDepth);
             if (result.GameResult == GameResult.Continue)
             {
-                for (int d = x+1; d <= depth; d++)
+                for (int d = _initialDepth + 1; d <= depth; d++)
                 {
                     result = GetResult(-SearchValue, SearchValue, d, result.Move);
                     if (result.GameResult != GameResult.Continue) break;

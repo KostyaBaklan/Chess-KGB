@@ -12,7 +12,9 @@ namespace Engine.DataStructures
         private int _size;
         private readonly IMoveComparer _comparer;
 
-        public MaxHeap() : this(128, new HistoryComparer()) { }
+        public MaxHeap() : this(128, new HistoryComparer())
+        {
+        }
 
         public MaxHeap(int size, IMoveComparer comparer)
         {
@@ -91,10 +93,11 @@ namespace Engine.DataStructures
         {
             if (_elements.Length == _size)
             {
-                IMove[] elements = new IMove[_size+_size];
-                Array.Copy(_elements,elements,_size);
+                IMove[] elements = new IMove[_size + _size];
+                Array.Copy(_elements, elements, _size);
                 _elements = elements;
             }
+
             _elements[_size] = element;
             var i = _size++;
             var parent = Parent(i);
@@ -127,6 +130,7 @@ namespace Engine.DataStructures
                 {
                     elements[i] = Maximum();
                 }
+
                 elements[elements.Length - 1] = _elements[0];
             }
             else
@@ -136,6 +140,7 @@ namespace Engine.DataStructures
                 {
                     elements[i] = Maximum();
                 }
+
                 for (var i = count; i < elements.Length; i++)
                 {
                     elements[i] = _elements[i - count];
@@ -180,25 +185,23 @@ namespace Engine.DataStructures
         {
             if (_size <= 0) return;
 
-            var count = _size;
-            if (_size < 6)
+            if (_size > 1)
             {
-                for (var i = 0; i < count - 1; i++)
+                var count = _size;
+                int last = count < 6 ? count / 2 : count / 3;
+                for (var i = 0; i < last; i++)
                 {
                     moves.Add(Maximum());
                 }
-                moves.Add(_elements[0]);
-            }
-            else
-            {
-                for (var i = 0; i < 6; i++)
-                {
-                    moves.Add(Maximum());
-                }
-                for (var i = 6; i <  count; i++)
+
+                for (var i = last; i < count; i++)
                 {
                     moves.Add(_elements[i]);
                 }
+            }
+            else
+            {
+                moves.Add(_elements[0]);
             }
         }
     }
