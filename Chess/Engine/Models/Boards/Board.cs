@@ -250,7 +250,7 @@ namespace Engine.Models.Boards
             //    } 
             //}
 
-            value = CheckUndeveloped(Piece.BlackBishop.AsByte(), _ranks[7], value);
+            //value = CheckUndeveloped(Piece.BlackBishop.AsByte(), _ranks[7], value);
             return value;
         }
 
@@ -277,7 +277,7 @@ namespace Engine.Models.Boards
                 }
             }
 
-            value = CheckUndeveloped(Piece.BlackKnight.AsByte(), _ranks[7], value);
+            //value = CheckUndeveloped(Piece.BlackKnight.AsByte(), _ranks[7], value);
             return value;
         }
 
@@ -392,7 +392,7 @@ namespace Engine.Models.Boards
             //    } 
             //}
 
-            value = CheckUndeveloped(Piece.WhiteBishop.AsByte(), _ranks[0], value);
+            //value = CheckUndeveloped(Piece.WhiteBishop.AsByte(), _ranks[0], value);
             return value;
         }
 
@@ -420,19 +420,19 @@ namespace Engine.Models.Boards
                 }
             }
 
-            value = CheckUndeveloped(piece, _ranks[0], value);
+            //value = CheckUndeveloped(piece, _ranks[0], value);
             return value;
         }
 
-        private int CheckUndeveloped(byte piece, BitBoard rank, int value)
-        {
-            if (_phase == Phase.Middle && (_boards[piece] & rank).Any())
-            {
-                return value - _evaluationService.GetPawnValue();
-            }
+        //private int CheckUndeveloped(byte piece, BitBoard rank, int value)
+        //{
+        //    if (_phase == Phase.Middle && (_boards[piece] & rank).Any())
+        //    {
+        //        return value - _evaluationService.GetPawnValue();
+        //    }
 
-            return value;
-        }
+        //    return value;
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhitePawnValue(int[] positions)
@@ -519,16 +519,11 @@ namespace Engine.Models.Boards
         {
             for (var i = 0; i < rooks.Length; i++)
             {
+                var rook = rooks[i].AsBitBoard();
                 BitBoard file = GetFile(rooks[i]);
-                if (_empty.IsSet(file))
+                if ((_empty^rook).IsSet(file))
                 {
                     value += _evaluationService.GetPawnValue(3);
-                }
-
-                var rookAttacks = rooks[i].RookAttacks(~_empty);
-                if ((rookAttacks & _boards[Piece.WhiteRook.AsByte()]).Any())
-                {
-                    value += _evaluationService.GetPawnValue();
                 }
 
                 //if (_evaluationService.ShouldUseMobility())
@@ -545,16 +540,11 @@ namespace Engine.Models.Boards
         {
             for (var i = 0; i < rooks.Length; i++)
             {
+                var rook = rooks[i].AsBitBoard();
                 BitBoard file = GetFile(rooks[i]);
-                if (_empty.IsSet(file))
+                if ((_empty ^ rook).IsSet(file))
                 {
                     value += _evaluationService.GetPawnValue(3);
-                }
-
-                var rookAttacks = rooks[i].RookAttacks(~_empty);
-                if ((rookAttacks & _boards[Piece.BlackRook.AsByte()]).Any())
-                {
-                    value += _evaluationService.GetPawnValue();
                 }
 
                 //if (_evaluationService.ShouldUseMobility())
