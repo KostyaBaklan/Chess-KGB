@@ -333,20 +333,20 @@ namespace Engine.Services
                 }
 
                 int capacity;
-                if (level ==7)
-                {
-                    capacity = 20000213;
-                }
-                else if(level ==8)
+                if (level == 7)
                 {
                     capacity = 30000781;
                 }
-                else
+                else if (level == 8)
                 {
                     capacity = 40000651;
                 }
+                else
+                {
+                    capacity = 49979687;
+                }
 
-                _threshold = 2*capacity / 3;
+                _threshold = 2 * capacity / 3;
                 _table = new Dictionary<ulong, short>(capacity);
             }
             else
