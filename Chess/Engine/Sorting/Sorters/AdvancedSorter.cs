@@ -23,7 +23,6 @@ namespace Engine.Sorting.Sorters
 
         #region Overrides of MoveSorter
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection)

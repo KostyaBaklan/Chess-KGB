@@ -15,12 +15,23 @@ namespace Common
 
         public string Strategy { get; set; }
         public int Depth { get; set; }
-        public int Mobility { get; set; }
         public TimeSpan Total { get; set; }
         public TimeSpan Min { get; set; }
         public TimeSpan Max { get; set; }
         public TimeSpan Average { get; set; }
         public TimeSpan Std { get; set; }
+
+        [JsonIgnore]
+        public int Material
+        {
+            get { return Moves.Select(m => m.Material).Last(); }
+        }
+
+        [JsonIgnore]
+        public int StaticValue
+        {
+            get { return Moves.Select(m => m.StaticValue).Last(); }
+        }
 
         [JsonIgnore]
         public long Table

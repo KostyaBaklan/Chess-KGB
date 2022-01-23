@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Windows;
 using CommonServiceLocator;
 using Engine.Interfaces;
+using Engine.Models;
 using Engine.Services;
 using Kgb.ChessApp.Views;
+using Newtonsoft.Json;
 using Prism.Ioc;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -19,6 +22,11 @@ namespace Kgb.ChessApp
     {
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            var s = File.ReadAllText(@"Config\Configuration.json");
+            var configuration = JsonConvert.DeserializeObject<Configuration>(s);
+
+            containerRegistry.RegisterInstance(typeof(IConfiguration), configuration);
+
             containerRegistry.RegisterSingleton(typeof(IMoveProvider), typeof(MoveProvider));
             containerRegistry.RegisterSingleton(typeof(IMoveFormatter), typeof(MoveFormatter));
             containerRegistry.RegisterSingleton(typeof(IMoveHistoryService), typeof(MoveHistoryService));

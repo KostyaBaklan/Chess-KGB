@@ -35,50 +35,62 @@ namespace TestViewer.Views
                     {
                         "Total",
                         new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
-                            new KeyValuePair<IComparable, string>(i.Total, $"{i.Strategy}_M{i.Mobility}"))
+                            new KeyValuePair<IComparable, string>(i.Total, $"{i.Strategy}"))
                             .OrderBy(k=>k.Key))
                     },
                     {
                         "Min",
                         new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
-                            new KeyValuePair<IComparable, string>(i.Min, $"{i.Strategy}_M{i.Mobility}"))
+                            new KeyValuePair<IComparable, string>(i.Min, $"{i.Strategy}"))
                             .OrderBy(k=>k.Key))
                     },
                     {
                         "Max",
                         new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
-                            new KeyValuePair<IComparable, string>(i.Max, $"{i.Strategy}_M{i.Mobility}"))
+                            new KeyValuePair<IComparable, string>(i.Max, $"{i.Strategy}"))
                             .OrderBy(k=>k.Key))
                     },
                     {
                         "Average",
                         new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
-                            new KeyValuePair<IComparable, string>(i.Average, $"{i.Strategy}_M{i.Mobility}"))
+                            new KeyValuePair<IComparable, string>(i.Average, $"{i.Strategy}"))
                             .OrderBy(k=>k.Key))
                     },
                     {
                         "Std",
                         new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
-                            new KeyValuePair<IComparable, string>(i.Std, $"{i.Strategy}_M{i.Mobility}"))
+                            new KeyValuePair<IComparable, string>(i.Std, $"{i.Strategy}"))
                             .OrderBy(k=>k.Key))
                     },
                     {
                         "Table",
                         new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
-                            new KeyValuePair<IComparable, string>(i.Table, $"{i.Strategy}_M{i.Mobility}"))
+                            new KeyValuePair<IComparable, string>(i.Table, $"{i.Strategy}"))
                             .OrderBy(k=>k.Key))
                     },
                     {
                         "Evaluation",
                         new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
-                            new KeyValuePair<IComparable, string>(i.Evaluation, $"{i.Strategy}_M{i.Mobility}"))
+                            new KeyValuePair<IComparable, string>(i.Evaluation, $"{i.Strategy}"))
                             .OrderBy(k=>k.Key))
                     },
                     {
                         "Memory",
                         new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
-                            new KeyValuePair<IComparable, string>(i.Memory, $"{i.Strategy}_M{i.Mobility}"))
+                            new KeyValuePair<IComparable, string>(i.Memory, $"{i.Strategy}"))
                             .OrderBy(k=>k.Key))
+                    },
+                    {
+                        "Material",
+                        new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
+                                new KeyValuePair<IComparable, string>(i.Material, $"{i.Strategy}"))
+                            .OrderByDescending(k=>k.Key))
+                    },
+                    {
+                        "Static Value",
+                        new List<KeyValuePair<IComparable, string>>(TestItems.Select(i =>
+                                new KeyValuePair<IComparable, string>(i.StaticValue, $"{i.Strategy}"))
+                            .OrderByDescending(k=>k.Key))
                     }
                 };
 

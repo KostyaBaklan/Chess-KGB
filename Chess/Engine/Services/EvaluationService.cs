@@ -15,7 +15,6 @@ namespace Engine.Services
 
         private readonly int _penaltyValue;
         private readonly int _unitValue;
-        private int _mobilityValue;
         private readonly int _pawnValue;
         private readonly int[] _values;
         private readonly int[][][] _staticValues;
@@ -77,11 +76,11 @@ namespace Engine.Services
             -10,  0, 10, 10, 10, 10,  0,-10,
             -10, 10, 10, 10, 10, 10, 10,-10,
             -10,  5,  0,  0,  0,  0,  5,-10,
-            -20,-10,-10,-10,-10,-10,-10,-20
+            -20,-10,-15,-10,-10,-15,-10,-20
         };
 
         private static readonly int[] _whiteBishopSquareTable = {
-            -20,-10,-10,-10,-10,-10,-10,-20,
+            -20,-10,-15,-10,-10,-15,-10,-20,
             -10,  5,  0,  0,  0,  0,  5,-10,
             -10, 10, 10, 10, 10, 10, 10,-10,
             -10,  0, 10, 10, 10, 10,  0,-10,
@@ -179,8 +178,6 @@ namespace Engine.Services
             -50,-40,-30,-20,-20,-30,-40,-50
         };
 
-        private bool _useMobility;
-
         #endregion
 
         public EvaluationService(IMoveHistoryService moveHistory)
@@ -277,9 +274,9 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetMateValue(bool isWhite)
+        public int GetMateValue()
         {
-            return isWhite ? _values[Piece.WhiteKing.AsByte()] : -_values[Piece.BlackKing.AsByte()];
+            return _values[Piece.WhiteKing.AsByte()];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -324,10 +321,8 @@ namespace Engine.Services
             _nextDepth++;
         }
 
-        public void Initialize(short level, int mobility)
+        public void Initialize(short level)
         {
-            _mobilityValue = mobility;
-            _useMobility = _mobilityValue > 0;
             if (level > 6)
             {
                 _useCache = true;
@@ -338,20 +333,20 @@ namespace Engine.Services
                 }
 
                 int capacity;
-                if (level ==7)
-                {
-                    capacity = 20000213;
-                }
-                else if(level ==8)
+                if (level == 7)
                 {
                     capacity = 30000781;
                 }
-                else
+                else if (level == 8)
                 {
                     capacity = 40000651;
                 }
+                else
+                {
+                    capacity = 49979687;
+                }
 
-                _threshold = 2*capacity / 3;
+                _threshold = 2 * capacity / 3;
                 _table = new Dictionary<ulong, short>(capacity);
             }
             else
@@ -359,18 +354,6 @@ namespace Engine.Services
                 _useCache = false;
                 _table = new Dictionary<ulong, short>(0);
             }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetMobilityValue()
-        {
-            return _mobilityValue;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ShouldUseMobility()
-        {
-            return _useMobility;
         }
 
         #endregion

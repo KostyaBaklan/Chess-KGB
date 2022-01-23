@@ -2,7 +2,6 @@
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Models.Enums;
-using Engine.Models.Helpers;
 using Engine.Models.Transposition;
 
 namespace Engine.Strategies.AlphaBeta.Simple
@@ -24,11 +23,11 @@ namespace Engine.Strategies.AlphaBeta.Simple
             }
             else if (depth == 7)
             {
-                capacity = 4356733;
+                capacity = 5000113;
             }
             else
             {
-                capacity = 7910731;
+                capacity = 10000139;
             }
             Table = new TranspositionTable(capacity);
         }
@@ -159,7 +158,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
             {
                 var lastMove = MoveHistory.GetLastMove();
                 return lastMove.IsCheck()
-                    ? -EvaluationService.GetMateValue(lastMove.Piece.IsWhite())
+                    ? -EvaluationService.GetMateValue()
                     : -EvaluationService.Evaluate(Position);
             }
 

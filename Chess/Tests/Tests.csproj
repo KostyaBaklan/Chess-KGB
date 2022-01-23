@@ -72,6 +72,7 @@
     <PostBuildEvent>xcopy /f /y "$(TargetPath)" "$(ProjectDir)Redist\"
  xcopy /f /y "$(TargetDir)*.dll" "$(ProjectDir)Redist\"
  xcopy /f /y "$(TargetDir)Data\*" "$(ProjectDir)Redist\Data\*"
+ xcopy /f /y "$(TargetDir)Config\*" "$(ProjectDir)Redist\Config\*"
 xcopy /f /y "$(TargetDir)$(TargetName).exe.config" "$(ProjectDir)Redist\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

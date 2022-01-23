@@ -10,10 +10,8 @@ namespace Engine.Interfaces
         int GetPawnValue(int factor = 1);
         int GetPenaltyValue(int factor = 1);
         int GetUnitValue(int factor = 1);
-        int GetMateValue(bool isWhite);
+        int GetMateValue();
         int Evaluate(IPosition position);
-        void Initialize(short depth, int mobility);
-        int GetMobilityValue();
-        bool ShouldUseMobility();
+        void Initialize(short depth);
     }
 }

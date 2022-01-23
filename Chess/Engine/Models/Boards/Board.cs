@@ -95,39 +95,39 @@ namespace Engine.Models.Boards
             return piece.IsWhite() ? _blacks.IsSet(bitBoard) : _whites.IsSet(bitBoard);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int CalculateBlackMobility(BitBoard mobility)
-        {
-            int value = 0;
-            foreach (var p in mobility.BitScan())
-            {
-                var pattern = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), p) &
-                              _boards[Piece.WhitePawn.AsByte()];
-                if (!pattern.Any())
-                {
-                    value += _evaluationService.GetMobilityValue();
-                }
-            }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //private int CalculateBlackMobility(BitBoard mobility)
+        //{
+        //    int value = 0;
+        //    foreach (var p in mobility.BitScan())
+        //    {
+        //        var pattern = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), p) &
+        //                      _boards[Piece.WhitePawn.AsByte()];
+        //        if (!pattern.Any())
+        //        {
+        //            value += _evaluationService.GetMobilityValue();
+        //        }
+        //    }
 
-            return value;
-        }
+        //    return value;
+        //}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int CalculateWhiteMobility(BitBoard mobility)
-        {
-            int value = 0;
-            foreach (var p in mobility.BitScan())
-            {
-                var pattern = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), p) &
-                              _boards[Piece.BlackPawn.AsByte()];
-                if (!pattern.Any())
-                {
-                    value += _evaluationService.GetMobilityValue();
-                }
-            }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //private int CalculateWhiteMobility(BitBoard mobility)
+        //{
+        //    int value = 0;
+        //    foreach (var p in mobility.BitScan())
+        //    {
+        //        var pattern = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), p) &
+        //                      _boards[Piece.BlackPawn.AsByte()];
+        //        if (!pattern.Any())
+        //        {
+        //            value += _evaluationService.GetMobilityValue();
+        //        }
+        //    }
 
-            return value;
-        }
+        //    return value;
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetStaticValue(byte piece, int[] positions)
@@ -241,16 +241,16 @@ namespace Engine.Models.Boards
                 value -= _evaluationService.GetPawnValue(2);
             }
 
-            if (_evaluationService.ShouldUseMobility())
-            {
-                for (var i = 0; i < bishops.Length; i++)
-                {
-                    var bishopAttacks = bishops[i].BishopAttacks(~_empty) & _empty;
-                    value += CalculateBlackMobility(bishopAttacks);
-                } 
-            }
+            //if (_evaluationService.ShouldUseMobility())
+            //{
+            //    for (var i = 0; i < bishops.Length; i++)
+            //    {
+            //        var bishopAttacks = bishops[i].BishopAttacks(~_empty) & _empty;
+            //        value += CalculateBlackMobility(bishopAttacks);
+            //    } 
+            //}
 
-            value = CheckUndeveloped(Piece.BlackBishop.AsByte(), _ranks[7], value);
+            //value = CheckUndeveloped(Piece.BlackBishop.AsByte(), _ranks[7], value);
             return value;
         }
 
@@ -263,12 +263,12 @@ namespace Engine.Models.Boards
 
             for (var i = 0; i < knights.Length; i++)
             {
-                if (_evaluationService.ShouldUseMobility())
-                {
-                    var attackPattern = _moveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), knights[i]) & _empty;
+                //if (_evaluationService.ShouldUseMobility())
+                //{
+                //    var attackPattern = _moveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), knights[i]) & _empty;
 
-                    value += CalculateBlackMobility(attackPattern); 
-                }
+                //    value += CalculateBlackMobility(attackPattern); 
+                //}
 
                 if ((_moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), knights[i]) &
                      _boards[Piece.BlackPawn.AsByte()]).Any())
@@ -277,7 +277,7 @@ namespace Engine.Models.Boards
                 }
             }
 
-            value = CheckUndeveloped(Piece.BlackKnight.AsByte(), _ranks[7], value);
+            //value = CheckUndeveloped(Piece.BlackKnight.AsByte(), _ranks[7], value);
             return value;
         }
 
@@ -383,16 +383,16 @@ namespace Engine.Models.Boards
             {
                 value -= _evaluationService.GetPawnValue(2);
             }
-            if (_evaluationService.ShouldUseMobility())
-            {
-                for (var i = 0; i < bishops.Length; i++)
-                {
-                    var bishopAttacks = bishops[i].BishopAttacks(~_empty) & _empty;
-                    value += CalculateWhiteMobility(bishopAttacks);
-                } 
-            }
+            //if (_evaluationService.ShouldUseMobility())
+            //{
+            //    for (var i = 0; i < bishops.Length; i++)
+            //    {
+            //        var bishopAttacks = bishops[i].BishopAttacks(~_empty) & _empty;
+            //        value += CalculateWhiteMobility(bishopAttacks);
+            //    } 
+            //}
 
-            value = CheckUndeveloped(Piece.WhiteBishop.AsByte(), _ranks[0], value);
+            //value = CheckUndeveloped(Piece.WhiteBishop.AsByte(), _ranks[0], value);
             return value;
         }
 
@@ -406,12 +406,12 @@ namespace Engine.Models.Boards
 
             for (var i = 0; i < knights.Length; i++)
             {
-                if (_evaluationService.ShouldUseMobility())
-                {
-                    var attackPattern = _moveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), knights[i]) & _empty;
+                //if (_evaluationService.ShouldUseMobility())
+                //{
+                //    var attackPattern = _moveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), knights[i]) & _empty;
 
-                    value += CalculateWhiteMobility(attackPattern); 
-                }
+                //    value += CalculateWhiteMobility(attackPattern); 
+                //}
 
                 if ((_moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), knights[i]) &
                      _boards[Piece.WhitePawn.AsByte()]).Any())
@@ -420,19 +420,19 @@ namespace Engine.Models.Boards
                 }
             }
 
-            value = CheckUndeveloped(piece, _ranks[0], value);
+            //value = CheckUndeveloped(piece, _ranks[0], value);
             return value;
         }
 
-        private int CheckUndeveloped(byte piece, BitBoard rank, int value)
-        {
-            if (_phase == Phase.Middle && (_boards[piece] & rank).Any())
-            {
-                return value - _evaluationService.GetPawnValue();
-            }
+        //private int CheckUndeveloped(byte piece, BitBoard rank, int value)
+        //{
+        //    if (_phase == Phase.Middle && (_boards[piece] & rank).Any())
+        //    {
+        //        return value - _evaluationService.GetPawnValue();
+        //    }
 
-            return value;
-        }
+        //    return value;
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhitePawnValue(int[] positions)
@@ -519,22 +519,17 @@ namespace Engine.Models.Boards
         {
             for (var i = 0; i < rooks.Length; i++)
             {
+                var rook = rooks[i].AsBitBoard();
                 BitBoard file = GetFile(rooks[i]);
-                if (_empty.IsSet(file))
+                if ((_empty^rook).IsSet(file))
                 {
                     value += _evaluationService.GetPawnValue(3);
                 }
 
-                var rookAttacks = rooks[i].RookAttacks(~_empty);
-                if ((rookAttacks & _boards[Piece.WhiteRook.AsByte()]).Any())
-                {
-                    value += _evaluationService.GetPawnValue();
-                }
-
-                if (_evaluationService.ShouldUseMobility())
-                {
-                    value += CalculateWhiteMobility(rookAttacks & _empty); 
-                }
+                //if (_evaluationService.ShouldUseMobility())
+                //{
+                //    value += CalculateWhiteMobility(rookAttacks & _empty); 
+                //}
             }
 
             return value;
@@ -545,22 +540,17 @@ namespace Engine.Models.Boards
         {
             for (var i = 0; i < rooks.Length; i++)
             {
+                var rook = rooks[i].AsBitBoard();
                 BitBoard file = GetFile(rooks[i]);
-                if (_empty.IsSet(file))
+                if ((_empty ^ rook).IsSet(file))
                 {
                     value += _evaluationService.GetPawnValue(3);
                 }
 
-                var rookAttacks = rooks[i].RookAttacks(~_empty);
-                if ((rookAttacks & _boards[Piece.BlackRook.AsByte()]).Any())
-                {
-                    value += _evaluationService.GetPawnValue();
-                }
-
-                if (_evaluationService.ShouldUseMobility())
-                {
-                    value += CalculateBlackMobility(rookAttacks & _empty); 
-                }
+                //if (_evaluationService.ShouldUseMobility())
+                //{
+                //    value += CalculateBlackMobility(rookAttacks & _empty); 
+                //}
             }
 
             return value;

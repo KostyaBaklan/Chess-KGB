@@ -7,9 +7,9 @@ using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 using Engine.Strategies.AlphaBeta.Simple;
 
-namespace Engine.Strategies.AlphaBeta.Null
+namespace Engine.Strategies.AlphaBeta.Null.Heap
 {
-    public abstract class AlphaBetaNullStrategy : AlphaBetaStrategy
+    public abstract class AlphaBetaNullHeapStrategy : AlphaBetaStrategy
     {
         protected bool CanUseNull;
         protected bool IsNull;
@@ -17,15 +17,14 @@ namespace Engine.Strategies.AlphaBeta.Null
         protected int MaxReduction;
         protected int NullWindow;
 
-        protected AlphaBetaNullStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position)
+        protected AlphaBetaNullHeapStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position)
         {
             CanUseNull = false;
             MinReduction = 2;
             MaxReduction = 3;
             NullWindow = EvaluationService.GetPenaltyValue();
-            Sorter = new ExtendedSorter(position, comparer);
+            Sorter = new ExtendedHeapSorter(position, comparer);
         }
-
         public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
         {
             CanUseNull = false;
@@ -207,7 +206,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             }
 
             TranspositionEntry te = new TranspositionEntry
-                {Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
+            { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
             if (best <= alpha)
             {
                 te.Type = TranspositionEntryType.LowerBound;
