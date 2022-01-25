@@ -261,9 +261,9 @@ namespace Engine.Models.Boards
         private int GetBlackBishopValue(int[] bishops)
         {
             var value = GetStaticValue(Piece.BlackBishop.AsByte(), bishops);
-            if (_pieceCount[Piece.BlackBishop.AsByte()] < 2)
+            if (_pieceCount[Piece.BlackBishop.AsByte()] == 2)
             {
-                value -= _doubleBishopValue;
+                value += _doubleBishopValue;
             }
 
             //if (_evaluationService.ShouldUseMobility())
@@ -409,9 +409,9 @@ namespace Engine.Models.Boards
         private int GetWhiteBishopValue(int[] bishops)
         {
             var value = GetStaticValue(Piece.WhiteBishop.AsByte(), bishops);
-            if (_pieceCount[Piece.WhiteBishop.AsByte()] < 2)
+            if (_pieceCount[Piece.WhiteBishop.AsByte()] == 2)
             {
-                value -= _doubleBishopValue;
+                value += _doubleBishopValue;
             }
             //if (_evaluationService.ShouldUseMobility())
             //{

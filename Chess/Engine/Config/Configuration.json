@@ -6,7 +6,7 @@
     "Static": {
       "Unit": 5,
       "Penalty": 25,
-      "Mate": 6000,
+      "Mate": 10000,
       "NotAbleCastleValue": 1,
       "EarlyQueenValue": 4,
       "DoubleBishopValue": 2,
@@ -25,7 +25,7 @@
       "Bishop": 625,
       "Rook": 975,
       "Queen": 1925,
-      "King": 20000
+      "King": 6000
     }
   }
 }

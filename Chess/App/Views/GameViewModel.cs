@@ -17,6 +17,7 @@ using Engine.Models.Helpers;
 using Engine.Strategies;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Extended.Heap;
+using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.AlphaBeta.Simple;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
@@ -155,7 +156,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new AlphaBetaExtendedHistoryStrategy(level, _position);
+            _strategy = new AlphaBetaNullHistoryStrategy(level, _position);
 
             if (color == "White")
             {
