@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using Common;
 using Engine.Models.Boards;
+using Engine.Models.Config;
 using Engine.Models.Helpers;
+using Newtonsoft.Json;
 
 namespace Tools
 {
@@ -13,6 +15,37 @@ namespace Tools
         static void Main(string[] args)
         {
             Boot.SetUp();
+
+            //var evaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
+
+            //StaticTableCollection tables = new StaticTableCollection();
+            //for (int i = 0; i < 12; i++)
+            //{
+            //    Piece piece = (Piece) i;
+            //    PieceStaticTable table = new PieceStaticTable(piece);
+
+            //    for (int j = 0; j < 3; j++)
+            //    {
+            //        Phase phase = (Phase)j;
+            //        table.AddPhase(phase);
+            //        for (byte k = 0; k < 64; k++)
+            //        {
+            //            Square square = new Square(k);
+            //            short value = (short) (evaluationService.GetValue(i, k, phase)/2);
+            //            table.AddValue(phase, square.AsString(), value);
+            //        }
+            //    }
+
+            //    tables.Add(piece, table);
+            //}
+
+            //var s = JsonConvert.SerializeObject(tables, Formatting.Indented);
+            //File.WriteAllText("StaticTables.json",s);
+
+            var x = File.ReadAllText(@"Config\StaticTables.json");
+            var staticTableCollection = JsonConvert.DeserializeObject<StaticTableCollection>(x);
+
+            Console.WriteLine(staticTableCollection);
 
             Console.ReadLine();
         }

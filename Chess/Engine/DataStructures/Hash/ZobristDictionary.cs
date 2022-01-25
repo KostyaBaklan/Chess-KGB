@@ -19,7 +19,7 @@ namespace Engine.DataStructures.Hash
         public int Count => Table.Count;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(ulong key, T item)
+        public virtual void Add(ulong key, T item)
         {
             if (Table.TryGetValue(key, out var t))
             {
@@ -49,7 +49,7 @@ namespace Engine.DataStructures.Hash
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual void Replace(ulong key, T oldItem, T newItem)
+        public virtual void Replace(ulong key, T oldItem, T newItem)
         {
             Table[key] = newItem;
         }

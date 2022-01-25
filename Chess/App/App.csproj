@@ -40,6 +40,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>chess_icon_9bb_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommonServiceLocator">
       <HintPath>Libs\CommonServiceLocator.dll</HintPath>
@@ -190,6 +193,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\WhiteRook.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="chess_icon_9bb_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

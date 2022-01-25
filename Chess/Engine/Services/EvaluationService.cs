@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 
@@ -15,190 +16,56 @@ namespace Engine.Services
 
         private readonly int _penaltyValue;
         private readonly int _unitValue;
-        private readonly int _pawnValue;
+        private readonly int _mateValue;
+        private readonly int _notAbleCastleValue;
+        private readonly int _earlyQueenValue;
+        private readonly int _doubleBishopValue;
+        private readonly int _minorDefendedByPawnValue;
+        private readonly int _blockedPawnValue;
+        private readonly int _passedPawnValue;
+        private readonly int _doubledPawnValue;
+        private readonly int _isolatedPawnValue;
+        private readonly int _backwardPawnValue;
+        private readonly int _rookOnOpenFileValue;
+
         private readonly int[] _values;
         private readonly int[][][] _staticValues;
         private Dictionary<ulong, short> _table;
         private DynamicCollection<ulong>[] _depthTable;
         private readonly IMoveHistoryService _moveHistory;
 
-        #region Piece-Square Tables
-
-        private static readonly int[] _blackPawnSquareTable = {
-            0,  0,  0,  0,  0,  0,  0,  0,
-            50, 50, 50, 50, 50, 50, 50, 50,
-            10, 10, 20, 30, 30, 20, 10, 10,
-             5,  5, 10, 25, 25, 10,  5,  5,
-             0,  0,  0, 20, 20,  0,  0,  0,
-             5, -5,-10,  0,  0,-10, -5,  5,
-             5, 10, 10,-20,-20, 10, 10,  5,
-             0,  0,  0,  0,  0,  0,  0,  0
-        };
-
-        private static readonly int[] _whitePawnSquareTable = {
-            0,  0,  0,  0,  0,  0,  0,  0,
-            5, 10, 10,-20,-20, 10, 10,  5,
-            5, -5,-10,  0,  0,-10, -5,  5,
-            0,  0,  0, 20, 20,  0,  0,  0,
-            5,  5, 10, 25, 25, 10,  5,  5,
-            10, 10, 20, 30, 30, 20, 10, 10,
-            50, 50, 50, 50, 50, 50, 50, 50,
-            0,  0,  0,  0,  0,  0,  0,  0
-        };
-
-        private static readonly int[] _blackKnightSquareTable = {
-            -50,-40,-30,-30,-30,-30,-40,-50,
-            -40,-20,  0,  0,  0,  0,-20,-40,
-            -30,  0, 10, 15, 15, 10,  0,-30,
-            -30,  5, 15, 20, 20, 15,  5,-30,
-            -30,  0, 15, 20, 20, 15,  0,-30,
-            -30,  5, 10, 15, 15, 10,  5,-30,
-            -40,-20,  0,  5,  5,  0,-20,-40,
-            -50,-40,-30,-30,-30,-30,-40,-50
-        };
-
-        private static readonly int[] _whiteKnightSquareTable = {
-            -50,-40,-30,-30,-30,-30,-40,-50,
-            -40,-20,  0,  5,  5,  0,-20,-40,
-            -30,  5, 10, 15, 15, 10,  5,-30,
-            -30,  0, 15, 20, 20, 15,  0,-30,
-            -30,  5, 15, 20, 20, 15,  5,-30,
-            -30,  0, 10, 15, 15, 10,  0,-30,
-            -40,-20,  0,  0,  0,  0,-20,-40,
-            -50,-40,-30,-30,-30,-30,-40,-50
-        };
-
-        private static readonly int[] _blackBishopSquareTable = {
-            -20,-10,-10,-10,-10,-10,-10,-20,
-            -10,  0,  0,  0,  0,  0,  0,-10,
-            -10,  0,  5, 10, 10,  5,  0,-10,
-            -10,  5,  5, 10, 10,  5,  5,-10,
-            -10,  0, 10, 10, 10, 10,  0,-10,
-            -10, 10, 10, 10, 10, 10, 10,-10,
-            -10,  5,  0,  0,  0,  0,  5,-10,
-            -20,-10,-15,-10,-10,-15,-10,-20
-        };
-
-        private static readonly int[] _whiteBishopSquareTable = {
-            -20,-10,-15,-10,-10,-15,-10,-20,
-            -10,  5,  0,  0,  0,  0,  5,-10,
-            -10, 10, 10, 10, 10, 10, 10,-10,
-            -10,  0, 10, 10, 10, 10,  0,-10,
-            -10,  5,  5, 10, 10,  5,  5,-10,
-            -10,  0,  5, 10, 10,  5,  0,-10,
-            -10,  0,  0,  0,  0,  0,  0,-10,
-            -20,-10,-10,-10,-10,-10,-10,-20
-        };
-
-        private static readonly int[] _blackRookSquareTable = {
-            0,  0,  0,  0,  0,  0,  0,  0,
-            5, 10, 10, 10, 10, 10, 10,  5,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-            0,  0,  0 ,  5,  5,  0,  0,  0
-        };
-
-        private static readonly int[] _whiteRookSquareTable = {
-            0,  0,  0,  5,  5,  0,  0,  0,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-           -5,  0,  0,  0,  0,  0,  0, -5,
-            5, 10, 10, 10, 10, 10, 10,  5,
-            0,  0,  0,  0,  0,  0,  0,  0
-        };
-
-        private static readonly int[] _blackQueenSquareTable = {
-            -20,-10,-10, -5, -5,-10,-10,-20,
-            -10,  0,  0,  0,  0,  0,  0,-10,
-            -10,  0,  5,  5,  5,  5,  0,-10,
-             -5,  0,  5,  5,  5,  5,  0, -5,
-              0,  0,  5,  5,  5,  5,  0, -5,
-            -10,  5,  5,  5,  5,  5,  0,-10,
-            -10,  0,  5,  0,  0,  0,  0,-10,
-            -20,-10,-10, -5, -5,-10,-10,-20
-        };
-
-        private static readonly int[] _whiteQueenSquareTable = {
-            -20,-10,-10, -5, -5,-10,-10,-20,
-            -10,  0,  5,  0,  0,  0,  0,-10,
-            -10,  5,  5,  5,  5,  5,  0,-10,
-             0,  0,  5,  5,  5,  5,  0, -5,
-            -5,  0,  5,  5,  5,  5,  0, -5,
-            -10,  0,  5,  5,  5,  5,  0,-10,
-            -10,  0,  0,  0,  0,  0,  0,-10,
-            -20,-10,-10, -5, -5,-10,-10,-20
-          };
-
-        private static readonly int[] _blackKingMiddleGameSquareTable = {
-            -30,-40,-40,-50,-50,-40,-40,-30,
-            -30,-40,-40,-50,-50,-40,-40,-30,
-            -30,-40,-40,-50,-50,-40,-40,-30,
-            -30,-40,-40,-50,-50,-40,-40,-30,
-            -20,-30,-30,-40,-40,-30,-30,-20,
-            -10,-20,-20,-20,-20,-20,-20,-10,
-             20, 20,  0,  0,  0,  0, 20, 20,
-             20, 30, 10,  0,  0, 10, 30, 20
-        };
-
-        private static readonly int[] _whiteKingMiddleGameSquareTable = {
-            20, 30, 10,  0,  0, 10, 30, 20,
-            20, 20,  0,  0,  0,  0, 20, 20,
-            -10,-20,-20,-20,-20,-20,-20,-10,
-            -20,-30,-30,-40,-40,-30,-30,-20,
-            -30,-40,-40,-50,-50,-40,-40,-30,
-            -30,-40,-40,-50,-50,-40,-40,-30,
-            -30,-40,-40,-50,-50,-40,-40,-30,
-            -30,-40,-40,-50,-50,-40,-40,-30
-        };
-
-        private static readonly int[] _blackKingEndGameSquareTable = {
-            -50,-40,-30,-20,-20,-30,-40,-50,
-            -30,-20,-10,  0,  0,-10,-20,-30,
-            -30,-10, 20, 30, 30, 20,-10,-30,
-            -30,-10, 30, 40, 40, 30,-10,-30,
-            -30,-10, 30, 40, 40, 30,-10,-30,
-            -30,-10, 20, 30, 30, 20,-10,-30,
-            -30,-30,  0,  0,  0,  0,-30,-30,
-            -50,-30,-30,-30,-30,-30,-30,-50
-        };
-
-        private static readonly int[] _whiteKingEndGameSquareTable = {
-            -50,-30,-30,-30,-30,-30,-30,-50,
-            -30,-30,  0,  0,  0,  0,-30,-30,
-            -30,-10, 20, 30, 30, 20,-10,-30,
-            -30,-10, 30, 40, 40, 30,-10,-30,
-            -30,-10, 30, 40, 40, 30,-10,-30,
-            -30,-10, 20, 30, 30, 20,-10,-30,
-            -30,-20,-10,  0,  0,-10,-20,-30,
-            -50,-40,-30,-20,-20,-30,-40,-50
-        };
-
-        #endregion
-
-        public EvaluationService(IMoveHistoryService moveHistory)
+        public EvaluationService(IMoveHistoryService moveHistory, IConfigurationProvider configuration, IStaticValueProvider staticValueProvider)
         {
             _moveHistory = moveHistory;
-            _unitValue = 1;
-            _penaltyValue = 5;
-            _pawnValue = 25;
+
+            _unitValue = configuration.Evaluation.Static.Unit;
+            _mateValue = configuration.Evaluation.Static.Mate;
+            _penaltyValue = configuration.Evaluation.Static.Penalty;
+
+            _notAbleCastleValue = configuration.Evaluation.Static.NotAbleCastleValue*_penaltyValue;
+            _earlyQueenValue = configuration.Evaluation.Static.EarlyQueenValue * _penaltyValue;
+            _doubleBishopValue = configuration.Evaluation.Static.DoubleBishopValue * _penaltyValue;
+            _minorDefendedByPawnValue = configuration.Evaluation.Static.MinorDefendedByPawnValue * _unitValue;
+            _blockedPawnValue = configuration.Evaluation.Static.BlockedPawnValue * _penaltyValue;
+            _passedPawnValue = configuration.Evaluation.Static.PassedPawnValue * _penaltyValue;
+            _doubledPawnValue = configuration.Evaluation.Static.DoubledPawnValue * _penaltyValue;
+            _isolatedPawnValue = configuration.Evaluation.Static.IsolatedPawnValue * _penaltyValue;
+            _backwardPawnValue = configuration.Evaluation.Static.BackwardPawnValue * _penaltyValue;
+            _rookOnOpenFileValue = configuration.Evaluation.Static.RookOnOpenFileValue * _penaltyValue;
+
             _values = new int[12];
-            _values[Piece.WhitePawn.AsByte()] = 200;
-            _values[Piece.BlackPawn.AsByte()] = 200;
-            _values[Piece.WhiteKnight.AsByte()] = 625;
-            _values[Piece.BlackKnight.AsByte()] = 625;
-            _values[Piece.WhiteBishop.AsByte()] = 625;
-            _values[Piece.BlackBishop.AsByte()] = 625;
-            _values[Piece.WhiteKing.AsByte()] = 6000;
-            _values[Piece.BlackKing.AsByte()] = 6000;
-            _values[Piece.WhiteRook.AsByte()] = 975;
-            _values[Piece.BlackRook.AsByte()] = 975;
-            _values[Piece.WhiteQueen.AsByte()] = 1925;
-            _values[Piece.BlackQueen.AsByte()] = 1925;
+            _values[Piece.WhitePawn.AsByte()] = configuration.Evaluation.Piece.Pawn;
+            _values[Piece.BlackPawn.AsByte()] = configuration.Evaluation.Piece.Pawn;
+            _values[Piece.WhiteKnight.AsByte()] = configuration.Evaluation.Piece.Knight;
+            _values[Piece.BlackKnight.AsByte()] = configuration.Evaluation.Piece.Knight;
+            _values[Piece.WhiteBishop.AsByte()] = configuration.Evaluation.Piece.Bishop;
+            _values[Piece.BlackBishop.AsByte()] = configuration.Evaluation.Piece.Bishop;
+            _values[Piece.WhiteKing.AsByte()] = configuration.Evaluation.Piece.King;
+            _values[Piece.BlackKing.AsByte()] = configuration.Evaluation.Piece.King;
+            _values[Piece.WhiteRook.AsByte()] = configuration.Evaluation.Piece.Rook;
+            _values[Piece.BlackRook.AsByte()] = configuration.Evaluation.Piece.Rook;
+            _values[Piece.WhiteQueen.AsByte()] = configuration.Evaluation.Piece.Queen;
+            _values[Piece.BlackQueen.AsByte()] = configuration.Evaluation.Piece.Queen;
 
             _staticValues = new int[12][][];
             for (var i = 0; i < _staticValues.Length; i++)
@@ -206,25 +73,18 @@ namespace Engine.Services
                 _staticValues[i] = new int[3][];
             }
 
-            var factor = 2;
-            for (int i = 0; i < 3; i++)
+            short factor = configuration.Evaluation.Static.Factor;
+            for (byte i = 0; i < 12; i++)
             {
-                _staticValues[Piece.WhitePawn.AsByte()][i] = _whitePawnSquareTable.Factor(factor);
-                _staticValues[Piece.BlackPawn.AsByte()][i] = _blackPawnSquareTable.Factor(factor);
-                _staticValues[Piece.WhiteKnight.AsByte()][i] = _whiteKnightSquareTable.Factor(factor);
-                _staticValues[Piece.BlackKnight.AsByte()][i] = _blackKnightSquareTable.Factor(factor);
-                _staticValues[Piece.WhiteBishop.AsByte()][i] = _whiteBishopSquareTable.Factor(factor);
-                _staticValues[Piece.BlackBishop.AsByte()][i] = _blackBishopSquareTable.Factor(factor);
-                _staticValues[Piece.WhiteRook.AsByte()][i] = _whiteRookSquareTable.Factor(factor);
-                _staticValues[Piece.BlackRook.AsByte()][i] = _blackRookSquareTable.Factor(factor);
-                _staticValues[Piece.WhiteQueen.AsByte()][i] = _whiteQueenSquareTable.Factor(factor);
-                _staticValues[Piece.BlackQueen.AsByte()][i] = _blackQueenSquareTable.Factor(factor);
-                _staticValues[Piece.WhiteKing.AsByte()][i] = i == 2
-                    ? _whiteKingEndGameSquareTable.Factor(factor)
-                    : _whiteKingMiddleGameSquareTable.Factor(factor);
-                _staticValues[Piece.BlackKing.AsByte()][i] = i == 2
-                    ? _blackKingEndGameSquareTable.Factor(factor)
-                    : _blackKingMiddleGameSquareTable.Factor(factor);
+                _staticValues[i] = new int[3][];
+                for (byte j = 0; j < 3; j++)
+                {
+                    _staticValues[i][j] = new int[64];
+                    for (byte k = 0; k < 64; k++)
+                    {
+                        _staticValues[i][j][k] = staticValueProvider.GetValue(i, j, k)* factor;
+                    }
+                }
             }
         }
 
@@ -253,30 +113,6 @@ namespace Engine.Services
         public int GetFullValue(int piece, int square, Phase phase)
         {
             return _values[piece] + _staticValues[piece][(int)phase][square];
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetPawnValue(int factor = 1)
-        {
-            return _pawnValue * factor;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetPenaltyValue(int factor = 1)
-        {
-            return _penaltyValue * factor;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetUnitValue(int factor = 1)
-        {
-            return _unitValue * factor;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetMateValue()
-        {
-            return _values[Piece.WhiteKing.AsByte()];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -355,6 +191,88 @@ namespace Engine.Services
                 _table = new Dictionary<ulong, short>(0);
             }
         }
+
+        #region Evaluations
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetMateValue()
+        {
+            return _mateValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetUnitValue()
+        {
+            return _unitValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetPenaltyValue()
+        {
+            return _penaltyValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetMinorDefendedByPawnValue()
+        {
+            return _minorDefendedByPawnValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetBlockedPawnValue()
+        {
+            return _blockedPawnValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetPassedPawnValue()
+        {
+            return _passedPawnValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetDoubledPawnValue()
+        {
+            return _doubledPawnValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetIsolatedPawnValue()
+        {
+            return _isolatedPawnValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetBackwardPawnValue()
+        {
+            return _backwardPawnValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetNotAbleCastleValue()
+        {
+            return _notAbleCastleValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetEarlyQueenValue()
+        {
+            return _earlyQueenValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetDoubleBishopValue()
+        {
+            return _doubleBishopValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetRookOnOpenFileValue()
+        {
+            return _rookOnOpenFileValue;
+        }
+
+        #endregion
 
         #endregion
     }

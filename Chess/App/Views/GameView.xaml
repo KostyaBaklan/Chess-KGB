@@ -115,11 +115,12 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel Margin="10,3">
+            <StackPanel Margin="10,3" Orientation="Horizontal">
+                <CheckBox Margin="5,2" Content="Use Machine" IsChecked="{Binding UseMachine}"/>
                 <Button Content="Undo last move" Command="{Binding UndoCommand, Mode=OneWay}"
-                        HorizontalAlignment="Center"/>
+                        HorizontalAlignment="Center" Margin="5,2"/>
                 <Button Content="Save History" Command="{Binding SaveHistoryCommand, Mode=OneWay}"
-                        HorizontalAlignment="Center"/>
+                        HorizontalAlignment="Center" Margin="5,2"/>
             </StackPanel>
             <DataGrid Grid.Row="1" CanUserSortColumns="False" CanUserAddRows="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False"
                       ItemsSource="{Binding MoveItems, Mode=OneWay}"

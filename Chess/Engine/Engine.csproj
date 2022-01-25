@@ -63,11 +63,26 @@
     <Compile Include="DataStructures\Moves\MoveWrapper.cs" />
     <Compile Include="DataStructures\Node.cs" />
     <Compile Include="DataStructures\PriorityQueue.cs" />
+    <Compile Include="Interfaces\Config\IAlgorithmConfiguration.cs" />
+    <Compile Include="Interfaces\Config\IEvaluationProvider.cs" />
+    <Compile Include="Interfaces\Config\IPieceEvaluation.cs" />
+    <Compile Include="Interfaces\Config\IStaticEvaluation.cs" />
+    <Compile Include="Interfaces\Config\IStaticValueProvider.cs" />
     <Compile Include="Interfaces\IAttack.cs" />
-    <Compile Include="Interfaces\IConfiguration.cs" />
+    <Compile Include="Interfaces\Config\IConfigurationProvider.cs" />
     <Compile Include="Interfaces\IMoveCollection.cs" />
     <Compile Include="Models\Boards\PieceBoard.cs" />
-    <Compile Include="Models\Configuration.cs" />
+    <Compile Include="Models\Config\AlgorithmConfiguration.cs" />
+    <Compile Include="Models\Config\Configuration.cs" />
+    <Compile Include="Models\Config\ConfigurationProvider.cs" />
+    <Compile Include="Models\Config\Evaluation.cs" />
+    <Compile Include="Models\Config\EvaluationProvider.cs" />
+    <Compile Include="Models\Config\PhaseStaticTable.cs" />
+    <Compile Include="Models\Config\PieceEvaluation.cs" />
+    <Compile Include="Models\Config\PieceStaticTable.cs" />
+    <Compile Include="Models\Config\StaticEvaluation.cs" />
+    <Compile Include="Models\Config\StaticTableCollection.cs" />
+    <Compile Include="Models\Config\StaticValueProvider.cs" />
     <Compile Include="Models\Enums\Phase.cs" />
     <Compile Include="Models\Helpers\BitBoardExtensions.cs" />
     <Compile Include="Models\Helpers\BoardExtensions.cs" />
@@ -121,6 +136,7 @@
     <Compile Include="Services\MoveProvider.cs" />
     <Compile Include="Sorting\Comparers\DifferenceComparer.cs" />
     <Compile Include="Sorting\Comparers\DifferenceHistoryComparer.cs" />
+    <Compile Include="Sorting\Comparers\HistoryDifferenceComparer.cs" />
     <Compile Include="Sorting\Comparers\IMoveComparer.cs" />
     <Compile Include="Sorting\Sorters\AdvancedSorter.cs" />
     <Compile Include="Sorting\Comparers\AttackComparer.cs" />
@@ -133,21 +149,27 @@
     <Compile Include="Sorting\Comparers\StaticComparer.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedHistoryStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Heap\AlphaBetaNullHeapStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Heap\NullHeapDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Heap\NullHeapDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\Heap\NullHeapHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Heap\NullHeapHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Simple\AlphaBetaDifferenceHistoryStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Simple\AlphaBetaHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Simple\AlphaBetaHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullHistoryStrategy.cs" />
@@ -158,6 +180,7 @@
     <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceStrategy.cs" />
+    <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\IdStrategyBase.cs" />
     <Compile Include="Strategies\StrategyBase.cs" />
@@ -165,7 +188,11 @@
     <Compile Include="Strategies\IStrategy.cs" />
     <Compile Include="Strategies\TestStrategy.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Config\StaticTables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Config\Configuration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

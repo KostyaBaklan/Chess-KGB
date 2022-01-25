@@ -2,7 +2,8 @@
 using System.IO;
 using CommonServiceLocator;
 using Engine.Interfaces;
-using Engine.Models;
+using Engine.Interfaces.Config;
+using Engine.Models.Config;
 using Engine.Services;
 using Newtonsoft.Json;
 using Unity;
@@ -19,11 +20,19 @@ namespace Common
             var s = File.ReadAllText(@"Config\Configuration.json");
             var configuration = JsonConvert.DeserializeObject<Configuration>(s);
 
+            var x = File.ReadAllText(@"Config\StaticTables.json");
+            var collection = JsonConvert.DeserializeObject<StaticTableCollection>(x);
+
             ServiceLocator.SetLocatorProvider(() => serviceLocatorAdapter);
             container.RegisterInstance<IServiceLocator>(serviceLocatorAdapter);
             container.RegisterInstance<IServiceProvider>(serviceLocatorAdapter);
 
-            container.RegisterInstance<IConfiguration>(configuration);
+            var evaluation = configuration.Evaluation;
+            IConfigurationProvider configurationProvider = new ConfigurationProvider(configuration.AlgorithmConfiguration, new EvaluationProvider(evaluation.Static,evaluation.Piece));
+            container.RegisterInstance(configurationProvider);
+
+            IStaticValueProvider staticValueProvider = new StaticValueProvider(collection);
+            container.RegisterInstance(staticValueProvider);
 
             container.RegisterSingleton(typeof(IMoveProvider), typeof(MoveProvider));
             container.RegisterSingleton(typeof(IMoveFormatter), typeof(MoveFormatter));

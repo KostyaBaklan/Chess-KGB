@@ -47,6 +47,16 @@ namespace Engine.Models.Boards
         private readonly IMoveProvider _moveProvider;
         private readonly IMoveHistoryService _moveHistory;
         private readonly IEvaluationService _evaluationService;
+        private readonly int _notAbleCastleValue;
+        private readonly int _earlyQueenValue;
+        private readonly int _doubleBishopValue;
+        private readonly int _minorDefendedByPawnValue;
+        private readonly int _blockedPawnValue;
+        private readonly int _passedPawnValue;
+        private readonly int _doubledPawnValue;
+        private readonly int _isolatedPawnValue;
+        private readonly int _backwardPawnValue;
+        private readonly int _rookOnOpenFileValue;
 
         public Board()
         {
@@ -67,6 +77,17 @@ namespace Engine.Models.Boards
 
             _hash = new ZobristHash();
             _hash.Initialize(_boards);
+
+            _notAbleCastleValue = _evaluationService.GetNotAbleCastleValue();
+            _earlyQueenValue = _evaluationService.GetEarlyQueenValue();
+            _doubleBishopValue = _evaluationService.GetDoubleBishopValue();
+            _minorDefendedByPawnValue = _evaluationService.GetMinorDefendedByPawnValue();
+            _blockedPawnValue = _evaluationService.GetBlockedPawnValue();
+            _passedPawnValue = _evaluationService.GetPassedPawnValue();
+            _doubledPawnValue = _evaluationService.GetDoubledPawnValue();
+            _isolatedPawnValue = _evaluationService.GetIsolatedPawnValue();
+            _backwardPawnValue = _evaluationService.GetBackwardPawnValue();
+            _rookOnOpenFileValue = _evaluationService.GetRookOnOpenFileValue();
         }
 
         #region Implementation of IBoard
@@ -197,11 +218,15 @@ namespace Engine.Models.Boards
 
             if (_isBlackCastled)
             {
-                value += _evaluationService.GetPawnValue(2);
+                return value;
             }
-            else if (!_moveHistory.CanDoBlackCastle())
+            if (!_moveHistory.CanDoBlackSmallCastle())
             {
-                value -= _evaluationService.GetPawnValue(2);
+                value -= _notAbleCastleValue;
+            }
+            if (!_moveHistory.CanDoBlackBigCastle())
+            {
+                value -= _notAbleCastleValue;
             }
 
             return value;
@@ -210,14 +235,14 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetBlackQueenValue(int[] queens)
         {
+            if (queens.Length <= 0) return 0;
+
             var value = GetStaticValue(Piece.BlackQueen.AsByte(), queens);
             if (_phase != Phase.Opening) return value;
 
-            if (queens.Length <= 0) return value;
-
             if (queens[0] != Squares.D8.AsInt())
             {
-                value -= _evaluationService.GetPawnValue(3);
+                value -= _earlyQueenValue;
             }
 
             return value;
@@ -238,7 +263,7 @@ namespace Engine.Models.Boards
             var value = GetStaticValue(Piece.BlackBishop.AsByte(), bishops);
             if (_pieceCount[Piece.BlackBishop.AsByte()] < 2)
             {
-                value -= _evaluationService.GetPawnValue(2);
+                value -= _doubleBishopValue;
             }
 
             //if (_evaluationService.ShouldUseMobility())
@@ -273,7 +298,7 @@ namespace Engine.Models.Boards
                 if ((_moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), knights[i]) &
                      _boards[Piece.BlackPawn.AsByte()]).Any())
                 {
-                    value += _evaluationService.GetPenaltyValue();
+                    value += _minorDefendedByPawnValue;
                 }
             }
 
@@ -293,7 +318,7 @@ namespace Engine.Models.Boards
                 value += _evaluationService.GetFullValue(piece, coordinate, _phase);
                 if (_whites.IsSet((coordinate - 8).AsBitBoard()))
                 {
-                    value -= _evaluationService.GetPawnValue();
+                    value -= _blockedPawnValue;
                 }
 
                 var file = coordinate % 8;
@@ -312,13 +337,13 @@ namespace Engine.Models.Boards
 
                 if ((_files[file] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
                 {
-                    value += _evaluationService.GetPawnValue(2);
+                    value += _passedPawnValue;
                 }
 
                 pawns[file]++;
             }
 
-            return GetPawnValue(value, _evaluationService.GetPawnValue(2), _evaluationService.GetPawnValue(3), pawns);
+            return GetPawnValue(value, _doubledPawnValue, _isolatedPawnValue, pawns);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -341,11 +366,15 @@ namespace Engine.Models.Boards
 
             if (_isWhiteCastled)
             {
-                value += _evaluationService.GetPawnValue(2);
+                return value;
             }
-            else if (!_moveHistory.CanDoWhiteCastle())
+            if (!_moveHistory.CanDoWhiteSmallCastle())
             {
-                value -= _evaluationService.GetPawnValue(2);
+                value -= _notAbleCastleValue;
+            }
+            if (!_moveHistory.CanDoWhiteBigCastle())
+            {
+                value -= _notAbleCastleValue;
             }
 
             return value;
@@ -354,12 +383,13 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhiteQueenValue(int[] queens)
         {
+            if (queens.Length <= 0) return 0;
             var value = GetStaticValue(Piece.WhiteQueen.AsByte(), queens);
             if (_phase != Phase.Opening) return value;
 
-            if (queens.Length < 1 || queens[0] != Squares.D1.AsInt())
+            if (queens[0] != Squares.D1.AsInt())
             {
-                value -= _evaluationService.GetPawnValue(3);
+                value -= _earlyQueenValue;
             }
 
             return value;
@@ -381,7 +411,7 @@ namespace Engine.Models.Boards
             var value = GetStaticValue(Piece.WhiteBishop.AsByte(), bishops);
             if (_pieceCount[Piece.WhiteBishop.AsByte()] < 2)
             {
-                value -= _evaluationService.GetPawnValue(2);
+                value -= _doubleBishopValue;
             }
             //if (_evaluationService.ShouldUseMobility())
             //{
@@ -416,7 +446,7 @@ namespace Engine.Models.Boards
                 if ((_moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), knights[i]) &
                      _boards[Piece.WhitePawn.AsByte()]).Any())
                 {
-                    value += _evaluationService.GetPenaltyValue();
+                    value += _minorDefendedByPawnValue;
                 }
             }
 
@@ -446,7 +476,7 @@ namespace Engine.Models.Boards
                 value += _evaluationService.GetFullValue(piece, coordinate, _phase);
                 if (_blacks.IsSet((coordinate + 8).AsBitBoard()))
                 {
-                    value -= _evaluationService.GetPawnValue();
+                    value -= _blockedPawnValue;
                 }
 
                 var file = coordinate % 8;
@@ -465,13 +495,13 @@ namespace Engine.Models.Boards
 
                 if ((_files[file] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
                 {
-                    value += _evaluationService.GetPawnValue(2);
+                    value += _passedPawnValue;
                 }
 
                 pawns[file]++;
             }
 
-            return GetPawnValue(value, _evaluationService.GetPawnValue(2), _evaluationService.GetPawnValue(3), pawns);
+            return GetPawnValue(value, _doubledPawnValue, _isolatedPawnValue, pawns);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -488,7 +518,7 @@ namespace Engine.Models.Boards
             var w = attackPattern & _boards[Piece.WhitePawn.AsByte()];
             if (w.Any())
             {
-                value -= _evaluationService.GetPawnValue(3);
+                value -= _backwardPawnValue;
             }
 
             return value;
@@ -508,7 +538,7 @@ namespace Engine.Models.Boards
             var b = attackPattern & _boards[Piece.BlackPawn.AsByte()];
             if (b.Any())
             {
-                value -= _evaluationService.GetPawnValue(3);
+                value -= _backwardPawnValue;
             }
 
             return value;
@@ -523,7 +553,7 @@ namespace Engine.Models.Boards
                 BitBoard file = GetFile(rooks[i]);
                 if ((_empty^rook).IsSet(file))
                 {
-                    value += _evaluationService.GetPawnValue(3);
+                    value += _rookOnOpenFileValue;
                 }
 
                 //if (_evaluationService.ShouldUseMobility())
@@ -544,7 +574,7 @@ namespace Engine.Models.Boards
                 BitBoard file = GetFile(rooks[i]);
                 if ((_empty ^ rook).IsSet(file))
                 {
-                    value += _evaluationService.GetPawnValue(3);
+                    value += _rookOnOpenFileValue;
                 }
 
                 //if (_evaluationService.ShouldUseMobility())

@@ -51,12 +51,16 @@ namespace Engine.Strategies.AlphaBeta.Simple
             Result result = new Result();
 
             IMove pv = pvMove;
+            var key = Position.GetKey();
             if (pv == null)
             {
                 var isNotEndGame = Position.GetPhase() != Phase.End;
-                if (isNotEndGame && Table.TryGet(Position.GetKey(), out var entry))
+                if (isNotEndGame && Table.TryGet(key, out var entry))
                 {
-                    pv = entry.PvMove;
+                    if ((entry.Depth - depth) % 2 == 0)
+                    {
+                        pv = entry.PvMove;
+                    }
                 } 
             }
 
@@ -67,7 +71,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 return result;
             }
 
-            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
+            if (MoveHistory.IsThreefoldRepetition(key))
             {
                 var v = Evaluate(alpha,beta);
                 if (v < -500)
@@ -122,12 +126,15 @@ namespace Engine.Strategies.AlphaBeta.Simple
 
             IMove pv = null;
             var key = Position.GetKey();
+            bool shouldUpdate = false;
+            bool isInTable = false;
 
             var isNotEndGame = Position.GetPhase() != Phase.End;
-
             if (isNotEndGame && Table.TryGet(key, out var entry))
             {
-                if (entry.Depth >= depth)
+                isInTable = true;
+                var entryDepth = entry.Depth;
+                if (entryDepth >= depth)
                 {
                     if (entry.Type == TranspositionEntryType.Exact)
                     {
@@ -146,8 +153,15 @@ namespace Engine.Strategies.AlphaBeta.Simple
                     if (alpha >= beta)
                         return entry.Value;
                 }
+                else
+                {
+                    shouldUpdate = true;
+                }
 
-                pv = entry.PvMove;
+                if ((entryDepth - depth) % 2 == 0)
+                {
+                    pv = entry.PvMove;
+                }
             }
 
             int value = int.MinValue;
@@ -162,7 +176,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
                     : -EvaluationService.Evaluate(Position);
             }
 
-            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
+            if (MoveHistory.IsThreefoldRepetition(key))
             {
                 var v = Evaluate(alpha,beta);
                 if (v < 0)
@@ -174,6 +188,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
+
                 Position.Make(move);
 
                 var r = -Search(-beta, -alpha, depth - 1);
@@ -199,7 +214,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
             int best;
             if (bestMove == null)
             {
-                best = short.MinValue;
+                best = -SearchValue;
             }
             else
             {
@@ -209,21 +224,28 @@ namespace Engine.Strategies.AlphaBeta.Simple
 
             if (!isNotEndGame) return best;
 
-            TranspositionEntry te = new TranspositionEntry { Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
-            if (best <= alpha)
+            if (!isInTable || shouldUpdate)
             {
-                te.Type = TranspositionEntryType.LowerBound;
-            }
-            else if (best >= beta)
-            {
-                te.Type = TranspositionEntryType.UpperBound;
-            }
-            else
-            {
-                te.Type = TranspositionEntryType.Exact;
+                TranspositionEntry te = new TranspositionEntry
+                    {Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
+                if (best <= alpha)
+                {
+                    te.Type = TranspositionEntryType.LowerBound;
+                }
+                else if (best >= beta)
+                {
+                    te.Type = TranspositionEntryType.UpperBound;
+                }
+                else
+                {
+                    te.Type = TranspositionEntryType.Exact;
+                }
+
+                Table.Set(key, te);
+
+                return best;
             }
 
-            Table.Add(key, te);
             return best;
         }
 

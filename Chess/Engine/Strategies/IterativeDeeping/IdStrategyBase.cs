@@ -1,6 +1,7 @@
 ﻿using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 
 namespace Engine.Strategies.IterativeDeeping
@@ -13,7 +14,8 @@ namespace Engine.Strategies.IterativeDeeping
         protected IdStrategyBase(short depth, IPosition position, StrategyBase strategy) : base(depth, position)
         {
             InternalStrategy = strategy;
-            _initialDepth = ServiceLocator.Current.GetInstance<IConfiguration>().InitialDepth;
+            _initialDepth = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .AlgorithmConfiguration.InitialDepth;
         }
 
         #region Overrides of StrategyBase

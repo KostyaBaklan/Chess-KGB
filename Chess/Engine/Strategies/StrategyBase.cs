@@ -1,5 +1,6 @@
 ﻿using CommonServiceLocator;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Sorting.Sorters;
 
 namespace Engine.Strategies
@@ -9,13 +10,15 @@ namespace Engine.Strategies
         protected short Depth;
         protected MoveSorter Sorter;
         protected IPosition Position;
-        protected int SearchValue = short.MaxValue;
+        protected int SearchValue;
 
         protected IEvaluationService EvaluationService;
         protected readonly IMoveHistoryService MoveHistory;
 
         protected StrategyBase(short depth, IPosition position)
         {
+            SearchValue = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .Evaluation.Static.Mate;
             Depth = depth;
             Position = position;
             EvaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
