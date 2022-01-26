@@ -1,4 +1,6 @@
-﻿namespace Engine.Interfaces.Config
+﻿using Engine.Models.Config;
+
+namespace Engine.Interfaces.Config
 {
     public interface IStaticEvaluation
     {
@@ -6,15 +8,11 @@
         short Penalty { get; }
         short Mate { get; }
         short Factor { get; }
-        short NotAbleCastleValue { get; }
-        short EarlyQueenValue { get; }
-        short DoubleBishopValue { get; }
-        short MinorDefendedByPawnValue { get; }
-        short BlockedPawnValue { get; }
-        short PassedPawnValue { get; }
-        short DoubledPawnValue { get; }
-        short IsolatedPawnValue { get; }
-        short BackwardPawnValue { get; }
-        short RookOnOpenFileValue { get; }
+
+        BoardEvaluation Opening { get; set; }
+        BoardEvaluation Middle { get; set; }
+        BoardEvaluation End { get; set; }
+
+        BoardEvaluation GetBoard(byte phase);
     }
 }

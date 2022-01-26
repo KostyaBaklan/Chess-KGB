@@ -4,16 +4,26 @@ namespace Engine.Models.Config
 {
     public class EvaluationProvider: IEvaluationProvider
     {
-        public EvaluationProvider(IStaticEvaluation @static, IPieceEvaluation piece)
+        private IPieceEvaluation[] _piece;
+        public EvaluationProvider(StaticEvaluation evaluationStatic, IPieceEvaluation evaluationOpening, IPieceEvaluation evaluationMiddle, IPieceEvaluation evaluationEnd)
         {
-            Static = @static;
-            Piece = piece;
+            Static = evaluationStatic;
+            _piece = new[] {evaluationOpening, evaluationMiddle, evaluationEnd};
         }
 
         #region Implementation of IEvaluationProvider
 
         public IStaticEvaluation Static { get; }
-        public IPieceEvaluation Piece { get; }
+
+        public IStaticEvaluation GetStatic(byte phase)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IPieceEvaluation GetPiece(byte phase)
+        {
+            return _piece[phase];
+        }
 
         #endregion
     }

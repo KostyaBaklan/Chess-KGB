@@ -73,6 +73,7 @@
     <Compile Include="Interfaces\IMoveCollection.cs" />
     <Compile Include="Models\Boards\PieceBoard.cs" />
     <Compile Include="Models\Config\AlgorithmConfiguration.cs" />
+    <Compile Include="Models\Config\BoardEvaluation.cs" />
     <Compile Include="Models\Config\Configuration.cs" />
     <Compile Include="Models\Config\ConfigurationProvider.cs" />
     <Compile Include="Models\Config\Evaluation.cs" />

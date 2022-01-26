@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
 using Engine.Sorting.Comparers;
@@ -22,7 +24,8 @@ namespace Engine.Strategies.AlphaBeta.Null.Heap
             CanUseNull = false;
             MinReduction = 2;
             MaxReduction = 3;
-            NullWindow = EvaluationService.GetUnitValue();
+            NullWindow = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .AlgorithmConfiguration.NullWindow;
             Sorter = new ExtendedHeapSorter(position, comparer);
         }
         public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)

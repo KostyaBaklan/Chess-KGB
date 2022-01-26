@@ -11,16 +11,16 @@ namespace Engine.Models.Config
         public short Mate { get; set; }
         public short Factor { get; set; }
 
-        public short NotAbleCastleValue { get; set; }
-        public short EarlyQueenValue { get; set; }
-        public short DoubleBishopValue { get; set; }
-        public short MinorDefendedByPawnValue { get; set; }
-        public short BlockedPawnValue { get; set; }
-        public short PassedPawnValue { get; set; }
-        public short DoubledPawnValue { get; set; }
-        public short IsolatedPawnValue { get; set; }
-        public short BackwardPawnValue { get; set; }
-        public short RookOnOpenFileValue { get; set; }
+        public BoardEvaluation Opening { get; set; }
+        public BoardEvaluation Middle { get; set; }
+        public BoardEvaluation End { get; set; }
+
+        public BoardEvaluation GetBoard(byte phase)
+        {
+            if (phase == 0) return Opening;
+            if (phase == 1) return Middle;
+            return End;
+        }
 
         #endregion
     }

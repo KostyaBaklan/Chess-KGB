@@ -3,6 +3,6 @@
     public interface IEvaluationProvider
     {
         IStaticEvaluation Static { get; }
-        IPieceEvaluation Piece { get; }
+        IPieceEvaluation GetPiece(byte phase);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
@@ -17,18 +18,19 @@ namespace Engine.Services
         private readonly int _penaltyValue;
         private readonly int _unitValue;
         private readonly int _mateValue;
-        private readonly int _notAbleCastleValue;
-        private readonly int _earlyQueenValue;
-        private readonly int _doubleBishopValue;
-        private readonly int _minorDefendedByPawnValue;
-        private readonly int _blockedPawnValue;
-        private readonly int _passedPawnValue;
-        private readonly int _doubledPawnValue;
-        private readonly int _isolatedPawnValue;
-        private readonly int _backwardPawnValue;
-        private readonly int _rookOnOpenFileValue;
 
-        private readonly int[] _values;
+        private readonly int[] _notAbleCastleValue;
+        private readonly int[] _earlyQueenValue;
+        private readonly int[] _doubleBishopValue;
+        private readonly int[] _minorDefendedByPawnValue;
+        private readonly int[] _blockedPawnValue;
+        private readonly int[] _passedPawnValue;
+        private readonly int[] _doubledPawnValue;
+        private readonly int[] _isolatedPawnValue;
+        private readonly int[] _backwardPawnValue;
+        private readonly int[] _rookOnOpenFileValue;
+
+        private readonly int[][] _values;
         private readonly int[][][] _staticValues;
         private Dictionary<ulong, short> _table;
         private DynamicCollection<ulong>[] _depthTable;
@@ -42,30 +44,48 @@ namespace Engine.Services
             _mateValue = configuration.Evaluation.Static.Mate;
             _penaltyValue = configuration.Evaluation.Static.Penalty;
 
-            _notAbleCastleValue = configuration.Evaluation.Static.NotAbleCastleValue*_penaltyValue;
-            _earlyQueenValue = configuration.Evaluation.Static.EarlyQueenValue * _penaltyValue;
-            _doubleBishopValue = configuration.Evaluation.Static.DoubleBishopValue * _penaltyValue;
-            _minorDefendedByPawnValue = configuration.Evaluation.Static.MinorDefendedByPawnValue * _unitValue;
-            _blockedPawnValue = configuration.Evaluation.Static.BlockedPawnValue * _penaltyValue;
-            _passedPawnValue = configuration.Evaluation.Static.PassedPawnValue * _penaltyValue;
-            _doubledPawnValue = configuration.Evaluation.Static.DoubledPawnValue * _penaltyValue;
-            _isolatedPawnValue = configuration.Evaluation.Static.IsolatedPawnValue * _penaltyValue;
-            _backwardPawnValue = configuration.Evaluation.Static.BackwardPawnValue * _penaltyValue;
-            _rookOnOpenFileValue = configuration.Evaluation.Static.RookOnOpenFileValue * _penaltyValue;
+            _notAbleCastleValue = new int[3];
+            _earlyQueenValue = new int[3];
+            _doubleBishopValue = new int[3];
+            _minorDefendedByPawnValue = new int[3];
+            _blockedPawnValue = new int[3];
+            _passedPawnValue = new int[3];
+            _doubledPawnValue = new int[3];
+            _isolatedPawnValue = new int[3];
+            _backwardPawnValue = new int[3];
+            _rookOnOpenFileValue = new int[3];
+            for (byte i = 0; i < 3; i++)
+            {
+                var evaluationStatic = configuration.Evaluation.Static.GetBoard(i);
+                _notAbleCastleValue[i] = evaluationStatic.NotAbleCastleValue * _penaltyValue;
+                _earlyQueenValue[i] = evaluationStatic.EarlyQueenValue * _penaltyValue;
+                _doubleBishopValue[i] = evaluationStatic.DoubleBishopValue * _penaltyValue;
+                _minorDefendedByPawnValue[i] = evaluationStatic.MinorDefendedByPawnValue * _unitValue;
+                _blockedPawnValue[i] = evaluationStatic.BlockedPawnValue * _penaltyValue;
+                _passedPawnValue[i] = evaluationStatic.PassedPawnValue * _penaltyValue;
+                _doubledPawnValue[i] = evaluationStatic.DoubledPawnValue * _penaltyValue;
+                _isolatedPawnValue[i] = evaluationStatic.IsolatedPawnValue * _penaltyValue;
+                _backwardPawnValue[i] = evaluationStatic.BackwardPawnValue * _penaltyValue;
+                _rookOnOpenFileValue[i] = evaluationStatic.RookOnOpenFileValue * _penaltyValue;
+            }
 
-            _values = new int[12];
-            _values[Piece.WhitePawn.AsByte()] = configuration.Evaluation.Piece.Pawn;
-            _values[Piece.BlackPawn.AsByte()] = configuration.Evaluation.Piece.Pawn;
-            _values[Piece.WhiteKnight.AsByte()] = configuration.Evaluation.Piece.Knight;
-            _values[Piece.BlackKnight.AsByte()] = configuration.Evaluation.Piece.Knight;
-            _values[Piece.WhiteBishop.AsByte()] = configuration.Evaluation.Piece.Bishop;
-            _values[Piece.BlackBishop.AsByte()] = configuration.Evaluation.Piece.Bishop;
-            _values[Piece.WhiteKing.AsByte()] = configuration.Evaluation.Piece.King;
-            _values[Piece.BlackKing.AsByte()] = configuration.Evaluation.Piece.King;
-            _values[Piece.WhiteRook.AsByte()] = configuration.Evaluation.Piece.Rook;
-            _values[Piece.BlackRook.AsByte()] = configuration.Evaluation.Piece.Rook;
-            _values[Piece.WhiteQueen.AsByte()] = configuration.Evaluation.Piece.Queen;
-            _values[Piece.BlackQueen.AsByte()] = configuration.Evaluation.Piece.Queen;
+            _values = new int[3][];
+            for (byte i = 0; i < 3; i++)
+            {
+                _values[i] = new int[12];
+                _values[i][Piece.WhitePawn.AsByte()] = configuration.Evaluation.GetPiece(i).Pawn;
+                _values[i][Piece.BlackPawn.AsByte()] = configuration.Evaluation.GetPiece(i).Pawn;
+                _values[i][Piece.WhiteKnight.AsByte()] = configuration.Evaluation.GetPiece(i).Knight;
+                _values[i][Piece.BlackKnight.AsByte()] = configuration.Evaluation.GetPiece(i).Knight;
+                _values[i][Piece.WhiteBishop.AsByte()] = configuration.Evaluation.GetPiece(i).Bishop;
+                _values[i][Piece.BlackBishop.AsByte()] = configuration.Evaluation.GetPiece(i).Bishop;
+                _values[i][Piece.WhiteKing.AsByte()] = configuration.Evaluation.GetPiece(i).King;
+                _values[i][Piece.BlackKing.AsByte()] = configuration.Evaluation.GetPiece(i).King;
+                _values[i][Piece.WhiteRook.AsByte()] = configuration.Evaluation.GetPiece(i).Rook;
+                _values[i][Piece.BlackRook.AsByte()] = configuration.Evaluation.GetPiece(i).Rook;
+                _values[i][Piece.WhiteQueen.AsByte()] = configuration.Evaluation.GetPiece(i).Queen;
+                _values[i][Piece.BlackQueen.AsByte()] = configuration.Evaluation.GetPiece(i).Queen;
+            }
 
             _staticValues = new int[12][][];
             for (var i = 0; i < _staticValues.Length; i++)
@@ -99,9 +119,9 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetValue(int piece)
+        public int GetValue(int piece, Phase phase)
         {
-            return _values[piece];
+            return _values[(byte)phase][piece];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -112,7 +132,7 @@ namespace Engine.Services
 
         public int GetFullValue(int piece, int square, Phase phase)
         {
-            return _values[piece] + _staticValues[piece][(int)phase][square];
+            return _values[(byte)phase][piece] + _staticValues[piece][(byte)phase][square];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -159,7 +179,9 @@ namespace Engine.Services
 
         public void Initialize(short level)
         {
-            if (level > 6)
+            var useEvaluationCache = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .GeneralConfiguration.UseEvaluationCache;
+            if (useEvaluationCache && level > 6)
             {
                 _useCache = true;
                 _depthTable = new DynamicCollection<ulong>[256];
@@ -213,63 +235,63 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetMinorDefendedByPawnValue()
+        public int GetMinorDefendedByPawnValue(Phase phase)
         {
-            return _minorDefendedByPawnValue;
+            return _minorDefendedByPawnValue[(byte) phase];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetBlockedPawnValue()
+        public int GetBlockedPawnValue(Phase phase)
         {
-            return _blockedPawnValue;
+            return _blockedPawnValue[(byte)phase];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetPassedPawnValue()
+        public int GetPassedPawnValue(Phase phase)
         {
-            return _passedPawnValue;
+            return _passedPawnValue[(byte)phase];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetDoubledPawnValue()
+        public int GetDoubledPawnValue(Phase phase)
         {
-            return _doubledPawnValue;
+            return _doubledPawnValue[(byte)phase];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetIsolatedPawnValue()
+        public int GetIsolatedPawnValue(Phase phase)
         {
-            return _isolatedPawnValue;
+            return _isolatedPawnValue[(byte)phase];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetBackwardPawnValue()
+        public int GetBackwardPawnValue(Phase phase)
         {
-            return _backwardPawnValue;
+            return _backwardPawnValue[(byte)phase];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetNotAbleCastleValue()
+        public int GetNotAbleCastleValue(Phase phase)
         {
-            return _notAbleCastleValue;
+            return _notAbleCastleValue[(byte)phase];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetEarlyQueenValue()
+        public int GetEarlyQueenValue(Phase phase)
         {
-            return _earlyQueenValue;
+            return _earlyQueenValue[(byte)phase];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetDoubleBishopValue()
+        public int GetDoubleBishopValue(Phase phase)
         {
-            return _doubleBishopValue;
+            return _doubleBishopValue[(byte)phase];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetRookOnOpenFileValue()
+        public int GetRookOnOpenFileValue(Phase phase)
         {
-            return _rookOnOpenFileValue;
+            return _rookOnOpenFileValue[(byte)phase];
         }
 
         #endregion

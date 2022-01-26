@@ -30,7 +30,8 @@ namespace Kgb.ChessApp
             var collection = JsonConvert.DeserializeObject<StaticTableCollection>(x);
 
             var evaluation = configuration.Evaluation;
-            IConfigurationProvider configurationProvider = new ConfigurationProvider(configuration.AlgorithmConfiguration, new EvaluationProvider(evaluation.Static, evaluation.Piece));
+            IConfigurationProvider configurationProvider = new ConfigurationProvider(configuration.AlgorithmConfiguration, new EvaluationProvider(evaluation.Static, evaluation.Opening, evaluation.Middle, evaluation.End),
+                configuration.GeneralConfiguration);
             containerRegistry.RegisterInstance(configurationProvider);
 
             IStaticValueProvider staticValueProvider = new StaticValueProvider(collection);

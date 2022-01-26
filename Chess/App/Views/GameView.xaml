@@ -17,7 +17,7 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Grid>
+        <Grid Margin="10,5">
             <Grid.Resources>
                 <converters:FigureToImageConvertor x:Key="FigureToImageConvertor" />
                 <converters:CellTypeToBrushConvertor x:Key="CellTypeToBrushConvertor" />
@@ -110,7 +110,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Grid>
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Margin="10,5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
