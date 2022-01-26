@@ -194,7 +194,8 @@ namespace Engine.DataStructures
                     moves.Add(Maximum());
                 }
 
-                for (var i = last; i < count; i++)
+                count = count - last;
+                for (var i = 0; i < count; i++)
                 {
                     moves.Add(_elements[i]);
                 }

@@ -3,14 +3,15 @@ using Engine.Interfaces;
 
 namespace Engine.Sorting.Comparers
 {
-    public class HistoryComparer : IMoveComparer
+    public class HistoryDifferenceComparer : IMoveComparer
     {
         #region Implementation of IComparer<in IMove>
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Compare(IMove x, IMove y)
         {
-            return y.History.CompareTo(x.History);
+            var comparision = y.History.CompareTo(x.History);
+            return comparision != 0 ? comparision : y.Difference.CompareTo(x.Difference);
         }
 
         #endregion

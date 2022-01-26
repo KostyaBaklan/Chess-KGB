@@ -15,7 +15,11 @@ using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies;
+using Engine.Strategies.AlphaBeta.Extended;
+using Engine.Strategies.AlphaBeta.Extended.Heap;
+using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.AlphaBeta.Null.Heap;
+using Engine.Strategies.AlphaBeta.Simple;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -102,6 +106,14 @@ namespace Kgb.ChessApp.Views
             _evaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
         }
 
+        private bool _useMachine;
+
+        public bool UseMachine
+        {
+            get => _useMachine;
+            set => SetProperty(ref _useMachine, value);
+        }
+
         private IEnumerable<int> _numbers;
 
         public IEnumerable<int> Numbers
@@ -145,7 +157,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new NullHeapHistoryStrategy(level, _position);
+            _strategy = new NullHeapHistoryDifferenceStrategy(level, _position);
 
             if (color == "White")
             {
@@ -288,6 +300,8 @@ namespace Kgb.ChessApp.Views
 
         private void MakeMachineMove()
         {
+            if (!_useMachine) return;
+
             Task.Delay(10)
                 .ContinueWith(t =>
                 {

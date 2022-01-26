@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Engine.Models.Boards;
 
 namespace Engine.Models.Helpers
@@ -33,6 +34,12 @@ namespace Engine.Models.Helpers
         public static string AsString(this Square square)
         {
             return _names[square.AsByte()];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Square ToSquare(this string square)
+        {
+            return new Square(Array.IndexOf(_names,square));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

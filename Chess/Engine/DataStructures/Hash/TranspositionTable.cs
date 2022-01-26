@@ -12,7 +12,7 @@ namespace Engine.DataStructures.Hash
         #region Overrides of ZobristDictionary<TranspositionEntry>
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void Replace(ulong key, TranspositionEntry oldItem, TranspositionEntry newItem)
+        public override void Replace(ulong key, TranspositionEntry oldItem, TranspositionEntry newItem)
         {
             if (oldItem.Depth < newItem.Depth)
             {
@@ -20,6 +20,18 @@ namespace Engine.DataStructures.Hash
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void Add(ulong key, TranspositionEntry item)
+        {
+            Table.Add(key, item);
+        }
+
         #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Set(ulong key, TranspositionEntry item)
+        {
+            Table[key] = item;
+        }
     }
 }

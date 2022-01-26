@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
 using Engine.Sorting.Comparers;
@@ -22,7 +24,8 @@ namespace Engine.Strategies.AlphaBeta.Null
             CanUseNull = false;
             MinReduction = 2;
             MaxReduction = 3;
-            NullWindow = EvaluationService.GetPenaltyValue();
+            NullWindow = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .AlgorithmConfiguration.NullWindow;
             Sorter = new ExtendedSorter(position, comparer);
         }
 
@@ -34,9 +37,13 @@ namespace Engine.Strategies.AlphaBeta.Null
             IMove pv = pvMove;
 
             var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (isNotEndGame && Table.TryGet(Position.GetKey(), out var entry))
+            var key = Position.GetKey();
+            if (isNotEndGame && Table.TryGet(key, out var entry))
             {
-                pv = entry.PvMove;
+                if ((entry.Depth - depth) % 2 == 0)
+                {
+                    pv = entry.PvMove;
+                }
             }
 
             var moves = Position.GetAllMoves(Sorter, pv);
@@ -46,7 +53,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 return result;
             }
 
-            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
+            if (MoveHistory.IsThreefoldRepetition(key))
             {
                 var v = Evaluate(alpha, beta);
                 if (v < -500)
@@ -107,9 +114,14 @@ namespace Engine.Strategies.AlphaBeta.Null
 
             var isNotEndGame = Position.GetPhase() != Phase.End;
 
+            bool shouldUpdate = false;
+            bool isInTable = false;
+
             if (!IsNull && isNotEndGame && Table.TryGet(key, out var entry))
             {
-                if (entry.Depth >= depth)
+                isInTable = true;
+                var entryDepth = entry.Depth;
+                if (entryDepth >= depth)
                 {
                     if (entry.Type == TranspositionEntryType.Exact)
                     {
@@ -128,8 +140,15 @@ namespace Engine.Strategies.AlphaBeta.Null
                     if (alpha >= beta)
                         return entry.Value;
                 }
+                else
+                {
+                    shouldUpdate = true;
+                }
 
-                pv = entry.PvMove;
+                if ((entryDepth - depth) % 2 == 0)
+                {
+                    pv = entry.PvMove;
+                }
             }
 
             int value = short.MinValue;
@@ -206,22 +225,28 @@ namespace Engine.Strategies.AlphaBeta.Null
                 best = value;
             }
 
-            TranspositionEntry te = new TranspositionEntry
-                {Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
-            if (best <= alpha)
+            if (!isInTable || shouldUpdate)
             {
-                te.Type = TranspositionEntryType.LowerBound;
-            }
-            else if (best >= beta)
-            {
-                te.Type = TranspositionEntryType.UpperBound;
-            }
-            else
-            {
-                te.Type = TranspositionEntryType.Exact;
+                TranspositionEntry te = new TranspositionEntry
+                    { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
+                if (best <= alpha)
+                {
+                    te.Type = TranspositionEntryType.LowerBound;
+                }
+                else if (best >= beta)
+                {
+                    te.Type = TranspositionEntryType.UpperBound;
+                }
+                else
+                {
+                    te.Type = TranspositionEntryType.Exact;
+                }
+
+                Table.Set(key, te);
+
+                return best;
             }
 
-            Table.Add(key, te);
             return best;
         }
 

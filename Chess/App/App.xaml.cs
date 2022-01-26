@@ -4,7 +4,8 @@ using System.IO;
 using System.Windows;
 using CommonServiceLocator;
 using Engine.Interfaces;
-using Engine.Models;
+using Engine.Interfaces.Config;
+using Engine.Models.Config;
 using Engine.Services;
 using Kgb.ChessApp.Views;
 using Newtonsoft.Json;
@@ -25,7 +26,16 @@ namespace Kgb.ChessApp
             var s = File.ReadAllText(@"Config\Configuration.json");
             var configuration = JsonConvert.DeserializeObject<Configuration>(s);
 
-            containerRegistry.RegisterInstance(typeof(IConfiguration), configuration);
+            var x = File.ReadAllText(@"Config\StaticTables.json");
+            var collection = JsonConvert.DeserializeObject<StaticTableCollection>(x);
+
+            var evaluation = configuration.Evaluation;
+            IConfigurationProvider configurationProvider = new ConfigurationProvider(configuration.AlgorithmConfiguration, new EvaluationProvider(evaluation.Static, evaluation.Opening, evaluation.Middle, evaluation.End),
+                configuration.GeneralConfiguration);
+            containerRegistry.RegisterInstance(configurationProvider);
+
+            IStaticValueProvider staticValueProvider = new StaticValueProvider(collection);
+            containerRegistry.RegisterInstance(staticValueProvider);
 
             containerRegistry.RegisterSingleton(typeof(IMoveProvider), typeof(MoveProvider));
             containerRegistry.RegisterSingleton(typeof(IMoveFormatter), typeof(MoveFormatter));
