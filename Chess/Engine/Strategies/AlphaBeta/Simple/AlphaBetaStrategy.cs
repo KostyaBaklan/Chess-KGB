@@ -23,11 +23,11 @@ namespace Engine.Strategies.AlphaBeta.Simple
             }
             else if (depth == 7)
             {
-                capacity = 5000113;
+                capacity = 10000139;
             }
             else
             {
-                capacity = 10000139;
+                capacity = 22675729; 
             }
             Table = new TranspositionTable(capacity);
         }

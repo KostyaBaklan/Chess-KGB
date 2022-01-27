@@ -16,6 +16,7 @@ using Engine.Strategies.AlphaBeta.Extended.Heap;
 using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.AlphaBeta.Null.Heap;
 using Engine.Strategies.AlphaBeta.Simple;
+using Engine.Strategies.Aspiration.Original;
 using Engine.Strategies.IterativeDeeping.Extended;
 using Newtonsoft.Json;
 
@@ -78,7 +79,12 @@ namespace Tests
                 {"id_es_hc", new IdExtendedHistoryStrategy(depth, position)},
                 {"id_es_hdc", new IdExtendedHistoryDifferenceStrategy(depth, position)},
                 {"id_es_dc", new IdExtendedDifferenceStrategy(depth, position)},
-                {"id_es_dhc", new IdExtendedDifferenceHistoryStrategy(depth, position)}
+                {"id_es_dhc", new IdExtendedDifferenceHistoryStrategy(depth, position)},
+
+                {"a_es_hc", new AspirationHistoryStrategy(depth, position)},
+                {"a_es_hdc", new AspirationHistoryDifferenceStrategy(depth, position)},
+                {"a_es_dc", new AspirationDifferenceStrategy(depth, position)},
+                {"a_es_dhc", new AspirationDifferenceHistoryStrategy(depth, position)}
             };
 
             IStrategy strategy = strategies[args[0]];
@@ -111,6 +117,10 @@ namespace Tests
             position.Make(moveProvider.GetMoves(Piece.BlackKnight, Squares.B8, position.GetBoard()).FirstOrDefault(m => m.To == Squares.C6));
             position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.F1, position.GetBoard()).FirstOrDefault(m => m.To == Squares.B5));
             position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.A7, position.GetBoard()).FirstOrDefault(m => m.To == Squares.A6));
+            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.B5, position.GetBoard()).FirstOrDefault(m => m.To == Squares.A4));
+            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.B7, position.GetBoard()).FirstOrDefault(m => m.To == Squares.B5));
+            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.A4, position.GetBoard()).FirstOrDefault(m => m.To == Squares.B3));
+            position.Make(moveProvider.GetMoves(Piece.BlackBishop, Squares.F8, position.GetBoard()).FirstOrDefault(m => m.To == Squares.C5));
 
             TimeSpan total = TimeSpan.Zero;
 

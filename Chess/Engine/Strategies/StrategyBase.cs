@@ -35,7 +35,7 @@ namespace Engine.Strategies
 
         protected int Evaluate(int alpha, int beta)
         {
-            int standPat = EvaluationService.Evaluate(Position);
+            int standPat = Position.GetValue();
             if (standPat >= beta)
             {
                 return beta;
