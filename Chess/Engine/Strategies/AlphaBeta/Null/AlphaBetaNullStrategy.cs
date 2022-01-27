@@ -38,12 +38,15 @@ namespace Engine.Strategies.AlphaBeta.Null
 
             var isNotEndGame = Position.GetPhase() != Phase.End;
             var key = Position.GetKey();
-            if (isNotEndGame && Table.TryGet(key, out var entry))
+            if (pv == null)
             {
-                if ((entry.Depth - depth) % 2 == 0)
+                if (isNotEndGame && Table.TryGet(key, out var entry))
                 {
-                    pv = entry.PvMove;
-                }
+                    if ((entry.Depth - depth) % 2 == 0)
+                    {
+                        pv = entry.PvMove;
+                    }
+                } 
             }
 
             var moves = Position.GetAllMoves(Sorter, pv);

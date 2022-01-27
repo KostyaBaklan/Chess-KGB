@@ -5,7 +5,8 @@
   "AlgorithmConfiguration": {
     "InitialDepth": 3,
     "NullWindow": 5,
-    "AspirationWindow": 350
+    "AspirationWindow": 250,
+    "AspirationDepth": 2
   },
   "Evaluation": {
     "Static": {

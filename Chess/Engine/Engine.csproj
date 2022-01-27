@@ -65,6 +65,7 @@
     <Compile Include="DataStructures\PriorityQueue.cs" />
     <Compile Include="Interfaces\Config\IAlgorithmConfiguration.cs" />
     <Compile Include="Interfaces\Config\IEvaluationProvider.cs" />
+    <Compile Include="Interfaces\Config\IGeneralConfiguration.cs" />
     <Compile Include="Interfaces\Config\IPieceEvaluation.cs" />
     <Compile Include="Interfaces\Config\IStaticEvaluation.cs" />
     <Compile Include="Interfaces\Config\IStaticValueProvider.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Models\Config\ConfigurationProvider.cs" />
     <Compile Include="Models\Config\Evaluation.cs" />
     <Compile Include="Models\Config\EvaluationProvider.cs" />
+    <Compile Include="Models\Config\GeneralConfiguration.cs" />
     <Compile Include="Models\Config\PhaseStaticTable.cs" />
     <Compile Include="Models\Config\PieceEvaluation.cs" />
     <Compile Include="Models\Config\PieceStaticTable.cs" />
@@ -179,6 +181,11 @@
     <Compile Include="DataStructures\Result.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\AlphaBetaNullStrategy.cs" />
+    <Compile Include="Strategies\Aspiration\AspirationStrategyBase.cs" />
+    <Compile Include="Strategies\Aspiration\Original\AspirationDifferenceHistoryStrategy.cs" />
+    <Compile Include="Strategies\Aspiration\Original\AspirationDifferenceStrategy.cs" />
+    <Compile Include="Strategies\Aspiration\Original\AspirationHistoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\Aspiration\Original\AspirationHistoryStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedHistoryDifferenceStrategy.cs" />
@@ -198,6 +205,9 @@
     <Content Include="Config\Configuration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Strategies\Aspiration\Heap\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
