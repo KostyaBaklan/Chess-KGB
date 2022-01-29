@@ -1,6 +1,6 @@
 ﻿using Engine.Interfaces;
 
-namespace Engine.Strategies
+namespace Engine.Strategies.Base
 {
     public interface IStrategy
     {

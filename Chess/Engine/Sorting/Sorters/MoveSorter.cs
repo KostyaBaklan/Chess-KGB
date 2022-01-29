@@ -167,7 +167,7 @@ namespace Engine.Sorting.Sorters
                     }
                     else
                     {
-                        DecideTrade(collection, attack);
+                        collection.AddTrade(attack);
                     }
                 }
             }
@@ -190,12 +190,6 @@ namespace Engine.Sorting.Sorters
             {
                 collection.AddWinCapture(_moves[i]);
             }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual void DecideTrade(AttackCollection collection, IAttack attack)
-        {
-            collection.AddTrade(attack);
         }
 
         protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);

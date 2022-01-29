@@ -6,5 +6,7 @@
         int NullWindow { get; }
         int AspirationWindow { get; }
         int AspirationDepth { get; }
+        int NonPvIterations { get; }
+        int DepthOffset { get; }
     }
 }

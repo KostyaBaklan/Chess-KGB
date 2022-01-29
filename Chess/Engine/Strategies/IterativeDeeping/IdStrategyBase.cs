@@ -3,12 +3,12 @@ using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
+using Engine.Strategies.Base;
 
 namespace Engine.Strategies.IterativeDeeping
 {
-    public abstract  class IdStrategyBase:StrategyBase
+    public abstract  class IdStrategyBase: ComplexStrategyBase
     {
-        protected StrategyBase InternalStrategy;
         private readonly int _initialDepth;
 
         protected IdStrategyBase(short depth, IPosition position, StrategyBase strategy) : base(depth, position)
@@ -39,18 +39,6 @@ namespace Engine.Strategies.IterativeDeeping
             }
             return result;
         }
-
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
-        {
-            return InternalStrategy.GetResult(alpha, beta, depth, pvMove);
-        }
-
-        public override int Search(int alpha, int beta, int depth)
-        {
-            return InternalStrategy.Search(alpha, beta, depth);
-        }
-
-        public override int Size => InternalStrategy.Size;
 
         #endregion
     }

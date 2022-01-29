@@ -3,7 +3,7 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Sorting.Sorters;
 
-namespace Engine.Strategies
+namespace Engine.Strategies.Base
 {
     public abstract class StrategyBase : IStrategy
     {

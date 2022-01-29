@@ -1,16 +1,15 @@
-﻿using System;
-using CommonServiceLocator;
+﻿using CommonServiceLocator;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
+using Engine.Strategies.Base;
 
 namespace Engine.Strategies.Aspiration
 {
-    public abstract class AspirationStrategyBase : StrategyBase
+    public abstract class AspirationStrategyBase : ComplexStrategyBase
     {
         protected int AspirationWindow;
         protected int AspirationDepth;
-        protected StrategyBase InternalStrategy;
 
         protected AspirationStrategyBase(short depth, IPosition position) : base(depth, position)
         {
@@ -51,18 +50,6 @@ namespace Engine.Strategies.Aspiration
 
             return result;
         }
-
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
-        {
-            return InternalStrategy.GetResult(alpha, beta, depth, pvMove);
-        }
-
-        public override int Search(int alpha, int beta, int depth)
-        {
-            return InternalStrategy.Search(alpha, beta, depth);
-        }
-
-        public override int Size => InternalStrategy.Size;
 
         #endregion
     }

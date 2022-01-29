@@ -14,7 +14,7 @@ namespace Engine.DataStructures.Moves
         public AdvancedMoveCollection(IMoveComparer comparer) : base(comparer)
         {
             _killers = new List<IMove>();
-            _nonCaptures = new List<IMove>(48);
+            _nonCaptures = new List<IMove>(64);
             _checks = new List<IMove>();
         }
 
@@ -69,11 +69,9 @@ namespace Engine.DataStructures.Moves
 
             _moves.AddRange(_winCaptures);
 
-            _moves.AddRange(_killers);
-
-            //bool hasGoodMoves = _moves.Count > 0;
-
             _moves.AddRange(_trades);
+
+            _moves.AddRange(_killers);
 
             _moves.AddRange(_checks);
 
@@ -83,7 +81,6 @@ namespace Engine.DataStructures.Moves
             }
             else
             {
-                //var count = hasGoodMoves ? 5: _nonCaptures.Count / 3;
                 for (var i = 0; i < _nonCaptures.Count / 3; i++)
                 {
                     int index = i;

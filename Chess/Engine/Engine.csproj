@@ -186,15 +186,30 @@
     <Compile Include="Strategies\Aspiration\Original\AspirationDifferenceStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Original\AspirationHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Original\AspirationHistoryStrategy.cs" />
+    <Compile Include="Strategies\Base\ComplexStrategyBase.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\IdStrategyBase.cs" />
-    <Compile Include="Strategies\StrategyBase.cs" />
+    <Compile Include="Strategies\Base\StrategyBase.cs" />
     <Compile Include="Interfaces\IResult.cs" />
-    <Compile Include="Strategies\IStrategy.cs" />
-    <Compile Include="Strategies\TestStrategy.cs" />
+    <Compile Include="Strategies\Base\IStrategy.cs" />
+    <Compile Include="Strategies\Base\TestStrategy.cs" />
+    <Compile Include="Strategies\MTD\MtdHistoryStrategy.cs" />
+    <Compile Include="Strategies\MTD\MtdStrategyBase.cs" />
+    <Compile Include="Strategies\PVS\NWS\NwsHistoryStrategy.cs" />
+    <Compile Include="Strategies\PVS\NWS\NwsStrategyBase.cs" />
+    <Compile Include="Strategies\PVS\Original\PvsDifferenceHistoryStrategy.cs" />
+    <Compile Include="Strategies\PVS\Original\PvsDifferenceStrategy.cs" />
+    <Compile Include="Strategies\PVS\Original\PvsHistoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\PVS\Original\PvsHistoryStrategy.cs" />
+    <Compile Include="Strategies\PVS\Memory\PvsMemoryDifferenceHistoryStrategy.cs" />
+    <Compile Include="Strategies\PVS\Memory\PvsMemoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\PVS\Memory\PvsMemoryHistoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\PVS\Memory\PvsMemoryHistoryStrategy.cs" />
+    <Compile Include="Strategies\PVS\Memory\PvsMemoryStrategyBase.cs" />
+    <Compile Include="Strategies\PVS\Original\PvsStrategyBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\StaticTables.json">

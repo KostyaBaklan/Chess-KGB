@@ -13,7 +13,6 @@ namespace Engine.Sorting.Sorters
 {
     public class AdvancedSorter : MoveSorter
     {
-        private int _value;
         private readonly IMoveProvider _moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
         public AdvancedSorter(IPosition position, IMoveComparer comparer) : base(position)
@@ -30,8 +29,6 @@ namespace Engine.Sorting.Sorters
             var sortedAttacks = OrderAttacks(attacks);
 
             AdvancedMoveCollection collection = new AdvancedMoveCollection(Comparer);
-
-            _value = Position.GetStaticValue();
 
             OrderAttacks(collection, sortedAttacks);
 
@@ -85,8 +82,6 @@ namespace Engine.Sorting.Sorters
 
             AdvancedMoveCollection collection = new AdvancedMoveCollection(Comparer);
 
-            _value = Position.GetStaticValue();
-
             if (pvNode is IAttack attack)
             {
                 OrderAttacks(collection, sortedAttacks, attack);
@@ -106,11 +101,11 @@ namespace Engine.Sorting.Sorters
                     }
                     else
                     {
-                        if (killerMoveCollection.Contains(move))
+                        if (killerMoveCollection.Contains(move) || move.IsPromotion())
                         {
                             collection.AddKillerMove(move);
                         }
-                        else if (move.IsCastle() || move.IsPromotion())
+                        else if (move.IsCastle() )
                         {
                             collection.AddSuggested(move);
                         }
@@ -131,11 +126,11 @@ namespace Engine.Sorting.Sorters
                     }
                     else
                     {
-                        if (killerMoveCollection.Contains(move))
+                        if (killerMoveCollection.Contains(move) || move.IsPromotion())
                         {
                             collection.AddKillerMove(move);
                         }
-                        else if (move.IsCastle() || move.IsPromotion())
+                        else if (move.IsCastle() )
                         {
                             collection.AddSuggested(move);
                         }
@@ -528,18 +523,6 @@ namespace Engine.Sorting.Sorters
             }
 
             return false;
-        }
-
-        protected override void DecideTrade(AttackCollection collection, IAttack attack)
-        {
-            if (collection is AdvancedAttackCollection advancedMoveCollection && _value < 0)
-            {
-                advancedMoveCollection.AddLooseTrade(attack);
-            }
-            else
-            {
-                base.DecideTrade(collection, attack);
-            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

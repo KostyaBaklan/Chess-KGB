@@ -10,6 +10,8 @@ namespace Engine.Models.Config
         public int NullWindow { get; set; }
         public int AspirationWindow { get; set; }
         public int AspirationDepth { get; set; }
+        public int NonPvIterations { get; set; }
+        public int DepthOffset { get; set; }
 
         #endregion
     }
