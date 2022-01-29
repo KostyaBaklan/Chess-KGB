@@ -111,7 +111,7 @@ namespace Engine.Sorting.Sorters
                     }
                     else
                     {
-                        DecideTrade(collection, attack);
+                        collection.AddTrade(attack);
                     }
                 }
             }

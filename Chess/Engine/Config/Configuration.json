@@ -6,7 +6,9 @@
     "InitialDepth": 3,
     "NullWindow": 5,
     "AspirationWindow": 250,
-    "AspirationDepth": 2
+    "AspirationDepth": 2,
+    "DepthOffset": 2,
+    "NonPvIterations": 4
   },
   "Evaluation": {
     "Static": {

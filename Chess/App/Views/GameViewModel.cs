@@ -14,9 +14,12 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
-using Engine.Strategies;
-using Engine.Strategies.AlphaBeta.Null.Heap;
 using Engine.Strategies.Aspiration.Original;
+using Engine.Strategies.Base;
+using Engine.Strategies.MTD;
+using Engine.Strategies.PVS;
+using Engine.Strategies.PVS.Memory;
+using Engine.Strategies.PVS.NWS;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -154,7 +157,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new AspirationHistoryDifferenceStrategy(level, _position);
+            _strategy = new MtdHistoryStrategy(level, _position);
 
             if (color == "White")
             {

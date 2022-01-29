@@ -9,7 +9,6 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
-using Engine.Strategies;
 using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Extended.Heap;
@@ -17,7 +16,11 @@ using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.AlphaBeta.Null.Heap;
 using Engine.Strategies.AlphaBeta.Simple;
 using Engine.Strategies.Aspiration.Original;
+using Engine.Strategies.Base;
 using Engine.Strategies.IterativeDeeping.Extended;
+using Engine.Strategies.PVS;
+using Engine.Strategies.PVS.Memory;
+using Engine.Strategies.PVS.Original;
 using Newtonsoft.Json;
 
 namespace Tests
@@ -84,7 +87,17 @@ namespace Tests
                 {"a_es_hc", new AspirationHistoryStrategy(depth, position)},
                 {"a_es_hdc", new AspirationHistoryDifferenceStrategy(depth, position)},
                 {"a_es_dc", new AspirationDifferenceStrategy(depth, position)},
-                {"a_es_dhc", new AspirationDifferenceHistoryStrategy(depth, position)}
+                {"a_es_dhc", new AspirationDifferenceHistoryStrategy(depth, position)},
+
+                {"pv_es_hc", new PvsHistoryStrategy(depth, position)},
+                {"pv_es_hdc", new PvsHistoryDifferenceStrategy(depth, position)},
+                {"pv_es_dc", new PvsDifferenceStrategy(depth, position)},
+                {"pv_es_dhc", new PvsDifferenceHistoryStrategy(depth, position)},
+
+                {"pvm_es_hc", new PvsMemoryHistoryStrategy(depth, position)},
+                {"pvm_es_hdc", new PvsMemoryHistoryDifferenceStrategy(depth, position)},
+                {"pvm_es_dc", new PvsMemoryDifferenceStrategy(depth, position)},
+                {"pvm_es_dhc", new PvsMemoryDifferenceHistoryStrategy(depth, position)}
             };
 
             IStrategy strategy = strategies[args[0]];

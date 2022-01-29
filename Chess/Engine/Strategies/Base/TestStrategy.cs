@@ -3,7 +3,7 @@ using Engine.Interfaces;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 
-namespace Engine.Strategies
+namespace Engine.Strategies.Base
 {
     public class TestStrategy
     {
