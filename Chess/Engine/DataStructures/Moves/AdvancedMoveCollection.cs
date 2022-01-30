@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Engine.Interfaces;
 using Engine.Sorting.Comparers;
@@ -42,7 +43,7 @@ namespace Engine.DataStructures.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddBadMove(IMove move)
         {
-            _looseCaptures.Add(move);
+            LooseCaptures.Add(move);
             Count++;
         }
 
@@ -56,38 +57,42 @@ namespace Engine.DataStructures.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddNonSuggested(IMove move)
         {
-            _looseTrades.Add(move);
+            LooseTrades.Add(move);
             Count++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Build()
         {
-            _moves = new List<IMove>(Count);
+            Moves = new List<IMove>(Count);
 
-            _moves.AddRange(_hashMoves);
+            Moves.AddRange(HashMoves);
 
-            _moves.AddRange(_winCaptures);
+            Moves.AddRange(WinCaptures);
 
-            _moves.AddRange(_trades);
+            Moves.AddRange(Trades);
 
-            _moves.AddRange(_killers);
+            Pv = Math.Max(4, Moves.Count);
 
-            _moves.AddRange(_checks);
+            Moves.AddRange(_killers);
 
-            if (_nonCaptures.Count < 6)
+            Moves.AddRange(_checks);
+
+            Cut = Math.Max(5, Moves.Count);
+
+            if (_nonCaptures.Count > 1)
             {
-                _nonCaptures.Sort(_comparer);
-            }
-            else
-            {
-                for (var i = 0; i < _nonCaptures.Count / 3; i++)
+                var capturesCount = _nonCaptures.Count < 6 ? _nonCaptures.Count / 2 : _nonCaptures.Count / 3;
+
+                All = Cut + capturesCount;
+
+                for (var i = 0; i < capturesCount; i++)
                 {
                     int index = i;
                     var min = _nonCaptures[i];
                     for (int j = i + 1; j < _nonCaptures.Count; j++)
                     {
-                        if (_comparer.Compare(_nonCaptures[j], min) >= 0) continue;
+                        if (Comparer.Compare(_nonCaptures[j], min) >= 0) continue;
 
                         min = _nonCaptures[j];
                         index = j;
@@ -101,17 +106,21 @@ namespace Engine.DataStructures.Moves
                 }
             }
 
-            _moves.AddRange(_nonCaptures);
+            Moves.AddRange(_nonCaptures);
 
-            _moves.AddRange(_looseTrades);
+            Late = Moves.Count;
 
-            _moves.AddRange(_looseCaptures);
+            Moves.AddRange(LooseTrades);
+
+            Moves.AddRange(LooseCaptures);
+
+            Bad = Count;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasWinCaptures()
         {
-            return _winCaptures.Count > 0;
+            return WinCaptures.Count > 0;
         }
     }
 }

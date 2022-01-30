@@ -7,17 +7,17 @@ namespace Engine.DataStructures.Moves
 {
     public class AttackCollection : MoveCollectionBase
     {
-        protected readonly List<IMove> _winCaptures;
-        protected readonly List<IMove> _trades;
-        protected readonly List<IMove> _looseCaptures;
-        protected readonly List<IMove> _hashMoves;
+        protected readonly List<IMove> WinCaptures;
+        protected readonly List<IMove> Trades;
+        protected readonly List<IMove> LooseCaptures;
+        protected readonly List<IMove> HashMoves;
 
         public AttackCollection(IMoveComparer comparer) : base(comparer)
         {
-            _winCaptures = new List<IMove>();
-            _trades = new List<IMove>();
-            _looseCaptures = new List<IMove>();
-            _hashMoves = new List<IMove>();
+            WinCaptures = new List<IMove>();
+            Trades = new List<IMove>();
+            LooseCaptures = new List<IMove>();
+            HashMoves = new List<IMove>();
         }
 
         #region Implementation of IMoveCollection
@@ -27,43 +27,43 @@ namespace Engine.DataStructures.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddWinCapture(IMove move)
         {
-            _winCaptures.Add(move);
+            WinCaptures.Add(move);
             Count++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddTrade(IMove move)
         {
-            _trades.Add(move);
+            Trades.Add(move);
             Count++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddLooseCapture(IMove move)
         {
-            _looseCaptures.Add(move);
+            LooseCaptures.Add(move);
             Count++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddHashMove(IMove move)
         {
-            _hashMoves.Add(move);
+            HashMoves.Add(move);
             Count++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Build()
         {
-            _moves = new List<IMove>(Count);
+            Moves = new List<IMove>(Count);
 
-            _moves.AddRange(_hashMoves);
+            Moves.AddRange(HashMoves);
 
-            _moves.AddRange(_winCaptures);
+            Moves.AddRange(WinCaptures);
 
-            _moves.AddRange(_trades);
+            Moves.AddRange(Trades);
 
-            _moves.AddRange(_looseCaptures);
+            Moves.AddRange(LooseCaptures);
         }
     }
 }

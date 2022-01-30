@@ -8,5 +8,6 @@
         int AspirationDepth { get; }
         int NonPvIterations { get; }
         int DepthOffset { get; }
+        int DepthReduction { get; }
     }
 }

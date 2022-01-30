@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Interfaces;
+﻿using Engine.Interfaces;
 using Engine.Strategies.AlphaBeta.Extended;
 
 namespace Engine.Strategies.MTD

@@ -196,6 +196,11 @@
     <Compile Include="Interfaces\IResult.cs" />
     <Compile Include="Strategies\Base\IStrategy.cs" />
     <Compile Include="Strategies\Base\TestStrategy.cs" />
+    <Compile Include="Strategies\LateMove\LmrAdvancedHistoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\LateMove\LmrAdvancedHistoryStrategy.cs" />
+    <Compile Include="Strategies\LateMove\LmrExtendedHistoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\LateMove\LmrExtendedHistoryStrategy.cs" />
+    <Compile Include="Strategies\LateMove\LmrStrategyBase.cs" />
     <Compile Include="Strategies\MTD\MtdHistoryStrategy.cs" />
     <Compile Include="Strategies\MTD\MtdStrategyBase.cs" />
     <Compile Include="Strategies\PVS\NWS\NwsHistoryStrategy.cs" />

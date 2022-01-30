@@ -18,7 +18,7 @@ using Engine.Strategies.AlphaBeta.Simple;
 using Engine.Strategies.Aspiration.Original;
 using Engine.Strategies.Base;
 using Engine.Strategies.IterativeDeeping.Extended;
-using Engine.Strategies.PVS;
+using Engine.Strategies.LateMove;
 using Engine.Strategies.PVS.Memory;
 using Engine.Strategies.PVS.Original;
 using Newtonsoft.Json;
@@ -97,7 +97,12 @@ namespace Tests
                 {"pvm_es_hc", new PvsMemoryHistoryStrategy(depth, position)},
                 {"pvm_es_hdc", new PvsMemoryHistoryDifferenceStrategy(depth, position)},
                 {"pvm_es_dc", new PvsMemoryDifferenceStrategy(depth, position)},
-                {"pvm_es_dhc", new PvsMemoryDifferenceHistoryStrategy(depth, position)}
+                {"pvm_es_dhc", new PvsMemoryDifferenceHistoryStrategy(depth, position)},
+
+                {"lmr_es_hc", new LmrExtendedHistoryStrategy(depth, position)},
+                {"lmr_es_hdc", new LmrExtendedHistoryDifferenceStrategy(depth, position)},
+                {"lmr_as_dc", new LmrAdvancedHistoryStrategy(depth, position)},
+                {"lmr_as_dhc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)}
             };
 
             IStrategy strategy = strategies[args[0]];
