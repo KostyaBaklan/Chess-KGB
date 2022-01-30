@@ -17,6 +17,7 @@ using Engine.Models.Helpers;
 using Engine.Strategies.Base;
 using Engine.Strategies.LateMove;
 using Engine.Strategies.MTD;
+using Engine.Strategies.NullMove;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -154,7 +155,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrAdvancedHistoryStrategy(level, _position);
+            _strategy = new NmrAdvancedHistoryStrategy(level, _position);
 
             if (color == "White")
             {

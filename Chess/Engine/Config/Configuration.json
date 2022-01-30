@@ -9,7 +9,8 @@
     "AspirationDepth": 2,
     "DepthOffset": 2,
     "NonPvIterations": 4,
-    "DepthReduction": 2
+    "DepthReduction": 2,
+    "NullDepthReduction": 2
   },
   "Evaluation": {
     "Static": {

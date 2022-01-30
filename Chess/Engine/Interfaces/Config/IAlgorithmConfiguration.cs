@@ -9,5 +9,6 @@
         int NonPvIterations { get; }
         int DepthOffset { get; }
         int DepthReduction { get; }
+        int NullDepthReduction { get; }
     }
 }

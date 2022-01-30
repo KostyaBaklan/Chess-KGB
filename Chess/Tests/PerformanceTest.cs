@@ -13,12 +13,15 @@ using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Extended.Heap;
 using Engine.Strategies.AlphaBeta.Null;
+using Engine.Strategies.AlphaBeta.Null.Advanced;
+using Engine.Strategies.AlphaBeta.Null.Extended;
 using Engine.Strategies.AlphaBeta.Null.Heap;
 using Engine.Strategies.AlphaBeta.Simple;
 using Engine.Strategies.Aspiration.Original;
 using Engine.Strategies.Base;
 using Engine.Strategies.IterativeDeeping.Extended;
 using Engine.Strategies.LateMove;
+using Engine.Strategies.NullMove;
 using Engine.Strategies.PVS.Memory;
 using Engine.Strategies.PVS.Original;
 using Newtonsoft.Json;
@@ -74,6 +77,11 @@ namespace Tests
                 {"abn_es_dc", new AlphaBetaNullDifferenceStrategy(depth, position)},
                 {"abn_es_dhc", new AlphaBetaNullDifferenceHistoryStrategy(depth, position)},
 
+                {"abn_as_hc", new AlphaBetaAdvancedNullHistoryStrategy(depth, position)},
+                {"abn_as_hdc", new AlphaBetaAdvancedNullHistoryDifferenceStrategy(depth, position)},
+                {"abn_as_dc", new AlphaBetaAdvancedNullDifferenceStrategy(depth, position)},
+                {"abn_as_dhc", new AlphaBetaAdvancedNullDifferenceHistoryStrategy(depth, position)},
+
                 {"abn_hs_hc", new NullHeapHistoryStrategy(depth, position)},
                 {"abn_hs_hdc", new NullHeapHistoryDifferenceStrategy(depth, position)},
                 {"abn_hs_dc", new NullHeapDifferenceStrategy(depth, position)},
@@ -102,7 +110,12 @@ namespace Tests
                 {"lmr_es_hc", new LmrExtendedHistoryStrategy(depth, position)},
                 {"lmr_es_hdc", new LmrExtendedHistoryDifferenceStrategy(depth, position)},
                 {"lmr_as_dc", new LmrAdvancedHistoryStrategy(depth, position)},
-                {"lmr_as_dhc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)}
+                {"lmr_as_dhc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)},
+
+                {"nmr_es_hc", new NmrExtendedHistoryStrategy(depth, position)},
+                {"nmr_es_hdc", new NmrExtendedHistoryDifferenceStrategy(depth, position)},
+                {"nmr_as_dc", new NmrAdvancedHistoryStrategy(depth, position)},
+                {"nmr_as_dhc", new NmrAdvancedHistoryDifferenceStrategy(depth, position)}
             };
 
             IStrategy strategy = strategies[args[0]];

@@ -13,6 +13,7 @@ namespace Engine.Models.Config
         public int NonPvIterations { get; set; }
         public int DepthOffset { get; set; }
         public int DepthReduction { get; set; }
+        public int NullDepthReduction { get; set; }
 
         #endregion
     }

@@ -1,108 +1,20 @@
-﻿using System.Runtime.CompilerServices;
-using CommonServiceLocator;
-using Engine.DataStructures;
+﻿using CommonServiceLocator;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
-using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
-using Engine.Strategies.AlphaBeta.Simple;
+using Engine.Strategies.AlphaBeta.Null;
 
-namespace Engine.Strategies.AlphaBeta.Null
+namespace Engine.Strategies.NullMove
 {
-    public abstract class AlphaBetaNullStrategy : AlphaBetaStrategy
+    public abstract class NmrStrategyBase: NullMoveStrategy
     {
-        protected bool CanUseNull;
-        protected bool IsNull;
-        protected int MinReduction;
-        protected int MaxReduction;
-        protected int NullWindow;
+        protected int NullDepthReduction;
 
-        protected AlphaBetaNullStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position)
+        protected NmrStrategyBase(short depth, IPosition position) : base(depth, position)
         {
-            CanUseNull = false;
-            MinReduction = 2;
-            MaxReduction = 3;
-            NullWindow = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
-                .AlgorithmConfiguration.NullWindow;
-            Sorter = new ExtendedSorter(position, comparer);
-        }
-
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
-        {
-            CanUseNull = false;
-            Result result = new Result();
-
-            IMove pv = pvMove;
-
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            var key = Position.GetKey();
-            if (pv == null)
-            {
-                if (isNotEndGame && Table.TryGet(key, out var entry))
-                {
-                    if ((entry.Depth - depth) % 2 == 0)
-                    {
-                        pv = entry.PvMove;
-                    }
-                } 
-            }
-
-            var moves = Position.GetAllMoves(Sorter, pv);
-            if (moves.Count == 0)
-            {
-                result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
-                return result;
-            }
-
-            if (MoveHistory.IsThreefoldRepetition(key))
-            {
-                var v = Evaluate(alpha, beta);
-                if (v < -500)
-                {
-                    result.GameResult = GameResult.ThreefoldRepetition;
-                    return result;
-                }
-            }
-
-            if (moves.Count > 1)
-            {
-                for (var i = 0; i < moves.Count; i++)
-                {
-                    IsNull = false;
-                    var move = moves[i];
-                    SwitchNull();
-                    Position.Make(move);
-
-                    var value = -Search(-beta, -alpha, depth - 1);
-
-                    Position.UnMake();
-                    SwitchNull();
-
-                    if (value > result.Value)
-                    {
-                        result.Value = value;
-                        result.Move = move;
-                    }
-
-                    if (value > alpha)
-                    {
-                        alpha = value;
-                    }
-
-                    if (alpha < beta) continue;
-                    break;
-                }
-            }
-            else
-            {
-                result.Move = moves[0];
-            }
-
-            result.Move.History++;
-
-            return result;
+            NullDepthReduction = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .AlgorithmConfiguration.NullDepthReduction;
         }
 
         public override int Search(int alpha, int beta, int depth)
@@ -175,6 +87,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 }
             }
 
+            int d = depth;
             if (CanUseNull && !lastMove.IsCheck() && isNotEndGame && IsValidWindow(alpha, beta))
             {
                 int r = depth > 6 ? MaxReduction : MinReduction;
@@ -185,7 +98,16 @@ namespace Engine.Strategies.AlphaBeta.Null
                     UndoNullMove();
                     if (v >= beta)
                     {
-                        return v;
+                        var nullDepthReduction = NullDepthReduction;
+                        if (depth > 6)
+                        {
+                            nullDepthReduction++;
+                        }
+                        d = depth - nullDepthReduction;
+                        if (d <= 0)
+                        {
+                            return Evaluate(alpha, beta);
+                        }
                     }
                 }
             }
@@ -195,7 +117,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 var move = moves[i];
 
                 Position.Make(move);
-                var r = -Search(-beta, -alpha, depth - 1);
+                var r = -Search(-beta, -alpha, d - 1);
                 Position.UnMake();
 
                 if (r > value)
@@ -224,14 +146,14 @@ namespace Engine.Strategies.AlphaBeta.Null
             }
             else
             {
-                bestMove.History += 1 << depth;
+                bestMove.History += 1 << d;
                 best = value;
             }
 
             if (!isInTable || shouldUpdate)
             {
                 TranspositionEntry te = new TranspositionEntry
-                    { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
+                { Depth = (byte)d, Value = (short)best, PvMove = bestMove };
                 if (best <= alpha)
                 {
                     te.Type = TranspositionEntryType.LowerBound;
@@ -251,34 +173,6 @@ namespace Engine.Strategies.AlphaBeta.Null
             }
 
             return best;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsValidWindow(int alpha, int beta)
-        {
-            return beta < SearchValue && beta - alpha > NullWindow;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void UndoNullMove()
-        {
-            SwitchNull();
-            Position.SwapTurn();
-            IsNull = false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void MakeNullMove()
-        {
-            SwitchNull();
-            Position.SwapTurn();
-            IsNull = true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void SwitchNull()
-        {
-            CanUseNull = !CanUseNull;
         }
     }
 }
