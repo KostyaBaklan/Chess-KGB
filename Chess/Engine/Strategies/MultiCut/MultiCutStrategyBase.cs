@@ -171,11 +171,7 @@ namespace Engine.Strategies.MultiCut
 
             if (MoveHistory.IsThreefoldRepetition(key))
             {
-                var v = Evaluate(alpha, beta);
-                if (v < 0)
-                {
-                    return -v;
-                }
+                return Evaluate(alpha, beta);
             }
 
             if (IsCut && depth > MultiCutDepth)

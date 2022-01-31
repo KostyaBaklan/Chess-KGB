@@ -51,7 +51,6 @@
     <Compile Include="DataStructures\GameResult.cs" />
     <Compile Include="DataStructures\Hash\DynamicHash.cs" />
     <Compile Include="DataStructures\Hash\IDynamicHash.cs" />
-    <Compile Include="DataStructures\Moves\AdvancedAttackCollection.cs" />
     <Compile Include="DataStructures\Moves\AdvancedMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\AttackCollection.cs" />
     <Compile Include="DataStructures\DynamicArray.cs" />
@@ -143,6 +142,7 @@
     <Compile Include="Sorting\Comparers\IMoveComparer.cs" />
     <Compile Include="Sorting\Sorters\AdvancedSorter.cs" />
     <Compile Include="Sorting\Comparers\AttackComparer.cs" />
+    <Compile Include="Sorting\Sorters\ComplexSorter.cs" />
     <Compile Include="Sorting\Sorters\ExtendedHeapSorter.cs" />
     <Compile Include="Sorting\Sorters\ExtendedSorter.cs" />
     <Compile Include="Sorting\Sorters\IMoveSorter.cs" />
@@ -170,6 +170,9 @@
     <Compile Include="Strategies\AlphaBeta\Null\Advanced\AlphaBetaAdvancedNullHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Advanced\AlphaBetaAdvancedNullHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Advanced\AlphaBetaAdvancedNullStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\Complex\AlphaBetaComplexNullHistoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\Complex\AlphaBetaComplexNullHistoryStrategy.cs" />
+    <Compile Include="Strategies\AlphaBeta\Null\Complex\AlphaBetaComplexNullStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Extended\AlphaBetaExtendedNullStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Extended\AlphaBetaNullHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Heap\AlphaBetaNullHeapStrategy.cs" />
@@ -204,6 +207,8 @@
     <Compile Include="Strategies\Base\TestStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrAdvancedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrAdvancedHistoryStrategy.cs" />
+    <Compile Include="Strategies\LateMove\LmrComplexHistoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\LateMove\LmrComplexHistoryStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrStrategyBase.cs" />
@@ -211,11 +216,15 @@
     <Compile Include="Strategies\MTD\MtdStrategyBase.cs" />
     <Compile Include="Strategies\MultiCut\MultiCutAdvancedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\MultiCut\MultiCutAdvancedHistoryStrategy.cs" />
+    <Compile Include="Strategies\MultiCut\MultiCutComplexHistoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\MultiCut\MultiCutComplexHistoryStrategy.cs" />
     <Compile Include="Strategies\MultiCut\MultiCutExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\MultiCut\MultiCutExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\MultiCut\MultiCutStrategyBase.cs" />
     <Compile Include="Strategies\NullMove\NmrAdvancedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\NullMove\NmrAdvancedHistoryStrategy.cs" />
+    <Compile Include="Strategies\NullMove\NmrComplexHistoryDifferenceStrategy.cs" />
+    <Compile Include="Strategies\NullMove\NmrComplexHistoryStrategy.cs" />
     <Compile Include="Strategies\NullMove\NmrExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\NullMove\NmrExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\NullMove\NmrStrategyBase.cs" />
