@@ -6,17 +6,19 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
 {
-    public class AdvancedMoveCollection : AdvancedAttackCollection
+    public class AdvancedMoveCollection : AttackCollection
     {
         private readonly List<IMove> _killers;
         private readonly List<IMove> _nonCaptures;
         private readonly List<IMove> _checks;
+        protected readonly List<IMove> LooseTrades;
 
         public AdvancedMoveCollection(IMoveComparer comparer) : base(comparer)
         {
             _killers = new List<IMove>();
             _nonCaptures = new List<IMove>(64);
             _checks = new List<IMove>();
+            LooseTrades = new List<IMove>(32);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -117,12 +119,6 @@ namespace Engine.DataStructures.Moves
             Moves.AddRange(LooseCaptures);
 
             Bad = Count;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool HasWinCaptures()
-        {
-            return WinCaptures.Count > 0;
         }
     }
 }

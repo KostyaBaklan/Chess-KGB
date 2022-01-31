@@ -13,6 +13,7 @@ using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Extended.Heap;
 using Engine.Strategies.AlphaBeta.Null.Advanced;
+using Engine.Strategies.AlphaBeta.Null.Complex;
 using Engine.Strategies.AlphaBeta.Null.Extended;
 using Engine.Strategies.AlphaBeta.Null.Heap;
 using Engine.Strategies.AlphaBeta.Simple;
@@ -82,6 +83,9 @@ namespace Tests
                 {"abn_as_dc", new AlphaBetaAdvancedNullDifferenceStrategy(depth, position)},
                 {"abn_as_dhc", new AlphaBetaAdvancedNullDifferenceHistoryStrategy(depth, position)},
 
+                {"abn_cs_hc", new AlphaBetaComplexNullHistoryStrategy(depth, position)},
+                {"abn_cs_hdc", new AlphaBetaComplexNullHistoryDifferenceStrategy(depth, position)},
+
                 {"abn_hs_hc", new NullHeapHistoryStrategy(depth, position)},
                 {"abn_hs_hdc", new NullHeapHistoryDifferenceStrategy(depth, position)},
                 {"abn_hs_dc", new NullHeapDifferenceStrategy(depth, position)},
@@ -111,16 +115,22 @@ namespace Tests
                 {"lmr_es_hdc", new LmrExtendedHistoryDifferenceStrategy(depth, position)},
                 {"lmr_as_hc", new LmrAdvancedHistoryStrategy(depth, position)},
                 {"lmr_as_hdc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)},
+                {"lmr_cs_hc", new LmrComplexHistoryStrategy(depth, position)},
+                {"lmr_cs_hdc", new LmrComplexHistoryDifferenceStrategy(depth, position)},
 
                 {"nmr_es_hc", new NmrExtendedHistoryStrategy(depth, position)},
                 {"nmr_es_hdc", new NmrExtendedHistoryDifferenceStrategy(depth, position)},
                 {"nmr_as_hc", new NmrAdvancedHistoryStrategy(depth, position)},
                 {"nmr_as_hdc", new NmrAdvancedHistoryDifferenceStrategy(depth, position)},
+                {"nmr_cs_hc", new NmrComplexHistoryStrategy(depth, position)},
+                {"nmr_cs_hdc", new NmrComplexHistoryDifferenceStrategy(depth, position)},
 
                 {"mc_es_hc", new MultiCutExtendedHistoryStrategy(depth, position)},
                 {"mc_es_hdc", new MultiCutExtendedHistoryDifferenceStrategy(depth, position)},
                 {"mc_as_hc", new MultiCutAdvancedHistoryStrategy(depth, position)},
-                {"mc_as_hdc", new MultiCutAdvancedHistoryDifferenceStrategy(depth, position)}
+                {"mc_as_hdc", new MultiCutAdvancedHistoryDifferenceStrategy(depth, position)},
+                {"mc_cs_hc", new MultiCutComplexHistoryStrategy(depth, position)},
+                {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)}
             };
 
             IStrategy strategy = strategies[args[0]];
