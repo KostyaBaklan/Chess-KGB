@@ -10,5 +10,9 @@
         int DepthOffset { get; }
         int DepthReduction { get; }
         int NullDepthReduction { get; }
+        int MultiCutReduction { get; }
+        int MultiCutDepth { get; }
+        int MultiCutRequirement { get; }
+        int MultiCutMoves { get; }
     }
 }

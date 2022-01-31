@@ -13,6 +13,8 @@ namespace Engine.Strategies.NullMove
 
         protected NmrStrategyBase(short depth, IPosition position) : base(depth, position)
         {
+            MinReduction = 3;
+            MaxReduction = 4;
             NullDepthReduction = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
                 .AlgorithmConfiguration.NullDepthReduction;
         }
@@ -98,12 +100,7 @@ namespace Engine.Strategies.NullMove
                     UndoNullMove();
                     if (v >= beta)
                     {
-                        var nullDepthReduction = NullDepthReduction;
-                        if (depth > 6)
-                        {
-                            nullDepthReduction++;
-                        }
-                        d = depth - nullDepthReduction;
+                        d = depth - NullDepthReduction;
                         if (d <= 0)
                         {
                             return Evaluate(alpha, beta);

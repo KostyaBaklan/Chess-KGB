@@ -12,7 +12,6 @@ using Engine.Models.Helpers;
 using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Extended.Heap;
-using Engine.Strategies.AlphaBeta.Null;
 using Engine.Strategies.AlphaBeta.Null.Advanced;
 using Engine.Strategies.AlphaBeta.Null.Extended;
 using Engine.Strategies.AlphaBeta.Null.Heap;
@@ -21,6 +20,7 @@ using Engine.Strategies.Aspiration.Original;
 using Engine.Strategies.Base;
 using Engine.Strategies.IterativeDeeping.Extended;
 using Engine.Strategies.LateMove;
+using Engine.Strategies.MultiCut;
 using Engine.Strategies.NullMove;
 using Engine.Strategies.PVS.Memory;
 using Engine.Strategies.PVS.Original;
@@ -109,13 +109,18 @@ namespace Tests
 
                 {"lmr_es_hc", new LmrExtendedHistoryStrategy(depth, position)},
                 {"lmr_es_hdc", new LmrExtendedHistoryDifferenceStrategy(depth, position)},
-                {"lmr_as_dc", new LmrAdvancedHistoryStrategy(depth, position)},
-                {"lmr_as_dhc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)},
+                {"lmr_as_hc", new LmrAdvancedHistoryStrategy(depth, position)},
+                {"lmr_as_hdc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)},
 
                 {"nmr_es_hc", new NmrExtendedHistoryStrategy(depth, position)},
                 {"nmr_es_hdc", new NmrExtendedHistoryDifferenceStrategy(depth, position)},
-                {"nmr_as_dc", new NmrAdvancedHistoryStrategy(depth, position)},
-                {"nmr_as_dhc", new NmrAdvancedHistoryDifferenceStrategy(depth, position)}
+                {"nmr_as_hc", new NmrAdvancedHistoryStrategy(depth, position)},
+                {"nmr_as_hdc", new NmrAdvancedHistoryDifferenceStrategy(depth, position)},
+
+                {"mc_es_hc", new MultiCutExtendedHistoryStrategy(depth, position)},
+                {"mc_es_hdc", new MultiCutExtendedHistoryDifferenceStrategy(depth, position)},
+                {"mc_as_hc", new MultiCutAdvancedHistoryStrategy(depth, position)},
+                {"mc_as_hdc", new MultiCutAdvancedHistoryDifferenceStrategy(depth, position)}
             };
 
             IStrategy strategy = strategies[args[0]];
@@ -191,22 +196,25 @@ namespace Tests
                 moveModel.Table = strategy.Size;
                 moveModel.Evaluation = evaluation.Size;
                 moveModel.Memory = memory;
+                moveModel.White = formatter.Format(move);
 
                 var m = st.Get().Move;
                 if (m == null)
                 {
                     Console.WriteLine($"{i + 1} The opponent has no moves !!!");
-                    break;
                 }
-                position.Make(m);
+                else
+                {
+                    position.Make(m);
+                    moveModel.Black = formatter.Format(m);
+                }
 
                 moveModel.StaticValue = position.GetValue();
                 moveModel.Material = position.GetStaticValue();
 
-                moveModel.White = formatter.Format(move);
-                moveModel.Black = formatter.Format(m);
-
                 _model.Moves.Add(moveModel);
+
+                if (m == null) break;
             }
         }
     }

@@ -50,7 +50,7 @@ namespace Engine.DataStructures.Moves
 
             int capturesCount  =_nonCaptures.GetOrderedItems(Moves);
 
-            All = Cut + capturesCount;
+            All = Math.Min(Cut + capturesCount, Moves.Count);
 
             Late = Moves.Count;
 

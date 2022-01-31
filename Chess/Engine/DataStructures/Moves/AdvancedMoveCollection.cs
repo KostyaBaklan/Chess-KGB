@@ -108,6 +108,8 @@ namespace Engine.DataStructures.Moves
 
             Moves.AddRange(_nonCaptures);
 
+            All = Math.Min(All, Moves.Count);
+
             Late = Moves.Count;
 
             Moves.AddRange(LooseTrades);
