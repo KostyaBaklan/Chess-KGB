@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Engine.Interfaces;
 using Engine.Sorting.Comparers;
@@ -33,26 +34,33 @@ namespace Engine.DataStructures.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Build()
         {
-            _moves = new List<IMove>(Count);
+            Moves = new List<IMove>(Count);
 
-            _moves.AddRange(_hashMoves);
+            Moves.AddRange(HashMoves);
 
-            _moves.AddRange(_winCaptures);
+            Moves.AddRange(WinCaptures);
 
-            _moves.AddRange(_trades);
+            Moves.AddRange(Trades);
 
-            _moves.AddRange(_killers);
+            Pv = Math.Max(4,Moves.Count);
+
+            Moves.AddRange(_killers);
+
+            Cut = Math.Max(5, Moves.Count);
 
             if (_nonCaptures.Count > 1)
             {
                 var capturesCount = _nonCaptures.Count < 6 ? _nonCaptures.Count / 2 : _nonCaptures.Count / 3;
+
+                All = Cut + capturesCount;
+
                 for (var i = 0; i < capturesCount; i++)
                 {
                     int index = i;
                     var min = _nonCaptures[i];
                     for (int j = i + 1; j < _nonCaptures.Count; j++)
                     {
-                        if (_comparer.Compare(_nonCaptures[j], min) >= 0) continue;
+                        if (Comparer.Compare(_nonCaptures[j], min) >= 0) continue;
 
                         min = _nonCaptures[j];
                         index = j;
@@ -66,9 +74,15 @@ namespace Engine.DataStructures.Moves
                 }
             }
 
-            _moves.AddRange(_nonCaptures);
+            Moves.AddRange(_nonCaptures);
 
-            _moves.AddRange(_looseCaptures);
+            All = Math.Min(All, Moves.Count);
+
+            Late = Moves.Count;
+
+            Moves.AddRange(LooseCaptures);
+
+            Bad = Count;
         }
     }
 }

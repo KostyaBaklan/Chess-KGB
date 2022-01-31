@@ -8,7 +8,13 @@
     "AspirationWindow": 250,
     "AspirationDepth": 2,
     "DepthOffset": 2,
-    "NonPvIterations": 4
+    "NonPvIterations": 4,
+    "DepthReduction": 2,
+    "NullDepthReduction": 4,
+    "MultiCutReduction": 2,
+    "MultiCutDepth": 3,
+    "MultiCutRequirement": 3,
+    "MultiCutMoves": 10
   },
   "Evaluation": {
     "Static": {

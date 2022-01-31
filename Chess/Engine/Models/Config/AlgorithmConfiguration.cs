@@ -12,6 +12,12 @@ namespace Engine.Models.Config
         public int AspirationDepth { get; set; }
         public int NonPvIterations { get; set; }
         public int DepthOffset { get; set; }
+        public int DepthReduction { get; set; }
+        public int NullDepthReduction { get; set; }
+        public int MultiCutReduction { get; set; }
+        public int MultiCutDepth { get; set; }
+        public int MultiCutRequirement { get; set; }
+        public int MultiCutMoves { get; set; }
 
         #endregion
     }

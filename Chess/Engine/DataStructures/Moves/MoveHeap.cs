@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Engine.Interfaces;
 using Engine.Sorting.Comparers;
@@ -33,19 +34,29 @@ namespace Engine.DataStructures.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Build()
         {
-            _moves = new List<IMove>(Count);
+            Moves = new List<IMove>(Count);
 
-            _moves.AddRange(_hashMoves);
+            Moves.AddRange(HashMoves);
 
-            _moves.AddRange(_winCaptures);
+            Moves.AddRange(WinCaptures);
 
-            _moves.AddRange(_trades);
+            Moves.AddRange(Trades);
 
-            _moves.AddRange(_killers);
+            Pv = Math.Max(4, Moves.Count);
 
-            _nonCaptures.GetOrderedItems(_moves);
+            Moves.AddRange(_killers);
 
-            _moves.AddRange(_looseCaptures);
+            Cut = Math.Max(5, Moves.Count);
+
+            int capturesCount  =_nonCaptures.GetOrderedItems(Moves);
+
+            All = Math.Min(Cut + capturesCount, Moves.Count);
+
+            Late = Moves.Count;
+
+            Moves.AddRange(LooseCaptures);
+
+            Bad = Count;
         }
     }
 }

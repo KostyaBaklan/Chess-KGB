@@ -32,40 +32,19 @@ namespace Engine.Sorting.Sorters
 
             OrderAttacks(collection, sortedAttacks);
 
-            if (collection.HasWinCaptures())
+            foreach (var move in moves)
             {
-                foreach (var move in moves)
+                if (killerMoveCollection.Contains(move))
                 {
-                    if (killerMoveCollection.Contains(move))
-                    {
-                        collection.AddKillerMove(move);
-                    }
-                    else if (move.IsCastle() || move.IsPromotion())
-                    {
-                        collection.AddSuggested(move);
-                    }
-                    else
-                    {
-                        collection.AddNonCapture(move);
-                    }
+                    collection.AddKillerMove(move);
                 }
-            }
-            else
-            {
-                foreach (var move in moves)
+                else if (move.IsCastle() || move.IsPromotion())
                 {
-                    if (killerMoveCollection.Contains(move))
-                    {
-                        collection.AddKillerMove(move);
-                    }
-                    else if (move.IsCastle() || move.IsPromotion())
-                    {
-                        collection.AddSuggested(move);
-                    }
-                    else
-                    {
-                        ProcessMove(collection, move);
-                    }
+                    collection.AddSuggested(move);
+                }
+                else
+                {
+                    ProcessMove(collection, move);
                 }
             }
 
@@ -156,7 +135,15 @@ namespace Engine.Sorting.Sorters
             {
                 if (move.Piece == Piece.WhiteKing && !MoveHistoryService.GetLastMove().IsCheck())
                 {
-                    collection.AddNonSuggested(move);
+                    if (phase!=Phase.End)
+                    {
+                        collection.AddNonSuggested(move);
+                        return; 
+                    }
+                }
+
+                if (IsBadWhiteSee(collection, board, move))
+                {
                     return;
                 }
 
@@ -221,7 +208,15 @@ namespace Engine.Sorting.Sorters
             {
                 if (move.Piece == Piece.BlackKing && !MoveHistoryService.GetLastMove().IsCheck())
                 {
-                    collection.AddNonSuggested(move);
+                    if (phase!=Phase.End)
+                    {
+                        collection.AddNonSuggested(move);
+                        return; 
+                    }
+                }
+
+                if (IsBadBlackSee(collection, board, move))
+                {
                     return;
                 }
 

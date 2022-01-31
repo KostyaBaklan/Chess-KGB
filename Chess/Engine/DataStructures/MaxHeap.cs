@@ -181,9 +181,9 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void GetOrderedItems(List<IMove> moves)
+        public int GetOrderedItems(List<IMove> moves)
         {
-            if (_size <= 0) return;
+            if (_size <= 0) return 0;
 
             if (_size > 1)
             {
@@ -199,11 +199,13 @@ namespace Engine.DataStructures
                 {
                     moves.Add(_elements[i]);
                 }
+
+                return last;
             }
-            else
-            {
-                moves.Add(_elements[0]);
-            }
+
+            moves.Add(_elements[0]);
+
+            return 1;
         }
     }
 }

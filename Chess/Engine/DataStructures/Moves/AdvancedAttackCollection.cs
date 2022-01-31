@@ -7,34 +7,34 @@ namespace Engine.DataStructures.Moves
 {
     public class AdvancedAttackCollection : AttackCollection
     {
-        protected readonly List<IMove> _looseTrades;
+        protected readonly List<IMove> LooseTrades;
 
         public AdvancedAttackCollection(IMoveComparer comparer) : base(comparer)
         {
-            _looseTrades = new List<IMove>(16);
+            LooseTrades = new List<IMove>(16);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddLooseTrade(IMove move)
         {
-            _looseTrades.Add(move);
+            LooseTrades.Add(move);
             Count++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Build()
         {
-            _moves = new List<IMove>(Count);
+            Moves = new List<IMove>(Count);
 
-            _moves.AddRange(_hashMoves);
+            Moves.AddRange(HashMoves);
 
-            _moves.AddRange(_winCaptures);
+            Moves.AddRange(WinCaptures);
 
-            _moves.AddRange(_trades);
+            Moves.AddRange(Trades);
 
-            _moves.AddRange(_looseTrades);
+            Moves.AddRange(LooseTrades);
 
-            _moves.AddRange(_looseCaptures);
+            Moves.AddRange(LooseCaptures);
         }
     }
 }

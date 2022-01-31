@@ -1,60 +1,39 @@
-﻿using Engine.DataStructures;
+﻿using System;
+using CommonServiceLocator;
+using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
-using Engine.Strategies.Base;
+using Engine.Strategies.AlphaBeta.Simple;
 
-namespace Engine.Strategies.AlphaBeta.Simple
+namespace Engine.Strategies.MultiCut
 {
-    public abstract class AlphaBetaStrategy : StrategyBase
+    public abstract class MultiCutStrategyBase:AlphaBetaStrategy
     {
-        protected readonly TranspositionTable Table;
+        protected bool IsCut;
+        protected int MultiCutReduction;
+        protected int MultiCutDepth;
+        protected int MultiCutRequirement;
+        protected int NullWindow;
+        protected int MultiCutMoves;
 
-        protected AlphaBetaStrategy(short depth, IPosition position, TranspositionTable table = null) : base(depth,
-            position)
+        protected MultiCutStrategyBase(short depth, IPosition position, TranspositionTable table = null)
+            : base(depth, position, table)
         {
-            if (table == null)
-            {
-                int capacity;
-                if (depth < 6)
-                {
-                    capacity = 1131467;
-                }
-                else if (depth == 6)
-                {
-                    capacity = 2263139;
-                }
-                else if (depth == 7)
-                {
-                    capacity = 10000139;
-                }
-                else
-                {
-                    capacity = 15485867;
-                }
-
-                Table = new TranspositionTable(capacity);
-            }
-            else
-            {
-                Table = table;
-            }
+            var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
+            MultiCutReduction = configurationProvider
+                .AlgorithmConfiguration.MultiCutReduction;
+            MultiCutDepth = configurationProvider
+                .AlgorithmConfiguration.MultiCutDepth;
+            MultiCutRequirement = configurationProvider
+                .AlgorithmConfiguration.MultiCutRequirement;
+            NullWindow = configurationProvider
+                .AlgorithmConfiguration.NullWindow;
+            MultiCutMoves = configurationProvider
+                .AlgorithmConfiguration.MultiCutMoves;
         }
-
-        public override int Size => Table.Count;
-
-        public override IResult GetResult()
-        {
-            var depth = Depth;
-            if (Position.GetPhase() == Phase.End)
-            {
-                depth++;
-            }
-
-            return GetResult(-SearchValue, SearchValue, depth);
-        }
-
         #region Overrides of StrategyBase
 
         public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
@@ -99,7 +78,9 @@ namespace Engine.Strategies.AlphaBeta.Simple
                     var move = moves[i];
                     Position.Make(move);
 
+                    IsCut = true;
                     var value = -Search(-beta, -alpha, depth - 1);
+                    IsCut = false;
 
                     Position.UnMake();
                     if (value > result.Value)
@@ -197,20 +178,49 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 }
             }
 
+            if (IsCut && depth > MultiCutDepth)
+            {
+                int cutCount = 0;
+                var multiCutMoves = Math.Min(MultiCutMoves, moves.All);
+                for (var i = 0; i < multiCutMoves; i++)
+                {
+                    var move = moves[i];
+                    Position.Make(move);
+                    IsCut = false;
+
+                    var v = -Search(-beta, -beta + NullWindow, depth - MultiCutReduction - 1);
+
+                    Position.UnMake();
+                    IsCut = true;
+                    if (v < beta) continue;
+
+                    cutCount++;
+                    if (cutCount >= MultiCutRequirement)
+                    {
+                        return v;
+                    }
+                }
+            }
+
+
             for (var i = 0; i < moves.Count; i++)
             {
                 var move = moves[i];
 
                 Position.Make(move);
+                IsCut = !IsCut;
 
                 var r = -Search(-beta, -alpha, depth - 1);
+
+                IsCut = !IsCut;
+                Position.UnMake();
+
                 if (r > value)
                 {
                     value = r;
                     bestMove = move;
                 }
 
-                Position.UnMake();
 
                 if (value > alpha)
                 {
@@ -239,7 +249,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
             if (!isInTable || shouldUpdate)
             {
                 TranspositionEntry te = new TranspositionEntry
-                    {Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
+                { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
                 if (best <= alpha)
                 {
                     te.Type = TranspositionEntryType.LowerBound;
@@ -259,11 +269,6 @@ namespace Engine.Strategies.AlphaBeta.Simple
             }
 
             return best;
-        }
-
-        public void Clear()
-        {
-            Table.Clear();
         }
     }
 }

@@ -5,13 +5,11 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
-using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 using Engine.Strategies.AlphaBeta.Simple;
 
 namespace Engine.Strategies.AlphaBeta.Null
 {
-    public abstract class AlphaBetaNullStrategy : AlphaBetaStrategy
+    public abstract class NullMoveStrategy : AlphaBetaStrategy
     {
         protected bool CanUseNull;
         protected bool IsNull;
@@ -19,14 +17,13 @@ namespace Engine.Strategies.AlphaBeta.Null
         protected int MaxReduction;
         protected int NullWindow;
 
-        protected AlphaBetaNullStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position)
+        protected NullMoveStrategy(short depth, IPosition position) : base(depth, position)
         {
             CanUseNull = false;
             MinReduction = 2;
             MaxReduction = 3;
             NullWindow = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
                 .AlgorithmConfiguration.NullWindow;
-            Sorter = new ExtendedSorter(position, comparer);
         }
 
         public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
@@ -46,7 +43,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                     {
                         pv = entry.PvMove;
                     }
-                } 
+                }
             }
 
             var moves = Position.GetAllMoves(Sorter, pv);
@@ -231,7 +228,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             if (!isInTable || shouldUpdate)
             {
                 TranspositionEntry te = new TranspositionEntry
-                    { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
+                { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
                 if (best <= alpha)
                 {
                     te.Type = TranspositionEntryType.LowerBound;
@@ -254,7 +251,7 @@ namespace Engine.Strategies.AlphaBeta.Null
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsValidWindow(int alpha, int beta)
+        protected bool IsValidWindow(int alpha, int beta)
         {
             return beta < SearchValue && beta - alpha > NullWindow;
         }

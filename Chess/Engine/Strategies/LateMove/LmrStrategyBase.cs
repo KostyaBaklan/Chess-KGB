@@ -1,133 +1,22 @@
-﻿using Engine.DataStructures;
-using Engine.DataStructures.Hash;
+﻿using System.Runtime.CompilerServices;
+using CommonServiceLocator;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
-using Engine.Strategies.Base;
+using Engine.Strategies.AlphaBeta.Simple;
 
-namespace Engine.Strategies.AlphaBeta.Simple
+namespace Engine.Strategies.LateMove
 {
-    public abstract class AlphaBetaStrategy : StrategyBase
+    public abstract class LmrStrategyBase: AlphaBetaStrategy
     {
-        protected readonly TranspositionTable Table;
+        protected int DepthReduction;
 
-        protected AlphaBetaStrategy(short depth, IPosition position, TranspositionTable table = null) : base(depth,
-            position)
+        protected LmrStrategyBase(short depth, IPosition position) : base(depth, position)
         {
-            if (table == null)
-            {
-                int capacity;
-                if (depth < 6)
-                {
-                    capacity = 1131467;
-                }
-                else if (depth == 6)
-                {
-                    capacity = 2263139;
-                }
-                else if (depth == 7)
-                {
-                    capacity = 10000139;
-                }
-                else
-                {
-                    capacity = 15485867;
-                }
-
-                Table = new TranspositionTable(capacity);
-            }
-            else
-            {
-                Table = table;
-            }
+            DepthReduction = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                    .AlgorithmConfiguration.DepthReduction;
         }
-
-        public override int Size => Table.Count;
-
-        public override IResult GetResult()
-        {
-            var depth = Depth;
-            if (Position.GetPhase() == Phase.End)
-            {
-                depth++;
-            }
-
-            return GetResult(-SearchValue, SearchValue, depth);
-        }
-
-        #region Overrides of StrategyBase
-
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
-        {
-            Result result = new Result();
-
-            IMove pv = pvMove;
-            var key = Position.GetKey();
-            if (pv == null)
-            {
-                var isNotEndGame = Position.GetPhase() != Phase.End;
-                if (isNotEndGame && Table.TryGet(key, out var entry))
-                {
-                    if ((entry.Depth - depth) % 2 == 0)
-                    {
-                        pv = entry.PvMove;
-                    }
-                }
-            }
-
-            var moves = Position.GetAllMoves(Sorter, pv);
-            if (moves.Count == 0)
-            {
-                result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
-                return result;
-            }
-
-            if (MoveHistory.IsThreefoldRepetition(key))
-            {
-                var v = Evaluate(alpha, beta);
-                if (v < -500)
-                {
-                    result.GameResult = GameResult.ThreefoldRepetition;
-                    return result;
-                }
-            }
-
-            if (moves.Count > 1)
-            {
-                for (var i = 0; i < moves.Count; i++)
-                {
-                    var move = moves[i];
-                    Position.Make(move);
-
-                    var value = -Search(-beta, -alpha, depth - 1);
-
-                    Position.UnMake();
-                    if (value > result.Value)
-                    {
-                        result.Value = value;
-                        result.Move = move;
-                    }
-
-                    if (value > alpha)
-                    {
-                        alpha = value;
-                    }
-
-                    if (alpha < beta) continue;
-                    break;
-                }
-            }
-            else
-            {
-                result.Move = moves[0];
-            }
-
-            result.Move.History++;
-
-            return result;
-        }
-
-        #endregion
 
         public override int Search(int alpha, int beta, int depth)
         {
@@ -203,7 +92,20 @@ namespace Engine.Strategies.AlphaBeta.Simple
 
                 Position.Make(move);
 
-                var r = -Search(-beta, -alpha, depth - 1);
+                int r;
+                if (depth > DepthReduction && moves.IsLmr(i) && CanReduce(move))
+                {
+                    r = -Search(-beta, -alpha, depth - DepthReduction);
+                    if (r > alpha)
+                    {
+                        r = -Search(-beta, -alpha, depth - 1);
+                    }
+                }
+                else
+                {
+                    r = -Search(-beta, -alpha, depth - 1);
+                }
+
                 if (r > value)
                 {
                     value = r;
@@ -261,9 +163,15 @@ namespace Engine.Strategies.AlphaBeta.Simple
             return best;
         }
 
-        public void Clear()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool CanReduce(IMove move)
         {
-            Table.Clear();
+            if (move.IsAttack() || move.IsPromotion() || move.IsCheck())
+            {
+                return false;
+            }
+
+            return !MoveHistory.GetLastMove().IsCheck();
         }
     }
 }
