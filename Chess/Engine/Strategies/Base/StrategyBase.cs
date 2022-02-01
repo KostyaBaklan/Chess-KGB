@@ -11,18 +11,23 @@ namespace Engine.Strategies.Base
         protected MoveSorter Sorter;
         protected IPosition Position;
         protected int SearchValue;
+        protected int ThreefoldRepetitionValue;
 
         protected IEvaluationService EvaluationService;
         protected readonly IMoveHistoryService MoveHistory;
+        protected readonly IMoveProvider MoveProvider;
 
         protected StrategyBase(short depth, IPosition position)
         {
             SearchValue = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
                 .Evaluation.Static.Mate;
+            ThreefoldRepetitionValue = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .Evaluation.Static.ThreefoldRepetitionValue;
             Depth = depth;
             Position = position;
             EvaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
             MoveHistory = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
+            MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
         }
 
         public abstract IResult GetResult();

@@ -149,7 +149,6 @@
     <Compile Include="Sorting\Comparers\HistoryComparer.cs" />
     <Compile Include="Sorting\Sorters\MoveSorter.cs" />
     <Compile Include="Sorting\Sorters\SimpleMoveSorter.cs" />
-    <Compile Include="Sorting\Comparers\StaticComparer.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedHistoryDifferenceStrategy.cs" />

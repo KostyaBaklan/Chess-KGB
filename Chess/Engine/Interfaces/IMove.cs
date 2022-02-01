@@ -1,15 +1,13 @@
-﻿using System;
-using Engine.DataStructures;
+﻿using Engine.DataStructures;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 
 namespace Engine.Interfaces
 {
-    public interface IMove:IComparable<IMove>
+    public interface IMove
     {
-        int Static { get; }
+        short Key { get; }
         int Difference { get; }
-        int Value { get; set; }
         int History { get; set; }
         Piece Piece { get; }
         Square From { get; }

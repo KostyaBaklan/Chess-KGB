@@ -70,7 +70,7 @@ namespace Engine.Strategies.PVS.Memory
                 {
                     if ((entry.Depth - depth) % 2 == 0)
                     {
-                        pv = entry.PvMove;
+                        pv = MoveProvider.Get(entry.PvMove);
                     }
                 }
             }
@@ -184,7 +184,7 @@ namespace Engine.Strategies.PVS.Memory
 
                 if ((entryDepth - depth) % 2 == 0)
                 {
-                    pv = entry.PvMove;
+                    pv = MoveProvider.Get(entry.PvMove);
                 }
             }
 
@@ -248,42 +248,34 @@ namespace Engine.Strategies.PVS.Memory
                 break;
             }
 
-            int best;
             if (bestMove == null)
             {
-                best = -SearchValue;
+                return -SearchValue;
+            }
+
+            bestMove.History += 1 << depth;
+
+            if (!isNotEndGame) return value;
+
+            if (isInTable && !shouldUpdate) return value;
+            TranspositionEntry te = new TranspositionEntry
+                { Depth = (byte)depth, Value = (short)value, PvMove = bestMove.Key };
+            if (value <= alpha)
+            {
+                te.Type = TranspositionEntryType.LowerBound;
+            }
+            else if (value >= beta)
+            {
+                te.Type = TranspositionEntryType.UpperBound;
             }
             else
             {
-                bestMove.History += 1 << depth;
-                best = value;
+                te.Type = TranspositionEntryType.Exact;
             }
 
-            if (!isNotEndGame) return best;
+            Table.Set(key, te);
 
-            if (!isInTable || shouldUpdate)
-            {
-                TranspositionEntry te = new TranspositionEntry
-                    { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
-                if (best <= alpha)
-                {
-                    te.Type = TranspositionEntryType.LowerBound;
-                }
-                else if (best >= beta)
-                {
-                    te.Type = TranspositionEntryType.UpperBound;
-                }
-                else
-                {
-                    te.Type = TranspositionEntryType.Exact;
-                }
-
-                Table.Set(key, te);
-
-                return best;
-            }
-
-            return best;
+            return value;
         }
 
         #endregion

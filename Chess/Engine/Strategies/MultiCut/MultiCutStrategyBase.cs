@@ -49,7 +49,7 @@ namespace Engine.Strategies.MultiCut
                 {
                     if ((entry.Depth - depth) % 2 == 0)
                     {
-                        pv = entry.PvMove;
+                        pv = MoveProvider.Get(entry.PvMove);
                     }
                 }
             }
@@ -153,7 +153,7 @@ namespace Engine.Strategies.MultiCut
 
                 if ((entryDepth - depth) % 2 == 0)
                 {
-                    pv = entry.PvMove;
+                    pv = MoveProvider.Get(entry.PvMove);
                 }
             }
 
@@ -161,18 +161,8 @@ namespace Engine.Strategies.MultiCut
             IMove bestMove = null;
 
             var moves = Position.GetAllMoves(Sorter, pv);
-            if (moves.Count == 0)
-            {
-                var lastMove = MoveHistory.GetLastMove();
-                return lastMove.IsCheck()
-                    ? -EvaluationService.GetMateValue()
-                    : -EvaluationService.Evaluate(Position);
-            }
 
-            if (MoveHistory.IsThreefoldRepetition(key))
-            {
-                return Evaluate(alpha, beta);
-            }
+            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             if (IsCut && depth > MultiCutDepth)
             {
@@ -229,42 +219,18 @@ namespace Engine.Strategies.MultiCut
                 break;
             }
 
-            int best;
             if (bestMove == null)
             {
-                best = -SearchValue;
-            }
-            else
-            {
-                bestMove.History += 1 << depth;
-                best = value;
+                return -SearchValue;
             }
 
-            if (!isNotEndGame) return best;
+            bestMove.History += 1 << depth;
 
-            if (!isInTable || shouldUpdate)
-            {
-                TranspositionEntry te = new TranspositionEntry
-                { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
-                if (best <= alpha)
-                {
-                    te.Type = TranspositionEntryType.LowerBound;
-                }
-                else if (best >= beta)
-                {
-                    te.Type = TranspositionEntryType.UpperBound;
-                }
-                else
-                {
-                    te.Type = TranspositionEntryType.Exact;
-                }
+            if (!isNotEndGame) return value;
 
-                Table.Set(key, te);
+            if (isInTable && !shouldUpdate) return value;
 
-                return best;
-            }
-
-            return best;
+            return StoreValue(alpha, beta, depth, value, bestMove);
         }
     }
 }

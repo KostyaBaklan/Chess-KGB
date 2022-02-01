@@ -14,6 +14,7 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.Base;
 using Engine.Strategies.LateMove;
 using Engine.Strategies.MultiCut;
@@ -154,7 +155,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrComplexHistoryStrategy(level, _position);
+            _strategy = new LmrAdvancedHistoryStrategy(level, _position);
 
             if (color == "White")
             {
