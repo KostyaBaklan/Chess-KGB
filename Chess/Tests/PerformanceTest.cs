@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Common;
 using CommonServiceLocator;
 using Engine.Interfaces;
@@ -51,7 +52,7 @@ namespace Tests
             evaluationService.Initialize(depth);
             IPosition position = new Position();
 
-            Dictionary<string, IStrategy> strategies = new Dictionary<string, IStrategy>
+            Dictionary<string, StrategyBase> strategies = new Dictionary<string, StrategyBase>
             {
                 {"ab_ss_hc", new AlphaBetaHistoryStrategy(depth, position)},
                 {"ab_ss_hdc", new AlphaBetaHistoryDifferenceStrategy(depth, position)},
@@ -133,7 +134,7 @@ namespace Tests
                 {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)}
             };
 
-            IStrategy strategy = strategies[args[0]];
+            StrategyBase strategy = strategies[args[0]];
             _model.Strategy = strategy.ToString();
 
             var file = Path.Combine("Log", $"{strategy}_D{depth}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log");
@@ -148,7 +149,7 @@ namespace Tests
             //position.GetBoard().PrintCache(Path.Combine("Log", $"See_Cache_{strategy}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log"));
         }
 
-        private static void Play(int depth, IStrategy strategy, IPosition position)
+        private static void Play(int depth, StrategyBase strategy, IPosition position)
         {
             var formatter = ServiceLocator.Current.GetInstance<IMoveFormatter>();
             var check = ServiceLocator.Current.GetInstance<ICheckService>();
@@ -174,7 +175,13 @@ namespace Tests
             {
                 var timer = new Stopwatch();
                 timer.Start();
+                while (strategy.IsBlocked())
+                {
+                    Thread.Sleep(TimeSpan.FromMilliseconds(0.01));
+                }
                 var result = strategy.GetResult();
+                strategy.ExecuteAsyncAction();
+
                 var move = result.Move;
                 if (move != null)
                 {
@@ -201,11 +208,11 @@ namespace Tests
                 var currentProcess = Process.GetCurrentProcess();
                 var memory = currentProcess.WorkingSet64;
 
-                Console.WriteLine($"{logMessage} Table = {strategy.Size}, Check = {check.Size}, Evaluation = {evaluation.Size}, Memory = {memory}");
+                Console.WriteLine($"{logMessage} Table = {strategy.Size}, Check = {check.Size}, Evaluation = {evaluation.Size}, Memory = {memory/1024} KB");
 
                 moveModel.Table = strategy.Size;
                 moveModel.Evaluation = evaluation.Size;
-                moveModel.Memory = memory;
+                moveModel.Memory = memory/1024;
                 moveModel.White = formatter.Format(move);
 
                 var m = st.Get().Move;

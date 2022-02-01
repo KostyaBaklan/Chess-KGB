@@ -1,5 +1,6 @@
 {
   "GeneralConfiguration": {
+    "GameDepth": 256,
     "UseEvaluationCache": false
   },
   "AlgorithmConfiguration": {

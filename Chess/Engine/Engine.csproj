@@ -62,6 +62,7 @@
     <Compile Include="DataStructures\Moves\MoveWrapper.cs" />
     <Compile Include="DataStructures\Node.cs" />
     <Compile Include="DataStructures\PriorityQueue.cs" />
+    <Compile Include="DataStructures\ZoobristKeyCollection.cs" />
     <Compile Include="Interfaces\Config\IAlgorithmConfiguration.cs" />
     <Compile Include="Interfaces\Config\IEvaluationProvider.cs" />
     <Compile Include="Interfaces\Config\IGeneralConfiguration.cs" />

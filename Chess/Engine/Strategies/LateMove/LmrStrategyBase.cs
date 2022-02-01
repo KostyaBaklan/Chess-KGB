@@ -111,11 +111,6 @@ namespace Engine.Strategies.LateMove
                 break;
             }
 
-            if (bestMove == null)
-            {
-                return -SearchValue;
-            }
-
             bestMove.History += 1 << depth;
 
             if (!isNotEndGame) return value;

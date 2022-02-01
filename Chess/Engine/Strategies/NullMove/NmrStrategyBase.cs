@@ -123,11 +123,6 @@ namespace Engine.Strategies.NullMove
 
             if (IsNull || !isNotEndGame) return value;
 
-            if (bestMove == null)
-            {
-                return -SearchValue;
-            }
-
             bestMove.History += 1 << d;
 
             if (isInTable && !shouldUpdate) return value;

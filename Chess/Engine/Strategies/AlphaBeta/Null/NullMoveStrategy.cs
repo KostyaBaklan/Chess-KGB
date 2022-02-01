@@ -200,11 +200,6 @@ namespace Engine.Strategies.AlphaBeta.Null
 
             if (IsNull || !isNotEndGame) return value;
 
-            if (bestMove == null)
-            {
-                return -SearchValue;
-            }
-
             bestMove.History += 1 << depth;
 
             if (isInTable && !shouldUpdate) return value;

@@ -12,7 +12,7 @@ namespace Engine.Services
 {
     public class MoveProvider : IMoveProvider
     {
-        private MoveBase[] _all;
+        private readonly MoveBase[] _all;
         private readonly List<List<MoveBase>>[][] _moves;
         private readonly List<List<Attack>>[][] _attacks;
         private readonly List<Attack>[][][] _attacksTo;

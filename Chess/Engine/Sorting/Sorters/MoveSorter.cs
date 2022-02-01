@@ -4,6 +4,7 @@ using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Moves;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Boards;
 using Engine.Sorting.Comparers;
 
@@ -21,7 +22,8 @@ namespace Engine.Sorting.Sorters
         {
             _moves = new List<IMove>(8);
             Position = position;
-            Moves = new KillerMoveCollection[256];
+            Moves = new KillerMoveCollection[ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .GeneralConfiguration.GameDepth];
             for (var i = 0; i < Moves.Length; i++)
             {
                 Moves[i] = new KillerMoveCollection();

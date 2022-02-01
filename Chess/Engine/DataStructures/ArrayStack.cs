@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using CommonServiceLocator;
+using Engine.Interfaces.Config;
 
 namespace Engine.DataStructures
 {
@@ -7,7 +9,8 @@ namespace Engine.DataStructures
     {
         private readonly T[] _items;
 
-        public ArrayStack():this(256)
+        public ArrayStack():this(ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+            .GeneralConfiguration.GameDepth)
         {
         }
 

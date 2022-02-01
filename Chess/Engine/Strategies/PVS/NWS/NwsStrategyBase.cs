@@ -248,11 +248,6 @@ namespace Engine.Strategies.PVS.NWS
                 break;
             }
 
-            if (bestMove == null)
-            {
-                return -SearchValue;
-            }
-
             bestMove.History += 1 << depth;
 
             if (!isNotEndGame) return value;
@@ -366,11 +361,6 @@ namespace Engine.Strategies.PVS.NWS
                     Sorter.Add(move);
                     break;
                 }
-            }
-
-            if (bestMove == null)
-            {
-                return -SearchValue;
             }
 
             bestMove.History += 1 << depth;

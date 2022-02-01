@@ -1,6 +1,6 @@
 ﻿namespace Engine.Models.Transposition
 {
-    public class TranspositionEntry
+    public struct TranspositionEntry
     {
         public short Value { get; set; }
         public byte Depth { get; set; }

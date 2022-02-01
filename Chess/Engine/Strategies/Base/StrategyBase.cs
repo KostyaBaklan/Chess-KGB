@@ -1,4 +1,6 @@
-﻿using CommonServiceLocator;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using CommonServiceLocator;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Sorting.Sorters;
@@ -7,6 +9,7 @@ namespace Engine.Strategies.Base
 {
     public abstract class StrategyBase : IStrategy
     {
+        private bool _isBlocked;
         protected short Depth;
         protected MoveSorter Sorter;
         protected IPosition Position;
@@ -74,6 +77,17 @@ namespace Engine.Strategies.Base
         public override string ToString()
         {
             return $"{GetType().Name}";
+        }
+
+        public virtual bool IsBlocked()
+        {
+            return _isBlocked;
+        }
+
+        public virtual void ExecuteAsyncAction()
+        {
+            _isBlocked = true;
+            Task.Factory.StartNew(() => { _isBlocked = false; });
         }
     }
 }

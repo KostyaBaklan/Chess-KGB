@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Threading;
 using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
@@ -26,14 +27,14 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 {
                     capacity = 2263139;
                 }
-                else //if (depth == 7)
+                else if (depth == 7)
                 {
-                    capacity = 10000139;
+                    capacity = 5002903;
                 }
-                //else
-                //{
-                //    capacity = 15485867;
-                //}
+                else
+                {
+                    capacity = 10023499;
+                }
 
                 Table = new TranspositionTable(capacity);
             }
@@ -208,11 +209,6 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 break;
             }
 
-            if (bestMove == null)
-            {
-                return -SearchValue;
-            }
-
             bestMove.History += 1 << depth;
 
             if (!isNotEndGame) return value;
@@ -277,5 +273,19 @@ namespace Engine.Strategies.AlphaBeta.Simple
         {
             Table.Clear();
         }
+
+        #region Overrides of StrategyBase
+
+        public override bool IsBlocked()
+        {
+            return Table.IsBlocked();
+        }
+
+        public override void ExecuteAsyncAction()
+        {
+            Table.Update();
+        }
+
+        #endregion
     }
 }

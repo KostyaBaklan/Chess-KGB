@@ -179,12 +179,15 @@ namespace Engine.Services
 
         public void Initialize(short level)
         {
-            var useEvaluationCache = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+            var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
+            var useEvaluationCache = configurationProvider
                 .GeneralConfiguration.UseEvaluationCache;
+            var depth = configurationProvider
+                .GeneralConfiguration.GameDepth;
             if (useEvaluationCache && level > 6)
             {
                 _useCache = true;
-                _depthTable = new DynamicCollection<ulong>[256];
+                _depthTable = new DynamicCollection<ulong>[depth];
                 for (var i = 0; i < _depthTable.Length; i++)
                 {
                     _depthTable[i] = new DynamicCollection<ulong>();

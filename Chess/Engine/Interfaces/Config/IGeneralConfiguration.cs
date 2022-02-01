@@ -3,5 +3,6 @@
     public interface IGeneralConfiguration
     {
         bool UseEvaluationCache { get; }
+        int GameDepth { get; }
     }
 }

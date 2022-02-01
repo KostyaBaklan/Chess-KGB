@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 
@@ -20,7 +22,8 @@ namespace Engine.Services
 
         public MoveHistoryService()
         {
-            var historyDepth = 256;
+            var historyDepth = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .GeneralConfiguration.GameDepth;
             _whiteSmallCastleHistory = new bool[historyDepth];
             _whiteBigCastleHistory = new bool[historyDepth];
             _blackSmallCastleHistory = new bool[historyDepth];

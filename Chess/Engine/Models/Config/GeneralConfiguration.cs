@@ -7,6 +7,7 @@ namespace Engine.Models.Config
         #region Implementation of IGeneralConfiguration
 
         public bool UseEvaluationCache { get; set; }
+        public int GameDepth { get; set; }
 
         #endregion
     }
