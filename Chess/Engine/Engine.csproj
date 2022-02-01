@@ -62,6 +62,7 @@
     <Compile Include="DataStructures\Moves\MoveWrapper.cs" />
     <Compile Include="DataStructures\Node.cs" />
     <Compile Include="DataStructures\PriorityQueue.cs" />
+    <Compile Include="DataStructures\ZoobristKeyCollection.cs" />
     <Compile Include="Interfaces\Config\IAlgorithmConfiguration.cs" />
     <Compile Include="Interfaces\Config\IEvaluationProvider.cs" />
     <Compile Include="Interfaces\Config\IGeneralConfiguration.cs" />
@@ -149,7 +150,6 @@
     <Compile Include="Sorting\Comparers\HistoryComparer.cs" />
     <Compile Include="Sorting\Sorters\MoveSorter.cs" />
     <Compile Include="Sorting\Sorters\SimpleMoveSorter.cs" />
-    <Compile Include="Sorting\Comparers\StaticComparer.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedHistoryDifferenceStrategy.cs" />

@@ -1,4 +1,6 @@
-﻿using Engine.DataStructures;
+﻿using System.Runtime.CompilerServices;
+using System.Threading;
+using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Models.Enums;
@@ -27,11 +29,11 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 }
                 else if (depth == 7)
                 {
-                    capacity = 10000139;
+                    capacity = 5002903;
                 }
                 else
                 {
-                    capacity = 15485867;
+                    capacity = 10023499;
                 }
 
                 Table = new TranspositionTable(capacity);
@@ -70,7 +72,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 {
                     if ((entry.Depth - depth) % 2 == 0)
                     {
-                        pv = entry.PvMove;
+                        pv = MoveProvider.Get(entry.PvMove);
                     }
                 }
             }
@@ -84,12 +86,8 @@ namespace Engine.Strategies.AlphaBeta.Simple
 
             if (MoveHistory.IsThreefoldRepetition(key))
             {
-                var v = Evaluate(alpha, beta);
-                if (v < -500)
-                {
-                    result.GameResult = GameResult.ThreefoldRepetition;
-                    return result;
-                }
+                result.GameResult = GameResult.ThreefoldRepetition;
+                return result;
             }
 
             if (moves.Count > 1)
@@ -131,13 +129,14 @@ namespace Engine.Strategies.AlphaBeta.Simple
 
         public override int Search(int alpha, int beta, int depth)
         {
-            if (depth == 0)
+            if (depth <= 0)
             {
                 return Evaluate(alpha, beta);
             }
 
             IMove pv = null;
             var key = Position.GetKey();
+
             bool shouldUpdate = false;
             bool isInTable = false;
 
@@ -146,6 +145,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
+
                 if (entryDepth >= depth)
                 {
                     if (entry.Type == TranspositionEntryType.Exact)
@@ -172,7 +172,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
 
                 if ((entryDepth - depth) % 2 == 0)
                 {
-                    pv = entry.PvMove;
+                    pv = MoveProvider.Get(entry.PvMove);
                 }
             }
 
@@ -180,22 +180,8 @@ namespace Engine.Strategies.AlphaBeta.Simple
             IMove bestMove = null;
 
             var moves = Position.GetAllMoves(Sorter, pv);
-            if (moves.Count == 0)
-            {
-                var lastMove = MoveHistory.GetLastMove();
-                return lastMove.IsCheck()
-                    ? -EvaluationService.GetMateValue()
-                    : -EvaluationService.Evaluate(Position);
-            }
 
-            if (MoveHistory.IsThreefoldRepetition(key))
-            {
-                var v = Evaluate(alpha, beta);
-                if (v < 0)
-                {
-                    return -v;
-                }
-            }
+            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             for (var i = 0; i < moves.Count; i++)
             {
@@ -223,47 +209,83 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 break;
             }
 
-            int best;
-            if (bestMove == null)
+            bestMove.History += 1 << depth;
+
+            if (!isNotEndGame) return value;
+
+            if (isInTable && !shouldUpdate) return value;
+
+            return StoreValue(alpha, beta, depth, value, bestMove);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected int StoreValue(int alpha, int beta, int depth, int value, IMove bestMove)
+        {
+            TranspositionEntry te = new TranspositionEntry
+                {Depth = (byte) depth, Value = (short) value, PvMove = bestMove.Key};
+            if (value <= alpha)
             {
-                best = -SearchValue;
+                te.Type = TranspositionEntryType.LowerBound;
+            }
+            else if (value >= beta)
+            {
+                te.Type = TranspositionEntryType.UpperBound;
             }
             else
             {
-                bestMove.History += 1 << depth;
-                best = value;
+                te.Type = TranspositionEntryType.Exact;
             }
 
-            if (!isNotEndGame) return best;
+            Table.Set(Position.GetKey(), te);
 
-            if (!isInTable || shouldUpdate)
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool CheckMoves(int alpha, int beta, IMoveCollection moves, out int value)
+        {
+            value = 0;
+            if (moves.Count == 0)
             {
-                TranspositionEntry te = new TranspositionEntry
-                    {Depth = (byte) depth, Value = (short) best, PvMove = bestMove};
-                if (best <= alpha)
-                {
-                    te.Type = TranspositionEntryType.LowerBound;
-                }
-                else if (best >= beta)
-                {
-                    te.Type = TranspositionEntryType.UpperBound;
-                }
-                else
-                {
-                    te.Type = TranspositionEntryType.Exact;
-                }
-
-                Table.Set(key, te);
-
-                return best;
+                var lastMove = MoveHistory.GetLastMove();
+                value = lastMove.IsCheck()
+                    ? -EvaluationService.GetMateValue()
+                    : -EvaluationService.Evaluate(Position);
+                return true;
             }
 
-            return best;
+            if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
+
+            value = Position.GetValue();
+            if (value < 0)
+            {
+                value += ThreefoldRepetitionValue;
+            }
+            else
+            {
+                value -= ThreefoldRepetitionValue;
+            }
+            return true;
         }
 
         public void Clear()
         {
             Table.Clear();
         }
+
+        #region Overrides of StrategyBase
+
+        public override bool IsBlocked()
+        {
+            return Table.IsBlocked();
+        }
+
+        public override void ExecuteAsyncAction()
+        {
+            Table.Update();
+        }
+
+        #endregion
     }
 }

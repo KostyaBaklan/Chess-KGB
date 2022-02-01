@@ -45,18 +45,6 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BubbleUp(int i, int newKey)
-        {
-            var parent = Parent(i);
-            while (i > 0 && newKey.CompareTo(_elements[parent].Value) > 0)
-            {
-                Swap(i, parent);
-                i = parent;
-                parent = Parent(parent);
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Heapify(int index)
         {
             var left = Left(index);

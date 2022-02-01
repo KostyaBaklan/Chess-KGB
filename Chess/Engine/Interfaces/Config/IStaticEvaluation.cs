@@ -8,6 +8,7 @@ namespace Engine.Interfaces.Config
         short Penalty { get; }
         short Mate { get; }
         short Factor { get; }
+        int ThreefoldRepetitionValue { get; }
 
         BoardEvaluation Opening { get; set; }
         BoardEvaluation Middle { get; set; }

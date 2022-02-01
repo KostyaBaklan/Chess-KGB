@@ -187,18 +187,9 @@ namespace Engine.Strategies.PVS.Original
                 break;
             }
 
-            int best;
-            if (bestMove == null)
-            {
-                best = -SearchValue;
-            }
-            else
-            {
-                bestMove.History += 1 << depth;
-                best = value;
-            }
+            bestMove.History += 1 << depth;
 
-            return best;
+            return value;
         }
 
         #endregion

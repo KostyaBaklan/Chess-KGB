@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Engine.Interfaces;
 
 namespace Engine.DataStructures
 {
@@ -22,16 +23,32 @@ namespace Engine.DataStructures
             var root = _root;
             _root = null;
             Count = 0;
-            Task.Factory.StartNew(() =>
+
+            var next = root.Next;
+            while (root != null)
             {
-                var next = root.Next;
-                while (root != null)
-                {
-                    root.Next = null;
-                    root = next;
-                    next = next.Next;
-                }
-            });
+                root.Next = null;
+                root = next;
+                next = next.Next;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<T> GetAndClear()
+        {
+            var root = _root;
+            if (root == null) yield break;
+            _root = null;
+            Count = 0;
+
+            var next = root.Next;
+            while (root != null)
+            {
+                yield return root.Value;
+                root.Next = null;
+                root = next;
+                next = next.Next;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

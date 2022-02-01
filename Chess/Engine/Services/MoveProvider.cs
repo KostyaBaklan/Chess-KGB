@@ -12,6 +12,7 @@ namespace Engine.Services
 {
     public class MoveProvider : IMoveProvider
     {
+        private readonly MoveBase[] _all;
         private readonly List<List<MoveBase>>[][] _moves;
         private readonly List<List<Attack>>[][] _attacks;
         private readonly List<Attack>[][][] _attacksTo;
@@ -69,6 +70,41 @@ namespace Engine.Services
             }
 
             SetValues();
+
+            List<MoveBase> all = new List<MoveBase>();
+            for (var i = 0; i < _attacks.Length; i++)
+            {
+                for (var j = 0; j < _attacks[i].Length; j++)
+                {
+                    for (var k = 0; k < _attacks[i][j].Count; k++)
+                    {
+                        foreach (var attack in _attacks[i][j][k])
+                        {
+                            all.Add(attack);
+                        }
+                    }
+                }
+            }
+
+            for (var i = 0; i < _moves.Length; i++)
+            {
+                for (var j = 0; j < _moves[i].Length; j++)
+                {
+                    for (var k = 0; k < _moves[i][j].Count; k++)
+                    {
+                        foreach (var move in _moves[i][j][k])
+                        {
+                            all.Add(move);
+                        }
+                    }
+                }
+            }
+
+            _all = all.ToArray();
+            for (var i = 0; i < _all.Length; i++)
+            {
+                _all[i].Key = (short) i;
+            }
         }
 
         #region Private
@@ -84,7 +120,6 @@ namespace Engine.Services
         private void SetValueForMove(MoveBase move)
         {
             var value = _evaluationService.GetValue(move.Piece.AsByte(), move.To.AsByte(), Phase.Opening);
-            move.Static = value;
             move.Difference = value - _evaluationService.GetValue(move.Piece.AsByte(), move.From.AsByte(), Phase.Opening);
         }
 
@@ -1200,6 +1235,18 @@ namespace Engine.Services
         #endregion
 
         #region Implementation of IMoveProvider
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IMove Get(short key)
+        {
+            return _all[key];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<IMove> GetAll()
+        {
+            return _all;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IAttack> GetAttacks(Piece piece, Square cell, IBoard board)

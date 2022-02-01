@@ -1,5 +1,6 @@
 {
   "GeneralConfiguration": {
+    "GameDepth": 256,
     "UseEvaluationCache": false
   },
   "AlgorithmConfiguration": {
@@ -22,6 +23,7 @@
       "Penalty": 25,
       "Mate": 10000,
       "Factor": 2,
+      "ThreefoldRepetitionValue": 500,
       "Opening": {
         "NotAbleCastleValue": 2,
         "EarlyQueenValue": 4,

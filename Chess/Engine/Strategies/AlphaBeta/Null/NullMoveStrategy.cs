@@ -41,7 +41,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 {
                     if ((entry.Depth - depth) % 2 == 0)
                     {
-                        pv = entry.PvMove;
+                        pv = MoveProvider.Get(entry.PvMove);
                     }
                 }
             }
@@ -147,31 +147,17 @@ namespace Engine.Strategies.AlphaBeta.Null
 
                 if ((entryDepth - depth) % 2 == 0)
                 {
-                    pv = entry.PvMove;
+                    pv = MoveProvider.Get(entry.PvMove);
                 }
             }
 
             int value = short.MinValue;
             IMove bestMove = null;
+            var moves = Position.GetAllMoves(Sorter, pv);
+
+            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             var lastMove = MoveHistory.GetLastMove();
-            var moves = Position.GetAllMoves(Sorter, pv);
-            if (moves.Count == 0)
-            {
-                return lastMove.IsCheck()
-                    ? -EvaluationService.GetMateValue()
-                    : -EvaluationService.Evaluate(Position);
-            }
-
-            if (MoveHistory.IsThreefoldRepetition(key))
-            {
-                var v = Evaluate(alpha, beta);
-                if (v < 0)
-                {
-                    return -v;
-                }
-            }
-
             if (CanUseNull && !lastMove.IsCheck() && isNotEndGame && IsValidWindow(alpha, beta))
             {
                 int r = depth > 6 ? MaxReduction : MinReduction;
@@ -214,40 +200,11 @@ namespace Engine.Strategies.AlphaBeta.Null
 
             if (IsNull || !isNotEndGame) return value;
 
-            int best;
-            if (bestMove == null)
-            {
-                best = short.MinValue;
-            }
-            else
-            {
-                bestMove.History += 1 << depth;
-                best = value;
-            }
+            bestMove.History += 1 << depth;
 
-            if (!isInTable || shouldUpdate)
-            {
-                TranspositionEntry te = new TranspositionEntry
-                { Depth = (byte)depth, Value = (short)best, PvMove = bestMove };
-                if (best <= alpha)
-                {
-                    te.Type = TranspositionEntryType.LowerBound;
-                }
-                else if (best >= beta)
-                {
-                    te.Type = TranspositionEntryType.UpperBound;
-                }
-                else
-                {
-                    te.Type = TranspositionEntryType.Exact;
-                }
+            if (isInTable && !shouldUpdate) return value;
 
-                Table.Set(key, te);
-
-                return best;
-            }
-
-            return best;
+            return StoreValue(alpha, beta, depth, value, bestMove);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

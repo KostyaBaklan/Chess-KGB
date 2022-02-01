@@ -14,6 +14,7 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.Base;
 using Engine.Strategies.LateMove;
 using Engine.Strategies.MultiCut;
@@ -26,10 +27,11 @@ namespace Kgb.ChessApp.Views
 {
     public class GameViewModel : BindableBase, INavigationAware
     {
+        private bool _machineMove;
         private Turn _turn = Turn.White;
         private readonly IPosition _position;
         private List<IMove> _moves;
-        private IStrategy _strategy;
+        private StrategyBase _strategy;
         private readonly Dictionary<string, CellViewModel> _cellsMap;
         private readonly IMoveFormatter _moveFormatter;
         private readonly IEvaluationService _evaluationService;
@@ -154,7 +156,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrComplexHistoryStrategy(level, _position);
+            _strategy = new LmrAdvancedHistoryStrategy(level, _position);
 
             if (color == "White")
             {
@@ -304,12 +306,21 @@ namespace Kgb.ChessApp.Views
                 {
                     var timer = new Stopwatch();
                     timer.Start();
+
+                    while (_strategy.IsBlocked())
+                    {
+                        Thread.Sleep(TimeSpan.FromMilliseconds(0.01));
+                    }
+
                     var q = _strategy.GetResult();
+
+                    _strategy.ExecuteAsyncAction();
                     timer.Stop();
                     return new Tuple<IResult, TimeSpan>(q, timer.Elapsed);
                 })
                 .ContinueWith(t =>
                     {
+                        _machineMove = true;
                         Tuple<IResult, TimeSpan> tResult = null;
                         try
                         {

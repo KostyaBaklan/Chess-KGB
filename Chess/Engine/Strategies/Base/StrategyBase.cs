@@ -1,4 +1,6 @@
-﻿using CommonServiceLocator;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using CommonServiceLocator;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Sorting.Sorters;
@@ -7,22 +9,28 @@ namespace Engine.Strategies.Base
 {
     public abstract class StrategyBase : IStrategy
     {
+        private bool _isBlocked;
         protected short Depth;
         protected MoveSorter Sorter;
         protected IPosition Position;
         protected int SearchValue;
+        protected int ThreefoldRepetitionValue;
 
         protected IEvaluationService EvaluationService;
         protected readonly IMoveHistoryService MoveHistory;
+        protected readonly IMoveProvider MoveProvider;
 
         protected StrategyBase(short depth, IPosition position)
         {
             SearchValue = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
                 .Evaluation.Static.Mate;
+            ThreefoldRepetitionValue = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .Evaluation.Static.ThreefoldRepetitionValue;
             Depth = depth;
             Position = position;
             EvaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
             MoveHistory = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
+            MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
         }
 
         public abstract IResult GetResult();
@@ -69,6 +77,17 @@ namespace Engine.Strategies.Base
         public override string ToString()
         {
             return $"{GetType().Name}";
+        }
+
+        public virtual bool IsBlocked()
+        {
+            return _isBlocked;
+        }
+
+        public virtual void ExecuteAsyncAction()
+        {
+            _isBlocked = true;
+            Task.Factory.StartNew(() => { _isBlocked = false; });
         }
     }
 }

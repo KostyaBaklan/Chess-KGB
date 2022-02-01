@@ -4,7 +4,7 @@ namespace Engine.Models.Config
 {
     public class EvaluationProvider: IEvaluationProvider
     {
-        private IPieceEvaluation[] _piece;
+        private readonly IPieceEvaluation[] _piece;
         public EvaluationProvider(StaticEvaluation evaluationStatic, IPieceEvaluation evaluationOpening, IPieceEvaluation evaluationMiddle, IPieceEvaluation evaluationEnd)
         {
             Static = evaluationStatic;

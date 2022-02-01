@@ -20,9 +20,8 @@ namespace Engine.Models.Moves
 
         #region Implementation of IMove
 
-        public int Static { get; set; }
+        public short Key { get; set; }
         public int Difference { get; set; }
-        public int Value { get; set; }
         public int History { get; set; }
         public Piece Piece { get; set; }
         public Square From { get; set; }
@@ -87,12 +86,6 @@ namespace Engine.Models.Moves
         #endregion
 
         #region Overrides of Object
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int CompareTo(IMove other)
-        {
-            return Value.CompareTo(other.Value);
-        }
 
         public override string ToString()
         {
