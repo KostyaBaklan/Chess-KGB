@@ -43,5 +43,7 @@ namespace Engine.Interfaces
         Phase UpdatePhase();
         int StaticExchange(IAttack attack);
         Piece[] GetBoardSet();
+        int GetBlackMaxValue();
+        int GetWhiteMaxValue();
     }
 }

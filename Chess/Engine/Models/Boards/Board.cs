@@ -840,6 +840,36 @@ namespace Engine.Models.Boards
             return _pieces;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetBlackMaxValue()
+        {
+            int value = 0;
+            for (int i = 10; i > 5; i--)
+            {
+                if (_pieceCount[i] > 0)
+                {
+                    return _evaluationService.GetValue(i, _phase);
+                }
+            }
+
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetWhiteMaxValue()
+        {
+            int value = 0;
+            for (int i = 4; i > -1; i--)
+            {
+                if (_pieceCount[i] > 0)
+                {
+                    return _evaluationService.GetValue(i, _phase);
+                }
+            }
+
+            return value;
+        }
+
         #endregion
 
         #region SEE

@@ -1,7 +1,10 @@
 {
   "GeneralConfiguration": {
     "GameDepth": 256,
-    "UseEvaluationCache": false
+    "BlockTimeout": 0.1,
+    "FutilityDepth": 2,
+    "UseEvaluationCache": false,
+    "UseFutility": true
   },
   "AlgorithmConfiguration": {
     "InitialDepth": 3,

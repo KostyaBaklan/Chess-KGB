@@ -68,7 +68,8 @@ namespace Engine.Strategies.LateMove
             int value = int.MinValue;
             IMove bestMove = null;
 
-            var moves = Position.GetAllMoves(Sorter, pv);
+            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 

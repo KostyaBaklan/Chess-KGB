@@ -11,6 +11,7 @@ namespace Engine.DataStructures.Hash
 {
     public class TranspositionTable : ZobristDictionary<TranspositionEntry>
     {
+        private readonly double _blockTimeout;
         private int _nextLevel;
         private readonly int _threshold;
         private bool _isBlocked;
@@ -23,8 +24,11 @@ namespace Engine.DataStructures.Hash
             _nextLevel = 0;
             _threshold = 2 * capacity / 3;
 
-            var depth = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+            var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
+            var depth = configurationProvider
                 .GeneralConfiguration.GameDepth;
+            _blockTimeout = configurationProvider
+                .GeneralConfiguration.BlockTimeout;
             _moveHistory = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
 
             _depthTable = new ZoobristKeyCollection[depth];
@@ -69,7 +73,7 @@ namespace Engine.DataStructures.Hash
 
             while (_isBlocked)
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(0.01));
+                Thread.Sleep(TimeSpan.FromMilliseconds(_blockTimeout));
             }
 
             Table[key] = item;

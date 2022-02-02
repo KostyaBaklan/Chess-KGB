@@ -10,6 +10,7 @@ namespace Engine.Interfaces
         ulong GetKey();
         short GetValue();
         int GetStaticValue();
+        int GetOpponentMaxValue();
         Turn GetTurn();
         bool GetPiece(Square cell, out Piece? piece);
 

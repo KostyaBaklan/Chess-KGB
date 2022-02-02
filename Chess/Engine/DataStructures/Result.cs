@@ -2,7 +2,7 @@
 
 namespace Engine.DataStructures
 {
-    class Result : IResult
+    public class Result : IResult
     {
         public Result()
         {

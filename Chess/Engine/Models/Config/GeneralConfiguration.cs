@@ -8,6 +8,9 @@ namespace Engine.Models.Config
 
         public bool UseEvaluationCache { get; set; }
         public int GameDepth { get; set; }
+        public double BlockTimeout { get; set; }
+        public bool UseFutility { get; set; }
+        public int FutilityDepth { get; set; }
 
         #endregion
     }
