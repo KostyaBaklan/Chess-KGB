@@ -191,23 +191,10 @@ namespace Engine.Strategies.PVS.Memory
             int value = int.MinValue;
             IMove bestMove = null;
 
-            var moves = Position.GetAllMoves(Sorter, pv);
-            if (moves.Count == 0)
-            {
-                var lastMove = MoveHistory.GetLastMove();
-                return lastMove.IsCheck()
-                    ? -EvaluationService.GetMateValue()
-                    : -EvaluationService.Evaluate(Position);
-            }
+            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            if (moves == null) return alpha;
 
-            if (MoveHistory.IsThreefoldRepetition(key))
-            {
-                var v = Evaluate(alpha, beta);
-                if (v < 0)
-                {
-                    return -v;
-                }
-            }
+            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             for (var i = 0; i < moves.Count; i++)
             {

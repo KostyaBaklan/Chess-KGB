@@ -4,5 +4,8 @@
     {
         bool UseEvaluationCache { get; }
         int GameDepth { get; }
+        double BlockTimeout { get; }
+        bool UseFutility { get; }
+        int FutilityDepth { get; }
     }
 }

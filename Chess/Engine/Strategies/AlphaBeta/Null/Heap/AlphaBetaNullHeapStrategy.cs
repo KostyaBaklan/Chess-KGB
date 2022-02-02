@@ -49,21 +49,8 @@ namespace Engine.Strategies.AlphaBeta.Null.Heap
             }
 
             var moves = Position.GetAllMoves(Sorter, pv);
-            if (moves.Count == 0)
-            {
-                result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
-                return result;
-            }
 
-            if (MoveHistory.IsThreefoldRepetition(key))
-            {
-                var v = Evaluate(alpha, beta);
-                if (v < -500)
-                {
-                    result.GameResult = GameResult.ThreefoldRepetition;
-                    return result;
-                }
-            }
+            if (CheckMoves(moves, out var res)) return res;
 
             if (moves.Count > 1)
             {
@@ -156,7 +143,8 @@ namespace Engine.Strategies.AlphaBeta.Null.Heap
             int value = short.MinValue;
             IMove bestMove = null;
 
-            var moves = Position.GetAllMoves(Sorter, pv);
+            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 

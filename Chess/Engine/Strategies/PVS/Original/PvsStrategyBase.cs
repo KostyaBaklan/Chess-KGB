@@ -55,21 +55,8 @@ namespace Engine.Strategies.PVS.Original
             Result result = new Result();
 
             var moves = Position.GetAllMoves(Sorter, pvMove);
-            if (moves.Count == 0)
-            {
-                result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
-                return result;
-            }
 
-            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
-            {
-                var v = Evaluate(alpha, beta);
-                if (v < -500)
-                {
-                    result.GameResult = GameResult.ThreefoldRepetition;
-                    return result;
-                }
-            }
+            if (CheckMoves(moves, out var res)) return res;
 
             if (moves.Count > 1)
             {
@@ -130,23 +117,10 @@ namespace Engine.Strategies.PVS.Original
             int value = int.MinValue;
             IMove bestMove = null;
 
-            var moves = Position.GetAllMoves(Sorter);
-            if (moves.Count == 0)
-            {
-                var lastMove = MoveHistory.GetLastMove();
-                return lastMove.IsCheck()
-                    ? -EvaluationService.GetMateValue()
-                    : -EvaluationService.Evaluate(Position);
-            }
+            IMoveCollection moves = GenerateMoves(alpha, beta, depth);
+            if (moves == null) return alpha;
 
-            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
-            {
-                var v = Evaluate(alpha, beta);
-                if (v < 0)
-                {
-                    return -v;
-                }
-            }
+            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             for (var i = 0; i < moves.Count; i++)
             {

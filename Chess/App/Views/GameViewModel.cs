@@ -11,13 +11,16 @@ using System.Windows.Input;
 using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies.AlphaBeta.Extended;
+using Engine.Strategies.AlphaBeta.Null.Extended;
 using Engine.Strategies.Base;
 using Engine.Strategies.LateMove;
 using Engine.Strategies.MultiCut;
+using Engine.Strategies.NullMove;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -27,7 +30,7 @@ namespace Kgb.ChessApp.Views
 {
     public class GameViewModel : BindableBase, INavigationAware
     {
-        private bool _machineMove;
+        private readonly double _blockTimeout;
         private Turn _turn = Turn.White;
         private readonly IPosition _position;
         private List<IMove> _moves;
@@ -38,6 +41,8 @@ namespace Kgb.ChessApp.Views
 
         public GameViewModel(IMoveFormatter moveFormatter)
         {
+            _blockTimeout = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .GeneralConfiguration.BlockTimeout;
             _moveFormatter = moveFormatter;
             _cellsMap = new Dictionary<string, CellViewModel>(64);
             for (int i = 0; i < 64; i++)
@@ -156,7 +161,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrAdvancedHistoryStrategy(level, _position);
+            _strategy = new LmrExtendedHistoryStrategy(level, _position);
 
             if (color == "White")
             {
@@ -309,7 +314,7 @@ namespace Kgb.ChessApp.Views
 
                     while (_strategy.IsBlocked())
                     {
-                        Thread.Sleep(TimeSpan.FromMilliseconds(0.01));
+                        Thread.Sleep(TimeSpan.FromMilliseconds(_blockTimeout));
                     }
 
                     var q = _strategy.GetResult();
@@ -320,7 +325,6 @@ namespace Kgb.ChessApp.Views
                 })
                 .ContinueWith(t =>
                     {
-                        _machineMove = true;
                         Tuple<IResult, TimeSpan> tResult = null;
                         try
                         {

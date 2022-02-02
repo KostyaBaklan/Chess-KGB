@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Threading;
 using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
@@ -78,17 +77,8 @@ namespace Engine.Strategies.AlphaBeta.Simple
             }
 
             var moves = Position.GetAllMoves(Sorter, pv);
-            if (moves.Count == 0)
-            {
-                result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
-                return result;
-            }
 
-            if (MoveHistory.IsThreefoldRepetition(key))
-            {
-                result.GameResult = GameResult.ThreefoldRepetition;
-                return result;
-            }
+            if (CheckMoves(moves, out var res)) return res;
 
             if (moves.Count > 1)
             {
@@ -121,7 +111,6 @@ namespace Engine.Strategies.AlphaBeta.Simple
             }
 
             result.Move.History++;
-
             return result;
         }
 
@@ -179,7 +168,8 @@ namespace Engine.Strategies.AlphaBeta.Simple
             int value = int.MinValue;
             IMove bestMove = null;
 
-            var moves = Position.GetAllMoves(Sorter, pv);
+            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
@@ -240,33 +230,6 @@ namespace Engine.Strategies.AlphaBeta.Simple
             Table.Set(Position.GetKey(), te);
 
             return value;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CheckMoves(int alpha, int beta, IMoveCollection moves, out int value)
-        {
-            value = 0;
-            if (moves.Count == 0)
-            {
-                var lastMove = MoveHistory.GetLastMove();
-                value = lastMove.IsCheck()
-                    ? -EvaluationService.GetMateValue()
-                    : -EvaluationService.Evaluate(Position);
-                return true;
-            }
-
-            if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
-
-            value = Position.GetValue();
-            if (value < 0)
-            {
-                value += ThreefoldRepetitionValue;
-            }
-            else
-            {
-                value -= ThreefoldRepetitionValue;
-            }
-            return true;
         }
 
         public void Clear()
