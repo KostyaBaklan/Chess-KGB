@@ -25,5 +25,6 @@ namespace Engine.Interfaces
         int GetEarlyQueenValue(Phase phase);
         int GetDoubleBishopValue(Phase phase);
         int GetRookOnOpenFileValue(Phase phase);
+        int GetRentgenValue(Phase phase);
     }
 }

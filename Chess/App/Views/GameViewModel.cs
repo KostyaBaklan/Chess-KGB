@@ -380,7 +380,8 @@ namespace Kgb.ChessApp.Views
                 var model = new MoveModel
                 {
                     Number = 1,
-                    White = $"[{_moveFormatter.Format(move)}][{-_position.GetValue()}]"
+                    White = $" {_moveFormatter.Format(move)} ",
+                    WhiteValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} "
                 };
                 MoveItems.Add(model);
                 mm = model;
@@ -392,16 +393,18 @@ namespace Kgb.ChessApp.Views
                     var model = new MoveModel
                     {
                         Number = lastModel.Number + 1,
-                        White = $"[{_moveFormatter.Format(move)}][{-_position.GetValue()}]"
+                        White = $" {_moveFormatter.Format(move)} ",
+                        WhiteValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} "
                     };
                     MoveItems.Add(model);
                     mm = model;
                 }
                 else
                 {
-                    lastModel.Black = $"[{_moveFormatter.Format(move)}][{-_position.GetValue()}]";
+                    lastModel.Black = $" {_moveFormatter.Format(move)} ";
+                    lastModel.BlackValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} ";
                     var process = Process.GetCurrentProcess();
-                    lastModel.Memory = $"{process.WorkingSet64 / 1024} KB";
+                    lastModel.Memory = $" {process.WorkingSet64 / 1024/1024} MB";
                     lastModel.Evaluation = _evaluationService.Size;
                     lastModel.Table = _strategy.Size;
                 }

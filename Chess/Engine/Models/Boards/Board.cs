@@ -239,49 +239,45 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetBlackBishopValue(int[] bishops)
         {
+            if (bishops.Length <= 0) return 0;
+
             var value = GetStaticValue(Piece.BlackBishop.AsByte(), bishops);
-            if (_pieceCount[Piece.BlackBishop.AsByte()] == 2)
+            if (bishops.Length == 2)
             {
                 value += _evaluationService.GetDoubleBishopValue(_phase);
             }
 
-            //if (_evaluationService.ShouldUseMobility())
-            //{
-            //    for (var i = 0; i < bishops.Length; i++)
-            //    {
-            //        var bishopAttacks = bishops[i].BishopAttacks(~_empty) & _empty;
-            //        value += CalculateBlackMobility(bishopAttacks);
-            //    } 
-            //}
+            for (var i = 0; i < bishops.Length; i++)
+            {
+                var attackPattern = _moveProvider.GetAttackPattern(Piece.BlackBishop.AsByte(), bishops[i]);
+                if (_boards[Piece.WhiteQueen.AsByte()].Any() && attackPattern.IsSet(_boards[Piece.WhiteQueen.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+                if (attackPattern.IsSet(_boards[Piece.WhiteKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+            }
 
-            //value = CheckUndeveloped(Piece.BlackBishop.AsByte(), _ranks[7], value);
             return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetBlackKnightValue(int[] knights)
         {
-            var value = GetStaticValue(Piece.BlackKnight.AsByte(), knights);
+            if (knights.Length <= 0) return 0;
 
-            if (knights.Length <= 0) return value;
+            var value = GetStaticValue(Piece.BlackKnight.AsByte(), knights);
 
             for (var i = 0; i < knights.Length; i++)
             {
-                //if (_evaluationService.ShouldUseMobility())
-                //{
-                //    var attackPattern = _moveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), knights[i]) & _empty;
-
-                //    value += CalculateBlackMobility(attackPattern); 
-                //}
-
                 if ((_moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), knights[i]) &
                      _boards[Piece.BlackPawn.AsByte()]).Any())
                 {
                     value += _evaluationService.GetMinorDefendedByPawnValue(_phase);
                 }
             }
-
-            //value = CheckUndeveloped(Piece.BlackKnight.AsByte(), _ranks[7], value);
             return value;
         }
 
@@ -387,61 +383,46 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhiteBishopValue(int[] bishops)
         {
+            if (bishops.Length <= 0) return 0;
+
             var value = GetStaticValue(Piece.WhiteBishop.AsByte(), bishops);
-            if (_pieceCount[Piece.WhiteBishop.AsByte()] == 2)
+            if (bishops.Length == 2)
             {
                 value += _evaluationService.GetDoubleBishopValue(_phase);
             }
-            //if (_evaluationService.ShouldUseMobility())
-            //{
-            //    for (var i = 0; i < bishops.Length; i++)
-            //    {
-            //        var bishopAttacks = bishops[i].BishopAttacks(~_empty) & _empty;
-            //        value += CalculateWhiteMobility(bishopAttacks);
-            //    } 
-            //}
 
-            //value = CheckUndeveloped(Piece.WhiteBishop.AsByte(), _ranks[0], value);
+            for (var i = 0; i < bishops.Length; i++)
+            {
+                var attackPattern = _moveProvider.GetAttackPattern(Piece.WhiteBishop.AsByte(), bishops[i]);
+                if (_boards[Piece.BlackQueen.AsByte()].Any() && attackPattern.IsSet(_boards[Piece.BlackQueen.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+                if (attackPattern.IsSet(_boards[Piece.BlackKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+            }
             return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhiteKnightValue(int[] knights)
         {
-            var piece = Piece.WhiteKnight.AsByte();
-            var value = GetStaticValue(piece, knights);
+            if (knights.Length <= 0) return 0;
 
-            if (knights.Length <= 0) return value;
+            var value = GetStaticValue(Piece.WhiteKnight.AsByte(), knights);
 
             for (var i = 0; i < knights.Length; i++)
             {
-                //if (_evaluationService.ShouldUseMobility())
-                //{
-                //    var attackPattern = _moveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), knights[i]) & _empty;
-
-                //    value += CalculateWhiteMobility(attackPattern); 
-                //}
-
                 if ((_moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), knights[i]) &
                      _boards[Piece.WhitePawn.AsByte()]).Any())
                 {
                     value += _evaluationService.GetMinorDefendedByPawnValue(_phase);
                 }
             }
-
-            //value = CheckUndeveloped(piece, _ranks[0], value);
             return value;
         }
-
-        //private int CheckUndeveloped(byte piece, BitBoard rank, int value)
-        //{
-        //    if (_phase == Phase.Middle && (_boards[piece] & rank).Any())
-        //    {
-        //        return value - _evaluationService.GetPawnValue();
-        //    }
-
-        //    return value;
-        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhitePawnValue(int[] positions)
@@ -535,10 +516,15 @@ namespace Engine.Models.Boards
                     value += _evaluationService.GetRookOnOpenFileValue(_phase);
                 }
 
-                //if (_evaluationService.ShouldUseMobility())
-                //{
-                //    value += CalculateWhiteMobility(rookAttacks & _empty); 
-                //}
+                if (_boards[Piece.BlackQueen.AsByte()].Any() && file.IsSet(_boards[Piece.BlackQueen.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+
+                if (file.IsSet(_boards[Piece.BlackKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
             }
 
             return value;
@@ -556,10 +542,15 @@ namespace Engine.Models.Boards
                     value += _evaluationService.GetRookOnOpenFileValue(_phase);
                 }
 
-                //if (_evaluationService.ShouldUseMobility())
-                //{
-                //    value += CalculateBlackMobility(rookAttacks & _empty); 
-                //}
+                if (_boards[Piece.WhiteQueen.AsByte()].Any() && file.IsSet(_boards[Piece.WhiteQueen.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+
+                if (file.IsSet(_boards[Piece.WhiteKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
             }
 
             return value;

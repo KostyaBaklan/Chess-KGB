@@ -25,43 +25,46 @@
       "Unit": 5,
       "Penalty": 25,
       "Mate": 10000,
-      "Factor": 2,
-      "ThreefoldRepetitionValue": 500,
+      "Factor": 1,
+      "ThreefoldRepetitionValue": 100,
       "Opening": {
         "NotAbleCastleValue": 2,
         "EarlyQueenValue": 4,
         "DoubleBishopValue": 2,
         "MinorDefendedByPawnValue": 1,
-        "BlockedPawnValue": 1,
-        "PassedPawnValue": 1,
+        "BlockedPawnValue": 0,
+        "PassedPawnValue": 0,
         "DoubledPawnValue": 1,
         "IsolatedPawnValue": 2,
-        "BackwardPawnValue": 3,
-        "RookOnOpenFileValue": 2
+        "BackwardPawnValue": 1,
+        "RookOnOpenFileValue": 2,
+        "RentgenValue": 1
       },
       "Middle": {
         "NotAbleCastleValue": 1,
-        "EarlyQueenValue": 4,
+        "EarlyQueenValue": 2,
         "DoubleBishopValue": 3,
         "MinorDefendedByPawnValue": 1,
         "BlockedPawnValue": 1,
-        "PassedPawnValue": 2,
-        "DoubledPawnValue": 1,
+        "PassedPawnValue": 1,
+        "DoubledPawnValue": 2,
         "IsolatedPawnValue": 3,
         "BackwardPawnValue": 2,
-        "RookOnOpenFileValue": 2
+        "RookOnOpenFileValue": 2,
+        "RentgenValue": 1
       },
       "End": {
-        "NotAbleCastleValue": 1,
-        "EarlyQueenValue": 4,
+        "NotAbleCastleValue": 0,
+        "EarlyQueenValue": 0,
         "DoubleBishopValue": 1,
         "MinorDefendedByPawnValue": 1,
         "BlockedPawnValue": 2,
-        "PassedPawnValue": 6,
-        "DoubledPawnValue": 2,
-        "IsolatedPawnValue": 4,
+        "PassedPawnValue": 3,
+        "DoubledPawnValue": 3,
+        "IsolatedPawnValue": 3,
         "BackwardPawnValue": 3,
-        "RookOnOpenFileValue": 3
+        "RookOnOpenFileValue": 1,
+        "RentgenValue": 1
       }
     },
     "Opening": {
@@ -86,7 +89,7 @@
       "Bishop": 625,
       "Rook": 1025,
       "Queen": 1850,
-      "King": 7000
+      "King": 6000
     }
   }
 }
