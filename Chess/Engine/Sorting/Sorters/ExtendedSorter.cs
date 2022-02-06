@@ -51,19 +51,8 @@ namespace Engine.Sorting.Sorters
             if (pvNode is IAttack attack)
             {
                 OrderAttacks(collection, sortedAttacks, attack);
-            }
-            else
-            {
-                OrderAttacks(collection, sortedAttacks);
-            }
 
-            foreach (var move in moves)
-            {
-                if (move.Equals(pvNode))
-                {
-                    collection.AddHashMove(move);
-                }
-                else
+                foreach (var move in moves)
                 {
                     if (killerMoveCollection.Contains(move) || move.IsPromotion())
                     {
@@ -72,6 +61,29 @@ namespace Engine.Sorting.Sorters
                     else
                     {
                         collection.AddNonCapture(move);
+                    }
+                }
+            }
+            else
+            {
+                OrderAttacks(collection, sortedAttacks);
+
+                foreach (var move in moves)
+                {
+                    if (move.Equals(pvNode))
+                    {
+                        collection.AddHashMove(move);
+                    }
+                    else
+                    {
+                        if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                        {
+                            collection.AddKillerMove(move);
+                        }
+                        else
+                        {
+                            collection.AddNonCapture(move);
+                        }
                     }
                 }
             }

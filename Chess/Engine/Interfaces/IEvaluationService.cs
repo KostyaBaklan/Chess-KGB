@@ -26,5 +26,6 @@ namespace Engine.Interfaces
         int GetDoubleBishopValue(Phase phase);
         int GetRookOnOpenFileValue(Phase phase);
         int GetRentgenValue(Phase phase);
+        int GetRookConnectionValue(Phase phase);
     }
 }

@@ -13,5 +13,6 @@
         public short BackwardPawnValue { get; set; }
         public short RookOnOpenFileValue { get; set; }
         public short RentgenValue { get; set; }
+        public int RookConnectionValue { get; set; }
     }
 }

@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Common;
+using CommonServiceLocator;
+using Engine.Interfaces;
 using Engine.Models.Boards;
+using Engine.Models.Enums;
 using Engine.Models.Helpers;
 
 namespace Tools
@@ -13,6 +17,34 @@ namespace Tools
         static void Main(string[] args)
         {
             Boot.SetUp();
+
+            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+            Dictionary<int, List<string>> attacks = new Dictionary<int, List<string>>();
+            for (int i = 0; i < 64; i++)
+            {
+                var attackPattern = moveProvider.GetAttackPattern(Piece.WhiteBishop.AsByte(), i);
+                var count = attackPattern.Count();
+                if (attacks.ContainsKey(count))
+                {
+                    attacks[count].Add(new Square(i).AsString());
+                }
+                else
+                {
+                    attacks[count] = new List<string> {new Square(i).AsString()};
+                }
+            }
+
+            foreach (var pair in attacks)
+            {
+                StringBuilder builder = new StringBuilder();
+                builder.Append($"{pair.Key} -> ");
+                foreach (var s in pair.Value)
+                {
+                    builder.Append($"{s} ");
+                }
+
+                Console.WriteLine(builder);
+            }
 
             Console.ReadLine();
         }

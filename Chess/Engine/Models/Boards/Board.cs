@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -44,6 +45,8 @@ namespace Engine.Models.Boards
         private int[] _pieceCount;
         private readonly bool[] _overBoard;
         private readonly Piece[] _pieces;
+        private readonly HashSet<int> _whiteQueenOpening;
+        private readonly HashSet<int> _blackQueenOpening;
         private readonly IMoveProvider _moveProvider;
         private readonly IMoveHistoryService _moveHistory;
         private readonly IEvaluationService _evaluationService;
@@ -67,6 +70,18 @@ namespace Engine.Models.Boards
 
             _hash = new ZobristHash();
             _hash.Initialize(_boards);
+
+            _whiteQueenOpening = new HashSet<int>
+            {
+                Squares.D1.AsInt(), Squares.E1.AsInt(), Squares.C1.AsInt(),
+                Squares.D2.AsInt(), Squares.E2.AsInt(), Squares.C2.AsInt()
+            };
+
+            _blackQueenOpening = new HashSet<int>
+            {
+                Squares.D8.AsInt(), Squares.E8.AsInt(), Squares.C8.AsInt(),
+                Squares.D7.AsInt(), Squares.E7.AsInt(), Squares.C7.AsInt()
+            };
         }
 
         #region Implementation of IBoard
@@ -94,40 +109,6 @@ namespace Engine.Models.Boards
         {
             return piece.IsWhite() ? _blacks.IsSet(bitBoard) : _whites.IsSet(bitBoard);
         }
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //private int CalculateBlackMobility(BitBoard mobility)
-        //{
-        //    int value = 0;
-        //    foreach (var p in mobility.BitScan())
-        //    {
-        //        var pattern = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), p) &
-        //                      _boards[Piece.WhitePawn.AsByte()];
-        //        if (!pattern.Any())
-        //        {
-        //            value += _evaluationService.GetMobilityValue();
-        //        }
-        //    }
-
-        //    return value;
-        //}
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //private int CalculateWhiteMobility(BitBoard mobility)
-        //{
-        //    int value = 0;
-        //    foreach (var p in mobility.BitScan())
-        //    {
-        //        var pattern = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), p) &
-        //                      _boards[Piece.BlackPawn.AsByte()];
-        //        if (!pattern.Any())
-        //        {
-        //            value += _evaluationService.GetMobilityValue();
-        //        }
-        //    }
-
-        //    return value;
-        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetStaticValue(byte piece, int[] positions)
@@ -195,18 +176,18 @@ namespace Engine.Models.Boards
             var p = _boards[Piece.BlackKing.AsByte()].BitScanForward();
             var value = _evaluationService.GetValue(Piece.BlackKing.AsByte(), p, _phase);
 
-            if (_isBlackCastled)
-            {
-                return value;
-            }
-            if (!_moveHistory.CanDoBlackSmallCastle())
-            {
-                value -= _evaluationService.GetNotAbleCastleValue(_phase);
-            }
-            if (!_moveHistory.CanDoBlackBigCastle())
-            {
-                value -= _evaluationService.GetNotAbleCastleValue(_phase);
-            }
+            //if (_isBlackCastled)
+            //{
+            //    return value;
+            //}
+            //if (!_moveHistory.CanDoBlackSmallCastle())
+            //{
+            //    value -= _evaluationService.GetNotAbleCastleValue(_phase);
+            //}
+            //if (!_moveHistory.CanDoBlackBigCastle())
+            //{
+            //    value -= _evaluationService.GetNotAbleCastleValue(_phase);
+            //}
 
             return value;
         }
@@ -217,9 +198,19 @@ namespace Engine.Models.Boards
             if (queens.Length <= 0) return 0;
 
             var value = GetStaticValue(Piece.BlackQueen.AsByte(), queens);
+
+            for (var i = 0; i < queens.Length; i++)
+            {
+                var attackPattern = _moveProvider.GetAttackPattern(Piece.BlackQueen.AsByte(), queens[i]);
+                if (attackPattern.IsSet(_boards[Piece.WhiteKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+            }
+
             if (_phase != Phase.Opening) return value;
 
-            if (queens[0] != Squares.D8.AsInt())
+            if (!_blackQueenOpening.Contains(queens[0]))
             {
                 value -= _evaluationService.GetEarlyQueenValue(_phase);
             }
@@ -230,10 +221,39 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetBlackRookValue(int[] rooks)
         {
+            if (rooks.Length == 0) return 0;
             var value = GetStaticValue(Piece.BlackRook.AsByte(), rooks);
+
             if (_phase == Phase.Opening) return value;
 
-            return UpdateBlackRookValue(rooks, value);
+            for (var i = 0; i < rooks.Length; i++)
+            {
+                var rook = rooks[i].AsBitBoard();
+                BitBoard file = GetFile(rooks[i]);
+                if ((_empty ^ rook).IsSet(file))
+                {
+                    value += _evaluationService.GetRookOnOpenFileValue(_phase);
+                }
+
+                if (_boards[Piece.WhiteQueen.AsByte()].Any() && file.IsSet(_boards[Piece.WhiteQueen.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+
+                if (file.IsSet(_boards[Piece.WhiteKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+            }
+
+            if (_pieceCount[Piece.BlackRook.AsByte()] <= 1) return value;
+
+            if ((rooks[0].RookAttacks(~_empty) & _boards[Piece.BlackRook.AsByte()]).Any())
+            {
+                value += _evaluationService.GetRookConnectionValue(_phase);
+            }
+
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -339,18 +359,18 @@ namespace Engine.Models.Boards
             var p = _boards[Piece.WhiteKing.AsByte()].BitScanForward();
             var value = _evaluationService.GetValue(Piece.WhiteKing.AsByte(), p, _phase);
 
-            if (_isWhiteCastled)
-            {
-                return value;
-            }
-            if (!_moveHistory.CanDoWhiteSmallCastle())
-            {
-                value -= _evaluationService.GetNotAbleCastleValue(_phase);
-            }
-            if (!_moveHistory.CanDoWhiteBigCastle())
-            {
-                value -= _evaluationService.GetNotAbleCastleValue(_phase);
-            }
+            //if (_isWhiteCastled)
+            //{
+            //    return value;
+            //}
+            //if (!_moveHistory.CanDoWhiteSmallCastle())
+            //{
+            //    value -= _evaluationService.GetNotAbleCastleValue(_phase);
+            //}
+            //if (!_moveHistory.CanDoWhiteBigCastle())
+            //{
+            //    value -= _evaluationService.GetNotAbleCastleValue(_phase);
+            //}
 
             return value;
         }
@@ -360,9 +380,19 @@ namespace Engine.Models.Boards
         {
             if (queens.Length <= 0) return 0;
             var value = GetStaticValue(Piece.WhiteQueen.AsByte(), queens);
+
+            for (var i = 0; i < queens.Length; i++)
+            {
+                var attackPattern = _moveProvider.GetAttackPattern(Piece.WhiteQueen.AsByte(), queens[i]);
+                if (attackPattern.IsSet(_boards[Piece.BlackKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+            }
+
             if (_phase != Phase.Opening) return value;
 
-            if (queens[0] != Squares.D1.AsInt())
+            if (!_whiteQueenOpening.Contains(queens[0]))
             {
                 value -= _evaluationService.GetEarlyQueenValue(_phase);
             }
@@ -373,11 +403,39 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhiteRookValue(int[] rooks)
         {
+            if (rooks.Length == 0) return 0;
             var value = GetStaticValue(Piece.WhiteRook.AsByte(), rooks);
 
             if (_phase == Phase.Opening) return value;
 
-            return UpdateWhiteRookValue(rooks, value);
+            for (var i = 0; i < rooks.Length; i++)
+            {
+                var rook = rooks[i].AsBitBoard();
+                BitBoard file = GetFile(rooks[i]);
+                if ((_empty ^ rook).IsSet(file))
+                {
+                    value += _evaluationService.GetRookOnOpenFileValue(_phase);
+                }
+
+                if (_boards[Piece.BlackQueen.AsByte()].Any() && file.IsSet(_boards[Piece.BlackQueen.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+
+                if (file.IsSet(_boards[Piece.BlackKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
+            }
+
+            if (_pieceCount[Piece.WhiteRook.AsByte()] <= 1) return value;
+
+            if ((rooks[0].RookAttacks(~_empty) & _boards[Piece.WhiteRook.AsByte()]).Any())
+            {
+                value += _evaluationService.GetRookConnectionValue(_phase);
+            }
+
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -499,58 +557,6 @@ namespace Engine.Models.Boards
             if (b.Any())
             {
                 value -= _evaluationService.GetBackwardPawnValue(_phase);
-            }
-
-            return value;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int UpdateWhiteRookValue(int[] rooks, int value)
-        {
-            for (var i = 0; i < rooks.Length; i++)
-            {
-                var rook = rooks[i].AsBitBoard();
-                BitBoard file = GetFile(rooks[i]);
-                if ((_empty^rook).IsSet(file))
-                {
-                    value += _evaluationService.GetRookOnOpenFileValue(_phase);
-                }
-
-                if (_boards[Piece.BlackQueen.AsByte()].Any() && file.IsSet(_boards[Piece.BlackQueen.AsByte()]))
-                {
-                    value += _evaluationService.GetRentgenValue(_phase);
-                }
-
-                if (file.IsSet(_boards[Piece.BlackKing.AsByte()]))
-                {
-                    value += _evaluationService.GetRentgenValue(_phase);
-                }
-            }
-
-            return value;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int UpdateBlackRookValue(int[] rooks, int value)
-        {
-            for (var i = 0; i < rooks.Length; i++)
-            {
-                var rook = rooks[i].AsBitBoard();
-                BitBoard file = GetFile(rooks[i]);
-                if ((_empty ^ rook).IsSet(file))
-                {
-                    value += _evaluationService.GetRookOnOpenFileValue(_phase);
-                }
-
-                if (_boards[Piece.WhiteQueen.AsByte()].Any() && file.IsSet(_boards[Piece.WhiteQueen.AsByte()]))
-                {
-                    value += _evaluationService.GetRentgenValue(_phase);
-                }
-
-                if (file.IsSet(_boards[Piece.WhiteKing.AsByte()]))
-                {
-                    value += _evaluationService.GetRentgenValue(_phase);
-                }
             }
 
             return value;
