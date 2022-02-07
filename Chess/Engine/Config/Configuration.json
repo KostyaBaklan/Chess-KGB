@@ -1,7 +1,7 @@
 {
   "GeneralConfiguration": {
     "GameDepth": 256,
-    "BlockTimeout": 0.1,
+    "BlockTimeout": 1,
     "FutilityDepth": 2,
     "UseEvaluationCache": false,
     "UseFutility": true
@@ -25,7 +25,7 @@
       "Unit": 5,
       "Penalty": 25,
       "Mate": 10000,
-      "Factor": 2,
+      "Factor": 1,
       "ThreefoldRepetitionValue": 500,
       "Opening": {
         "NotAbleCastleValue": 2,
@@ -36,8 +36,11 @@
         "PassedPawnValue": 1,
         "DoubledPawnValue": 1,
         "IsolatedPawnValue": 2,
-        "BackwardPawnValue": 3,
-        "RookOnOpenFileValue": 2
+        "BackwardPawnValue": 2,
+        "RookOnOpenFileValue": 2,
+        "RookOnHalfOpenFileValue": 2,
+        "RentgenValue": 1,
+        "RookConnectionValue": 2
       },
       "Middle": {
         "NotAbleCastleValue": 1,
@@ -45,11 +48,14 @@
         "DoubleBishopValue": 3,
         "MinorDefendedByPawnValue": 1,
         "BlockedPawnValue": 1,
-        "PassedPawnValue": 2,
+        "PassedPawnValue": 1,
         "DoubledPawnValue": 1,
         "IsolatedPawnValue": 3,
         "BackwardPawnValue": 2,
-        "RookOnOpenFileValue": 2
+        "RookOnOpenFileValue": 2,
+        "RookOnHalfOpenFileValue": 2,
+        "RentgenValue": 1,
+        "RookConnectionValue": 4
       },
       "End": {
         "NotAbleCastleValue": 1,
@@ -57,11 +63,14 @@
         "DoubleBishopValue": 1,
         "MinorDefendedByPawnValue": 1,
         "BlockedPawnValue": 2,
-        "PassedPawnValue": 6,
-        "DoubledPawnValue": 2,
+        "PassedPawnValue": 4,
+        "DoubledPawnValue": 3,
         "IsolatedPawnValue": 4,
         "BackwardPawnValue": 3,
-        "RookOnOpenFileValue": 3
+        "RookOnOpenFileValue": 3,
+        "RookOnHalfOpenFileValue": 1,
+        "RentgenValue": 1,
+        "RookConnectionValue": 2
       }
     },
     "Opening": {
@@ -86,7 +95,7 @@
       "Bishop": 625,
       "Rook": 1025,
       "Queen": 1850,
-      "King": 7000
+      "King": 6000
     }
   }
 }

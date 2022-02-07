@@ -45,33 +45,56 @@ namespace Engine.Sorting.Sorters
             IMove pvNode)
         {
             MoveCollection collection = new MoveCollection(Comparer);
-            foreach (var attack in attacks)
-            {
-                if (attack.Equals(pvNode))
-                {
-                    collection.AddHashMove(attack);
-                }
-                else
-                {
-                    collection.AddTrade(attack);
-                }
-            }
 
-            foreach (var move in moves)
+            if (pvNode is IAttack a)
             {
-                if (move.Equals(pvNode))
+                foreach (var attack in attacks)
                 {
-                    collection.AddHashMove(move);
+                    if (attack.Equals(pvNode))
+                    {
+                        collection.AddHashMove(attack);
+                    }
+                    else
+                    {
+                        collection.AddTrade(attack);
+                    }
                 }
-                else
+
+                foreach (var move in moves)
                 {
-                    if (killerMoveCollection.Contains(move) ||  move.IsPromotion())
+                    if (killerMoveCollection.Contains(move) || move.IsPromotion())
                     {
                         collection.AddKillerMove(move);
                     }
                     else
                     {
                         collection.AddNonCapture(move);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var attack in attacks)
+                {
+                    collection.AddTrade(attack);
+                }
+
+                foreach (var move in moves)
+                {
+                    if (move.Equals(pvNode))
+                    {
+                        collection.AddHashMove(move);
+                    }
+                    else
+                    {
+                        if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                        {
+                            collection.AddKillerMove(move);
+                        }
+                        else
+                        {
+                            collection.AddNonCapture(move);
+                        }
                     }
                 }
             }

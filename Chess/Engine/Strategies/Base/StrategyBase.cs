@@ -137,21 +137,21 @@ namespace Engine.Strategies.Base
                 var lastMove = MoveHistory.GetLastMove();
                 value = lastMove.IsCheck()
                     ? -EvaluationService.GetMateValue()
-                    : -EvaluationService.Evaluate(Position);
+                    : Position.GetValue();
                 return true;
             }
 
             if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
 
             value = Position.GetValue();
-            if (value < 0)
-            {
-                value += ThreefoldRepetitionValue;
-            }
-            else
-            {
-                value -= ThreefoldRepetitionValue;
-            }
+            //if (value < 0)
+            //{
+            //    value += ThreefoldRepetitionValue;
+            //}
+            //else
+            //{
+            //    value -= ThreefoldRepetitionValue;
+            //}
             return true;
         }
 

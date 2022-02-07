@@ -60,5 +60,21 @@ namespace Kgb.ChessApp.Models
             get => _table;
             set => SetProperty(ref _table, value);
         }
+
+        private string _whiteValue;
+
+        public string WhiteValue
+        {
+            get => _whiteValue;
+            set => SetProperty(ref _whiteValue, value);
+        }
+
+        private string _blackValue;
+
+        public string BlackValue
+        {
+            get => _blackValue;
+            set => SetProperty(ref _blackValue, value);
+        }
     }
 }

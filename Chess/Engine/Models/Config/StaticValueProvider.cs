@@ -32,5 +32,14 @@ namespace Engine.Models.Config
         }
 
         #endregion
+
+        #region Overrides of Object
+
+        public override string ToString()
+        {
+            return _collection.ToString();
+        }
+
+        #endregion
     }
 }

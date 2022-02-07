@@ -124,12 +124,7 @@ namespace Engine.Strategies.LateMove
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool CanReduce(IMove move)
         {
-            if (move.IsAttack() || move.IsPromotion() || move.IsCheck())
-            {
-                return false;
-            }
-
-            return !MoveHistory.GetLastMove().IsCheck();
+            return !move.IsAttack() && !move.IsPromotion() && !move.IsCheck() && !MoveHistory.GetLastMove().IsCheck();
         }
     }
 }

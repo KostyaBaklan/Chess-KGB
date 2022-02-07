@@ -29,6 +29,9 @@ namespace Engine.Services
         private readonly int[] _isolatedPawnValue;
         private readonly int[] _backwardPawnValue;
         private readonly int[] _rookOnOpenFileValue;
+        private readonly int[] _rookOnHalfOpenFileValue;
+        private readonly int[] _rentgenValue;
+        private readonly int[] _rookConnectionValue;
 
         private readonly int[][] _values;
         private readonly int[][][] _staticValues;
@@ -54,6 +57,9 @@ namespace Engine.Services
             _isolatedPawnValue = new int[3];
             _backwardPawnValue = new int[3];
             _rookOnOpenFileValue = new int[3];
+            _rookOnHalfOpenFileValue = new int[3];
+            _rentgenValue = new int[3];
+            _rookConnectionValue = new int[3];
             for (byte i = 0; i < 3; i++)
             {
                 var evaluationStatic = configuration.Evaluation.Static.GetBoard(i);
@@ -67,6 +73,9 @@ namespace Engine.Services
                 _isolatedPawnValue[i] = evaluationStatic.IsolatedPawnValue * _penaltyValue;
                 _backwardPawnValue[i] = evaluationStatic.BackwardPawnValue * _penaltyValue;
                 _rookOnOpenFileValue[i] = evaluationStatic.RookOnOpenFileValue * _penaltyValue;
+                _rentgenValue[i] = evaluationStatic.RentgenValue * _unitValue;
+                _rookConnectionValue[i] = evaluationStatic.RookConnectionValue * _unitValue;
+                _rookOnHalfOpenFileValue[i] = evaluationStatic.RookOnHalfOpenFileValue * _unitValue;
             }
 
             _values = new int[3][];
@@ -295,6 +304,24 @@ namespace Engine.Services
         public int GetRookOnOpenFileValue(Phase phase)
         {
             return _rookOnOpenFileValue[(byte)phase];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetRentgenValue(Phase phase)
+        {
+            return _rentgenValue[(byte)phase];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetRookConnectionValue(Phase phase)
+        {
+            return _rookConnectionValue[(byte)phase];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetRookOnHalfOpenFileValue(Phase phase)
+        {
+            return _rookOnHalfOpenFileValue[(byte)phase];
         }
 
         #endregion
