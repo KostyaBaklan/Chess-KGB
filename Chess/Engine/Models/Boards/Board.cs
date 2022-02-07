@@ -14,8 +14,8 @@ namespace Engine.Models.Boards
 {
     public class Board : IBoard
     {
-        private bool _isWhiteCastled;
-        private bool _isBlackCastled;
+        //private bool _isWhiteCastled;
+        //private bool _isBlackCastled;
         private Phase _phase = Phase.Opening;
 
         private BitBoard _empty;
@@ -45,8 +45,8 @@ namespace Engine.Models.Boards
         private int[] _pieceCount;
         private readonly bool[] _overBoard;
         private readonly Piece[] _pieces;
-        private readonly HashSet<int> _whiteQueenOpening;
-        private readonly HashSet<int> _blackQueenOpening;
+        //private readonly HashSet<int> _whiteQueenOpening;
+        //private readonly HashSet<int> _blackQueenOpening;
         private readonly IMoveProvider _moveProvider;
         private readonly IMoveHistoryService _moveHistory;
         private readonly IEvaluationService _evaluationService;
@@ -71,17 +71,17 @@ namespace Engine.Models.Boards
             _hash = new ZobristHash();
             _hash.Initialize(_boards);
 
-            _whiteQueenOpening = new HashSet<int>
-            {
-                Squares.D1.AsInt(), Squares.E1.AsInt(), Squares.C1.AsInt(),
-                Squares.D2.AsInt(), Squares.E2.AsInt(), Squares.C2.AsInt()
-            };
+            //_whiteQueenOpening = new HashSet<int>
+            //{
+            //    Squares.D1.AsInt(), Squares.E1.AsInt(), Squares.C1.AsInt(),
+            //    Squares.D2.AsInt(), Squares.E2.AsInt(), Squares.C2.AsInt()
+            //};
 
-            _blackQueenOpening = new HashSet<int>
-            {
-                Squares.D8.AsInt(), Squares.E8.AsInt(), Squares.C8.AsInt(),
-                Squares.D7.AsInt(), Squares.E7.AsInt(), Squares.C7.AsInt()
-            };
+            //_blackQueenOpening = new HashSet<int>
+            //{
+            //    Squares.D8.AsInt(), Squares.E8.AsInt(), Squares.C8.AsInt(),
+            //    Squares.D7.AsInt(), Squares.E7.AsInt(), Squares.C7.AsInt()
+            //};
         }
 
         #region Implementation of IBoard
@@ -208,12 +208,12 @@ namespace Engine.Models.Boards
                 }
             }
 
-            if (_phase != Phase.Opening) return value;
+            //if (_phase != Phase.Opening) return value;
 
-            if (!_blackQueenOpening.Contains(queens[0]))
-            {
-                value -= _evaluationService.GetEarlyQueenValue(_phase);
-            }
+            //if (!_blackQueenOpening.Contains(queens[0]))
+            //{
+            //    value -= _evaluationService.GetEarlyQueenValue(_phase);
+            //}
 
             return value;
         }
@@ -233,6 +233,10 @@ namespace Engine.Models.Boards
                 if ((_empty ^ rook).IsSet(file))
                 {
                     value += _evaluationService.GetRookOnOpenFileValue(_phase);
+                }
+                else if (((_blacks ^ rook)&file).IsZero())
+                {
+                    value += _evaluationService.GetRookOnHalfOpenFileValue(_phase);
                 }
 
                 if (_boards[Piece.WhiteQueen.AsByte()].Any() && file.IsSet(_boards[Piece.WhiteQueen.AsByte()]))
@@ -390,12 +394,12 @@ namespace Engine.Models.Boards
                 }
             }
 
-            if (_phase != Phase.Opening) return value;
+            //if (_phase != Phase.Opening) return value;
 
-            if (!_whiteQueenOpening.Contains(queens[0]))
-            {
-                value -= _evaluationService.GetEarlyQueenValue(_phase);
-            }
+            //if (!_whiteQueenOpening.Contains(queens[0]))
+            //{
+            //    value -= _evaluationService.GetEarlyQueenValue(_phase);
+            //}
 
             return value;
         }
@@ -415,6 +419,11 @@ namespace Engine.Models.Boards
                 if ((_empty ^ rook).IsSet(file))
                 {
                     value += _evaluationService.GetRookOnOpenFileValue(_phase);
+                }
+
+                else if (((_whites ^ rook) & file).IsZero())
+                {
+                    value += _evaluationService.GetRookOnHalfOpenFileValue(_phase);
                 }
 
                 if (_boards[Piece.BlackQueen.AsByte()].Any() && file.IsSet(_boards[Piece.BlackQueen.AsByte()]))
@@ -1151,7 +1160,7 @@ namespace Engine.Models.Boards
 
             WhiteSmallCastle();
 
-            _isWhiteCastled = true;
+            //_isWhiteCastled = true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1165,7 +1174,7 @@ namespace Engine.Models.Boards
 
             BlackSmallCastle();
 
-            _isBlackCastled = true;
+            //_isBlackCastled = true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1179,7 +1188,7 @@ namespace Engine.Models.Boards
 
             BlackBigCastle();
 
-            _isBlackCastled = true;
+            //_isBlackCastled = true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1193,7 +1202,7 @@ namespace Engine.Models.Boards
 
             WhiteBigCastle();
 
-            _isWhiteCastled = true;
+            //_isWhiteCastled = true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1207,7 +1216,7 @@ namespace Engine.Models.Boards
 
             WhiteSmallCastle();
 
-            _isWhiteCastled = false;
+            //_isWhiteCastled = false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1221,7 +1230,7 @@ namespace Engine.Models.Boards
 
             BlackSmallCastle();
 
-            _isBlackCastled = false;
+           // _isBlackCastled = false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1235,7 +1244,7 @@ namespace Engine.Models.Boards
 
             WhiteBigCastle();
 
-            _isWhiteCastled = false;
+            //_isWhiteCastled = false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1249,7 +1258,7 @@ namespace Engine.Models.Boards
 
             BlackBigCastle();
 
-            _isBlackCastled = false;
+            //_isBlackCastled = false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

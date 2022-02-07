@@ -38,8 +38,9 @@
         "IsolatedPawnValue": 2,
         "BackwardPawnValue": 2,
         "RookOnOpenFileValue": 2,
+        "RookOnHalfOpenFileValue": 2,
         "RentgenValue": 1,
-        "RookConnectionValue":  2 
+        "RookConnectionValue": 2
       },
       "Middle": {
         "NotAbleCastleValue": 1,
@@ -52,6 +53,7 @@
         "IsolatedPawnValue": 3,
         "BackwardPawnValue": 2,
         "RookOnOpenFileValue": 2,
+        "RookOnHalfOpenFileValue": 2,
         "RentgenValue": 1,
         "RookConnectionValue": 4
       },
@@ -66,6 +68,7 @@
         "IsolatedPawnValue": 4,
         "BackwardPawnValue": 3,
         "RookOnOpenFileValue": 3,
+        "RookOnHalfOpenFileValue": 1,
         "RentgenValue": 1,
         "RookConnectionValue": 2
       }

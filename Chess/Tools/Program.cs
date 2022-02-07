@@ -6,9 +6,12 @@ using System.Text;
 using Common;
 using CommonServiceLocator;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Boards;
+using Engine.Models.Config;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Newtonsoft.Json;
 
 namespace Tools
 {
@@ -22,7 +25,7 @@ namespace Tools
             Dictionary<int, List<string>> attacks = new Dictionary<int, List<string>>();
             for (int i = 0; i < 64; i++)
             {
-                var attackPattern = moveProvider.GetAttackPattern(Piece.WhiteBishop.AsByte(), i);
+                var attackPattern = moveProvider.GetAttackPattern(Piece.WhiteQueen.AsByte(), i);
                 var count = attackPattern.Count();
                 if (attacks.ContainsKey(count))
                 {
@@ -45,6 +48,58 @@ namespace Tools
 
                 Console.WriteLine(builder);
             }
+
+            //var x = File.ReadAllText(@"Config\StaticTables.json");
+            //var collection = JsonConvert.DeserializeObject<StaticTableCollection>(x);
+            //var whiteTable = collection.Values[Piece.WhiteKnight.AsByte()];
+            //var blackTable = collection.Values[Piece.BlackKnight.AsByte()];
+
+            //var values = new Dictionary<int,short>()
+            //{
+            //    {2,-10 },
+            //    {3,-5 },
+            //    {4,0 },
+            //    {6,10 },
+            //    {8,20 }
+            //};
+
+            //var labels = new Dictionary<char, char>()
+            //{
+            //    {'1','8' },
+            //    {'2','7' },
+            //    {'3','6' },
+            //    {'4','5' },
+            //    {'5','4' },
+            //    {'6','3' },
+            //    {'7','2' },
+            //    {'8','1' }
+            //};
+
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    PhaseStaticTable wb = whiteTable.Values[(Phase)i];
+            //    PhaseStaticTable bb = blackTable.Values[(Phase)i];
+
+            //    foreach (var pair in attacks)
+            //    {
+            //        foreach (var key in pair.Value)
+            //        {
+            //            wb.Values[key] = values[pair.Key];
+            //            bb.Values[key] = values[pair.Key];
+            //        }
+            //    }
+
+            //    //foreach (var pair in wb.Values)
+            //    //{
+            //    //    var l = pair.Key[0];
+            //    //    var n = _labels[pair.Key[1]];
+            //    //    var key = new string(new[] { l, n });
+            //    //    bb.Values[key] = pair.Value;
+            //    //}
+            //}
+
+            //var q = JsonConvert.SerializeObject(collection, Formatting.Indented);
+            //File.WriteAllText(@"StaticTables.json", q);
 
             Console.ReadLine();
         }

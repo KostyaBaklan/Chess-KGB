@@ -27,5 +27,6 @@ namespace Engine.Interfaces
         int GetRookOnOpenFileValue(Phase phase);
         int GetRentgenValue(Phase phase);
         int GetRookConnectionValue(Phase phase);
+        int GetRookOnHalfOpenFileValue(Phase phase);
     }
 }
