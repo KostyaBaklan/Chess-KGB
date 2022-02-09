@@ -155,7 +155,7 @@ namespace Engine.Strategies.MultiCut
             if (IsCut && depth > MultiCutDepth)
             {
                 int cutCount = 0;
-                var multiCutMoves = Math.Min(MultiCutMoves, moves.All);
+                var multiCutMoves = Math.Min(MultiCutMoves, moves.Count);
                 for (var i = 0; i < multiCutMoves; i++)
                 {
                     var move = moves[i];

@@ -98,5 +98,14 @@ namespace Engine.DataStructures
         }
 
         #endregion
+
+        #region Overrides of Object
+
+        public override string ToString()
+        {
+            return $"Count={Count}";
+        }
+
+        #endregion
     }
 }

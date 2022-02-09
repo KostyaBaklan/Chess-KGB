@@ -16,20 +16,18 @@ namespace Engine.DataStructures.Moves
         }
 
         public int Count { get; protected set; }
-        public int Pv { get; protected set; }
-        public int Cut { get; protected set; }
-        public int All { get; protected set; }
-        public int Late { get; protected set; }
-        public int Bad { get; protected set; }
 
         public IMove this[int index] => Moves[index];
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsLmr(int i)
+        public abstract void Build();
+
+        #region Overrides of Object
+
+        public override string ToString()
         {
-            return i >= Cut;
+            return $"Count={Count}";
         }
 
-        public abstract void Build();
+        #endregion
     }
 }

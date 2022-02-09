@@ -113,16 +113,18 @@
         <Grid Grid.Column="1" Margin="10,5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel Margin="10,3" Orientation="Horizontal">
+            <TextBlock Text="{ Binding Title, Mode=OneWay}" FontSize="14"/>
+            <StackPanel Grid.Row="1" Margin="10,3" Orientation="Horizontal">
                 <CheckBox Margin="5,2" Content="Use Machine" IsChecked="{Binding UseMachine}"/>
                 <Button Content="Undo last move" Command="{Binding UndoCommand, Mode=OneWay}"
                         HorizontalAlignment="Center" Margin="5,2"/>
                 <Button Content="Save History" Command="{Binding SaveHistoryCommand, Mode=OneWay}"
                         HorizontalAlignment="Center" Margin="5,2"/>
             </StackPanel>
-            <DataGrid Grid.Row="1" CanUserSortColumns="False" CanUserAddRows="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False"
+            <DataGrid Grid.Row="2" CanUserSortColumns="False" CanUserAddRows="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False"
                       ItemsSource="{Binding MoveItems, Mode=OneWay}"
                       HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                 <DataGrid.Columns>
@@ -133,7 +135,7 @@
                     <DataGridTextColumn Header="Value" Binding="{Binding BlackValue, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Time" Binding="{Binding Time, Mode=OneWay}"/>
                     <DataGridTextColumn Header="Memory" Binding="{Binding Memory, Mode=OneWay}"/>
-                    <DataGridTextColumn Header="Evaluation" Binding="{Binding Evaluation, Mode=OneWay}"/>
+                    <!--<DataGridTextColumn Header="Evaluation" Binding="{Binding Evaluation, Mode=OneWay}"/>-->
                     <DataGridTextColumn Header="Table" Binding="{Binding Table, Mode=OneWay}"/>
                 </DataGrid.Columns>
             </DataGrid>

@@ -8,13 +8,17 @@ using Engine.Strategies.AlphaBeta.Simple;
 
 namespace Engine.Strategies.LateMove
 {
-    public abstract class LmrStrategyBase: AlphaBetaStrategy
+    public abstract class LmrStrategyBase : AlphaBetaStrategy
     {
         protected int DepthReduction;
+        protected int LmrDepthThreshold;
 
         protected LmrStrategyBase(short depth, IPosition position) : base(depth, position)
         {
-            DepthReduction = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+            var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
+            LmrDepthThreshold = configurationProvider
+                .AlgorithmConfiguration.LmrDepthThreshold;
+            DepthReduction = configurationProvider
                     .AlgorithmConfiguration.DepthReduction;
         }
 
@@ -73,43 +77,75 @@ namespace Engine.Strategies.LateMove
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            for (var i = 0; i < moves.Count; i++)
+            if (depth > DepthReduction+1 && !MoveHistory.GetLastMove().IsCheck())
             {
-                var move = moves[i];
-
-                Position.Make(move);
-
-                int r;
-                if (depth > DepthReduction && moves.IsLmr(i) && CanReduce(move))
+                for (var i = 0; i < moves.Count; i++)
                 {
-                    r = -Search(-beta, -alpha, depth - DepthReduction);
-                    if (r > alpha)
+                    var move = moves[i];
+
+                    Position.Make(move);
+
+                    int r;
+                    if (IsLmr(i) && CanReduce(move))
+                    {
+                        r = -Search(-beta, -alpha, depth - DepthReduction);
+                        if (r > alpha)
+                        {
+                            r = -Search(-beta, -alpha, depth - 1);
+                        }
+                    }
+                    else
                     {
                         r = -Search(-beta, -alpha, depth - 1);
                     }
+
+                    if (r > value)
+                    {
+                        value = r;
+                        bestMove = move;
+                    }
+
+                    Position.UnMake();
+
+                    if (value > alpha)
+                    {
+                        alpha = value;
+                    }
+
+                    if (alpha < beta) continue;
+
+                    Sorter.Add(move);
+                    break;
                 }
-                else
+            }
+            else
+            {
+                for (var i = 0; i < moves.Count; i++)
                 {
-                    r = -Search(-beta, -alpha, depth - 1);
+                    var move = moves[i];
+
+                    Position.Make(move);
+
+                    var r = -Search(-beta, -alpha, depth - 1);
+
+                    if (r > value)
+                    {
+                        value = r;
+                        bestMove = move;
+                    }
+
+                    Position.UnMake();
+
+                    if (value > alpha)
+                    {
+                        alpha = value;
+                    }
+
+                    if (alpha < beta) continue;
+
+                    Sorter.Add(move);
+                    break;
                 }
-
-                if (r > value)
-                {
-                    value = r;
-                    bestMove = move;
-                }
-
-                Position.UnMake();
-
-                if (value > alpha)
-                {
-                    alpha = value;
-                }
-
-                if (alpha < beta) continue;
-
-                Sorter.Add(move);
-                break;
             }
 
             bestMove.History += 1 << depth;
@@ -122,9 +158,15 @@ namespace Engine.Strategies.LateMove
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool CanReduce(IMove move)
+        protected bool IsLmr(int i)
         {
-            return !move.IsAttack() && !move.IsPromotion() && !move.IsCheck() && !MoveHistory.GetLastMove().IsCheck();
+            return i > LmrDepthThreshold;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool CanReduce(IMove move)
+        {
+            return !move.IsAttack() && !move.IsPromotion() && !move.IsCheck();
         }
     }
 }

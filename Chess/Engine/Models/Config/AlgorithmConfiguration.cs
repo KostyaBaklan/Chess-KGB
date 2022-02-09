@@ -18,6 +18,8 @@ namespace Engine.Models.Config
         public int MultiCutDepth { get; set; }
         public int MultiCutRequirement { get; set; }
         public int MultiCutMoves { get; set; }
+        public int LmrDepthThreshold { get; set; }
+        public int LmrLateDepthThreshold { get; set; }
 
         #endregion
     }

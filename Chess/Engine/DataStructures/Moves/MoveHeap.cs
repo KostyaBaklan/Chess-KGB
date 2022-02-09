@@ -42,21 +42,11 @@ namespace Engine.DataStructures.Moves
 
             Moves.AddRange(Trades);
 
-            Pv = Math.Max(4, Moves.Count);
-
             Moves.AddRange(_killers);
 
-            Cut = Math.Max(5, Moves.Count);
-
-            int capturesCount  =_nonCaptures.GetOrderedItems(Moves);
-
-            All = Math.Min(Cut + capturesCount, Moves.Count);
-
-            Late = Moves.Count;
+            _nonCaptures.GetOrderedItems(Moves);
 
             Moves.AddRange(LooseCaptures);
-
-            Bad = Count;
         }
     }
 }
