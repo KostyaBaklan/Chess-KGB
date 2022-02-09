@@ -6,21 +6,36 @@ using System.Text;
 using Common;
 using CommonServiceLocator;
 using Engine.Interfaces;
-using Engine.Interfaces.Config;
 using Engine.Models.Boards;
-using Engine.Models.Config;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Newtonsoft.Json;
 
 namespace Tools
 {
+    public class TableConfiguration
+    {
+        public int Depth { get; set; }
+        public int[] Values { get; set; }
+    }
     class Program
     {
         static void Main(string[] args)
         {
             Boot.SetUp();
+            var z = File.ReadAllText(@"Config\Table.json");
+            var table = JsonConvert.DeserializeObject<Dictionary<int, TableConfiguration>>(z);
 
+            Dictionary<int, TableConfiguration> config = new Dictionary<int, TableConfiguration>( );
+
+            var s = JsonConvert.SerializeObject(config, Formatting.Indented);
+            File.WriteAllText("Table.json",s);
+
+            Console.ReadLine();
+        }
+
+        private static void EvaluationTest()
+        {
             var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
             Dictionary<int, List<string>> attacks = new Dictionary<int, List<string>>();
             for (int i = 0; i < 64; i++)
@@ -100,8 +115,6 @@ namespace Tools
 
             //var q = JsonConvert.SerializeObject(collection, Formatting.Indented);
             //File.WriteAllText(@"StaticTables.json", q);
-
-            Console.ReadLine();
         }
 
         private static bool IsIn(int i)

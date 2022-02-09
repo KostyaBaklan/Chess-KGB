@@ -9,9 +9,13 @@ namespace Engine.DataStructures
     {
         private ulong[] _keys;
 
-        public ZoobristKeyCollection()
+        public ZoobristKeyCollection():this(2)
         {
-            _keys = new ulong[2];
+        }
+
+        public ZoobristKeyCollection(int capacity)
+        {
+            _keys = new ulong[capacity];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

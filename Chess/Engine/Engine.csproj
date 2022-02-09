@@ -69,6 +69,7 @@
     <Compile Include="Interfaces\Config\IPieceEvaluation.cs" />
     <Compile Include="Interfaces\Config\IStaticEvaluation.cs" />
     <Compile Include="Interfaces\Config\IStaticValueProvider.cs" />
+    <Compile Include="Interfaces\Config\ITableConfigurationProvider.cs" />
     <Compile Include="Interfaces\IAttack.cs" />
     <Compile Include="Interfaces\Config\IConfigurationProvider.cs" />
     <Compile Include="Interfaces\IMoveCollection.cs" />
@@ -86,6 +87,8 @@
     <Compile Include="Models\Config\StaticEvaluation.cs" />
     <Compile Include="Models\Config\StaticTableCollection.cs" />
     <Compile Include="Models\Config\StaticValueProvider.cs" />
+    <Compile Include="Models\Config\TableConfiguration.cs" />
+    <Compile Include="Models\Config\TableConfigurationProvider.cs" />
     <Compile Include="Models\Enums\Phase.cs" />
     <Compile Include="Models\Helpers\BitBoardExtensions.cs" />
     <Compile Include="Models\Helpers\BoardExtensions.cs" />
@@ -258,6 +261,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Strategies\Aspiration\Heap\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\Table.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

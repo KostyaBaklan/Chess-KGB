@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -767,22 +766,7 @@ namespace Engine.Models.Boards
         public Phase UpdatePhase()
         {
             var ply = _moveHistory.GetPly();
-            if (ply < 16)
-            {
-                _phase = Phase.Opening;
-            }
-            else
-            {
-                if (ply > 25 && IsEndGame())
-                {
-                    _phase = Phase.End;
-                }
-                else
-                {
-                    _phase = Phase.Middle;
-                }
-            }
-
+            _phase = ply < 16 ? Phase.Opening : ply > 25 && IsEndGame() ? Phase.End : Phase.Middle;
             return _phase;
         }
 
@@ -808,12 +792,7 @@ namespace Engine.Models.Boards
             }
 
             count += _pieceCount[Piece.BlackKnight.AsByte()];
-            if (count > 2)
-            {
-                return false;
-            }
-
-            return true;
+            return count <= 2;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -832,12 +811,7 @@ namespace Engine.Models.Boards
             }
 
             count += _pieceCount[Piece.WhiteKnight.AsByte()];
-            if (count > 2)
-            {
-                return false;
-            }
-
-            return true;
+            return count <= 2;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

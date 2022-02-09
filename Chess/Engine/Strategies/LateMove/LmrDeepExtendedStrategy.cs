@@ -1,10 +1,6 @@
-﻿using CommonServiceLocator;
-using Engine.Interfaces;
-using Engine.Interfaces.Config;
-using Engine.Models.Enums;
+﻿using Engine.Interfaces;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
-using Engine.Strategies.Base;
 
 namespace Engine.Strategies.LateMove
 {

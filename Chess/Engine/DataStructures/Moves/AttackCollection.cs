@@ -17,7 +17,7 @@ namespace Engine.DataStructures.Moves
             WinCaptures = new List<IMove>();
             Trades = new List<IMove>();
             LooseCaptures = new List<IMove>();
-            HashMoves = new List<IMove>();
+            HashMoves = new List<IMove>(1);
         }
 
         #region Implementation of IMoveCollection

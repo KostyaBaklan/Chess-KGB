@@ -30,7 +30,7 @@ namespace Engine.Strategies.PVS.NWS
             {
                 capacity = 22675729;
             }
-            Table = new TranspositionTable(capacity);
+            Table = new TranspositionTable(capacity,depth);
             InternalStrategy = new AlphaBetaExtendedHistoryStrategy(depth, position, Table);
         }
 

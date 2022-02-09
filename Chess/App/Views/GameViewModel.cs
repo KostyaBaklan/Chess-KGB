@@ -16,15 +16,9 @@ using Engine.Interfaces.Config;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
-using Engine.Strategies.AlphaBeta.Extended;
-using Engine.Strategies.AlphaBeta.Null.Extended;
-using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Base;
 using Engine.Strategies.LateMove;
-using Engine.Strategies.MultiCut;
-using Engine.Strategies.NullMove;
 using Kgb.ChessApp.Models;
-using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -182,7 +176,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrExtendedHistoryStrategy(level, _position);
+            _strategy = new LmrDeepExtendedStrategy(level, _position);
             _level = level;
             Title = $"Strategy={_strategy}, Level={level}";
 

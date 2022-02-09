@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -29,6 +30,9 @@ namespace Kgb.ChessApp
             var x = File.ReadAllText(@"Config\StaticTables.json");
             var collection = JsonConvert.DeserializeObject<StaticTableCollection>(x);
 
+            var z = File.ReadAllText(@"Config\Table.json");
+            var table = JsonConvert.DeserializeObject<Dictionary<int, TableConfiguration>>(z);
+
             var evaluation = configuration.Evaluation;
             IConfigurationProvider configurationProvider = new ConfigurationProvider(configuration.AlgorithmConfiguration, new EvaluationProvider(evaluation.Static, evaluation.Opening, evaluation.Middle, evaluation.End),
                 configuration.GeneralConfiguration);
@@ -36,6 +40,9 @@ namespace Kgb.ChessApp
 
             IStaticValueProvider staticValueProvider = new StaticValueProvider(collection);
             containerRegistry.RegisterInstance(staticValueProvider);
+
+            ITableConfigurationProvider tableConfigurationProvider = new TableConfigurationProvider(table, configurationProvider);
+            containerRegistry.RegisterInstance(tableConfigurationProvider);
 
             containerRegistry.RegisterSingleton(typeof(IMoveProvider), typeof(MoveProvider));
             containerRegistry.RegisterSingleton(typeof(IMoveFormatter), typeof(MoveFormatter));

@@ -46,7 +46,7 @@ namespace Engine.DataStructures.Moves
 
             if (_nonCaptures.Count > 1)
             {
-                var capturesCount = _nonCaptures.Count < 6 ? _nonCaptures.Count / 2 : _nonCaptures.Count / 3;
+                var capturesCount = _nonCaptures.Count < 6 ? _nonCaptures.Count / 2 : Math.Min(_nonCaptures.Count / 3, 10);
 
                 for (var i = 0; i < capturesCount; i++)
                 {
@@ -54,7 +54,7 @@ namespace Engine.DataStructures.Moves
                     var min = _nonCaptures[i];
                     for (int j = i + 1; j < _nonCaptures.Count; j++)
                     {
-                        if (Comparer.Compare(_nonCaptures[j], min) >= 0) continue;
+                        if (Comparer.Compare(min,_nonCaptures[j]) < 0) continue;
 
                         min = _nonCaptures[j];
                         index = j;

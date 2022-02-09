@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CommonServiceLocator;
 using Engine.Interfaces;
@@ -23,6 +24,9 @@ namespace Common
             var x = File.ReadAllText(@"Config\StaticTables.json");
             var collection = JsonConvert.DeserializeObject<StaticTableCollection>(x);
 
+            var z = File.ReadAllText(@"Config\Table.json");
+            var table = JsonConvert.DeserializeObject<Dictionary<int, TableConfiguration>>(z);
+
             ServiceLocator.SetLocatorProvider(() => serviceLocatorAdapter);
             container.RegisterInstance<IServiceLocator>(serviceLocatorAdapter);
             container.RegisterInstance<IServiceProvider>(serviceLocatorAdapter);
@@ -35,6 +39,9 @@ namespace Common
 
             IStaticValueProvider staticValueProvider = new StaticValueProvider(collection);
             container.RegisterInstance(staticValueProvider);
+
+            ITableConfigurationProvider tableConfigurationProvider = new TableConfigurationProvider(table, configurationProvider);
+            container.RegisterInstance(tableConfigurationProvider);
 
             container.RegisterSingleton(typeof(IMoveProvider), typeof(MoveProvider));
             container.RegisterSingleton(typeof(IMoveFormatter), typeof(MoveFormatter));

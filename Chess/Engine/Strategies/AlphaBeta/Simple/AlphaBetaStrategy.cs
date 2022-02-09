@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
@@ -44,7 +43,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
                     capacity = 22115983;
                 }
 
-                Table = new TranspositionTable(capacity);
+                Table = new TranspositionTable(capacity, depth);
             }
             else
             {

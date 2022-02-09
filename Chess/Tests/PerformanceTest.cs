@@ -131,7 +131,9 @@ namespace Tests
                 {"mc_as_hc", new MultiCutAdvancedHistoryStrategy(depth, position)},
                 {"mc_as_hdc", new MultiCutAdvancedHistoryDifferenceStrategy(depth, position)},
                 {"mc_cs_hc", new MultiCutComplexHistoryStrategy(depth, position)},
-                {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)}
+                {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)},
+
+                {"lmrd_es_hc", new LmrDeepExtendedStrategy(depth, position)}
             };
 
             StrategyBase strategy = strategies[args[0]];
