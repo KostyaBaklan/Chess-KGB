@@ -67,11 +67,11 @@ namespace Engine.Sorting.Sorters
 
                 foreach (var move in moves)
                 {
-                    if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                    if (killerMoveCollection.Contains(move))
                     {
                         collection.AddKillerMove(move);
                     }
-                    else if (move.IsCastle())
+                    else if (move.IsCastle() || move.IsPromotion())
                     {
                         collection.AddSuggested(move);
                     }
@@ -93,11 +93,11 @@ namespace Engine.Sorting.Sorters
                     }
                     else
                     {
-                        if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                        if (killerMoveCollection.Contains(move))
                         {
                             collection.AddKillerMove(move);
                         }
-                        else if (move.IsCastle())
+                        else if (move.IsCastle() || move.IsPromotion())
                         {
                             collection.AddSuggested(move);
                         }

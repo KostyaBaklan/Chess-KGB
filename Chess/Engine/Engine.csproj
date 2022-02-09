@@ -215,6 +215,7 @@
     <Compile Include="Strategies\LateMove\LmrAdvancedHistoryStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrComplexHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrComplexHistoryStrategy.cs" />
+    <Compile Include="Strategies\LateMove\LmrDeepAdvancedStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrDeepExtendedStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrDeepStrategyBase.cs" />
     <Compile Include="Strategies\LateMove\LmrExtendedHistoryDifferenceStrategy.cs" />
