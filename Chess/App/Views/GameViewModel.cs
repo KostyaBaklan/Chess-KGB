@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,11 +18,13 @@ using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Null.Extended;
+using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Base;
 using Engine.Strategies.LateMove;
 using Engine.Strategies.MultiCut;
 using Engine.Strategies.NullMove;
 using Kgb.ChessApp.Models;
+using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -30,14 +33,18 @@ namespace Kgb.ChessApp.Views
 {
     public class GameViewModel : BindableBase, INavigationAware
     {
+        private short _level;
         private readonly double _blockTimeout;
         private Turn _turn = Turn.White;
-        private readonly IPosition _position;
         private List<IMove> _moves;
+
+        private readonly IPosition _position;
         private StrategyBase _strategy;
         private readonly Dictionary<string, CellViewModel> _cellsMap;
+
         private readonly IMoveFormatter _moveFormatter;
         private readonly IEvaluationService _evaluationService;
+        private readonly IMoveHistoryService _moveHistoryService;
 
         public GameViewModel(IMoveFormatter moveFormatter)
         {
@@ -64,6 +71,21 @@ namespace Kgb.ChessApp.Views
                 _cellsMap[square.AsString()] = cell;
             }
 
+            FillCells();
+
+            _position = new Position();
+
+            MoveItems = new ObservableCollection<MoveModel>();
+
+            SelectionCommand = new DelegateCommand<CellViewModel>(SelectionCommandExecute, SelectionCommandCanExecute);
+            UndoCommand = new DelegateCommand(UndoCommandExecute);
+            SaveHistoryCommand = new DelegateCommand(SaveHistoryCommandExecute);
+            _evaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
+            _moveHistoryService = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
+        }
+
+        private void FillCells()
+        {
             _cellsMap["A1"].Figure = Piece.WhiteRook;
             _cellsMap["B1"].Figure = Piece.WhiteKnight;
             _cellsMap["C1"].Figure = Piece.WhiteBishop;
@@ -99,15 +121,6 @@ namespace Kgb.ChessApp.Views
             _cellsMap["F8"].Figure = Piece.BlackBishop;
             _cellsMap["G8"].Figure = Piece.BlackKnight;
             _cellsMap["H8"].Figure = Piece.BlackRook;
-
-            _position = new Position();
-
-            MoveItems = new ObservableCollection<MoveModel>();
-
-            SelectionCommand = new DelegateCommand<CellViewModel>(SelectionCommandExecute, SelectionCommandCanExecute);
-            UndoCommand = new DelegateCommand(UndoCommandExecute);
-            SaveHistoryCommand = new DelegateCommand(SaveHistoryCommandExecute);
-            _evaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
         }
 
         private bool _useMachine;
@@ -142,6 +155,14 @@ namespace Kgb.ChessApp.Views
             set => SetProperty(ref _cells, value);
         }
 
+        private string _title;
+
+        public string Title
+        {
+            get => _title;
+            set => SetProperty(ref _title, value);
+        }
+
         public ObservableCollection<MoveModel> MoveItems { get; }
 
         public ICommand SelectionCommand { get; }
@@ -162,6 +183,8 @@ namespace Kgb.ChessApp.Views
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
             _strategy = new LmrExtendedHistoryStrategy(level, _position);
+            _level = level;
+            Title = $"Strategy={_strategy}, Level={level}";
 
             if (color == "White")
             {
@@ -215,7 +238,29 @@ namespace Kgb.ChessApp.Views
         private void SaveHistoryCommandExecute()
         {
             IEnumerable<IMove> history = _position.GetHistory();
-            File.WriteAllLines($"History_{DateTime.Now:yyyy_MM_dd_hh_mm_ss}.txt",history.Select(_moveFormatter.Format));
+            List<string> moves = new List<string>();
+            bool isWhite = true;
+            StringBuilder builder = new StringBuilder();
+            foreach (var move in history)
+            {
+                if (isWhite)
+                {
+                    builder = new StringBuilder();
+                    builder.Append($"W={_moveFormatter.Format(move)} ");
+                }
+                else
+                {
+                    builder.Append($"B={_moveFormatter.Format(move)} ");
+                    moves.Add(builder.ToString());
+                }
+                isWhite = !isWhite;
+            }
+            var path = "History";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            File.WriteAllLines($@"{path}\\{DateTime.Now:yyyy_MM_dd_hh_mm_ss}.txt", moves);
         }
 
         private void UndoCommandExecute()

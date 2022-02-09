@@ -1,6 +1,6 @@
 {
   "GeneralConfiguration": {
-    "GameDepth": 256,
+    "GameDepth": 384,
     "BlockTimeout": 1,
     "FutilityDepth": 2,
     "UseEvaluationCache": false,
@@ -14,6 +14,8 @@
     "DepthOffset": 2,
     "NonPvIterations": 4,
     "DepthReduction": 2,
+    "LmrDepthThreshold": 4,
+    "LmrLateDepthThreshold": 11,
     "NullDepthReduction": 4,
     "MultiCutReduction": 2,
     "MultiCutDepth": 3,

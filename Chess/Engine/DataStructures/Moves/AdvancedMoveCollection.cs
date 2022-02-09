@@ -74,19 +74,13 @@ namespace Engine.DataStructures.Moves
 
             Moves.AddRange(Trades);
 
-            Pv = Math.Max(4, Moves.Count);
-
             Moves.AddRange(_killers);
 
             Moves.AddRange(_checks);
 
-            Cut = Math.Max(5, Moves.Count);
-
             if (_nonCaptures.Count > 1)
             {
                 var capturesCount = _nonCaptures.Count < 6 ? _nonCaptures.Count / 2 : _nonCaptures.Count / 3;
-
-                All = Cut + capturesCount;
 
                 for (var i = 0; i < capturesCount; i++)
                 {
@@ -110,15 +104,9 @@ namespace Engine.DataStructures.Moves
 
             Moves.AddRange(_nonCaptures);
 
-            All = Math.Min(All, Moves.Count);
-
-            Late = Moves.Count;
-
             Moves.AddRange(LooseTrades);
 
             Moves.AddRange(LooseCaptures);
-
-            Bad = Count;
         }
     }
 }

@@ -30,8 +30,6 @@ namespace Engine.Strategies.Aspiration
                 depth++;
             }
 
-            //var d = Math.Max(AspirationDepth, depth / 2);
-
             var d = depth - AspirationDepth;
 
             var tempResult = InternalStrategy.GetResult(-SearchValue, SearchValue, d);
