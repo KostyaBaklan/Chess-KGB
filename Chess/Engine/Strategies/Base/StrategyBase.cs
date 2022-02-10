@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommonServiceLocator;
 using Engine.DataStructures;
@@ -67,7 +66,7 @@ namespace Engine.Strategies.Base
                 alpha = standPat;
 
             var moves = Position.GetAllAttacks(Sorter);
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
                 Position.Make(move);
@@ -105,10 +104,10 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CheckMoves(IMoveCollection moves, out Result result)
+        protected bool CheckMoves(IMove[] moves, out Result result)
         {
             result = new Result();
-            if (moves.Count == 0)
+            if (moves.Length == 0)
             {
                 result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
 
@@ -130,10 +129,10 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CheckMoves(int alpha, int beta, IMoveCollection moves, out int value)
+        protected bool CheckMoves(int alpha, int beta, IMove[] moves, out int value)
         {
             value = 0;
-            if (moves.Count == 0)
+            if (moves.Length == 0)
             {
                 var lastMove = MoveHistory.GetLastMove();
                 value = lastMove.IsCheck()
@@ -157,7 +156,7 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected IMoveCollection GenerateMoves(int alpha, int beta, int depth, IMove pv = null)
+        protected IMove[] GenerateMoves(int alpha, int beta, int depth, IMove pv = null)
         {
             if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
                 return Position.GetAllMoves(Sorter, pv);
@@ -169,7 +168,7 @@ namespace Engine.Strategies.Base
             if (positionValue + Margins[(byte)Position.GetPhase()][depth - 1] > alpha) return Position.GetAllMoves(Sorter, pv);
 
             var moves = Position.GetAllAttacks(Sorter);
-            return moves.Count == 0 ? null : moves;
+            return moves.Length == 0 ? null : moves;
         }
 
         private void InitializeFutilityMargins()

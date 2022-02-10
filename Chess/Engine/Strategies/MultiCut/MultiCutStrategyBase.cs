@@ -58,9 +58,9 @@ namespace Engine.Strategies.MultiCut
 
             if (CheckMoves(moves, out var res)) return res;
 
-            if (moves.Count > 1)
+            if (moves.Length > 1)
             {
-                for (var i = 0; i < moves.Count; i++)
+                for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
                     Position.Make(move);
@@ -147,7 +147,7 @@ namespace Engine.Strategies.MultiCut
             int value = int.MinValue;
             IMove bestMove = null;
 
-            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
@@ -155,7 +155,7 @@ namespace Engine.Strategies.MultiCut
             if (IsCut && depth > MultiCutDepth)
             {
                 int cutCount = 0;
-                var multiCutMoves = Math.Min(MultiCutMoves, moves.Count);
+                var multiCutMoves = Math.Min(MultiCutMoves, moves.Length);
                 for (var i = 0; i < multiCutMoves; i++)
                 {
                     var move = moves[i];
@@ -177,7 +177,7 @@ namespace Engine.Strategies.MultiCut
             }
 
 
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
 

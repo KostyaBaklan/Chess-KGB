@@ -17,8 +17,8 @@ namespace Engine.Models.Boards
         private Phase _phase;
         private readonly ArrayStack<Piece?> _figureHistory;
 
-        private readonly Piece[] _white;
-        private readonly Piece[] _black;
+        private readonly byte[][] _white;
+        private readonly byte[][] _black;
 
         private readonly IBoard _board;
         private readonly IMoveProvider _moveProvider;
@@ -28,10 +28,65 @@ namespace Engine.Models.Boards
         public Position()
         {
             _turn = Turn.White;
-            _white = new[]
-                {Piece.WhitePawn, Piece.WhiteKnight, Piece.WhiteBishop, Piece.WhiteRook, Piece.WhiteQueen, Piece.WhiteKing};
-            _black = new[]
-                {Piece.BlackPawn, Piece.BlackKnight, Piece.BlackBishop, Piece.BlackRook, Piece.BlackQueen, Piece.BlackKing};
+            _white = new byte[3][];
+            _black = new byte[3][];
+            _white[0] = new[]
+            {
+                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
+                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
+                Piece.WhiteKing.AsByte()
+            };
+            _white[1] = new[]
+            {
+                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
+                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
+                Piece.WhiteKing.AsByte()
+            };
+            _white[2] = new[]
+            {
+                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
+                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
+                Piece.WhiteKing.AsByte()
+            };
+            _black[0] = new[]
+            {
+                Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
+                Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
+                Piece.BlackKing.AsByte()
+            };
+            _black[1] = new[]
+                {
+                    Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
+                    Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
+                    Piece.BlackKing.AsByte()};
+            _black[2] = new[]
+                {
+                    Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
+                    Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
+                    Piece.BlackKing.AsByte()};
+
+            //_white[0] = new[]
+            //{
+            //    Piece.WhitePawn, Piece.WhiteKnight, Piece.WhiteBishop, Piece.WhiteRook, Piece.WhiteQueen,
+            //    Piece.WhiteKing
+            //};
+            //_white[1] = new[]
+            //{
+            //    Piece.WhiteKnight, Piece.WhiteBishop,Piece.WhitePawn,Piece.WhiteQueen, Piece.WhiteRook,
+            //    Piece.WhiteKing
+            //};
+            //_white[2] = new[]
+            //{
+            //    Piece.WhitePawn,
+            //    Piece.WhiteKing, Piece.WhiteRook, Piece.WhiteQueen, Piece.WhiteKnight, Piece.WhiteBishop
+            //};
+            //_black[0] = new[]
+            //    {Piece.BlackPawn, Piece.BlackKnight, Piece.BlackBishop, Piece.BlackRook, Piece.BlackQueen, Piece.BlackKing};
+            //_black[1] = new[]
+            //    {Piece.BlackKnight, Piece.BlackBishop,Piece.BlackPawn,Piece.BlackQueen,  Piece.BlackRook,  Piece.BlackKing};
+            //_black[2] = new[]
+            //    {Piece.BlackPawn, Piece.BlackKing, Piece.BlackRook, Piece.BlackQueen, Piece.BlackKnight, Piece.BlackBishop};
+
             _board = new Board();
             _figureHistory = new ArrayStack<Piece?>();
             _moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
@@ -103,42 +158,28 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection GetAllAttacks(IMoveSorter sorter)
+        public IMove[] GetAllAttacks(IMoveSorter sorter)
         {
-            if (_turn == Turn.White)
-            {
-                var squares = GetSquares(_white);
-                return sorter.Order(PossibleAttacks(squares, _white));
-            }
-            else
-            {
-                var squares = GetSquares(_black);
-                return sorter.Order(PossibleAttacks(squares, _black));
-            }
+            var pieces = _turn == Turn.White ? _white[(byte)_phase] : _black[(byte)_phase];
+            var squares = GetSquares(pieces);
+            return sorter.Order(PossibleAttacks(squares, pieces));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection GetAllMoves(IMoveSorter sorter, IMove pvMove = null)
+        public IMove[] GetAllMoves(IMoveSorter sorter, IMove pvMove = null)
         {
-            if (_turn == Turn.White)
-            {
-                var squares = GetSquares(_white);
-                return sorter.Order(PossibleAttacks(squares, _white), PossibleMoves(squares, _white), pvMove);
-            }
-            else
-            {
-                var squares = GetSquares(_black);
-                return sorter.Order(PossibleAttacks(squares, _black), PossibleMoves(squares, _black), pvMove);
-            }
+            var pieces = _turn == Turn.White ? _white[(byte)_phase] : _black[(byte)_phase];
+            var squares = GetSquares(pieces);
+            return sorter.Order(PossibleAttacks(squares, pieces), PossibleMoves(squares, pieces), pvMove);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<IMove> PossibleMoves(Square[][] squares, Piece[] pieces)
+        private IEnumerable<IMove> PossibleMoves(Square[][] squares, byte[] pieces)
         {
             for (var index = 0; index < pieces.Length; index++)
             {
                 var p = pieces[index];
-                Square[] from = squares[p.AsByte() % 6];
+                Square[] from = squares[p % 6];
 
                 for (var f = 0; f < from.Length; f++)
                 {
@@ -154,13 +195,13 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<IAttack> PossibleAttacks(Square[][] squares, Piece[] pieces)
+        private IEnumerable<IAttack> PossibleAttacks(Square[][] squares, byte[] pieces)
         {
             for (var index = 0; index < pieces.Length; index++)
             {
                 var p = pieces[index];
 
-                var square = squares[p.AsByte() % 6];
+                var square = squares[p % 6];
                 for (var f = 0; f < square.Length; f++)
                 {
                     foreach (var attack in _moveProvider.GetAttacks(p, square[f], _board))
@@ -209,14 +250,14 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Square[][] GetSquares(Piece[] pieces)
+        private Square[][] GetSquares(byte[] pieces)
         {
             var squares = new Square[pieces.Length][];
             for (var i = 0; i < squares.Length; i++)
             {
                 var p = pieces[i];
-                var from = _board.GetPiecePositions(p.AsByte());
-                squares[p.AsByte()% squares.Length] = from;
+                var from = _board.GetPiecePositions(p);
+                squares[p % squares.Length] = from;
             }
             return squares;
         }
@@ -245,11 +286,11 @@ namespace Engine.Models.Boards
 
             move.SetMoveResult(IsCheck());
 
-            _phase = _board.UpdatePhase();
-
             //var set = _board.GetBoardSet();
 
             //_moveHistoryService.Add(set);
+
+            _phase = _board.UpdatePhase();
 
             _moveHistoryService.Add(_board.GetKey());
 

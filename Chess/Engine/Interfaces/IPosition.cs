@@ -22,8 +22,8 @@ namespace Engine.Interfaces
 
         IEnumerable<IAttack> GetAllAttacks(Square cell, Piece piece);
         IEnumerable<IMove> GetAllMoves(Square cell, Piece piece);
-        IMoveCollection GetAllAttacks(IMoveSorter sorter);
-        IMoveCollection GetAllMoves(IMoveSorter sorter, IMove pvMove = null);
+        IMove[] GetAllAttacks(IMoveSorter sorter);
+        IMove[] GetAllMoves(IMoveSorter sorter, IMove pvMove = null);
         int GetPieceValue(Square square);
         IBoard GetBoard();
         IEnumerable<IMove> GetHistory();

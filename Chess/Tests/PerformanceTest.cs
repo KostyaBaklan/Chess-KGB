@@ -12,11 +12,9 @@ using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies.AlphaBeta.Advanced;
 using Engine.Strategies.AlphaBeta.Extended;
-using Engine.Strategies.AlphaBeta.Extended.Heap;
 using Engine.Strategies.AlphaBeta.Null.Advanced;
 using Engine.Strategies.AlphaBeta.Null.Complex;
 using Engine.Strategies.AlphaBeta.Null.Extended;
-using Engine.Strategies.AlphaBeta.Null.Heap;
 using Engine.Strategies.AlphaBeta.Simple;
 using Engine.Strategies.Aspiration.Original;
 using Engine.Strategies.Base;
@@ -64,11 +62,6 @@ namespace Tests
                 {"ab_es_dc", new AlphaBetaExtendedDifferenceStrategy(depth, position)},
                 {"ab_es_dhc", new AlphaBetaExtendedDifferenceHistoryStrategy(depth, position)},
 
-                {"ab_hs_hc", new AlphaBetaHeapHistoryStrategy(depth, position)},
-                {"ab_hs_hdc", new AlphaBetaHeapHistoryDifferenceStrategy(depth, position)},
-                {"ab_hs_dc", new AlphaBetaHeapDifferenceStrategy(depth, position)},
-                {"ab_hs_dhc", new AlphaBetaHeapDifferenceHistoryStrategy(depth, position)},
-
                 {"ab_as_hc", new AlphaBetaAdvancedHistoryStrategy(depth, position)},
                 {"ab_as_hdc", new AlphaBetaAdvancedHistoryDifferenceStrategy(depth, position)},
                 {"ab_as_dc", new AlphaBetaAdvancedDifferenceStrategy(depth, position)},
@@ -86,11 +79,6 @@ namespace Tests
 
                 {"abn_cs_hc", new AlphaBetaComplexNullHistoryStrategy(depth, position)},
                 {"abn_cs_hdc", new AlphaBetaComplexNullHistoryDifferenceStrategy(depth, position)},
-
-                {"abn_hs_hc", new NullHeapHistoryStrategy(depth, position)},
-                {"abn_hs_hdc", new NullHeapHistoryDifferenceStrategy(depth, position)},
-                {"abn_hs_dc", new NullHeapDifferenceStrategy(depth, position)},
-                {"abn_hs_dhc", new NullHeapDifferenceHistoryStrategy(depth, position)},
 
                 {"id_es_hc", new IdExtendedHistoryStrategy(depth, position)},
                 {"id_es_hdc", new IdExtendedHistoryDifferenceStrategy(depth, position)},
@@ -131,7 +119,9 @@ namespace Tests
                 {"mc_as_hc", new MultiCutAdvancedHistoryStrategy(depth, position)},
                 {"mc_as_hdc", new MultiCutAdvancedHistoryDifferenceStrategy(depth, position)},
                 {"mc_cs_hc", new MultiCutComplexHistoryStrategy(depth, position)},
-                {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)}
+                {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)},
+
+                {"lmrd_es_hc", new LmrDeepExtendedStrategy(depth, position)}
             };
 
             StrategyBase strategy = strategies[args[0]];

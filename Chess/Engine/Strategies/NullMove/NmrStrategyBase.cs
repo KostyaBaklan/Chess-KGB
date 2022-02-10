@@ -71,7 +71,7 @@ namespace Engine.Strategies.NullMove
             int value = short.MinValue;
             IMove bestMove = null;
 
-            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
@@ -97,7 +97,7 @@ namespace Engine.Strategies.NullMove
                 }
             }
 
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
 

@@ -1270,6 +1270,27 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<IAttack> GetAttacks(byte piece, Square cell, IBoard board)
+        {
+            var lists = _attacks[piece][cell.AsByte()];
+            for (var i = 0; i < lists.Count; i++)
+            {
+                var list = lists[i];
+                for (var j = 0; j < list.Count; j++)
+                {
+                    var m = list[j];
+                    if (m.IsLegal(board))
+                        yield return m;
+
+                    else if (!board.IsEmpty(m.EmptyBoard))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IAttack> GetAttacks(Piece piece, int @from, IBoard board)
         {
             var lists = _attacks[piece.AsByte()][from];
@@ -1306,6 +1327,26 @@ namespace Engine.Services
         public IEnumerable<IMove> GetMoves(Piece piece, Square cell, IBoard board)
         {
             var lists = _moves[piece.AsByte()][cell.AsByte()];
+            for (var i = 0; i < lists.Count; i++)
+            {
+                var list = lists[i];
+                for (var j = 0; j < list.Count; j++)
+                {
+                    var m = list[j];
+                    if (m.IsLegal(board))
+                        yield return m;
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<IMove> GetMoves(byte piece, Square cell, IBoard board)
+        {
+            var lists = _moves[piece][cell.AsByte()];
             for (var i = 0; i < lists.Count; i++)
             {
                 var list = lists[i];

@@ -72,21 +72,19 @@ namespace Engine.Strategies.LateMove
             int value = int.MinValue;
             IMove bestMove = null;
 
-            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             if (depth > DepthReduction+1 && !MoveHistory.GetLastMove().IsCheck())
             {
-                for (var i = 0; i < moves.Count; i++)
+                for (var i = 0; i < moves.Length; i++)
                 {
-                    var move = moves[i];
-
-                    Position.Make(move);
+                    Position.Make(moves[i]);
 
                     int r;
-                    if (IsLmr(i) && CanReduce(move))
+                    if (IsLmr(i) && CanReduce(moves[i]))
                     {
                         r = -Search(-beta, -alpha, depth - DepthReduction);
                         if (r > alpha)
@@ -102,7 +100,7 @@ namespace Engine.Strategies.LateMove
                     if (r > value)
                     {
                         value = r;
-                        bestMove = move;
+                        bestMove = moves[i];
                     }
 
                     Position.UnMake();
@@ -114,24 +112,22 @@ namespace Engine.Strategies.LateMove
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(move);
+                    Sorter.Add(moves[i]);
                     break;
                 }
             }
             else
             {
-                for (var i = 0; i < moves.Count; i++)
+                for (var i = 0; i < moves.Length; i++)
                 {
-                    var move = moves[i];
-
-                    Position.Make(move);
+                    Position.Make(moves[i]);
 
                     var r = -Search(-beta, -alpha, depth - 1);
 
                     if (r > value)
                     {
                         value = r;
-                        bestMove = move;
+                        bestMove = moves[i];
                     }
 
                     Position.UnMake();
@@ -143,7 +139,7 @@ namespace Engine.Strategies.LateMove
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(move);
+                    Sorter.Add(moves[i]);
                     break;
                 }
             }

@@ -58,7 +58,7 @@
     <Compile Include="DataStructures\Moves\AttackWrapper.cs" />
     <Compile Include="DataStructures\Moves\MoveCollection.cs" />
     <Compile Include="DataStructures\Moves\MoveCollectionBase.cs" />
-    <Compile Include="DataStructures\Moves\MoveHeap.cs" />
+    <Compile Include="DataStructures\Moves\MoveList.cs" />
     <Compile Include="DataStructures\Moves\MoveWrapper.cs" />
     <Compile Include="DataStructures\Node.cs" />
     <Compile Include="DataStructures\PriorityQueue.cs" />
@@ -69,6 +69,7 @@
     <Compile Include="Interfaces\Config\IPieceEvaluation.cs" />
     <Compile Include="Interfaces\Config\IStaticEvaluation.cs" />
     <Compile Include="Interfaces\Config\IStaticValueProvider.cs" />
+    <Compile Include="Interfaces\Config\ITableConfigurationProvider.cs" />
     <Compile Include="Interfaces\IAttack.cs" />
     <Compile Include="Interfaces\Config\IConfigurationProvider.cs" />
     <Compile Include="Interfaces\IMoveCollection.cs" />
@@ -86,6 +87,8 @@
     <Compile Include="Models\Config\StaticEvaluation.cs" />
     <Compile Include="Models\Config\StaticTableCollection.cs" />
     <Compile Include="Models\Config\StaticValueProvider.cs" />
+    <Compile Include="Models\Config\TableConfiguration.cs" />
+    <Compile Include="Models\Config\TableConfigurationProvider.cs" />
     <Compile Include="Models\Enums\Phase.cs" />
     <Compile Include="Models\Helpers\BitBoardExtensions.cs" />
     <Compile Include="Models\Helpers\BoardExtensions.cs" />
@@ -145,7 +148,6 @@
     <Compile Include="Sorting\Sorters\AdvancedSorter.cs" />
     <Compile Include="Sorting\Comparers\AttackComparer.cs" />
     <Compile Include="Sorting\Sorters\ComplexSorter.cs" />
-    <Compile Include="Sorting\Sorters\ExtendedHeapSorter.cs" />
     <Compile Include="Sorting\Sorters\ExtendedSorter.cs" />
     <Compile Include="Sorting\Sorters\IMoveSorter.cs" />
     <Compile Include="Sorting\Comparers\HistoryComparer.cs" />
@@ -158,11 +160,6 @@
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapDifferenceHistoryStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapDifferenceStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapHistoryStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Extended\Heap\AlphaBetaHeapStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Extended\AlphaBetaExtendedHistoryStrategy.cs" />
@@ -176,11 +173,6 @@
     <Compile Include="Strategies\AlphaBeta\Null\Complex\AlphaBetaComplexNullStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Extended\AlphaBetaExtendedNullStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\Extended\AlphaBetaNullHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Null\Heap\AlphaBetaNullHeapStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Null\Heap\NullHeapDifferenceHistoryStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Null\Heap\NullHeapDifferenceStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Null\Heap\NullHeapHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\AlphaBeta\Null\Heap\NullHeapHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Simple\AlphaBetaDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Simple\AlphaBetaHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Simple\AlphaBetaHistoryStrategy.cs" />
@@ -212,6 +204,7 @@
     <Compile Include="Strategies\LateMove\LmrAdvancedHistoryStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrComplexHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrComplexHistoryStrategy.cs" />
+    <Compile Include="Strategies\LateMove\LmrDeepAdvancedStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrDeepExtendedStrategy.cs" />
     <Compile Include="Strategies\LateMove\LmrDeepStrategyBase.cs" />
     <Compile Include="Strategies\LateMove\LmrExtendedHistoryDifferenceStrategy.cs" />
@@ -258,6 +251,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Strategies\Aspiration\Heap\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\Table.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
