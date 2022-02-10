@@ -45,5 +45,7 @@ namespace Engine.Interfaces
         Piece[] GetBoardSet();
         int GetBlackMaxValue();
         int GetWhiteMaxValue();
+        bool CanWhitePromote();
+        bool CanBlackPromote();
     }
 }

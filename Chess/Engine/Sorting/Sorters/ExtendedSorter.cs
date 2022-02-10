@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Engine.DataStructures.Moves;
 using Engine.Interfaces;
+using Engine.Models.Enums;
 using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
@@ -22,21 +23,7 @@ namespace Engine.Sorting.Sorters
 
             OrderAttacks(ExtendedMoveCollection, sortedAttacks);
 
-            foreach (var move in moves)
-            {
-                if (killerMoveCollection.Contains(move))
-                {
-                    ExtendedMoveCollection.AddKillerMove(move);
-                }
-                else if(move.IsCastle()||move.IsPromotion())
-                {
-                    ExtendedMoveCollection.AddSuggested(move);
-                }
-                else
-                {
-                    ExtendedMoveCollection.AddNonCapture(move);
-                }
-            }
+            ProcessMoves(moves, killerMoveCollection);
 
             return ExtendedMoveCollection.Build();
         }
@@ -52,51 +39,390 @@ namespace Engine.Sorting.Sorters
             {
                 OrderAttacks(ExtendedMoveCollection, sortedAttacks, attack);
 
-                foreach (var move in moves)
-                {
-                    if (killerMoveCollection.Contains(move))
-                    {
-                        ExtendedMoveCollection.AddKillerMove(move);
-                    }
-                    else if (move.IsCastle() || move.IsPromotion())
-                    {
-                        ExtendedMoveCollection.AddSuggested(move);
-                    }
-                    else
-                    {
-                        ExtendedMoveCollection.AddNonCapture(move);
-                    }
-                }
+                ProcessMoves(moves, killerMoveCollection);
             }
             else
             {
                 OrderAttacks(ExtendedMoveCollection, sortedAttacks);
 
-                foreach (var move in moves)
+                ProcessMoves(moves, killerMoveCollection, pvNode);
+            }
+
+            return ExtendedMoveCollection.Build();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessMoves(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection)
+        {
+            if (Position.GetTurn() == Turn.White)
+            {
+                if (MoveHistoryService.CanDoWhiteCastle())
                 {
-                    if (move.Equals(pvNode))
+                    if (Position.CanWhitePromote())
                     {
-                        ExtendedMoveCollection.AddHashMove(move);
+                        foreach (var move in moves)
+                        {
+                            if (killerMoveCollection.Contains(move))
+                            {
+                                ExtendedMoveCollection.AddKillerMove(move);
+                            }
+                            else if (move.IsCastle() || move.IsPromotion())
+                            {
+                                ExtendedMoveCollection.AddSuggested(move);
+                            }
+                            else
+                            {
+                                ExtendedMoveCollection.AddNonCapture(move);
+                            }
+                        }
                     }
                     else
                     {
-                        if (killerMoveCollection.Contains(move))
+                        foreach (var move in moves)
                         {
-                            ExtendedMoveCollection.AddKillerMove(move);
+                            if (killerMoveCollection.Contains(move))
+                            {
+                                ExtendedMoveCollection.AddKillerMove(move);
+                            }
+                            else if (move.IsCastle())
+                            {
+                                ExtendedMoveCollection.AddSuggested(move);
+                            }
+                            else
+                            {
+                                ExtendedMoveCollection.AddNonCapture(move);
+                            }
                         }
-                        else if (move.IsCastle() || move.IsPromotion())
+                    }
+                }
+                else
+                {
+                    if (Position.CanWhitePromote())
+                    {
+                        foreach (var move in moves)
                         {
-                            ExtendedMoveCollection.AddSuggested(move);
+                            if (killerMoveCollection.Contains(move))
+                            {
+                                ExtendedMoveCollection.AddKillerMove(move);
+                            }
+                            else if (move.IsPromotion())
+                            {
+                                ExtendedMoveCollection.AddSuggested(move);
+                            }
+                            else
+                            {
+                                ExtendedMoveCollection.AddNonCapture(move);
+                            }
                         }
-                        else
+                    }
+                    else
+                    {
+                        foreach (var move in moves)
                         {
-                            ExtendedMoveCollection.AddNonCapture(move);
+                            if (killerMoveCollection.Contains(move))
+                            {
+                                ExtendedMoveCollection.AddKillerMove(move);
+                            }
+                            else
+                            {
+                                ExtendedMoveCollection.AddNonCapture(move);
+                            }
                         }
                     }
                 }
             }
+            else
+            {
+                if (MoveHistoryService.CanDoBlackCastle())
+                {
+                    if (Position.CanBlackPromote())
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (killerMoveCollection.Contains(move))
+                            {
+                                ExtendedMoveCollection.AddKillerMove(move);
+                            }
+                            else if (move.IsCastle() || move.IsPromotion())
+                            {
+                                ExtendedMoveCollection.AddSuggested(move);
+                            }
+                            else
+                            {
+                                ExtendedMoveCollection.AddNonCapture(move);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (killerMoveCollection.Contains(move))
+                            {
+                                ExtendedMoveCollection.AddKillerMove(move);
+                            }
+                            else if (move.IsCastle())
+                            {
+                                ExtendedMoveCollection.AddSuggested(move);
+                            }
+                            else
+                            {
+                                ExtendedMoveCollection.AddNonCapture(move);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (Position.CanBlackPromote())
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (killerMoveCollection.Contains(move))
+                            {
+                                ExtendedMoveCollection.AddKillerMove(move);
+                            }
+                            else if (move.IsPromotion())
+                            {
+                                ExtendedMoveCollection.AddSuggested(move);
+                            }
+                            else
+                            {
+                                ExtendedMoveCollection.AddNonCapture(move);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (killerMoveCollection.Contains(move))
+                            {
+                                ExtendedMoveCollection.AddKillerMove(move);
+                            }
+                            else
+                            {
+                                ExtendedMoveCollection.AddNonCapture(move);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-            return ExtendedMoveCollection.Build();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessMoves(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode)
+        {
+            if (Position.GetTurn() == Turn.White)
+            {
+                if (MoveHistoryService.CanDoWhiteCastle())
+                {
+                    if (Position.CanWhitePromote())
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (move.Equals(pvNode))
+                            {
+                                ExtendedMoveCollection.AddHashMove(move);
+                            }
+                            else
+                            {
+                                if (killerMoveCollection.Contains(move))
+                                {
+                                    ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else if (move.IsCastle() || move.IsPromotion())
+                                {
+                                    ExtendedMoveCollection.AddSuggested(move);
+                                }
+                                else
+                                {
+                                    ExtendedMoveCollection.AddNonCapture(move);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (move.Equals(pvNode))
+                            {
+                                ExtendedMoveCollection.AddHashMove(move);
+                            }
+                            else
+                            {
+                                if (killerMoveCollection.Contains(move))
+                                {
+                                    ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else if (move.IsCastle())
+                                {
+                                    ExtendedMoveCollection.AddSuggested(move);
+                                }
+                                else
+                                {
+                                    ExtendedMoveCollection.AddNonCapture(move);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (Position.CanWhitePromote())
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (move.Equals(pvNode))
+                            {
+                                ExtendedMoveCollection.AddHashMove(move);
+                            }
+                            else
+                            {
+                                if (killerMoveCollection.Contains(move))
+                                {
+                                    ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else if (move.IsPromotion())
+                                {
+                                    ExtendedMoveCollection.AddSuggested(move);
+                                }
+                                else
+                                {
+                                    ExtendedMoveCollection.AddNonCapture(move);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (move.Equals(pvNode))
+                            {
+                                ExtendedMoveCollection.AddHashMove(move);
+                            }
+                            else
+                            {
+                                if (killerMoveCollection.Contains(move))
+                                {
+                                    ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else
+                                {
+                                    ExtendedMoveCollection.AddNonCapture(move);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (MoveHistoryService.CanDoBlackCastle())
+                {
+                    if (Position.CanBlackPromote())
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (move.Equals(pvNode))
+                            {
+                                ExtendedMoveCollection.AddHashMove(move);
+                            }
+                            else
+                            {
+                                if (killerMoveCollection.Contains(move))
+                                {
+                                    ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else if (move.IsCastle() || move.IsPromotion())
+                                {
+                                    ExtendedMoveCollection.AddSuggested(move);
+                                }
+                                else
+                                {
+                                    ExtendedMoveCollection.AddNonCapture(move);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (move.Equals(pvNode))
+                            {
+                                ExtendedMoveCollection.AddHashMove(move);
+                            }
+                            else
+                            {
+                                if (killerMoveCollection.Contains(move))
+                                {
+                                    ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else if (move.IsCastle())
+                                {
+                                    ExtendedMoveCollection.AddSuggested(move);
+                                }
+                                else
+                                {
+                                    ExtendedMoveCollection.AddNonCapture(move);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (Position.CanBlackPromote())
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (move.Equals(pvNode))
+                            {
+                                ExtendedMoveCollection.AddHashMove(move);
+                            }
+                            else
+                            {
+                                if (killerMoveCollection.Contains(move))
+                                {
+                                    ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else if ( move.IsPromotion())
+                                {
+                                    ExtendedMoveCollection.AddSuggested(move);
+                                }
+                                else
+                                {
+                                    ExtendedMoveCollection.AddNonCapture(move);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var move in moves)
+                        {
+                            if (move.Equals(pvNode))
+                            {
+                                ExtendedMoveCollection.AddHashMove(move);
+                            }
+                            else
+                            {
+                                if (killerMoveCollection.Contains(move))
+                                {
+                                    ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else
+                                {
+                                    ExtendedMoveCollection.AddNonCapture(move);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -850,6 +850,18 @@ namespace Engine.Models.Boards
             return value;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanWhitePromote()
+        {
+            return (_ranks[6] & _boards[Piece.WhitePawn.AsByte()]).Any();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanBlackPromote()
+        {
+            return (_ranks[1] & _boards[Piece.BlackPawn.AsByte()]).Any();
+        }
+
         #endregion
 
         #region SEE

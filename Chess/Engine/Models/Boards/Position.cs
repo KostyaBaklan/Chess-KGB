@@ -250,6 +250,18 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanWhitePromote()
+        {
+            return _board.CanWhitePromote();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanBlackPromote()
+        {
+            return _board.CanBlackPromote();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Square[][] GetSquares(byte[] pieces)
         {
             var squares = new Square[pieces.Length][];

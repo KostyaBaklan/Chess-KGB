@@ -28,5 +28,7 @@ namespace Engine.Interfaces
         IBoard GetBoard();
         IEnumerable<IMove> GetHistory();
         Phase GetPhase();
+        bool CanWhitePromote();
+        bool CanBlackPromote();
     }
 }
