@@ -8,88 +8,81 @@ namespace Engine.Sorting.Sorters
 {
     public class ExtendedSorter : MoveSorter
     {
-        public ExtendedSorter(IPosition position, IMoveComparer comparer) : base(position)
+        public ExtendedSorter(IPosition position, IMoveComparer comparer) : base(position,comparer)
         {
-            Comparer = comparer;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection)
         {
             var sortedAttacks = OrderAttacks(attacks);
 
-            MoveCollection collection = new MoveCollection(Comparer);
-
-            OrderAttacks(collection, sortedAttacks);
+            OrderAttacks(MoveCollection, sortedAttacks);
 
             foreach (var move in moves)
             {
                 if (killerMoveCollection.Contains(move) || move.IsPromotion())
                 {
-                    collection.AddKillerMove(move);
+                    MoveCollection.AddKillerMove(move);
                 }
                 else
                 {
-                    collection.AddNonCapture(move);
+                    MoveCollection.AddNonCapture(move);
                 }
             }
 
-            collection.Build();
-            return collection;
+            return MoveCollection.Build();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection,
             IMove pvNode)
         {
             var sortedAttacks = OrderAttacks(attacks);
 
-            MoveCollection collection = new MoveCollection(Comparer);
-
             if (pvNode is IAttack attack)
             {
-                OrderAttacks(collection, sortedAttacks, attack);
+                OrderAttacks(MoveCollection, sortedAttacks, attack);
 
                 foreach (var move in moves)
                 {
                     if (killerMoveCollection.Contains(move) || move.IsPromotion())
                     {
-                        collection.AddKillerMove(move);
+                        MoveCollection.AddKillerMove(move);
                     }
                     else
                     {
-                        collection.AddNonCapture(move);
+                        MoveCollection.AddNonCapture(move);
                     }
                 }
             }
             else
             {
-                OrderAttacks(collection, sortedAttacks);
+                OrderAttacks(MoveCollection, sortedAttacks);
 
                 foreach (var move in moves)
                 {
                     if (move.Equals(pvNode))
                     {
-                        collection.AddHashMove(move);
+                        MoveCollection.AddHashMove(move);
                     }
                     else
                     {
                         if (killerMoveCollection.Contains(move) || move.IsPromotion())
                         {
-                            collection.AddKillerMove(move);
+                            MoveCollection.AddKillerMove(move);
                         }
                         else
                         {
-                            collection.AddNonCapture(move);
+                            MoveCollection.AddNonCapture(move);
                         }
                     }
                 }
             }
 
-            collection.Build();
-            return collection;
+            return MoveCollection.Build();
         }
     }
 }

@@ -12,15 +12,19 @@ namespace Engine.Sorting.Sorters
 {
     public abstract class MoveSorter : IMoveSorter
     {
+        private readonly MoveList _moves;
         protected readonly KillerMoveCollection[] Moves;
         protected readonly IMoveHistoryService MoveHistoryService;
         protected IMoveComparer Comparer;
         protected readonly IPosition Position;
-        private readonly List<IMove> _moves;
 
-        protected MoveSorter(IPosition position)
+        protected AttackCollection AttackCollection;
+        protected MoveCollection MoveCollection;
+
+        protected MoveSorter(IPosition position, IMoveComparer comparer)
         {
-            _moves = new List<IMove>(8);
+            _moves = new MoveList();
+            Comparer = comparer;
             Position = position;
             Moves = new KillerMoveCollection[ServiceLocator.Current.GetInstance<IConfigurationProvider>()
                 .GeneralConfiguration.GameDepth];
@@ -29,45 +33,51 @@ namespace Engine.Sorting.Sorters
                 Moves[i] = new KillerMoveCollection();
             }
 
+            AttackCollection = new AttackCollection(comparer);
+            MoveCollection = new MoveCollection(comparer);
+
             MoveHistoryService = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Add(IMove move)
         {
-            int depth = MoveHistoryService.GetPly();
-            Moves[depth].Add(move);
+            Moves[MoveHistoryService.GetPly()].Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection Order(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, IMove pvNode)
+        public IMove[] Order(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, IMove pvNode)
         {
             int depth = MoveHistoryService.GetPly();
-            if (depth < 0)
+
+            if (depth > 0)
+                return pvNode != null
+                    ? OrderInternal(attacks, moves, Moves[depth], pvNode)
+                    : OrderInternal(attacks, moves, Moves[depth]);
+
+            MoveList moveList = new MoveList();
+            foreach (var move in moves)
             {
-                var collection = new MoveCollection(Comparer);
-                foreach (var move in moves)
-                {
-                    collection.AddNonCapture(move);
-                }
-                collection.Build();
-                return collection;
+                moveList.Add(move);
             }
 
-            return pvNode != null ? OrderInternal(attacks, moves, Moves[depth], pvNode) : OrderInternal(attacks, moves, Moves[depth]);
+            moveList.Sort(Comparer);
+
+            var m = new IMove[moveList.Count];
+            moveList.CopyTo(m,0);
+            return m;
+
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection Order(IEnumerable<IAttack> attacks)
+        public IMove[] Order(IEnumerable<IAttack> attacks)
         {
             var sortedAttacks = OrderAttacks(attacks);
+            if(sortedAttacks.Count == 0)return new IMove[0];
 
-            AttackCollection collection = new AttackCollection(Comparer);
+            OrderAttacks(AttackCollection, sortedAttacks);
 
-            OrderAttacks(collection, sortedAttacks);
-
-            collection.Build();
-            return collection;
+            return AttackCollection.Build();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -183,18 +193,13 @@ namespace Engine.Sorting.Sorters
             if (_moves.Count <= 0) return;
             if (maxIndex != 0)
             {
-                var temp = _moves[0];
-                _moves[0] = _moves[maxIndex];
-                _moves[maxIndex] = temp;
+                _moves.Swap(0, maxIndex);
             }
 
-            for (var i = 0; i < _moves.Count; i++)
-            {
-                collection.AddWinCapture(_moves[i]);
-            }
+            collection.AddWinCapture(_moves);
         }
 
-        protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
-        protected abstract IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode);
+        protected abstract IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
+        protected abstract IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode);
     }
 }

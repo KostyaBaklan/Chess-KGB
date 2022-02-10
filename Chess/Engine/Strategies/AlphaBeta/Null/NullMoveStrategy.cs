@@ -50,9 +50,9 @@ namespace Engine.Strategies.AlphaBeta.Null
 
             if (CheckMoves(moves, out var res)) return res;
 
-            if (moves.Count > 1)
+            if (moves.Length > 1)
             {
-                for (var i = 0; i < moves.Count; i++)
+                for (var i = 0; i < moves.Length; i++)
                 {
                     IsNull = false;
                     var move = moves[i];
@@ -141,7 +141,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             int value = short.MinValue;
             IMove bestMove = null;
 
-            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
@@ -162,7 +162,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 }
             }
 
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
 

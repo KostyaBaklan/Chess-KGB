@@ -79,9 +79,9 @@ namespace Engine.Strategies.PVS.NWS
 
             if (CheckMoves(moves, out var res)) return res;
 
-            if (moves.Count > 1)
+            if (moves.Length > 1)
             {
-                for (var i = 0; i < moves.Count; i++)
+                for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
 
@@ -178,12 +178,12 @@ namespace Engine.Strategies.PVS.NWS
             int value = int.MinValue;
             IMove bestMove = null;
 
-            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
 
@@ -297,12 +297,12 @@ namespace Engine.Strategies.PVS.NWS
             int value = int.MinValue;
             IMove bestMove = null;
 
-            IMoveCollection moves = GenerateMoves(beta, nullWindow, depth, pv);
+            var moves = GenerateMoves(beta, nullWindow, depth, pv);
             if (moves == null) return beta;
 
             if (CheckMoves(beta, nullWindow, moves, out var defaultValue)) return defaultValue;
 
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
 
@@ -329,6 +329,7 @@ namespace Engine.Strategies.PVS.NWS
             if (!isNotEndGame) return value;
 
             if (isInTable && !shouldUpdate) return value;
+
             TranspositionEntry te = new TranspositionEntry
                 { Depth = (byte)depth, Value = (short)value, PvMove = bestMove.Key };
             if (value <= beta)

@@ -43,10 +43,10 @@ namespace Engine.Strategies.LateMove
 
             if (CheckMoves(moves, out var res)) return res;
 
-            if (moves.Count > 1)
+            if (moves.Length > 1)
             {
                 var isCheck = MoveHistory.GetLastMove().IsCheck();
-                for (var i = 0; i < moves.Count; i++)
+                for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
                     Position.Make(move);

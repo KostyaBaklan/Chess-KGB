@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Engine.Interfaces;
 using Engine.Sorting.Comparers;
@@ -8,69 +8,78 @@ namespace Engine.DataStructures.Moves
 {
     public class MoveCollection: AttackCollection
     {
-        private readonly List<IMove> _killers;
-        private readonly List<IMove> _nonCaptures;
+        private readonly MoveList _killers;
+        private readonly MoveList _nonCaptures;
 
         public MoveCollection(IMoveComparer comparer) : base(comparer)
         {
-            _killers = new List<IMove>();
-            _nonCaptures = new List<IMove>(64);
+            _killers = new MoveList();
+            _nonCaptures = new MoveList();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddKillerMove(IMove move)
         {
             _killers.Add(move);
-            Count++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddNonCapture(IMove move)
         {
             _nonCaptures.Add(move);
-            Count++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Build()
+        public override IMove[] Build()
         {
-            Moves = new List<IMove>(Count);
+            var hashMovesCount = HashMoves.Count;
+            var winCapturesCount = hashMovesCount + WinCaptures.Count;
+            var tradesCount = winCapturesCount + Trades.Count;
+            var killersCount = tradesCount + _killers.Count;
+            var nonCapturesCount = killersCount + _nonCaptures.Count;
+            Count = nonCapturesCount + LooseCaptures.Count;
 
-            Moves.AddRange(HashMoves);
+            IMove[] moves = new IMove[Count];
 
-            Moves.AddRange(WinCaptures);
-
-            Moves.AddRange(Trades);
-
-            Moves.AddRange(_killers);
-
-            if (_nonCaptures.Count > 1)
+            if (hashMovesCount > 0)
             {
-                var capturesCount = _nonCaptures.Count < 6 ? _nonCaptures.Count / 2 : Math.Min(_nonCaptures.Count / 3, 10);
-
-                for (var i = 0; i < capturesCount; i++)
-                {
-                    int index = i;
-                    var min = _nonCaptures[i];
-                    for (int j = i + 1; j < _nonCaptures.Count; j++)
-                    {
-                        if (Comparer.Compare(min,_nonCaptures[j]) < 0) continue;
-
-                        min = _nonCaptures[j];
-                        index = j;
-                    }
-
-                    if (index == i) continue;
-
-                    var temp = _nonCaptures[index];
-                    _nonCaptures[index] = _nonCaptures[i];
-                    _nonCaptures[i] = temp;
-                }
+                HashMoves.CopyTo(moves, 0);
+                HashMoves.Clear();
             }
 
-            Moves.AddRange(_nonCaptures);
+            if (WinCaptures.Count > 0)
+            {
+                WinCaptures.CopyTo(moves, hashMovesCount);
+                WinCaptures.Clear();
+            }
 
-            Moves.AddRange(LooseCaptures);
+            if (Trades.Count > 0)
+            {
+                Trades.CopyTo(moves, winCapturesCount);
+                Trades.Clear();
+            }
+
+            if (_killers.Count > 0)
+            {
+                _killers.CopyTo(moves, tradesCount);
+                _killers.Clear();
+            }
+
+            if (_nonCaptures.Count > 0)
+            {
+                _nonCaptures.Sort(Comparer);
+                _nonCaptures.CopyTo(moves, killersCount);
+                _nonCaptures.Clear();
+            }
+
+            if (LooseCaptures.Count > 0)
+            {
+                LooseCaptures.CopyTo(moves, nonCapturesCount);
+                LooseCaptures.Clear();
+            }
+
+            Count = 0;
+            return moves;
         }
     }
 }

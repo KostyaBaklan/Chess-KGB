@@ -5,7 +5,7 @@ namespace Engine.Sorting.Sorters
 {
     public interface IMoveSorter
     {
-        IMoveCollection Order(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, IMove pvNode);
-        IMoveCollection Order(IEnumerable<IAttack> attacks);
+        IMove[] Order(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, IMove pvNode);
+        IMove[] Order(IEnumerable<IAttack> attacks);
     }
 }

@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using Engine.Interfaces;
+﻿using Engine.Interfaces;
 using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
 {
-    public abstract class MoveCollectionBase : IMoveCollection
+    public abstract class MoveCollectionBase //: IMoveCollection
     {
-        protected List<IMove> Moves;
+        //protected List<IMove> Moves;
         protected readonly IMoveComparer Comparer;
 
         protected MoveCollectionBase(IMoveComparer comparer)
@@ -14,11 +13,11 @@ namespace Engine.DataStructures.Moves
             Comparer = comparer;
         }
 
-        public int Count { get; protected set; }
+        protected int Count { get; set; }
 
-        public IMove this[int index] => Moves[index];
+        //public IMove this[int index] => Moves[index];
 
-        public abstract void Build();
+        public abstract IMove[] Build();
 
         #region Overrides of Object
 

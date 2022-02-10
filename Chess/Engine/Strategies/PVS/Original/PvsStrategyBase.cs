@@ -58,9 +58,9 @@ namespace Engine.Strategies.PVS.Original
 
             if (CheckMoves(moves, out var res)) return res;
 
-            if (moves.Count > 1)
+            if (moves.Length > 1)
             {
-                for (var i = 0; i < moves.Count; i++)
+                for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
 
@@ -117,12 +117,12 @@ namespace Engine.Strategies.PVS.Original
             int value = int.MinValue;
             IMove bestMove = null;
 
-            IMoveCollection moves = GenerateMoves(alpha, beta, depth);
+            var moves = GenerateMoves(alpha, beta, depth);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
 

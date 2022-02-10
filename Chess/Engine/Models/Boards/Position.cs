@@ -158,7 +158,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection GetAllAttacks(IMoveSorter sorter)
+        public IMove[] GetAllAttacks(IMoveSorter sorter)
         {
             var pieces = _turn == Turn.White ? _white[(byte)_phase] : _black[(byte)_phase];
             var squares = GetSquares(pieces);
@@ -166,7 +166,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMoveCollection GetAllMoves(IMoveSorter sorter, IMove pvMove = null)
+        public IMove[] GetAllMoves(IMoveSorter sorter, IMove pvMove = null)
         {
             var pieces = _turn == Turn.White ? _white[(byte)_phase] : _black[(byte)_phase];
             var squares = GetSquares(pieces);

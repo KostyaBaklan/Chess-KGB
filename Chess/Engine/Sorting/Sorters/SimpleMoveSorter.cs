@@ -8,55 +8,50 @@ namespace Engine.Sorting.Sorters
 {
     public class SimpleMoveSorter : MoveSorter
     {
-        public SimpleMoveSorter(IMoveComparer comparer, IPosition position) : base(position)
+        public SimpleMoveSorter(IMoveComparer comparer, IPosition position) : base(position,comparer)
         {
-            Comparer = comparer;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection)
         {
-            MoveCollection collection = new MoveCollection(Comparer);
             foreach (var attack in attacks)
             {
-                collection.AddTrade(attack);
+                MoveCollection.AddTrade(attack);
             }
 
             foreach (var move in moves)
             {
                 if (killerMoveCollection.Contains(move) || move.IsPromotion())
                 {
-                    collection.AddKillerMove(move);
+                    MoveCollection.AddKillerMove(move);
                 }
                 else
                 {
-                    collection.AddNonCapture(move);
+                    MoveCollection.AddNonCapture(move);
                 }
             }
 
-            collection.Build();
-            return collection;
+            return MoveCollection.Build();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMoveCollection OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection,
             IMove pvNode)
         {
-            MoveCollection collection = new MoveCollection(Comparer);
-
-            if (pvNode is IAttack a)
+            if (pvNode is IAttack)
             {
                 foreach (var attack in attacks)
                 {
                     if (attack.Equals(pvNode))
                     {
-                        collection.AddHashMove(attack);
+                        MoveCollection.AddHashMove(attack);
                     }
                     else
                     {
-                        collection.AddTrade(attack);
+                        MoveCollection.AddTrade(attack);
                     }
                 }
 
@@ -64,11 +59,11 @@ namespace Engine.Sorting.Sorters
                 {
                     if (killerMoveCollection.Contains(move) || move.IsPromotion())
                     {
-                        collection.AddKillerMove(move);
+                        MoveCollection.AddKillerMove(move);
                     }
                     else
                     {
-                        collection.AddNonCapture(move);
+                        MoveCollection.AddNonCapture(move);
                     }
                 }
             }
@@ -76,31 +71,30 @@ namespace Engine.Sorting.Sorters
             {
                 foreach (var attack in attacks)
                 {
-                    collection.AddTrade(attack);
+                    MoveCollection.AddTrade(attack);
                 }
 
                 foreach (var move in moves)
                 {
                     if (move.Equals(pvNode))
                     {
-                        collection.AddHashMove(move);
+                        MoveCollection.AddHashMove(move);
                     }
                     else
                     {
                         if (killerMoveCollection.Contains(move) || move.IsPromotion())
                         {
-                            collection.AddKillerMove(move);
+                            MoveCollection.AddKillerMove(move);
                         }
                         else
                         {
-                            collection.AddNonCapture(move);
+                            MoveCollection.AddNonCapture(move);
                         }
                     }
                 }
             }
 
-            collection.Build();
-            return collection;
+            return MoveCollection.Build();
         }
     }
 }

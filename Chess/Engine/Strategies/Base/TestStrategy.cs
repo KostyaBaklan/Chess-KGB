@@ -14,14 +14,14 @@ namespace Engine.Strategies.Base
         {
             Position = position;
             Depth = 5;
-            Sorter = new SimpleMoveSorter(new DifferenceComparer(),position);
+            Sorter = new ExtendedSorter(position,new DifferenceComparer());
         }
 
         #region Overrides of StrategyBase
 
         public IResult Get()
         {
-            return Get(-1000000, 1000000, Depth);
+            return Get(-10000, 10000, Depth);
         }
 
         public IResult Get(int alpha, int beta, int depth, IMove pvMove = null, IMove cutMove = null)
@@ -29,7 +29,7 @@ namespace Engine.Strategies.Base
             Result result = new Result();
 
             var moves = Position.GetAllMoves(Sorter);
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
                 Position.Make(move);
@@ -64,7 +64,7 @@ namespace Engine.Strategies.Base
 
             int value = int.MinValue;
             var moves = Position.GetAllMoves(Sorter);
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
                 Position.Make(move);

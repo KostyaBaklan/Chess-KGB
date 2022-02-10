@@ -30,7 +30,7 @@ namespace Engine.Strategies.AlphaBeta.Simple
                 {
                     capacity = 5002903;
                 }
-                else if (depth == 7)
+                else if (depth == 8)
                 {
                     capacity = 10023499;
                 }
@@ -88,9 +88,9 @@ namespace Engine.Strategies.AlphaBeta.Simple
 
             if (CheckMoves(moves, out var res)) return res;
 
-            if (moves.Count > 1)
+            if (moves.Length > 1)
             {
-                for (var i = 0; i < moves.Count; i++)
+                for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
                     Position.Make(move);
@@ -176,12 +176,12 @@ namespace Engine.Strategies.AlphaBeta.Simple
             int value = int.MinValue;
             IMove bestMove = null;
 
-            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
 

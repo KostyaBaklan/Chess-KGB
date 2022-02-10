@@ -76,7 +76,7 @@ namespace Engine.Strategies.PVS.Memory
             }
 
             var moves = Position.GetAllMoves(Sorter, pv);
-            if (moves.Count == 0)
+            if (moves.Length == 0)
             {
                 result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
                 return result;
@@ -92,9 +92,9 @@ namespace Engine.Strategies.PVS.Memory
                 }
             }
 
-            if (moves.Count > 1)
+            if (moves.Length > 1)
             {
-                for (var i = 0; i < moves.Count; i++)
+                for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
 
@@ -191,12 +191,12 @@ namespace Engine.Strategies.PVS.Memory
             int value = int.MinValue;
             IMove bestMove = null;
 
-            IMoveCollection moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            for (var i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
 
