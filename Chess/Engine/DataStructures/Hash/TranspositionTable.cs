@@ -39,7 +39,6 @@ namespace Engine.DataStructures.Hash
             for (var i = 0; i < _depthTable.Length; i++)
             {
                 _depthTable[i] = new ZoobristKeyCollection(values[i]);
-                //_depthTable[i] = new ZoobristKeyCollection();
             }
         }
 

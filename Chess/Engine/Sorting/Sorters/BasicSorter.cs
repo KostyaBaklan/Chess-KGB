@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Engine.DataStructures.Moves;
 using Engine.Interfaces;
+using Engine.Models.Enums;
 using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
@@ -20,17 +21,7 @@ namespace Engine.Sorting.Sorters
 
             OrderAttacks(MoveCollection, sortedAttacks);
 
-            foreach (var move in moves)
-            {
-                if (killerMoveCollection.Contains(move) || move.IsPromotion())
-                {
-                    MoveCollection.AddKillerMove(move);
-                }
-                else
-                {
-                    MoveCollection.AddNonCapture(move);
-                }
-            }
+            ProcessMoves(moves, killerMoveCollection);
 
             return MoveCollection.Build();
         }
@@ -46,29 +37,109 @@ namespace Engine.Sorting.Sorters
             {
                 OrderAttacks(MoveCollection, sortedAttacks, attack);
 
-                foreach (var move in moves)
-                {
-                    if (killerMoveCollection.Contains(move) || move.IsPromotion())
-                    {
-                        MoveCollection.AddKillerMove(move);
-                    }
-                    else
-                    {
-                        MoveCollection.AddNonCapture(move);
-                    }
-                }
+                ProcessMoves(moves, killerMoveCollection);
             }
             else
             {
                 OrderAttacks(MoveCollection, sortedAttacks);
 
-                foreach (var move in moves)
+                ProcessMoves(moves, killerMoveCollection, pvNode);
+            }
+
+            return MoveCollection.Build();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessMoves(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode)
+        {
+            if (Position.GetTurn() == Turn.White)
+            {
+                if (Position.CanWhitePromote())
                 {
-                    if (move.Equals(pvNode))
+                    foreach (var move in moves)
                     {
-                        MoveCollection.AddHashMove(move);
+                        if (move.Equals(pvNode))
+                        {
+                            MoveCollection.AddHashMove(move);
+                        }
+                        else if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                        {
+                            MoveCollection.AddKillerMove(move);
+                        }
+                        else
+                        {
+                            MoveCollection.AddNonCapture(move);
+                        }
                     }
-                    else
+                }
+                else
+                {
+                    foreach (var move in moves)
+                    {
+                        if (move.Equals(pvNode))
+                        {
+                            MoveCollection.AddHashMove(move);
+                        }
+                        else if (killerMoveCollection.Contains(move))
+                        {
+                            MoveCollection.AddKillerMove(move);
+                        }
+                        else
+                        {
+                            MoveCollection.AddNonCapture(move);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (Position.CanBlackPromote())
+                {
+                    foreach (var move in moves)
+                    {
+                        if (move.Equals(pvNode))
+                        {
+                            MoveCollection.AddHashMove(move);
+                        }
+                        else if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                        {
+                            MoveCollection.AddKillerMove(move);
+                        }
+                        else
+                        {
+                            MoveCollection.AddNonCapture(move);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var move in moves)
+                    {
+                        if (move.Equals(pvNode))
+                        {
+                            MoveCollection.AddHashMove(move);
+                        }
+                        else if (killerMoveCollection.Contains(move))
+                        {
+                            MoveCollection.AddKillerMove(move);
+                        }
+                        else
+                        {
+                            MoveCollection.AddNonCapture(move);
+                        }
+                    }
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessMoves(IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection)
+        {
+            if (Position.GetTurn() == Turn.White)
+            {
+                if (Position.CanWhitePromote())
+                {
+                    foreach (var move in moves)
                     {
                         if (killerMoveCollection.Contains(move) || move.IsPromotion())
                         {
@@ -80,9 +151,52 @@ namespace Engine.Sorting.Sorters
                         }
                     }
                 }
+                else
+                {
+                    foreach (var move in moves)
+                    {
+                        if (killerMoveCollection.Contains(move))
+                        {
+                            MoveCollection.AddKillerMove(move);
+                        }
+                        else
+                        {
+                            MoveCollection.AddNonCapture(move);
+                        }
+                    }
+                }
             }
-
-            return MoveCollection.Build();
+            else
+            {
+                if (Position.CanBlackPromote())
+                {
+                    foreach (var move in moves)
+                    {
+                        if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                        {
+                            MoveCollection.AddKillerMove(move);
+                        }
+                        else
+                        {
+                            MoveCollection.AddNonCapture(move);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var move in moves)
+                    {
+                        if (killerMoveCollection.Contains(move))
+                        {
+                            MoveCollection.AddKillerMove(move);
+                        }
+                        else
+                        {
+                            MoveCollection.AddNonCapture(move);
+                        }
+                    }
+                }
+            }
         }
     }
 }
