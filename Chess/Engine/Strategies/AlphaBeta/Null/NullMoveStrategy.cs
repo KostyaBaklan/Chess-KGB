@@ -5,7 +5,6 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
-using Engine.Strategies.AlphaBeta.Simple;
 
 namespace Engine.Strategies.AlphaBeta.Null
 {

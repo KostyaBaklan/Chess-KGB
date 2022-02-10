@@ -6,9 +6,9 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
 {
-    public class SimpleMoveSorter : MoveSorter
+    public class BasicSorter : MoveSorter
     {
-        public SimpleMoveSorter(IMoveComparer comparer, IPosition position) : base(position,comparer)
+        public BasicSorter(IPosition position, IMoveComparer comparer) : base(position,comparer)
         {
         }
 
@@ -16,10 +16,9 @@ namespace Engine.Sorting.Sorters
         protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
             KillerMoveCollection killerMoveCollection)
         {
-            foreach (var attack in attacks)
-            {
-                MoveCollection.AddTrade(attack);
-            }
+            var sortedAttacks = OrderAttacks(attacks);
+
+            OrderAttacks(MoveCollection, sortedAttacks);
 
             foreach (var move in moves)
             {
@@ -41,19 +40,11 @@ namespace Engine.Sorting.Sorters
             KillerMoveCollection killerMoveCollection,
             IMove pvNode)
         {
-            if (pvNode is IAttack)
+            var sortedAttacks = OrderAttacks(attacks);
+
+            if (pvNode is IAttack attack)
             {
-                foreach (var attack in attacks)
-                {
-                    if (attack.Equals(pvNode))
-                    {
-                        MoveCollection.AddHashMove(attack);
-                    }
-                    else
-                    {
-                        MoveCollection.AddTrade(attack);
-                    }
-                }
+                OrderAttacks(MoveCollection, sortedAttacks, attack);
 
                 foreach (var move in moves)
                 {
@@ -69,10 +60,7 @@ namespace Engine.Sorting.Sorters
             }
             else
             {
-                foreach (var attack in attacks)
-                {
-                    MoveCollection.AddTrade(attack);
-                }
+                OrderAttacks(MoveCollection, sortedAttacks);
 
                 foreach (var move in moves)
                 {

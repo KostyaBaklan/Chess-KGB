@@ -8,8 +8,10 @@ namespace Engine.Sorting.Sorters
 {
     public class ExtendedSorter : MoveSorter
     {
-        public ExtendedSorter(IPosition position, IMoveComparer comparer) : base(position,comparer)
+        protected ExtendedMoveCollection ExtendedMoveCollection;
+        public ExtendedSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
         {
+            ExtendedMoveCollection = new ExtendedMoveCollection(comparer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -18,21 +20,25 @@ namespace Engine.Sorting.Sorters
         {
             var sortedAttacks = OrderAttacks(attacks);
 
-            OrderAttacks(MoveCollection, sortedAttacks);
+            OrderAttacks(ExtendedMoveCollection, sortedAttacks);
 
             foreach (var move in moves)
             {
-                if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                if (killerMoveCollection.Contains(move))
                 {
-                    MoveCollection.AddKillerMove(move);
+                    ExtendedMoveCollection.AddKillerMove(move);
+                }
+                else if(move.IsCastle()||move.IsPromotion())
+                {
+                    ExtendedMoveCollection.AddSuggested(move);
                 }
                 else
                 {
-                    MoveCollection.AddNonCapture(move);
+                    ExtendedMoveCollection.AddNonCapture(move);
                 }
             }
 
-            return MoveCollection.Build();
+            return ExtendedMoveCollection.Build();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,45 +50,53 @@ namespace Engine.Sorting.Sorters
 
             if (pvNode is IAttack attack)
             {
-                OrderAttacks(MoveCollection, sortedAttacks, attack);
+                OrderAttacks(ExtendedMoveCollection, sortedAttacks, attack);
 
                 foreach (var move in moves)
                 {
-                    if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                    if (killerMoveCollection.Contains(move))
                     {
-                        MoveCollection.AddKillerMove(move);
+                        ExtendedMoveCollection.AddKillerMove(move);
+                    }
+                    else if (move.IsCastle() || move.IsPromotion())
+                    {
+                        ExtendedMoveCollection.AddSuggested(move);
                     }
                     else
                     {
-                        MoveCollection.AddNonCapture(move);
+                        ExtendedMoveCollection.AddNonCapture(move);
                     }
                 }
             }
             else
             {
-                OrderAttacks(MoveCollection, sortedAttacks);
+                OrderAttacks(ExtendedMoveCollection, sortedAttacks);
 
                 foreach (var move in moves)
                 {
                     if (move.Equals(pvNode))
                     {
-                        MoveCollection.AddHashMove(move);
+                        ExtendedMoveCollection.AddHashMove(move);
                     }
                     else
                     {
-                        if (killerMoveCollection.Contains(move) || move.IsPromotion())
+                        if (killerMoveCollection.Contains(move))
                         {
-                            MoveCollection.AddKillerMove(move);
+                            ExtendedMoveCollection.AddKillerMove(move);
+                        }
+                        else if (move.IsCastle() || move.IsPromotion())
+                        {
+                            ExtendedMoveCollection.AddSuggested(move);
                         }
                         else
                         {
-                            MoveCollection.AddNonCapture(move);
+                            ExtendedMoveCollection.AddNonCapture(move);
                         }
                     }
                 }
             }
 
-            return MoveCollection.Build();
+            return ExtendedMoveCollection.Build();
         }
     }
 }

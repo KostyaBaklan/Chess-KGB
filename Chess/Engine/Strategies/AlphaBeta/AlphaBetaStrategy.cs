@@ -6,7 +6,7 @@ using Engine.Models.Enums;
 using Engine.Models.Transposition;
 using Engine.Strategies.Base;
 
-namespace Engine.Strategies.AlphaBeta.Simple
+namespace Engine.Strategies.AlphaBeta
 {
     public abstract class AlphaBetaStrategy : StrategyBase
     {
