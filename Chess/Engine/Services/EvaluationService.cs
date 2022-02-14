@@ -15,7 +15,6 @@ namespace Engine.Services
         private int _nextDepth;
         private int _threshold;
 
-        private readonly int _penaltyValue;
         private readonly int _unitValue;
         private readonly int _mateValue;
 
@@ -45,7 +44,6 @@ namespace Engine.Services
 
             _unitValue = configuration.Evaluation.Static.Unit;
             _mateValue = configuration.Evaluation.Static.Mate;
-            _penaltyValue = configuration.Evaluation.Static.Penalty;
 
             _notAbleCastleValue = new int[3];
             _earlyQueenValue = new int[3];
@@ -63,16 +61,16 @@ namespace Engine.Services
             for (byte i = 0; i < 3; i++)
             {
                 var evaluationStatic = configuration.Evaluation.Static.GetBoard(i);
-                _notAbleCastleValue[i] = evaluationStatic.NotAbleCastleValue * _penaltyValue;
-                _earlyQueenValue[i] = evaluationStatic.EarlyQueenValue * _penaltyValue;
-                _doubleBishopValue[i] = evaluationStatic.DoubleBishopValue * _penaltyValue;
+                _notAbleCastleValue[i] = evaluationStatic.NotAbleCastleValue * _unitValue;
+                _earlyQueenValue[i] = evaluationStatic.EarlyQueenValue * _unitValue;
+                _doubleBishopValue[i] = evaluationStatic.DoubleBishopValue * _unitValue;
                 _minorDefendedByPawnValue[i] = evaluationStatic.MinorDefendedByPawnValue * _unitValue;
-                _blockedPawnValue[i] = evaluationStatic.BlockedPawnValue * _penaltyValue;
-                _passedPawnValue[i] = evaluationStatic.PassedPawnValue * _penaltyValue;
-                _doubledPawnValue[i] = evaluationStatic.DoubledPawnValue * _penaltyValue;
-                _isolatedPawnValue[i] = evaluationStatic.IsolatedPawnValue * _penaltyValue;
-                _backwardPawnValue[i] = evaluationStatic.BackwardPawnValue * _penaltyValue;
-                _rookOnOpenFileValue[i] = evaluationStatic.RookOnOpenFileValue * _penaltyValue;
+                _blockedPawnValue[i] = evaluationStatic.BlockedPawnValue * _unitValue;
+                _passedPawnValue[i] = evaluationStatic.PassedPawnValue * _unitValue;
+                _doubledPawnValue[i] = evaluationStatic.DoubledPawnValue * _unitValue;
+                _isolatedPawnValue[i] = evaluationStatic.IsolatedPawnValue * _unitValue;
+                _backwardPawnValue[i] = evaluationStatic.BackwardPawnValue * _unitValue;
+                _rookOnOpenFileValue[i] = evaluationStatic.RookOnOpenFileValue * _unitValue;
                 _rentgenValue[i] = evaluationStatic.RentgenValue * _unitValue;
                 _rookConnectionValue[i] = evaluationStatic.RookConnectionValue * _unitValue;
                 _rookOnHalfOpenFileValue[i] = evaluationStatic.RookOnHalfOpenFileValue * _unitValue;
@@ -238,12 +236,6 @@ namespace Engine.Services
         public int GetUnitValue()
         {
             return _unitValue;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetPenaltyValue()
-        {
-            return _penaltyValue;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

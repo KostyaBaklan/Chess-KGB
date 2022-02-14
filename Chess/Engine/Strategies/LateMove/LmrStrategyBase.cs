@@ -19,7 +19,7 @@ namespace Engine.Strategies.LateMove
             LmrDepthThreshold = configurationProvider
                 .AlgorithmConfiguration.LmrDepthThreshold;
             DepthReduction = configurationProvider
-                    .AlgorithmConfiguration.DepthReduction;
+                    .AlgorithmConfiguration.LmrDepthReduction;
         }
 
         public override int Search(int alpha, int beta, int depth)

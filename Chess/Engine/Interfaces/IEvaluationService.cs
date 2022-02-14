@@ -12,7 +12,6 @@ namespace Engine.Interfaces
         void Initialize(short depth);
 
         //int GetUnitValue();
-        int GetPenaltyValue();
         int GetMinorDefendedByPawnValue(Phase phase);
 
         int GetBlockedPawnValue(Phase phase);
