@@ -7,6 +7,7 @@ namespace Engine.Models.Helpers
     {
         private static readonly int[] _values = new int[12];
         private static readonly string[] _names = new string[12];
+        private static readonly int[] _opponents = new int[12];
 
         static PieceExtensions()
         {
@@ -35,6 +36,15 @@ namespace Engine.Models.Helpers
             _names[(int)Piece.BlackRook] = "R";
             _names[(int)Piece.WhiteQueen] = "Q";
             _names[(int)Piece.BlackQueen] = "Q";
+
+            for (var i = 0; i < 6; i++)
+            {
+                _opponents[i] = i + 6;
+            }
+            for (var i = 6; i < _opponents.Length; i++)
+            {
+                _opponents[i] = i - 6;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -62,9 +72,9 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string AsString(this Piece piece)
+        public static Piece GetOpponent(this Piece piece)
         {
-            return _names[(byte)piece];
+            return (Piece) _opponents[piece.AsByte()];
         }
     }
 }

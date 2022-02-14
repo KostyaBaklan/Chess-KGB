@@ -8,6 +8,7 @@ namespace Engine.Models.Helpers
     {
         private static readonly string[] _names = new string[64];
         private static readonly BitBoard[] _values = new BitBoard[64];
+        private static readonly int[] _opponents;
 
         static SquareExtensions()
         {
@@ -28,6 +29,14 @@ namespace Engine.Models.Helpers
             {
                 _values[i] = new BitBoard(1ul << i);
             }
+
+            _opponents = new int[64];
+            for (int i = 0; i < 64; i++)
+            {
+                var file = 7 - i / 8;
+                var rank = i % 8;
+                _opponents[i] = file * 8 + rank;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -46,6 +55,18 @@ namespace Engine.Models.Helpers
         public static BitBoard AsBitBoard(this int square)
         {
             return _values[square];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetOpponent(this int square)
+        {
+            return _opponents[square];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Square GetOpponent(this Square square)
+        {
+            return new Square(_opponents[square.AsByte()]);
         }
     }
 }
