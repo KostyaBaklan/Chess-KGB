@@ -165,7 +165,8 @@ namespace Engine.Strategies.Base
 
             var positionValue = Position.GetValue();
 
-            if (positionValue + Margins[(byte)Position.GetPhase()][depth - 1] > alpha) return Position.GetAllMoves(Sorter, pv);
+            var i = Margins[(byte)Position.GetPhase()][depth - 1];
+            if (positionValue + i > alpha) return Position.GetAllMoves(Sorter, pv);
 
             var moves = Position.GetAllAttacks(Sorter);
             return moves.Length == 0 ? null : moves;

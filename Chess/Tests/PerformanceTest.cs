@@ -15,7 +15,6 @@ using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.AlphaBeta.Null.Advanced;
 using Engine.Strategies.AlphaBeta.Null.Complex;
 using Engine.Strategies.AlphaBeta.Null.Extended;
-using Engine.Strategies.AlphaBeta.Simple;
 using Engine.Strategies.Aspiration.Original;
 using Engine.Strategies.Base;
 using Engine.Strategies.IterativeDeeping.Extended;
@@ -52,11 +51,6 @@ namespace Tests
 
             Dictionary<string, StrategyBase> strategies = new Dictionary<string, StrategyBase>
             {
-                {"ab_ss_hc", new AlphaBetaHistoryStrategy(depth, position)},
-                {"ab_ss_hdc", new AlphaBetaHistoryDifferenceStrategy(depth, position)},
-                {"ab_ss_dc", new AlphaBetaDifferenceStrategy(depth, position)},
-                {"ab_ss_dhc", new AlphaBetaDifferenceHistoryStrategy(depth, position)},
-
                 {"ab_es_hc", new AlphaBetaExtendedHistoryStrategy(depth, position)},
                 {"ab_es_hdc", new AlphaBetaExtendedHistoryDifferenceStrategy(depth, position)},
                 {"ab_es_dc", new AlphaBetaExtendedDifferenceStrategy(depth, position)},
@@ -100,7 +94,9 @@ namespace Tests
                 {"pvm_es_dc", new PvsMemoryDifferenceStrategy(depth, position)},
                 {"pvm_es_dhc", new PvsMemoryDifferenceHistoryStrategy(depth, position)},
 
+                {"lmr_bs_hc", new LmrBasicHistoryStrategy(depth, position)},
                 {"lmr_es_hc", new LmrExtendedHistoryStrategy(depth, position)},
+
                 {"lmr_es_hdc", new LmrExtendedHistoryDifferenceStrategy(depth, position)},
                 {"lmr_as_hc", new LmrAdvancedHistoryStrategy(depth, position)},
                 {"lmr_as_hdc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)},
@@ -121,6 +117,7 @@ namespace Tests
                 {"mc_cs_hc", new MultiCutComplexHistoryStrategy(depth, position)},
                 {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)},
 
+                {"lmrd_bs_hc", new LmrDeepBasicStrategy(depth, position)},
                 {"lmrd_es_hc", new LmrDeepExtendedStrategy(depth, position)}
             };
 

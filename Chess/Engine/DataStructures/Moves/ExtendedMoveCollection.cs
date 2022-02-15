@@ -4,25 +4,23 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
 {
-    public class AdvancedMoveCollection : AttackCollection
+    public class ExtendedMoveCollection : AttackCollection
     {
         private readonly MoveList _killers;
         private readonly MoveList _nonCaptures;
-        private readonly MoveList _checks;
-        protected readonly MoveList LooseTrades;
+        private readonly MoveList _suggested;
 
-        public AdvancedMoveCollection(IMoveComparer comparer) : base(comparer)
+        public ExtendedMoveCollection(IMoveComparer comparer) : base(comparer)
         {
             _killers = new MoveList();
             _nonCaptures = new MoveList();
-            _checks = new MoveList();
-            LooseTrades = new MoveList();
+            _suggested = new MoveList();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddCheck(IMove move)
         {
-            _checks.Add(move);
+            _suggested.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -38,21 +36,9 @@ namespace Engine.DataStructures.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddBadMove(IMove move)
-        {
-            LooseCaptures.Add(move);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddSuggested(IMove move)
         {
-            _checks.Add(move);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddNonSuggested(IMove move)
-        {
-            LooseTrades.Add(move);
+            _suggested.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -62,10 +48,9 @@ namespace Engine.DataStructures.Moves
             var winCapturesCount = hashMovesCount + WinCaptures.Count;
             var tradesCount = winCapturesCount + Trades.Count;
             var killersCount = tradesCount + _killers.Count;
-            int checksCount = killersCount + _checks.Count;
+            int checksCount = killersCount+_suggested.Count;
             var nonCapturesCount = checksCount + _nonCaptures.Count;
-            var looseTradesCount = nonCapturesCount + LooseTrades.Count;
-            Count = looseTradesCount + LooseCaptures.Count;
+            Count = nonCapturesCount + LooseCaptures.Count;
 
             IMove[] moves = new IMove[Count];
 
@@ -93,10 +78,10 @@ namespace Engine.DataStructures.Moves
                 _killers.Clear();
             }
 
-            if (_checks.Count > 0)
+            if (_suggested.Count > 0)
             {
-                _checks.CopyTo(moves, killersCount);
-                _checks.Clear();
+                _suggested.CopyTo(moves, killersCount);
+                _suggested.Clear();
             }
 
             if (_nonCaptures.Count > 0)
@@ -106,15 +91,9 @@ namespace Engine.DataStructures.Moves
                 _nonCaptures.Clear();
             }
 
-            if (LooseTrades.Count > 0)
-            {
-                LooseTrades.CopyTo(moves, nonCapturesCount);
-                LooseTrades.Clear();
-            }
-
             if (LooseCaptures.Count > 0)
             {
-                LooseCaptures.CopyTo(moves, looseTradesCount);
+                LooseCaptures.CopyTo(moves, nonCapturesCount);
                 LooseCaptures.Clear();
             }
 

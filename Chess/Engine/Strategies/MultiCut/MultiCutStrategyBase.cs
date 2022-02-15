@@ -6,7 +6,7 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
-using Engine.Strategies.AlphaBeta.Simple;
+using Engine.Strategies.AlphaBeta;
 
 namespace Engine.Strategies.MultiCut
 {

@@ -16,5 +16,6 @@
         int MultiCutMoves { get; }
         int LmrDepthThreshold { get; }
         int LmrLateDepthThreshold { get; }
+        int LmrDepthReduction { get; }
     }
 }

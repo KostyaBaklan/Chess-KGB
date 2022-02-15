@@ -7,7 +7,6 @@ namespace Engine.Models.Config
         #region Implementation of IStaticEvaluation
 
         public short Unit { get; set; }
-        public short Penalty { get; set; }
         public short Mate { get; set; }
         public short Factor { get; set; }
         public int ThreefoldRepetitionValue { get; set; }
