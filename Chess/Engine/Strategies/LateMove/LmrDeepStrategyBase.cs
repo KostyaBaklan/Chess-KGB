@@ -181,10 +181,11 @@ namespace Engine.Strategies.LateMove
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
-                    Position.Make(moves[i]);
+                    var move = moves[i];
+                    Position.Make(move);
 
                     int r;
-                    if (IsLmr(i) && CanReduce(moves[i]))
+                    if (IsLmr(i) && CanReduce(move))
                     {
                         var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
                         r = -Search(-beta, -alpha, depth - reduction);
@@ -201,7 +202,7 @@ namespace Engine.Strategies.LateMove
                     if (r > value)
                     {
                         value = r;
-                        bestMove = moves[i];
+                        bestMove = move;
                     }
 
                     Position.UnMake();
@@ -213,7 +214,7 @@ namespace Engine.Strategies.LateMove
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(moves[i]);
+                    Sorter.Add(move);
                     break;
                 }
             }
@@ -221,14 +222,15 @@ namespace Engine.Strategies.LateMove
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
-                    Position.Make(moves[i]);
+                    var move = moves[i];
+                    Position.Make(move);
 
                     var r = -Search(-beta, -alpha, depth - 1);
 
                     if (r > value)
                     {
                         value = r;
-                        bestMove = moves[i];
+                        bestMove = move;
                     }
 
                     Position.UnMake();
@@ -240,7 +242,7 @@ namespace Engine.Strategies.LateMove
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(moves[i]);
+                    Sorter.Add(move);
                     break;
                 }
             }
