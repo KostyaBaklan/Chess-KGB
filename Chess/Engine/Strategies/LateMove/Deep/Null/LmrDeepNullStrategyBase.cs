@@ -14,6 +14,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
         protected bool IsNull;
         protected int NullWindow;
         protected int NullDepthReduction;
+        protected int NullDepthOffset;
 
         protected LmrDeepNullStrategyBase(short depth, IPosition position) : base(depth, position)
         {
@@ -23,6 +24,8 @@ namespace Engine.Strategies.LateMove.Deep.Null
                 .AlgorithmConfiguration.NullConfiguration.NullWindow;
             NullDepthReduction = configurationProvider
                 .AlgorithmConfiguration.DepthReduction;
+            NullDepthOffset = configurationProvider
+                .AlgorithmConfiguration.NullConfiguration.NullDepthOffset;
         }
 
         public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
@@ -147,8 +150,8 @@ namespace Engine.Strategies.LateMove.Deep.Null
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (isNotEndGame && Table.TryGet(key, out var entry))
+            //var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -191,7 +194,8 @@ namespace Engine.Strategies.LateMove.Deep.Null
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             var isWasCheck = MoveHistory.GetLastMove().IsCheck();
-            if (CanUseNull && depth > NullDepthReduction + 1 && !isWasCheck && isNotEndGame &&
+            bool isNotEndGame = Position.GetPhase() != Phase.End;
+            if (CanUseNull && !isWasCheck && isNotEndGame && depth > NullDepthReduction + NullDepthOffset &&
                 IsValidWindow(alpha, beta))
             {
                 MakeNullMove();
@@ -203,7 +207,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                 }
             }
 
-            if (depth > DepthReduction + 1 && !isWasCheck)
+            if (!isWasCheck && depth > DepthReduction + 1)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
@@ -276,8 +280,6 @@ namespace Engine.Strategies.LateMove.Deep.Null
             if (IsNull) return value;
 
             bestMove.History += 1 << depth;
-
-            if (!isNotEndGame) return value;
 
             if (isInTable && !shouldUpdate) return value;
 

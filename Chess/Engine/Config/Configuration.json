@@ -19,7 +19,8 @@
     },
     "NullConfiguration": {
       "NullWindow": 5,
-      "NullDepthReduction": 4
+      "NullDepthReduction": 4,
+      "NullDepthOffset": 3
     },
     "MultiCutConfiguration": {
       "MultiCutReduction": 2,

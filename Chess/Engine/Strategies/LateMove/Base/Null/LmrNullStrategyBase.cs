@@ -14,6 +14,7 @@ namespace Engine.Strategies.LateMove.Base.Null
         protected bool IsNull;
         protected int NullWindow;
         protected int NullDepthReduction;
+        protected int NullDepthOffset;
 
         protected LmrNullStrategyBase(short depth, IPosition position) : base(depth, position)
         {
@@ -21,6 +22,8 @@ namespace Engine.Strategies.LateMove.Base.Null
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
             NullWindow = configurationProvider
                 .AlgorithmConfiguration.NullConfiguration.NullWindow;
+            NullDepthOffset = configurationProvider
+                .AlgorithmConfiguration.NullConfiguration.NullDepthOffset;
             NullDepthReduction = configurationProvider
                 .AlgorithmConfiguration.DepthReduction;
         }
@@ -190,7 +193,7 @@ namespace Engine.Strategies.LateMove.Base.Null
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             var isWasCheck = MoveHistory.GetLastMove().IsCheck();
-            if (CanUseNull && depth > NullDepthReduction + 1 && !isWasCheck && isNotEndGame &&
+            if (CanUseNull && !isWasCheck && isNotEndGame && depth > NullDepthReduction + NullDepthOffset &&
                 IsValidWindow(alpha, beta))
             {
                 MakeNullMove();
@@ -202,7 +205,7 @@ namespace Engine.Strategies.LateMove.Base.Null
                 }
             }
 
-            if (depth > DepthReduction + 1 && !isWasCheck)
+            if (!isWasCheck && depth > DepthReduction + 1)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
