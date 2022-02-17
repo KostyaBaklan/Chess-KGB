@@ -133,8 +133,7 @@ namespace Engine.Strategies.LateMove.Deep
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (isNotEndGame && Table.TryGet(key, out var entry))
+            if (Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -178,6 +177,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck())
             {
+                bool isNotEndGame = Position.GetPhase()!=Phase.End;
                 for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
@@ -248,7 +248,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             bestMove.History += 1 << depth;
 
-            if (!isNotEndGame || isInTable && !shouldUpdate) return value;
+            if (isInTable && !shouldUpdate) return value;
 
             return StoreValue(alpha, beta, depth, value, bestMove);
         }
