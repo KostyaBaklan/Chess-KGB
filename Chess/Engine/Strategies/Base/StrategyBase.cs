@@ -110,22 +110,16 @@ namespace Engine.Strategies.Base
             if (moves.Length == 0)
             {
                 result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
-
                 return true;
-
             }
 
-            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
-            {
-                var value = Position.GetValue();
-                if (value < ThreefoldRepetitionValue)
-                {
-                    result.GameResult = GameResult.ThreefoldRepetition;
-                    return true;
-                }
-            }
+            if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
 
-            return false;
+            if (Position.GetValue() > 0) return false;
+
+            result.GameResult = GameResult.ThreefoldRepetition;
+            return true;
+
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,8 +128,7 @@ namespace Engine.Strategies.Base
             value = 0;
             if (moves.Length == 0)
             {
-                var lastMove = MoveHistory.GetLastMove();
-                value = lastMove.IsCheck()
+                value = MoveHistory.GetLastMove().IsCheck()
                     ? -EvaluationService.GetMateValue()
                     : Position.GetValue();
                 return true;
@@ -144,14 +137,6 @@ namespace Engine.Strategies.Base
             if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
 
             value = Position.GetValue();
-            //if (value < 0)
-            //{
-            //    value += ThreefoldRepetitionValue;
-            //}
-            //else
-            //{
-            //    value -= ThreefoldRepetitionValue;
-            //}
             return true;
         }
 

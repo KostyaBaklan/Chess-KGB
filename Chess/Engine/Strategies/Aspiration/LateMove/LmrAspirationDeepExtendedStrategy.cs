@@ -1,5 +1,6 @@
 ﻿using Engine.Interfaces;
 using Engine.Strategies.LateMove;
+using Engine.Strategies.LateMove.Deep;
 
 namespace Engine.Strategies.Aspiration.LateMove
 {

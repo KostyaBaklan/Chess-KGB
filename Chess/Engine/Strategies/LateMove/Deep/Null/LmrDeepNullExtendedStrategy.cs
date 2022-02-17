@@ -2,11 +2,11 @@
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 
-namespace Engine.Strategies.LateMove
+namespace Engine.Strategies.LateMove.Deep.Null
 {
-    public class LmrDeepExtendedStrategy : LmrDeepStrategyBase
+    public class LmrDeepNullExtendedStrategy : LmrDeepNullStrategyBase
     {
-        public LmrDeepExtendedStrategy(short depth, IPosition position) : base(depth, position)
+        public LmrDeepNullExtendedStrategy(short depth, IPosition position) : base(depth, position)
         {
             MainSorter = new ExtendedSorter(position, new HistoryComparer());
             InitialSorter = new ExtendedSorter(position, new HistoryDifferenceExtendedComparer());

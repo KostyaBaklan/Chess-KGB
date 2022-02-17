@@ -18,12 +18,12 @@ namespace Engine.DataStructures.Hash
 
         private readonly ZoobristKeyCollection[] _depthTable;
         private readonly IMoveHistoryService _moveHistory;
-        //private readonly int[] _values;
+        private readonly int[] _values;
 
         public TranspositionTable(int capacity, short d) : base(capacity)
         {
             _nextLevel = 0;
-            _threshold = 2 * capacity / 3;
+            _threshold = 3 * capacity / 4;
 
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
             var depth = configurationProvider
@@ -33,13 +33,13 @@ namespace Engine.DataStructures.Hash
             _moveHistory = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
 
             var tableConfigurationProvider = ServiceLocator.Current.GetInstance<ITableConfigurationProvider>();
-            var values = tableConfigurationProvider.GetValues(d);
+            _values = tableConfigurationProvider.GetValues(d);
 
             _depthTable = new ZoobristKeyCollection[depth];
-            for (var i = 0; i < _depthTable.Length; i++)
-            {
-                _depthTable[i] = new ZoobristKeyCollection(values[i]);
-            }
+            //for (var i = 0; i < _depthTable.Length; i++)
+            //{
+            //    _depthTable[i] = new ZoobristKeyCollection(values[i]);
+            //}
         }
 
         #region Overrides of ZobristDictionary<TranspositionEntry>
@@ -82,13 +82,13 @@ namespace Engine.DataStructures.Hash
 
             Table[key] = item;
 
-            //var ply = _moveHistory.GetPly();
-            //if (_depthTable[ply] == null)
-            //{
-            //    _depthTable[ply] = new ZoobristKeyCollection(_values[ply]);
-            //}
-            //_depthTable[ply].Add(key);
-            _depthTable[_moveHistory.GetPly()].Add(key);
+            var ply = _moveHistory.GetPly();
+            if (_depthTable[ply] == null)
+            {
+                _depthTable[ply] = new ZoobristKeyCollection(_values[ply]);
+            }
+            _depthTable[ply].Add(key);
+            //_depthTable[_moveHistory.GetPly()].Add(key);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

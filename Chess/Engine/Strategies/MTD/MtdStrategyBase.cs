@@ -18,7 +18,7 @@ namespace Engine.Strategies.MTD
             DepthOffset = configurationProvider
                 .AlgorithmConfiguration.DepthOffset;
             NullWindow = configurationProvider
-                .AlgorithmConfiguration.NullWindow;
+                .AlgorithmConfiguration.NullConfiguration.NullWindow;
         }
 
         public override IResult GetResult()

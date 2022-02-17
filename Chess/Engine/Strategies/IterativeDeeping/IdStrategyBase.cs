@@ -15,7 +15,7 @@ namespace Engine.Strategies.IterativeDeeping
         {
             InternalStrategy = strategy;
             _initialDepth = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
-                .AlgorithmConfiguration.InitialDepth;
+                .AlgorithmConfiguration.IterativeDeepingConfiguration.InitialDepth;
         }
 
         #region Overrides of StrategyBase

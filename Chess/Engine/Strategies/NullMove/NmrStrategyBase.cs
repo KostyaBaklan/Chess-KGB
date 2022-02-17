@@ -16,7 +16,7 @@ namespace Engine.Strategies.NullMove
             MinReduction = 3;
             MaxReduction = 4;
             NullDepthReduction = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
-                .AlgorithmConfiguration.NullDepthReduction;
+                .AlgorithmConfiguration.NullConfiguration.NullDepthReduction;
         }
 
         public override int Search(int alpha, int beta, int depth)

@@ -5,19 +5,18 @@ using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
 using Engine.Sorting.Sorters;
+using Engine.Strategies.LateMove.Base;
 
-namespace Engine.Strategies.LateMove
+namespace Engine.Strategies.LateMove.Deep
 {
     public abstract class LmrDeepStrategyBase : LmrStrategyBase
     {
         protected int LmrLateDepthThreshold;
-        protected MoveSorter InitialSorter;
-        protected MoveSorter MainSorter;
 
         protected LmrDeepStrategyBase(short depth, IPosition position) : base(depth, position)
         {
             LmrLateDepthThreshold = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
-                .AlgorithmConfiguration.LmrLateDepthThreshold;
+                .AlgorithmConfiguration.LateMoveConfiguration.LmrLateDepthThreshold;
         }
 
         public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
@@ -124,7 +123,7 @@ namespace Engine.Strategies.LateMove
 
         public override int Search(int alpha, int beta, int depth)
         {
-            if (depth == 0)
+            if (depth <= 0)
             {
                 return Evaluate(alpha, beta);
             }
@@ -134,8 +133,7 @@ namespace Engine.Strategies.LateMove
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (isNotEndGame && Table.TryGet(key, out var entry))
+            if (Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -179,6 +177,7 @@ namespace Engine.Strategies.LateMove
 
             if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck())
             {
+                bool isNotEndGame = Position.GetPhase()!=Phase.End;
                 for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
@@ -248,8 +247,6 @@ namespace Engine.Strategies.LateMove
             }
 
             bestMove.History += 1 << depth;
-
-            if (!isNotEndGame) return value;
 
             if (isInTable && !shouldUpdate) return value;
 

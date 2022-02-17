@@ -7,21 +7,32 @@
     "UseFutility": true
   },
   "AlgorithmConfiguration": {
-    "InitialDepth": 3,
-    "NullWindow": 5,
-    "AspirationWindow": 250,
-    "AspirationDepth": 2,
     "DepthOffset": 2,
-    "NonPvIterations": 4,
-    "LmrDepthReduction": 1,
     "DepthReduction": 2,
-    "LmrDepthThreshold": 4,
-    "LmrLateDepthThreshold": 11,
-    "NullDepthReduction": 4,
-    "MultiCutReduction": 2,
-    "MultiCutDepth": 3,
-    "MultiCutRequirement": 3,
-    "MultiCutMoves": 10
+    "NonPvIterations": 4,
+    "IterativeDeepingConfiguration": {
+      "InitialDepth": 3
+    },
+    "AspirationConfiguration": {
+      "AspirationWindow": 250,
+      "AspirationDepth": 2
+    },
+    "NullConfiguration": {
+      "NullWindow": 5,
+      "NullDepthReduction": 4,
+      "NullDepthOffset": 3
+    },
+    "MultiCutConfiguration": {
+      "MultiCutReduction": 2,
+      "MultiCutDepth": 3,
+      "MultiCutRequirement": 3,
+      "MultiCutMoves": 10
+    },
+    "LateMoveConfiguration": {
+      "LmrDepthReduction": 2,
+      "LmrDepthThreshold": 3,
+      "LmrLateDepthThreshold": 11
+    }
   },
   "Evaluation": {
     "Static": {

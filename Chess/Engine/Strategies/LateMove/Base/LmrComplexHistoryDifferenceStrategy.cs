@@ -2,7 +2,7 @@
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 
-namespace Engine.Strategies.LateMove
+namespace Engine.Strategies.LateMove.Base
 {
     public class LmrComplexHistoryDifferenceStrategy : LmrStrategyBase
     {
