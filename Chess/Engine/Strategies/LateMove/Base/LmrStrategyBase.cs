@@ -1,25 +1,128 @@
 ﻿using System.Runtime.CompilerServices;
 using CommonServiceLocator;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
+using Engine.Sorting.Sorters;
 using Engine.Strategies.AlphaBeta;
 
-namespace Engine.Strategies.LateMove
+namespace Engine.Strategies.LateMove.Base
 {
     public abstract class LmrStrategyBase : AlphaBetaStrategy
     {
         protected int DepthReduction;
         protected int LmrDepthThreshold;
+        protected MoveSorter InitialSorter;
+        protected MoveSorter MainSorter;
 
         protected LmrStrategyBase(short depth, IPosition position) : base(depth, position)
         {
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
             LmrDepthThreshold = configurationProvider
-                .AlgorithmConfiguration.LmrDepthThreshold;
+                .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthThreshold;
             DepthReduction = configurationProvider
-                    .AlgorithmConfiguration.LmrDepthReduction;
+                    .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthReduction;
+        }
+
+        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
+        {
+            Result result = new Result();
+
+            IMove pv = pvMove;
+            var key = Position.GetKey();
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (pv == null)
+            {
+                if (isNotEndGame && Table.TryGet(key, out var entry))
+                {
+                    if ((entry.Depth - depth) % 2 == 0)
+                    {
+                        pv = MoveProvider.Get(entry.PvMove);
+                    }
+                }
+            }
+
+            Sorter = MoveHistory.GetPly() > 4 ? MainSorter : InitialSorter;
+
+            var moves = Position.GetAllMoves(Sorter, pv);
+
+            if (CheckMoves(moves, out var res)) return res;
+
+            if (moves.Length > 1)
+            {
+                if (MoveHistory.GetLastMove().IsCheck())
+                {
+                    for (var i = 0; i < moves.Length; i++)
+                    {
+                        var move = moves[i];
+                        Position.Make(move);
+
+                        var value = -Search(-beta, -alpha, depth - 1);
+
+                        Position.UnMake();
+                        if (value > result.Value)
+                        {
+                            result.Value = value;
+                            result.Move = move;
+                        }
+
+                        if (value > alpha)
+                        {
+                            alpha = value;
+                        }
+
+                        if (alpha < beta) continue;
+                        break;
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < moves.Length; i++)
+                    {
+                        var move = moves[i];
+                        Position.Make(move);
+
+                        int value;
+                        if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
+                        {
+                            value = -Search(-beta, -alpha, depth - DepthReduction);
+                            if (value > alpha)
+                            {
+                                value = -Search(-beta, -alpha, depth - 1);
+                            }
+                        }
+                        else
+                        {
+                            value = -Search(-beta, -alpha, depth - 1);
+                        }
+
+                        Position.UnMake();
+                        if (value > result.Value)
+                        {
+                            result.Value = value;
+                            result.Move = move;
+                        }
+
+
+                        if (value > alpha)
+                        {
+                            alpha = value;
+                        }
+
+                        if (alpha < beta) continue;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                result.Move = moves[0];
+            }
+
+            result.Move.History++;
+            return result;
         }
 
         public override int Search(int alpha, int beta, int depth)
@@ -77,14 +180,15 @@ namespace Engine.Strategies.LateMove
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (depth > DepthReduction+1 && !MoveHistory.GetLastMove().IsCheck())
+            if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck())
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
-                    Position.Make(moves[i]);
+                    var move = moves[i];
+                    Position.Make(move);
 
                     int r;
-                    if (IsLmr(i) && CanReduce(moves[i]))
+                    if (IsLmr(i) && CanReduce(move))
                     {
                         r = -Search(-beta, -alpha, depth - DepthReduction);
                         if (r > alpha)
@@ -100,7 +204,7 @@ namespace Engine.Strategies.LateMove
                     if (r > value)
                     {
                         value = r;
-                        bestMove = moves[i];
+                        bestMove = move;
                     }
 
                     Position.UnMake();
@@ -112,7 +216,7 @@ namespace Engine.Strategies.LateMove
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(moves[i]);
+                    Sorter.Add(move);
                     break;
                 }
             }
@@ -146,9 +250,7 @@ namespace Engine.Strategies.LateMove
 
             bestMove.History += 1 << depth;
 
-            if (!isNotEndGame) return value;
-
-            if (isInTable && !shouldUpdate) return value;
+            if (!isNotEndGame||isInTable && !shouldUpdate) return value;
 
             return StoreValue(alpha, beta, depth, value, bestMove);
         }

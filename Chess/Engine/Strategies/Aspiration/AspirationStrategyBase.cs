@@ -14,9 +14,10 @@ namespace Engine.Strategies.Aspiration
         protected AspirationStrategyBase(short depth, IPosition position) : base(depth, position)
         {
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
-            AspirationWindow = configurationProvider.AlgorithmConfiguration
+            var configuration = configurationProvider.AlgorithmConfiguration.AspirationConfiguration;
+            AspirationWindow = configuration
                 .AspirationWindow;
-            AspirationDepth = configurationProvider.AlgorithmConfiguration
+            AspirationDepth = configuration
                 .AspirationDepth;
         }
 

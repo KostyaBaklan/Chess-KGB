@@ -24,15 +24,15 @@ namespace Engine.Strategies.MultiCut
         {
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
             MultiCutReduction = configurationProvider
-                .AlgorithmConfiguration.MultiCutReduction;
+                .AlgorithmConfiguration.MultiCutConfiguration.MultiCutReduction;
             MultiCutDepth = configurationProvider
-                .AlgorithmConfiguration.MultiCutDepth;
+                .AlgorithmConfiguration.MultiCutConfiguration.MultiCutDepth;
             MultiCutRequirement = configurationProvider
-                .AlgorithmConfiguration.MultiCutRequirement;
+                .AlgorithmConfiguration.MultiCutConfiguration.MultiCutRequirement;
             NullWindow = configurationProvider
-                .AlgorithmConfiguration.NullWindow;
+                .AlgorithmConfiguration.NullConfiguration.NullWindow;
             MultiCutMoves = configurationProvider
-                .AlgorithmConfiguration.MultiCutMoves;
+                .AlgorithmConfiguration.MultiCutConfiguration.MultiCutMoves;
         }
         #region Overrides of StrategyBase
 

@@ -19,6 +19,10 @@ using Engine.Strategies.Aspiration.Original;
 using Engine.Strategies.Base;
 using Engine.Strategies.IterativeDeeping.Extended;
 using Engine.Strategies.LateMove;
+using Engine.Strategies.LateMove.Base;
+using Engine.Strategies.LateMove.Base.Null;
+using Engine.Strategies.LateMove.Deep;
+using Engine.Strategies.LateMove.Deep.Null;
 using Engine.Strategies.MultiCut;
 using Engine.Strategies.NullMove;
 using Engine.Strategies.PVS.Memory;
@@ -96,7 +100,6 @@ namespace Tests
 
                 {"lmr_bs_hc", new LmrBasicHistoryStrategy(depth, position)},
                 {"lmr_es_hc", new LmrExtendedHistoryStrategy(depth, position)},
-
                 {"lmr_es_hdc", new LmrExtendedHistoryDifferenceStrategy(depth, position)},
                 {"lmr_as_hc", new LmrAdvancedHistoryStrategy(depth, position)},
                 {"lmr_as_hdc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)},
@@ -118,7 +121,16 @@ namespace Tests
                 {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)},
 
                 {"lmrd_bs_hc", new LmrDeepBasicStrategy(depth, position)},
-                {"lmrd_es_hc", new LmrDeepExtendedStrategy(depth, position)}
+                {"lmrd_es_hc", new LmrDeepExtendedStrategy(depth, position)},
+                {"lmrd_as_hc", new LmrDeepAdvancedStrategy(depth, position)},
+
+                {"lmrn_bs_hc", new LmrNullBasicStrategy(depth, position)},
+                {"lmrn_es_hc", new LmrNullExtendedStrategy(depth, position)},
+                {"lmrn_as_hc", new LmrNullAdvancedStrategy(depth, position)},
+
+                {"lmrnd_bs_hc", new LmrDeepNullBasicStrategy(depth, position)},
+                {"lmrnd_es_hc", new LmrDeepNullExtendedStrategy(depth, position)},
+                {"lmrnd_as_hc", new LmrDeepNullAdvancedStrategy(depth, position)}
             };
 
             StrategyBase strategy = strategies[args[0]];

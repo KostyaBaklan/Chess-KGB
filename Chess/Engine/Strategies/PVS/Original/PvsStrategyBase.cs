@@ -22,7 +22,7 @@ namespace Engine.Strategies.PVS.Original
             DepthOffset = configurationProvider
                 .AlgorithmConfiguration.DepthOffset;
             NullWindow = configurationProvider
-                .AlgorithmConfiguration.NullWindow;
+                .AlgorithmConfiguration.NullConfiguration.NullWindow;
             InternalStrategy = new AlphaBetaExtendedHistoryStrategy(depth, position);
         }
 

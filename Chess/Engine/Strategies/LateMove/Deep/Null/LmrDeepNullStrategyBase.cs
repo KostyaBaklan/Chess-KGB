@@ -1,23 +1,28 @@
-﻿using CommonServiceLocator;
+﻿using System.Runtime.CompilerServices;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
-using Engine.Sorting.Sorters;
 
-namespace Engine.Strategies.LateMove
+namespace Engine.Strategies.LateMove.Deep.Null
 {
-    public abstract class LmrDeepStrategyBase : LmrStrategyBase
+    public abstract class LmrDeepNullStrategyBase : LmrDeepStrategyBase
     {
-        protected int LmrLateDepthThreshold;
-        protected MoveSorter InitialSorter;
-        protected MoveSorter MainSorter;
+        protected bool CanUseNull;
+        protected bool IsNull;
+        protected int NullWindow;
+        protected int NullDepthReduction;
 
-        protected LmrDeepStrategyBase(short depth, IPosition position) : base(depth, position)
+        protected LmrDeepNullStrategyBase(short depth, IPosition position) : base(depth, position)
         {
-            LmrLateDepthThreshold = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
-                .AlgorithmConfiguration.LmrLateDepthThreshold;
+            CanUseNull = false;
+            var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
+            NullWindow = configurationProvider
+                .AlgorithmConfiguration.NullConfiguration.NullWindow;
+            NullDepthReduction = configurationProvider
+                .AlgorithmConfiguration.DepthReduction;
         }
 
         public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
@@ -51,12 +56,16 @@ namespace Engine.Strategies.LateMove
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
+                        IsNull = false;
                         var move = moves[i];
+                        SwitchNull();
                         Position.Make(move);
 
                         var value = -Search(-beta, -alpha, depth - 1);
 
                         Position.UnMake();
+                        SwitchNull();
+
                         if (value > result.Value)
                         {
                             result.Value = value;
@@ -76,7 +85,9 @@ namespace Engine.Strategies.LateMove
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
+                        IsNull = false;
                         var move = moves[i];
+                        SwitchNull();
                         Position.Make(move);
 
                         int value;
@@ -95,6 +106,8 @@ namespace Engine.Strategies.LateMove
                         }
 
                         Position.UnMake();
+                        SwitchNull();
+
                         if (value > result.Value)
                         {
                             result.Value = value;
@@ -124,7 +137,7 @@ namespace Engine.Strategies.LateMove
 
         public override int Search(int alpha, int beta, int depth)
         {
-            if (depth == 0)
+            if (depth <= 0)
             {
                 return Evaluate(alpha, beta);
             }
@@ -177,7 +190,20 @@ namespace Engine.Strategies.LateMove
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck())
+            var isWasCheck = MoveHistory.GetLastMove().IsCheck();
+            if (CanUseNull && depth > NullDepthReduction + 1 && !isWasCheck && isNotEndGame &&
+                IsValidWindow(alpha, beta))
+            {
+                MakeNullMove();
+                var v = -Search(-beta, NullWindow - beta, depth - NullDepthReduction - 1);
+                UndoNullMove();
+                if (v >= beta)
+                {
+                    return v;
+                }
+            }
+
+            if (depth > DepthReduction + 1 && !isWasCheck)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
@@ -247,6 +273,8 @@ namespace Engine.Strategies.LateMove
                 }
             }
 
+            if (IsNull) return value;
+
             bestMove.History += 1 << depth;
 
             if (!isNotEndGame) return value;
@@ -254,6 +282,34 @@ namespace Engine.Strategies.LateMove
             if (isInTable && !shouldUpdate) return value;
 
             return StoreValue(alpha, beta, depth, value, bestMove);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool IsValidWindow(int alpha, int beta)
+        {
+            return beta < SearchValue && beta - alpha > NullWindow;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void UndoNullMove()
+        {
+            SwitchNull();
+            Position.SwapTurn();
+            IsNull = false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void MakeNullMove()
+        {
+            SwitchNull();
+            Position.SwapTurn();
+            IsNull = true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void SwitchNull()
+        {
+            CanUseNull = !CanUseNull;
         }
     }
 }

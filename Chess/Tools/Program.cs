@@ -26,9 +26,19 @@ namespace Tools
             var z = File.ReadAllText(@"Config\Table.json");
             var table = JsonConvert.DeserializeObject<Dictionary<int, TableConfiguration>>(z);
 
-            Dictionary<int, TableConfiguration> config = new Dictionary<int, TableConfiguration>( );
+            foreach (var key in table.Keys)
+            {
+                var t = table[key];
+                for (var i = 0; i < t.Values.Length; i++)
+                {
+                    if (t.Values[i] > 2)
+                    {
+                        t.Values[i] /= 2;
+                    }
+                }
+            }
 
-            var s = JsonConvert.SerializeObject(config, Formatting.Indented);
+            var s = JsonConvert.SerializeObject(table, Formatting.Indented);
             File.WriteAllText("Table.json",s);
 
             Console.ReadLine();
