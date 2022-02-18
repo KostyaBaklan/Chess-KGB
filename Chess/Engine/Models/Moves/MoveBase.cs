@@ -69,6 +69,12 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool IsReversable()
+        {
+            return Piece != Piece.WhitePawn && Piece != Piece.BlackPawn;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public abstract void Make(IBoard board, ArrayStack<Piece?> figureHistory);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

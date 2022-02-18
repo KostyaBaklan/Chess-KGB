@@ -20,6 +20,7 @@ namespace Engine.Interfaces
         bool IsAttack();
         bool IsCastle();
         bool IsPromotion();
+        bool IsReversable();
         void Make(IBoard board, ArrayStack<Piece?> figureHistory);
         void UnMake(IBoard board, ArrayStack<Piece?> figureHistory);
     }

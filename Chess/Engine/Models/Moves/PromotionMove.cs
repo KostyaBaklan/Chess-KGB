@@ -28,5 +28,11 @@ namespace Engine.Models.Moves
         {
             return true;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsReversable()
+        {
+            return false;
+        }
     }
 }

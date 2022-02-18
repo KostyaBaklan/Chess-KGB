@@ -198,10 +198,10 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsThreefoldRepetition(ulong board)
         {
-            if (_ply < 6) return false;
+            if (_ply < 8) return false;
 
             int count = 1;
-            for (var i = _boardHistory.Count - 3; i >= 4; i-=2)
+            for (var i = _boardHistory.Count - 5; i > 0; i-=4)
             {
                 if (_boardHistory[i] != board)
                 {
