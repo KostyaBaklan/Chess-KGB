@@ -11,6 +11,7 @@ namespace Engine.Models.Config
         public double BlockTimeout { get; set; }
         public bool UseFutility { get; set; }
         public int FutilityDepth { get; set; }
+        public bool UseHistory { get; set; }
 
         #endregion
     }

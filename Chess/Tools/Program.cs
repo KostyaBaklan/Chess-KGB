@@ -5,24 +5,161 @@ using System.Linq;
 using System.Text;
 using Common;
 using CommonServiceLocator;
+using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Boards;
+using Engine.Models.Config;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Sorting.Comparers;
+using Engine.Sorting.Sorters;
+using Engine.Strategies.AlphaBeta;
+using Engine.Strategies.Base;
 using Newtonsoft.Json;
 
 namespace Tools
 {
-    public class TableConfiguration
+    public class MoveHistoryItem
     {
-        public int Depth { get; set; }
-        public int[] Values { get; set; }
+        public short Key { get; set; }
+        public int History { get; set; }
     }
+
+    public class MoveHistory
+    {
+        public MoveHistory()
+        {
+            White = new List<MoveHistoryItem>();
+            Black = new List<MoveHistoryItem>();
+        }
+
+        public List<MoveHistoryItem> White { get; set; }
+        public List<MoveHistoryItem> Black { get; set; }
+    }
+
+    class HistoryToolStrategy:AlphaBetaStrategy
+    {
+        public HistoryToolStrategy(short depth, IPosition position) : base(depth, position)
+        {
+            Sorter = new HistoryToolSorter(position, new DifferenceComparer());
+        }
+    }
+
+    internal class HistoryToolSorter : MoveSorter
+    {
+        public HistoryToolSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
+        {
+        }
+
+        #region Overrides of MoveSorter
+
+        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection)
+        {
+            return Array(attacks, moves);
+        }
+
+        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode)
+        {
+            return Array(attacks, moves);
+        }
+
+        private IMove[] Array(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves)
+        {
+            List<IMove> m = attacks.OfType<IMove>().ToList();
+
+            var list = moves.ToList();
+            list.Sort(Comparer);
+
+            m.AddRange(list);
+
+            return m.ToArray();
+        }
+
+        #endregion
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
             Boot.SetUp();
+
+            //CreateHistory();
+
+            var text = File.ReadAllText("History.json");
+            var moveHistory = JsonConvert.DeserializeObject<MoveHistory>(text);
+
+            Console.WriteLine(moveHistory.White.Count);
+            Console.WriteLine(moveHistory.Black.Count);
+
+            Dictionary<short,int> history = new Dictionary<short, int>();
+
+            foreach (var moveHistoryItem in moveHistory.White.Concat(moveHistory.Black))
+            {
+                history[moveHistoryItem.Key] = moveHistoryItem.History;
+            }
+
+            var s = JsonConvert.SerializeObject(history,Formatting.Indented);
+            File.WriteAllText(@"Config/History.json",s);
+
+            Console.WriteLine("Yalla !!!");
+            Console.ReadLine();
+        }
+
+        private static void CreateHistory()
+        {
+            Position position = new Position();
+
+            HistoryToolStrategy strategy = new HistoryToolStrategy(7, position);
+
+            for (int i = 0; i < 12; i++)
+            {
+                var result = strategy.GetResult();
+                position.Make(result.Move);
+
+                Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
+            }
+
+            MoveHistory moveHistory = new MoveHistory();
+
+            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+            foreach (var move in moveProvider.GetAll()
+                .Where(m => m.History > 0)
+                .OrderByDescending(m => m.History))
+            {
+                var moveHistoryItem = new MoveHistoryItem
+                {
+                    History = move.History,
+                    Key = move.Key
+                };
+
+                if (move.Piece.IsWhite())
+                {
+                    moveHistory.White.Add(moveHistoryItem);
+                }
+                else
+                {
+                    moveHistory.Black.Add(moveHistoryItem);
+                }
+            }
+
+            int h = 1;
+            for (var i = moveHistory.White.Count - 1; i >= 0; i--)
+            {
+                moveHistory.White[i].History=h++;
+            }
+            h = 1;
+            for (var i = moveHistory.Black.Count - 1; i >= 0; i--)
+            {
+                moveHistory.Black[i].History = h++;
+            }
+
+            var o = JsonConvert.SerializeObject(moveHistory, Formatting.Indented);
+            File.WriteAllText("History.json", o);
+        }
+
+        private static void TableSize()
+        {
             var z = File.ReadAllText(@"Config\Table.json");
             var table = JsonConvert.DeserializeObject<Dictionary<int, TableConfiguration>>(z);
 
@@ -39,9 +176,7 @@ namespace Tools
             }
 
             var s = JsonConvert.SerializeObject(table, Formatting.Indented);
-            File.WriteAllText("Table.json",s);
-
-            Console.ReadLine();
+            File.WriteAllText("Table.json", s);
         }
 
         private static void EvaluationTest()

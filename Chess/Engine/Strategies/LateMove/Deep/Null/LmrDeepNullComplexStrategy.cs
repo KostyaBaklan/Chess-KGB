@@ -8,8 +8,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
     {
         public LmrDeepNullComplexStrategy(short depth, IPosition position) : base(depth, position)
         {
-            MainSorter = new ComplexSorter(position, new HistoryComparer());
-            InitialSorter = new ComplexSorter(position, new HistoryDifferenceExtendedComparer());
+            Sorter = new ComplexSorter(position, new HistoryComparer());
         }
     }
 }

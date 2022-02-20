@@ -37,8 +37,6 @@ namespace Engine.Strategies.LateMove.Deep
                 }
             }
 
-            Sorter = MoveHistory.GetPly() > 4 ? MainSorter : InitialSorter;
-
             var moves = Position.GetAllMoves(Sorter, pv);
 
             if (CheckMoves(moves, out var res)) return res;

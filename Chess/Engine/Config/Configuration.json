@@ -4,7 +4,8 @@
     "BlockTimeout": 1,
     "FutilityDepth": 2,
     "UseEvaluationCache": false,
-    "UseFutility": true
+    "UseFutility": true,
+    "UseHistory": true
   },
   "AlgorithmConfiguration": {
     "DepthOffset": 2,

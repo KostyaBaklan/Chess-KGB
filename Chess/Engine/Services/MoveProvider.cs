@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Moves;
+using Newtonsoft.Json;
 
 namespace Engine.Services
 {
@@ -22,7 +25,7 @@ namespace Engine.Services
 
         private readonly IEvaluationService _evaluationService;
 
-        public MoveProvider(IEvaluationService evaluationService)
+        public MoveProvider(IEvaluationService evaluationService, IConfigurationProvider configurationProvider)
         {
             _evaluationService = evaluationService;
             _moves = new List<List<MoveBase>>[_piecesNumbers][];
@@ -104,6 +107,19 @@ namespace Engine.Services
             for (var i = 0; i < _all.Length; i++)
             {
                 _all[i].Key = (short) i;
+            }
+
+            if (configurationProvider.GeneralConfiguration.UseHistory)
+            {
+                var text = File.ReadAllText(@"Config/History.json");
+                var moveHistory = JsonConvert.DeserializeObject<Dictionary<short, short>>(text);
+                for (var i = 0; i < _all.Length; i++)
+                {
+                    if (moveHistory.TryGetValue(_all[i].Key, out var history))
+                    {
+                        _all[i].History = history;
+                    }
+                } 
             }
         }
 

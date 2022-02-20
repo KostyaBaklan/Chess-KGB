@@ -14,8 +14,6 @@ namespace Engine.Strategies.LateMove.Base
     {
         protected int DepthReduction;
         protected int LmrDepthThreshold;
-        protected MoveSorter InitialSorter;
-        protected MoveSorter MainSorter;
 
         protected LmrStrategyBase(short depth, IPosition position) : base(depth, position)
         {
@@ -43,8 +41,6 @@ namespace Engine.Strategies.LateMove.Base
                     }
                 }
             }
-
-            Sorter = MoveHistory.GetPly() > 4 ? MainSorter : InitialSorter;
 
             var moves = Position.GetAllMoves(Sorter, pv);
 
