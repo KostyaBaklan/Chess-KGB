@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using CommonServiceLocator;
 using Engine.DataStructures;
+using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
@@ -19,6 +20,12 @@ namespace Engine.Models.Boards
 
         private readonly byte[][] _white;
         private readonly byte[][] _black;
+
+        private readonly AttackList _attacks;
+        private readonly AttackList _attacksTemp;
+
+        private readonly MoveList _moves;
+        private readonly MoveList _movesTemp;
 
         private readonly IBoard _board;
         private readonly IMoveProvider _moveProvider;
@@ -87,6 +94,11 @@ namespace Engine.Models.Boards
             //_black[2] = new[]
             //    {Piece.BlackPawn, Piece.BlackKing, Piece.BlackRook, Piece.BlackQueen, Piece.BlackKnight, Piece.BlackBishop};
 
+            _attacks = new AttackList();
+            _attacksTemp = new AttackList();
+            _moves = new MoveList();
+            _movesTemp = new MoveList();
+
             _board = new Board();
             _figureHistory = new ArrayStack<Piece?>();
             _moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
@@ -140,7 +152,7 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IAttack> GetAllAttacks(Square cell, Piece piece)
         {
-            var attacks = _moveProvider.GetAttacks(piece, cell,_board);
+            var attacks = _moveProvider.GetAttacks(piece, cell);
             foreach (var attack in attacks.Where(IsLigal))
             {
                 yield return attack;
@@ -150,7 +162,7 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IMove> GetAllMoves(Square cell, Piece piece)
         {
-            var moves = _moveProvider.GetMoves(piece, cell, _board);
+            var moves = _moveProvider.GetMoves(piece, cell);
             foreach (var move in moves.Where(IsLigal))
             {
                 yield return move;
@@ -174,8 +186,10 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<IMove> PossibleMoves(Square[][] squares, byte[] pieces)
+        private MoveList PossibleMoves(Square[][] squares, byte[] pieces)
         {
+            _moves.Clear();
+            _movesTemp.Clear();
             for (var index = 0; index < pieces.Length; index++)
             {
                 var p = pieces[index];
@@ -183,20 +197,26 @@ namespace Engine.Models.Boards
 
                 for (var f = 0; f < from.Length; f++)
                 {
-                    foreach (var move in _moveProvider.GetMoves(p, from[f], _board))
+                    _moveProvider.GetMoves(p, @from[f], _movesTemp);
+                    for (var i = 0; i < _movesTemp.Count; i++)
                     {
-                        if (IsLigal(move))
+                        if (IsLigal(_movesTemp[i]))
                         {
-                            yield return move;
+                            _moves.Add(_movesTemp[i]);
                         }
                     }
+                    _movesTemp.Clear();
                 }
             }
+
+            return _moves;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<IAttack> PossibleAttacks(Square[][] squares, byte[] pieces)
+        private AttackList PossibleAttacks(Square[][] squares, byte[] pieces)
         {
+            _attacks.Clear();
+            _attacksTemp.Clear();
             for (var index = 0; index < pieces.Length; index++)
             {
                 var p = pieces[index];
@@ -204,15 +224,19 @@ namespace Engine.Models.Boards
                 var square = squares[p % 6];
                 for (var f = 0; f < square.Length; f++)
                 {
-                    foreach (var attack in _moveProvider.GetAttacks(p, square[f], _board))
+                    _moveProvider.GetAttacks(p, square[f],_attacksTemp);
+                    for (var i = 0; i < _attacksTemp.Count; i++)
                     {
-                        if (IsLigal(attack))
+                        if (IsLigal(_attacksTemp[i]))
                         {
-                            yield return attack;
+                            _attacks.Add(_attacksTemp[i]);
                         }
                     }
+                    _attacksTemp.Clear();
                 }
             }
+
+            return _attacks;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -237,10 +261,10 @@ namespace Engine.Models.Boards
         public bool IsNotLegal(IMove move)
         {
             return _turn != Turn.White
-                ? _moveProvider.AnyBlackCheck(_board) || move.IsCastle() &&
-                  _moveProvider.IsWhiteUnderAttack(_board, move.To == Squares.C1 ? Squares.D1 : Squares.F1)
-                : _moveProvider.AnyWhiteCheck(_board) || move.IsCastle() &&
-                  _moveProvider.IsBlackUnderAttack(_board, move.To == Squares.C8 ? Squares.D8 : Squares.F8);
+                ? _moveProvider.AnyBlackCheck() || move.IsCastle() &&
+                  _moveProvider.IsWhiteUnderAttack(move.To == Squares.C1 ? Squares.D1 : Squares.F1)
+                : _moveProvider.AnyWhiteCheck() || move.IsCastle() &&
+                  _moveProvider.IsBlackUnderAttack(move.To == Squares.C8 ? Squares.D8 : Squares.F8);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -280,7 +304,7 @@ namespace Engine.Models.Boards
             //return _turn != Turn.White ? _checkService.IsBlackCheck(_board.GetKey(), _board) : _checkService.IsWhiteCheck(_board.GetKey(), _board);
             //return _turn != Turn.White ? _moveProvider.IsCheckToWhite(_board) : _moveProvider.IsCheckToBlack(_board);
 
-            return _turn != Turn.White ? _moveProvider.AnyBlackCheck(_board) : _moveProvider.AnyWhiteCheck(_board);
+            return _turn != Turn.White ? _moveProvider.AnyBlackCheck() : _moveProvider.AnyWhiteCheck();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

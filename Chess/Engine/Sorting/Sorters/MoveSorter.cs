@@ -47,8 +47,7 @@ namespace Engine.Sorting.Sorters
             Moves[MoveHistoryService.GetPly()].Add(move.Key);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove[] Order(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, IMove pvNode)
+        public IMove[] Order(AttackList attacks, MoveList moves, IMove pvNode)
         {
             int depth = MoveHistoryService.GetPly();
 
@@ -66,16 +65,14 @@ namespace Engine.Sorting.Sorters
             moveList.Sort(Comparer);
 
             var m = new IMove[moveList.Count];
-            moveList.CopyTo(m,0);
+            moveList.CopyTo(m, 0);
             return m;
-
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove[] Order(IEnumerable<IAttack> attacks)
+        public IMove[] Order(AttackList attacks)
         {
             var sortedAttacks = OrderAttacks(attacks);
-            if(sortedAttacks.Count == 0)return new IMove[0];
+            if (sortedAttacks.Count == 0) return new IMove[0];
 
             OrderAttacks(AttackCollection, sortedAttacks);
 
@@ -83,14 +80,15 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual Dictionary<Square, DynamicSortedList<IAttack>> OrderAttacks(IEnumerable<IAttack> attacks)
+        protected virtual Dictionary<Square, DynamicSortedList<IAttack>> OrderAttacks(AttackList attacks)
         {
             var board = Position.GetBoard();
             var attackComparer = new AttackComparer();
 
             Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks = new Dictionary<Square, DynamicSortedList<IAttack>>();
-            foreach (var attack in attacks)
+            for (var index = 0; index < attacks.Count; index++)
             {
+                var attack = attacks[index];
                 attack.Captured = board.GetPiece(attack.To);
                 if (sortedAttacks.TryGetValue(attack.To, out var set))
                 {
@@ -201,9 +199,9 @@ namespace Engine.Sorting.Sorters
             collection.AddWinCapture(_moves);
         }
 
-        protected abstract IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+        protected abstract IMove[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection);
-        protected abstract IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+        protected abstract IMove[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection, IMove pvNode);
     }
 }

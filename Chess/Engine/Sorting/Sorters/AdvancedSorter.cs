@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures.Moves;
@@ -25,15 +24,16 @@ namespace Engine.Sorting.Sorters
         #region Overrides of MoveSorter
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+        protected override IMove[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection)
         {
             var sortedAttacks = OrderAttacks(attacks);
 
             OrderAttacks(AdvancedMoveCollection, sortedAttacks);
 
-            foreach (var move in moves)
+            for (var index = 0; index < moves.Count; index++)
             {
+                var move = moves[index];
                 if (killerMoveCollection.Contains(move.Key))
                 {
                     AdvancedMoveCollection.AddKillerMove(move);
@@ -52,7 +52,7 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+        protected override IMove[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection,
             IMove pvNode)
         {
@@ -62,8 +62,9 @@ namespace Engine.Sorting.Sorters
             {
                 OrderAttacks(AdvancedMoveCollection, sortedAttacks, attack);
 
-                foreach (var move in moves)
+                for (var index = 0; index < moves.Count; index++)
                 {
+                    var move = moves[index];
                     if (killerMoveCollection.Contains(move.Key))
                     {
                         AdvancedMoveCollection.AddKillerMove(move);
@@ -82,8 +83,9 @@ namespace Engine.Sorting.Sorters
             {
                 OrderAttacks(AdvancedMoveCollection, sortedAttacks);
 
-                foreach (var move in moves)
+                for (var index = 0; index < moves.Count; index++)
                 {
+                    var move = moves[index];
                     if (move.Equals(pvNode))
                     {
                         AdvancedMoveCollection.AddHashMove(move);
@@ -328,7 +330,7 @@ namespace Engine.Sorting.Sorters
         {
             foreach (var p in attackTo.BitScan())
             {
-                foreach (var a in MoveProvider.GetAttacks(piece, p, board))
+                foreach (var a in MoveProvider.GetAttacks(piece, p))
                 {
                     a.Captured = move.Piece;
                     if (board.StaticExchange(a) <= 0) continue;

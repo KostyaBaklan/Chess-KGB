@@ -70,6 +70,8 @@ namespace Engine.Models.Boards
             _hash = new ZobristHash();
             _hash.Initialize(_boards);
 
+            _moveProvider.SetBoard(this);
+
             //_whiteQueenOpening = new HashSet<int>
             //{
             //    Squares.D1.AsInt(), Squares.E1.AsInt(), Squares.C1.AsInt(),
@@ -1309,21 +1311,21 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanDoWhiteCastle(byte to)
         {
-            return !(_moveProvider.IsUnderAttack(this, Piece.BlackBishop.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(this, Piece.BlackKnight.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(this, Piece.BlackQueen.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(this, Piece.BlackRook.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(this, Piece.BlackPawn.AsByte(), to));
+            return !(_moveProvider.IsUnderAttack(Piece.BlackBishop.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(Piece.BlackKnight.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(Piece.BlackQueen.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(Piece.BlackRook.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(Piece.BlackPawn.AsByte(), to));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanDoBlackCastle(byte to)
         {
-            return !(_moveProvider.IsUnderAttack(this, Piece.WhiteBishop.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(this, Piece.WhiteKnight.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(this, Piece.WhiteQueen.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(this, Piece.WhiteRook.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(this, Piece.WhitePawn.AsByte(), to));
+            return !(_moveProvider.IsUnderAttack(Piece.WhiteBishop.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(Piece.WhiteKnight.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(Piece.WhiteQueen.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(Piece.WhiteRook.AsByte(), to) ||
+                     _moveProvider.IsUnderAttack(Piece.WhitePawn.AsByte(), to));
         }
 
         #endregion

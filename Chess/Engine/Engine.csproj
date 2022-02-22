@@ -63,6 +63,7 @@
     <Compile Include="DataStructures\Moves\AttackCollection.cs" />
     <Compile Include="DataStructures\DynamicArray.cs" />
     <Compile Include="DataStructures\MaxHeap.cs" />
+    <Compile Include="DataStructures\Moves\AttackList.cs" />
     <Compile Include="DataStructures\Moves\AttackWrapper.cs" />
     <Compile Include="DataStructures\Killers\DoKillerMoves.cs" />
     <Compile Include="DataStructures\Moves\ExtendedMoveCollection.cs" />

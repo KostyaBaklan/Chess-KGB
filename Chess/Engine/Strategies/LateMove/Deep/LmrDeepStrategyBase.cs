@@ -4,7 +4,6 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Transposition;
-using Engine.Sorting.Sorters;
 using Engine.Strategies.LateMove.Base;
 
 namespace Engine.Strategies.LateMove.Deep

@@ -7,27 +7,27 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
 {
-    public class MoveList:IReadOnlyCollection<IMove>
+    public class AttackList : IReadOnlyCollection<IAttack>
     {
-        private readonly IMove[] _items;
+        private readonly IAttack[] _items;
 
-        public MoveList()
+        public AttackList()
         {
-            _items = new IMove[128];
+            _items = new IAttack[128];
         }
+
+        public IAttack this[int i] => _items[i];
 
         #region Implementation of IReadOnlyCollection<out IMove>
 
         public int Count { get; private set; }
-
-        public IMove this[int i] => _items[i];
 
         #endregion
 
         #region Implementation of IEnumerable
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerator<IMove> GetEnumerator()
+        public IEnumerator<IAttack> GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
             {
@@ -44,7 +44,7 @@ namespace Engine.DataStructures.Moves
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(IMove move)
+        public void Add(IAttack move)
         {
             _items[Count++] = move;
         }
@@ -58,7 +58,7 @@ namespace Engine.DataStructures.Moves
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void CopyTo(IMove[] items, int index)
+        public void CopyTo(IAttack[] items, int index)
         {
             Array.Copy(_items, 0, items, index, Count);
         }
@@ -100,9 +100,9 @@ namespace Engine.DataStructures.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(MoveList moves)
+        public void Add(AttackList moves)
         {
-            Array.Copy(moves._items,0,_items,Count,moves.Count);
+            Array.Copy(moves._items, 0, _items, Count, moves.Count);
             Count += moves.Count;
         }
 
