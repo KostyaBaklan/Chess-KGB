@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using CommonServiceLocator;
+using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Config;
@@ -49,6 +50,7 @@ namespace Kgb.ChessApp
             containerRegistry.RegisterSingleton(typeof(IMoveHistoryService), typeof(MoveHistoryService));
             containerRegistry.RegisterSingleton(typeof(IEvaluationService), typeof(EvaluationService));
             containerRegistry.RegisterSingleton(typeof(ICheckService), typeof(CheckService));
+            containerRegistry.RegisterSingleton(typeof(IKillerMoveCollectionFactory), typeof(KillerMoveCollectionFactory));
 
             containerRegistry.RegisterSingleton(typeof(StartViewModel));
             containerRegistry.RegisterSingleton(typeof(GameViewModel));

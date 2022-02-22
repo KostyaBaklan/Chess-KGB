@@ -26,7 +26,7 @@ namespace Engine.Sorting.Sorters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
-            KillerMoveCollection killerMoveCollection)
+            IKillerMoveCollection killerMoveCollection)
         {
             var sortedAttacks = OrderAttacks(attacks);
 
@@ -34,7 +34,7 @@ namespace Engine.Sorting.Sorters
 
             foreach (var move in moves)
             {
-                if (killerMoveCollection.Contains(move))
+                if (killerMoveCollection.Contains(move.Key))
                 {
                     AdvancedMoveCollection.AddKillerMove(move);
                 }
@@ -53,7 +53,7 @@ namespace Engine.Sorting.Sorters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
-            KillerMoveCollection killerMoveCollection,
+            IKillerMoveCollection killerMoveCollection,
             IMove pvNode)
         {
             var sortedAttacks = OrderAttacks(attacks);
@@ -64,7 +64,7 @@ namespace Engine.Sorting.Sorters
 
                 foreach (var move in moves)
                 {
-                    if (killerMoveCollection.Contains(move))
+                    if (killerMoveCollection.Contains(move.Key))
                     {
                         AdvancedMoveCollection.AddKillerMove(move);
                     }
@@ -90,7 +90,7 @@ namespace Engine.Sorting.Sorters
                     }
                     else
                     {
-                        if (killerMoveCollection.Contains(move))
+                        if (killerMoveCollection.Contains(move.Key))
                         {
                             AdvancedMoveCollection.AddKillerMove(move);
                         }

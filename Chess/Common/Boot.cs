@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using CommonServiceLocator;
+using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Config;
@@ -48,6 +49,7 @@ namespace Common
             container.RegisterSingleton(typeof(IMoveHistoryService), typeof(MoveHistoryService));
             container.RegisterSingleton(typeof(IEvaluationService), typeof(EvaluationService));
             container.RegisterSingleton(typeof(ICheckService), typeof(CheckService));
+            container.RegisterSingleton(typeof(IKillerMoveCollectionFactory), typeof(KillerMoveCollectionFactory));
         }
     }
 }

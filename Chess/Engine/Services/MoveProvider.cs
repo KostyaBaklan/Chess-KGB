@@ -1252,6 +1252,8 @@ namespace Engine.Services
 
         #region Implementation of IMoveProvider
 
+        public int MovesCount => _all.Length;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IMove Get(short key)
         {

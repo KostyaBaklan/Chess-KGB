@@ -53,12 +53,14 @@ namespace Tools
 
         #region Overrides of MoveSorter
 
-        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection)
+        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            IKillerMoveCollection killerMoveCollection)
         {
             return Array(attacks, moves);
         }
 
-        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode)
+        protected override IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            IKillerMoveCollection killerMoveCollection, IMove pvNode)
         {
             return Array(attacks, moves);
         }

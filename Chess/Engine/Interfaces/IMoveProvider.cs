@@ -6,6 +6,7 @@ namespace Engine.Interfaces
 {
     public interface IMoveProvider
     {
+        int MovesCount { get; }
         IMove Get(short key);
         IEnumerable<IMove> GetAll();
         IEnumerable<IAttack> GetAttacks(Piece piece, Square cell, IBoard board);

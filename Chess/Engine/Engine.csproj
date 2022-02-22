@@ -55,16 +55,23 @@
     <Compile Include="DataStructures\GameResult.cs" />
     <Compile Include="DataStructures\Hash\DynamicHash.cs" />
     <Compile Include="DataStructures\Hash\IDynamicHash.cs" />
+    <Compile Include="DataStructures\Killers\BiKillerMoves.cs" />
+    <Compile Include="DataStructures\Killers\KillerMoves.cs" />
+    <Compile Include="DataStructures\Killers\TiKillerMoves.cs" />
+    <Compile Include="DataStructures\Killers\TwoKillerMoves.cs" />
     <Compile Include="DataStructures\Moves\AdvancedMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\AttackCollection.cs" />
     <Compile Include="DataStructures\DynamicArray.cs" />
     <Compile Include="DataStructures\MaxHeap.cs" />
     <Compile Include="DataStructures\Moves\AttackWrapper.cs" />
+    <Compile Include="DataStructures\Killers\DoKillerMoves.cs" />
     <Compile Include="DataStructures\Moves\ExtendedMoveCollection.cs" />
+    <Compile Include="Services\KillerMoveCollectionFactory.cs" />
     <Compile Include="DataStructures\Moves\MoveCollection.cs" />
     <Compile Include="DataStructures\Moves\MoveCollectionBase.cs" />
     <Compile Include="DataStructures\Moves\MoveList.cs" />
     <Compile Include="DataStructures\Moves\MoveWrapper.cs" />
+    <Compile Include="DataStructures\Killers\TriKillerMoves.cs" />
     <Compile Include="DataStructures\Node.cs" />
     <Compile Include="DataStructures\PriorityQueue.cs" />
     <Compile Include="DataStructures\ZoobristKeyCollection.cs" />
@@ -82,6 +89,8 @@
     <Compile Include="Interfaces\Config\NullConfiguration.cs" />
     <Compile Include="Interfaces\IAttack.cs" />
     <Compile Include="Interfaces\Config\IConfigurationProvider.cs" />
+    <Compile Include="Interfaces\IKillerMoveCollection.cs" />
+    <Compile Include="Interfaces\IKillerMoveCollectionFactory.cs" />
     <Compile Include="Interfaces\IMoveCollection.cs" />
     <Compile Include="Models\Boards\PieceBoard.cs" />
     <Compile Include="Models\Config\AlgorithmConfiguration.cs" />
@@ -105,7 +114,7 @@
     <Compile Include="Models\Helpers\EnumerableExtensions.cs" />
     <Compile Include="Models\Helpers\MagicBitBoardExtensions.cs" />
     <Compile Include="Models\Helpers\MoveExtensions.cs" />
-    <Compile Include="DataStructures\Moves\KillerMoveCollection.cs" />
+    <Compile Include="DataStructures\Killers\KillerMoveCollection.cs" />
     <Compile Include="DataStructures\PieceSet.cs" />
     <Compile Include="DataStructures\Hash\TranspositionTable.cs" />
     <Compile Include="DataStructures\Hash\ZobristDictionary.cs" />
@@ -277,5 +286,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

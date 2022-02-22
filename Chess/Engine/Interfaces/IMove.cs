@@ -1,10 +1,11 @@
-﻿using Engine.DataStructures;
+﻿using System;
+using Engine.DataStructures;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 
 namespace Engine.Interfaces
 {
-    public interface IMove
+    public interface IMove:IEquatable<IMove>
     {
         short Key { get; }
         int Difference { get; }

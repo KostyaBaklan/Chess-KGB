@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Engine.DataStructures;
 using Engine.Interfaces;
@@ -97,6 +98,44 @@ namespace Engine.Models.Moves
         {
             return $"[{From.AsString()} -> {To.AsString()}]";
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool Equals(object obj)
+        {
+            if (obj is IMove move)
+            {
+                return Key == move.Key;
+            }
+
+            return false;
+        }
+
+        #region Equality members
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(IMove other)
+        {
+            return Key == other.Key;
+        }
+
+        public override int GetHashCode()
+        {
+            return Key.GetHashCode();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(MoveBase left, MoveBase right)
+        {
+            return left.Key == right.Key;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(MoveBase left, MoveBase right)
+        {
+            return left.Key != right.Key;
+        }
+
+        #endregion
 
         #endregion
     }

@@ -1,18 +1,20 @@
 ﻿using System.Runtime.CompilerServices;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
 using Engine.Models.Moves;
 
-namespace Engine.DataStructures.Moves
+namespace Engine.DataStructures.Killers
 {
     public class KillerMoveCollection
     {
-        private readonly int _capacity = 2;
+        private readonly int _capacity;
         private int _index;
         private readonly IMove[] _moves;
         private static readonly IMove _default = new Move();
 
-        public KillerMoveCollection()
+        public KillerMoveCollection(IConfigurationProvider configurationProvider)
         {
+            _capacity = configurationProvider.GeneralConfiguration.KillerCapacity;
             _moves = new IMove[_capacity];
             for (int i = 0; i < _capacity; i++)
             {

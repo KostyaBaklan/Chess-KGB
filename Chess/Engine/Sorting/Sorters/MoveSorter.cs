@@ -13,7 +13,7 @@ namespace Engine.Sorting.Sorters
     public abstract class MoveSorter : IMoveSorter
     {
         private readonly MoveList _moves;
-        protected readonly KillerMoveCollection[] Moves;
+        protected readonly IKillerMoveCollection[] Moves;
         protected readonly IMoveHistoryService MoveHistoryService;
         protected IMoveComparer Comparer;
         protected readonly IPosition Position;
@@ -26,11 +26,13 @@ namespace Engine.Sorting.Sorters
             _moves = new MoveList();
             Comparer = comparer;
             Position = position;
-            Moves = new KillerMoveCollection[ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+            var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
+            var killerMoveCollectionFactory = ServiceLocator.Current.GetInstance < IKillerMoveCollectionFactory>();
+            Moves = new IKillerMoveCollection[configurationProvider
                 .GeneralConfiguration.GameDepth];
             for (var i = 0; i < Moves.Length; i++)
             {
-                Moves[i] = new KillerMoveCollection();
+                Moves[i] = killerMoveCollectionFactory.Create();
             }
 
             AttackCollection = new AttackCollection(comparer);
@@ -42,7 +44,7 @@ namespace Engine.Sorting.Sorters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Add(IMove move)
         {
-            Moves[MoveHistoryService.GetPly()].Add(move);
+            Moves[MoveHistoryService.GetPly()].Add(move.Key);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -199,7 +201,9 @@ namespace Engine.Sorting.Sorters
             collection.AddWinCapture(_moves);
         }
 
-        protected abstract IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection);
-        protected abstract IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, KillerMoveCollection killerMoveCollection, IMove pvNode);
+        protected abstract IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            IKillerMoveCollection killerMoveCollection);
+        protected abstract IMove[] OrderInternal(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves,
+            IKillerMoveCollection killerMoveCollection, IMove pvNode);
     }
 }

@@ -11,7 +11,7 @@ namespace Tests
 
             PerformanceTest.Test(args);
 
-           // PerformanceTest.Test(new[] { "ad", "6", "4",false.ToString() });
+           //PerformanceTest.Test(new[] { "lmr_es_hc", "9", "2",false.ToString() });
 
             //OpenningsTest.Opennings();
 
