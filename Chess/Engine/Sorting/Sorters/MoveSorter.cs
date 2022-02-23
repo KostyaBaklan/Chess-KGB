@@ -20,9 +20,11 @@ namespace Engine.Sorting.Sorters
 
         protected AttackCollection AttackCollection;
         protected MoveCollection MoveCollection;
+        protected readonly IBoard Board;
 
         protected MoveSorter(IPosition position, IMoveComparer comparer)
         {
+            Board = position.GetBoard();
             _moves = new MoveList();
             Comparer = comparer;
             Position = position;
@@ -110,8 +112,7 @@ namespace Engine.Sorting.Sorters
             var maxValue = 0;
             int maxIndex = -1;
             var index = 0;
-            var board = Position.GetBoard();
-            foreach (var sortedAttack in sortedAttacks.Values)
+            foreach (DynamicSortedList<IAttack> sortedAttack in sortedAttacks.Values)
             {
                 while (sortedAttack.Count > 0)
                 {
@@ -122,7 +123,7 @@ namespace Engine.Sorting.Sorters
                         continue;
                     }
 
-                    int attackValue = board.StaticExchange(attack);
+                    int attackValue = Board.StaticExchange(attack);
                     if (attackValue > 0)
                     {
                         if (attackValue > maxValue)
@@ -155,14 +156,13 @@ namespace Engine.Sorting.Sorters
             var maxValue = 0;
             int maxIndex = -1;
             var index = 0;
-            var board = Position.GetBoard();
             foreach (var sortedAttack in sortedAttacks.Values)
             {
                 while (sortedAttack.Count > 0)
                 {
                     var attack = sortedAttack.Pop();
 
-                    int attackValue = board.StaticExchange(attack);
+                    int attackValue = Board.StaticExchange(attack);
                     if (attackValue > 0)
                     {
                         if (attackValue > maxValue)

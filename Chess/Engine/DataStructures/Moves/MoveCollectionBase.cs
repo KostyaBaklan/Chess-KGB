@@ -13,7 +13,7 @@ namespace Engine.DataStructures.Moves
             Comparer = comparer;
         }
 
-        protected int Count { get; set; }
+        protected int Count;
 
         //public IMove this[int index] => Moves[index];
 

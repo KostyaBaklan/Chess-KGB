@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Engine.DataStructures
 {
-    public class DynamicArray<T>:IReadOnlyCollection<T>
+    public class DynamicArray<T>:IEnumerable<T>
     {
         private readonly T[] _items;
 
@@ -16,10 +16,7 @@ namespace Engine.DataStructures
             _items = new T[capacity];
         }
 
-        public T this[int i]
-        {
-            get { return _items[i]; }
-        }
+        public T this[int i] => _items[i];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(T item)
@@ -52,7 +49,7 @@ namespace Engine.DataStructures
 
         #region Implementation of IReadOnlyCollection<out T>
 
-        public int Count { get; private set; }
+        public int Count;
 
         #endregion
     }

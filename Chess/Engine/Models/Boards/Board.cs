@@ -112,7 +112,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetStaticValue(byte piece, int[] positions)
+        private int GetStaticValue(byte piece, byte[] positions)
         {
             int value = 0;
             for (var i = 0; i < positions.Length; i++)
@@ -178,7 +178,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetBlackQueenValue(int[] queens)
+        private int GetBlackQueenValue(byte[] queens)
         {
             if (queens.Length <= 0) return 0;
 
@@ -204,7 +204,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetBlackRookValue(int[] rooks)
+        private int GetBlackRookValue(byte[] rooks)
         {
             if (rooks.Length == 0) return 0;
             var value = GetStaticValue(Piece.BlackRook.AsByte(), rooks);
@@ -245,7 +245,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetBlackBishopValue(int[] bishops)
+        private int GetBlackBishopValue(byte[] bishops)
         {
             if (bishops.Length <= 0) return 0;
 
@@ -272,7 +272,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetBlackKnightValue(int[] knights)
+        private int GetBlackKnightValue(byte[] knights)
         {
             if (knights.Length <= 0) return 0;
 
@@ -290,7 +290,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetBlackPawnValue(int[] positions)
+        private int GetBlackPawnValue(byte[] positions)
         {
             int value = 0;
             var pawns = new int[8];
@@ -352,7 +352,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetWhiteQueenValue(int[] queens)
+        private int GetWhiteQueenValue(byte[] queens)
         {
             if (queens.Length <= 0) return 0;
             var value = GetStaticValue(Piece.WhiteQueen.AsByte(), queens);
@@ -377,7 +377,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetWhiteRookValue(int[] rooks)
+        private int GetWhiteRookValue(byte[] rooks)
         {
             if (rooks.Length == 0) return 0;
             var value = GetStaticValue(Piece.WhiteRook.AsByte(), rooks);
@@ -419,7 +419,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetWhiteBishopValue(int[] bishops)
+        private int GetWhiteBishopValue(byte[] bishops)
         {
             if (bishops.Length <= 0) return 0;
 
@@ -445,7 +445,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetWhiteKnightValue(int[] knights)
+        private int GetWhiteKnightValue(byte[] knights)
         {
             if (knights.Length <= 0) return 0;
 
@@ -463,7 +463,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetWhitePawnValue(int[] positions)
+        private int GetWhitePawnValue(byte[] positions)
         {
             int value = 0;
             var pawns = new int[8];
@@ -547,10 +547,10 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int[] GetPositionInternal(int piece)
+        private byte[] GetPositionInternal(int piece)
         {
             var b = _boards[piece];
-            int[] positions = new int[_pieceCount[piece]];
+            byte[] positions = new byte[_pieceCount[piece]];
             for (var i = 0; i < positions.Length; i++)
             {
                 var position = b.BitScanForward();
@@ -695,7 +695,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public DynamicArray<int> GetPositions(int index)
+        public DynamicArray<byte> GetPositions(int index)
         {
             return _boards[index].Coordinates(index);
         }
@@ -703,7 +703,7 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ulong GetKey()
         {
-            return _hash.Key();
+            return _hash.Key;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -894,49 +894,52 @@ namespace Engine.Models.Boards
         private BitBoard ConsiderXrays(BitBoard occupied, BitBoard to, Piece piece, BitBoard[] boards)
         {
             BitBoard bit = new BitBoard(0);
+            PositionsList positions = new PositionsList();
             if (piece.IsWhite())
             {
-                foreach (var i in boards[Piece.WhiteBishop.AsByte()].BitScan())
+                boards[Piece.WhiteBishop.AsByte()].GetPositions(positions);
+                for (int i = 0; i < positions.Count; i++)
                 {
-                    if (!(i.BishopAttacks(occupied) & to).Any()) continue;
-                    bit = bit.Add(i);
+                    if(!(positions[i].BishopAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(positions[i]);
                     break;
                 }
-
-                foreach (var i in boards[Piece.WhiteRook.AsByte()].BitScan())
+                boards[Piece.WhiteRook.AsByte()].GetPositions(positions);
+                for (int i = 0; i < positions.Count; i++)
                 {
-                    if (!(i.RookAttacks(occupied) & to).Any()) continue;
-                    bit = bit.Add(i);
+                    if (!(positions[i].RookAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(positions[i]);
                     break;
                 }
-
-                foreach (var i in boards[Piece.WhiteQueen.AsByte()].BitScan())
+                boards[Piece.WhiteQueen.AsByte()].GetPositions(positions);
+                for (int i = 0; i < positions.Count; i++)
                 {
-                    if (!(i.QueenAttacks(occupied) & to).Any()) continue;
-                    bit = bit.Add(i);
+                    if (!(positions[i].QueenAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(positions[i]);
                     break;
                 }
             }
             else
             {
-                foreach (var i in boards[Piece.BlackBishop.AsByte()].BitScan())
+                boards[Piece.BlackBishop.AsByte()].GetPositions(positions);
+                for (int i = 0; i < positions.Count; i++)
                 {
-                    if (!(i.BishopAttacks(occupied) & to).Any()) continue;
-                    bit = bit.Add(i);
+                    if (!(positions[i].BishopAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(positions[i]);
                     break;
                 }
-
-                foreach (var i in boards[Piece.BlackRook.AsByte()].BitScan())
+                boards[Piece.BlackRook.AsByte()].GetPositions(positions);
+                for (int i = 0; i < positions.Count; i++)
                 {
-                    if (!(i.RookAttacks(occupied) & to).Any()) continue;
-                    bit = bit.Add(i);
+                    if (!(positions[i].RookAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(positions[i]);
                     break;
                 }
-
-                foreach (var i in boards[Piece.BlackQueen.AsByte()].BitScan())
+                boards[Piece.BlackQueen.AsByte()].GetPositions(positions);
+                for (int i = 0; i < positions.Count; i++)
                 {
-                    if (!(i.QueenAttacks(occupied) & to).Any()) continue;
-                    bit = bit.Add(i);
+                    if (!(positions[i].QueenAttacks(occupied) & to).Any()) continue;
+                    bit = bit.Add(positions[i]);
                     break;
                 }
             }

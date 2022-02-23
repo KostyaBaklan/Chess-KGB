@@ -7,7 +7,7 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
 {
-    public class MoveList:IReadOnlyCollection<IMove>
+    public class MoveList:IEnumerable<IMove>
     {
         private readonly IMove[] _items;
 
@@ -18,7 +18,7 @@ namespace Engine.DataStructures.Moves
 
         #region Implementation of IReadOnlyCollection<out IMove>
 
-        public int Count { get; private set; }
+        public int Count;
 
         public IMove this[int i] => _items[i];
 

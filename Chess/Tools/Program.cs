@@ -8,13 +8,11 @@ using CommonServiceLocator;
 using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Boards;
-using Engine.Models.Config;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 using Engine.Strategies.AlphaBeta;
-using Engine.Strategies.Base;
 using Newtonsoft.Json;
 
 namespace Tools

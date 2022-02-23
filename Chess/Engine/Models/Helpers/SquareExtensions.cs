@@ -58,6 +58,12 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static BitBoard AsBitBoard(this byte square)
+        {
+            return _values[square];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetOpponent(this int square)
         {
             return _opponents[square];

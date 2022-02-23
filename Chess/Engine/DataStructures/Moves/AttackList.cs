@@ -7,7 +7,7 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
 {
-    public class AttackList : IReadOnlyCollection<IAttack>
+    public class AttackList : IEnumerable<IAttack>
     {
         private readonly IAttack[] _items;
 
@@ -20,7 +20,7 @@ namespace Engine.DataStructures.Moves
 
         #region Implementation of IReadOnlyCollection<out IMove>
 
-        public int Count { get; private set; }
+        public int Count;
 
         #endregion
 

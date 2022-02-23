@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using CommonServiceLocator;
+using Engine.DataStructures;
 using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Boards;
@@ -12,11 +12,17 @@ namespace Engine.Sorting.Sorters
 {
     public class AdvancedSorter : MoveSorter
     {
+        protected readonly PositionsList PositionsList;
+        protected readonly AttackList AttackList;
+
         protected AdvancedMoveCollection AdvancedMoveCollection;
         protected readonly IMoveProvider MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
         public AdvancedSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
         {
+            PositionsList = new PositionsList();
+            AttackList = new AttackList();
+
             AdvancedMoveCollection = new AdvancedMoveCollection(comparer);
             Comparer = comparer;
         }
@@ -113,9 +119,7 @@ namespace Engine.Sorting.Sorters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void ProcessMove(IMove move)
-        { 
-            var board = Position.GetBoard();
-
+        {
             var phase = Position.GetPhase();
             if (move.Piece.IsWhite())
             {
@@ -128,7 +132,7 @@ namespace Engine.Sorting.Sorters
                     }
                 }
 
-                if (IsBadWhiteSee(board, move))
+                if (IsBadWhiteSee(move))
                 {
                     return;
                 }
@@ -141,7 +145,7 @@ namespace Engine.Sorting.Sorters
                         case Piece.WhiteBishop:
                         {
                             var bit = move.To.AsBitBoard();
-                            if ((bit & board.GetPerimeter()).Any())
+                            if ((bit & Board.GetPerimeter()).Any())
                             {
                                 AdvancedMoveCollection.AddNonSuggested(move);
                                 return;
@@ -178,7 +182,7 @@ namespace Engine.Sorting.Sorters
                 else
                 {
                     Position.Do(move);
-                    if (IsCheckToBlack(board, move))
+                    if (IsCheckToBlack(move))
                     {
                         AdvancedMoveCollection.AddCheck(move);
                     }
@@ -201,7 +205,7 @@ namespace Engine.Sorting.Sorters
                     }
                 }
 
-                if (IsBadBlackSee(board, move))
+                if (IsBadBlackSee(move))
                 {
                     return;
                 }
@@ -214,7 +218,7 @@ namespace Engine.Sorting.Sorters
                         case Piece.BlackBishop:
                         {
                             var bit = move.To.AsBitBoard();
-                            if ((bit & board.GetPerimeter()).Any())
+                            if ((bit & Board.GetPerimeter()).Any())
                             {
                                 AdvancedMoveCollection.AddNonSuggested(move);
                                 return;
@@ -246,7 +250,7 @@ namespace Engine.Sorting.Sorters
                 else
                 {
                     Position.Do(move);
-                    if (IsCheckToWhite(board, move))
+                    if (IsCheckToWhite(move))
                     {
                         AdvancedMoveCollection.AddCheck(move);
                     }
@@ -261,79 +265,79 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsCheckToWhite(IBoard board, IMove move)
+        protected bool IsCheckToWhite(IMove move)
         {
-            var whiteKingPosition = board.GetWhiteKingPosition();
-            var attacks = MoveProvider.GetAttacks(move.Piece, move.To, whiteKingPosition.AsByte());
-            return attacks?.Any(attack => attack.IsLegalAttack(board)) == true;
+            var whiteKingPosition = Board.GetWhiteKingPosition();
+            return MoveProvider.AnyLegalAttacksTo(move.Piece, move.To, whiteKingPosition.AsByte());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsBadBlackSee(IBoard board, IMove move)
+        protected bool IsBadBlackSee(IMove move)
         {
-            var attackTo = MoveProvider.GetWhitePawnAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.WhitePawn)) return true;
+            var attackTo = MoveProvider.GetWhitePawnAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.WhitePawn)) return true;
 
-            attackTo = MoveProvider.GetWhiteKnightAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.WhiteKnight)) return true;
+            attackTo = MoveProvider.GetWhiteKnightAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.WhiteKnight)) return true;
 
-            attackTo = MoveProvider.GetWhiteBishopAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.WhiteBishop)) return true;
+            attackTo = MoveProvider.GetWhiteBishopAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.WhiteBishop)) return true;
 
-            attackTo = MoveProvider.GetWhiteRookAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.WhiteRook)) return true;
+            attackTo = MoveProvider.GetWhiteRookAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.WhiteRook)) return true;
 
-            attackTo = MoveProvider.GetWhiteQueenAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.WhiteQueen)) return true;
+            attackTo = MoveProvider.GetWhiteQueenAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.WhiteQueen)) return true;
 
-            attackTo = MoveProvider.GetWhiteKingAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.WhiteKing)) return true;
+            attackTo = MoveProvider.GetWhiteKingAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.WhiteKing)) return true;
 
             return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsCheckToBlack(IBoard board, IMove move)
+        protected bool IsCheckToBlack(IMove move)
         {
-            var blackKingPosition = board.GetBlackKingPosition();
-            var attacks = MoveProvider.GetAttacks(move.Piece, move.To, blackKingPosition.AsByte());
-            return attacks?.Any(attack => attack.IsLegalAttack(board)) == true;
+            var blackKingPosition = Board.GetBlackKingPosition();
+            return MoveProvider.AnyLegalAttacksTo(move.Piece, move.To, blackKingPosition.AsByte());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsBadWhiteSee(IBoard board, IMove move)
+        protected bool IsBadWhiteSee(IMove move)
         {
-            var attackTo = MoveProvider.GetBlackPawnAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.BlackPawn)) return true;
+            var attackTo = MoveProvider.GetBlackPawnAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.BlackPawn)) return true;
 
-            attackTo = MoveProvider.GetBlackKnightAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.BlackKnight)) return true;
+            attackTo = MoveProvider.GetBlackKnightAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.BlackKnight)) return true;
 
-            attackTo = MoveProvider.GetBlackBishopAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.BlackBishop)) return true;
+            attackTo = MoveProvider.GetBlackBishopAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.BlackBishop)) return true;
 
-            attackTo = MoveProvider.GetBlackRookAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.BlackRook)) return true;
+            attackTo = MoveProvider.GetBlackRookAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.BlackRook)) return true;
 
-            attackTo = MoveProvider.GetBlackQueenAttackTo(board, move.To.AsByte());
-            if (IsBadSee( board, move, attackTo, Piece.BlackQueen)) return true;
+            attackTo = MoveProvider.GetBlackQueenAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.BlackQueen)) return true;
 
-            attackTo = MoveProvider.GetBlackKingAttackTo(board, move.To.AsByte());
-            if (IsBadSee(board, move, attackTo, Piece.BlackKing)) return true;
+            attackTo = MoveProvider.GetBlackKingAttackTo(Board, move.To.AsByte());
+            if (IsBadSee(move, attackTo, Piece.BlackKing)) return true;
 
             return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsBadSee(IBoard board, IMove move, BitBoard attackTo,
+        protected bool IsBadSee(IMove move, BitBoard attackTo,
             Piece piece)
         {
-            foreach (var p in attackTo.BitScan())
+            attackTo.GetPositions(PositionsList);
+            for (var i = 0; i < PositionsList.Count; i++)
             {
-                foreach (var a in MoveProvider.GetAttacks(piece, p))
+                MoveProvider.GetAttacks(piece, PositionsList[i], AttackList);
+                for (var x = 0; x < AttackList.Count; x++)
                 {
-                    a.Captured = move.Piece;
-                    if (board.StaticExchange(a) <= 0) continue;
+                    AttackList[x].Captured = move.Piece;
+                    if (Board.StaticExchange(AttackList[x]) <= 0) continue;
 
                     AdvancedMoveCollection.AddBadMove(move);
                     return true;

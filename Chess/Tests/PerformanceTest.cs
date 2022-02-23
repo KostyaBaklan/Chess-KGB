@@ -18,7 +18,6 @@ using Engine.Strategies.AlphaBeta.Null.Extended;
 using Engine.Strategies.Aspiration.Original;
 using Engine.Strategies.Base;
 using Engine.Strategies.IterativeDeeping.Extended;
-using Engine.Strategies.LateMove;
 using Engine.Strategies.LateMove.Base;
 using Engine.Strategies.LateMove.Base.Null;
 using Engine.Strategies.LateMove.Deep;

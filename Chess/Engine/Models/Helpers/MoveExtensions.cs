@@ -321,19 +321,19 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackRookAttackPattern(this int position, BitBoard occupied)
+        public static BitBoard GetBlackRookAttackPattern(this byte position, BitBoard occupied)
         {
             return position.RookAttacks(occupied);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackQueenAttackPattern(this int position, BitBoard occupied)
+        public static BitBoard GetBlackQueenAttackPattern(this byte position, BitBoard occupied)
         {
             return position.QueenAttacks(occupied);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackBishopAttackPattern(this int position, BitBoard occupied)
+        public static BitBoard GetBlackBishopAttackPattern(this byte position, BitBoard occupied)
         {
             return position.BishopAttacks(occupied);
         }
@@ -357,19 +357,19 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteRookAttackPattern(this int position, BitBoard occupied)
+        public static BitBoard GetWhiteRookAttackPattern(this byte position, BitBoard occupied)
         {
             return position.RookAttacks(occupied);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteQueenAttackPattern(this int position, BitBoard occupied)
+        public static BitBoard GetWhiteQueenAttackPattern(this byte position, BitBoard occupied)
         {
             return position.QueenAttacks(occupied);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteBishopAttackPattern(this int position, BitBoard occupied)
+        public static BitBoard GetWhiteBishopAttackPattern(this byte position, BitBoard occupied)
         {
             return position.BishopAttacks(occupied);
         }

@@ -1310,9 +1310,9 @@ namespace Engine.Services
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IAttack> GetAttacks(Piece piece, int @from)
+        public void GetAttacks(Piece piece, byte @from, AttackList attackList)
         {
+            attackList.Clear();
             var lists = _attacks[piece.AsByte()][from];
             for (var i = 0; i < lists.Count; i++)
             {
@@ -1321,7 +1321,7 @@ namespace Engine.Services
                 {
                     var m = list[j];
                     if (m.IsLegal(_board))
-                        yield return m;
+                        attackList.Add(m);
 
                     else if (!_board.IsEmpty(m.EmptyBoard))
                     {
@@ -1330,6 +1330,43 @@ namespace Engine.Services
                 }
             }
         }
+
+        public bool AnyLegalAttacksTo(Piece piece, Square @from, int to)
+        {
+            var attacks = _attacksTo[piece.AsByte()][@from.AsByte()][to];
+            if (attacks == null) return false;
+
+            for (var i = 0; i < attacks.Count; i++)
+            {
+                if (attacks[i].IsLegalAttack(_board))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public IEnumerable<IAttack> GetAttacks(Piece piece, int @from)
+        //{
+        //    var lists = _attacks[piece.AsByte()][from];
+        //    for (var i = 0; i < lists.Count; i++)
+        //    {
+        //        var list = lists[i];
+        //        for (var j = 0; j < list.Count; j++)
+        //        {
+        //            var m = list[j];
+        //            if (m.IsLegal(_board))
+        //                yield return m;
+
+        //            else if (!_board.IsEmpty(m.EmptyBoard))
+        //            {
+        //                break;
+        //            }
+        //        }
+        //    }
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IAttack> GetAttacks(Piece piece, Square @from, int to)

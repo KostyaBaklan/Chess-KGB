@@ -12,20 +12,20 @@ namespace Engine.Models.Helpers
     {
         private const ulong _magic = 0x07EDD5E59A4E28C2;
 
-        private static readonly int[] _magicTable;
-        private static readonly DynamicArray<int>[] _positions;
+        private static readonly byte[] _magicTable;
+        private static readonly DynamicArray<byte>[] _positions;
 
         static BitBoardExtensions()
         {
-            _magicTable = new int[64];
-            _positions = new DynamicArray<int>[12];
+            _magicTable = new byte[64];
+            _positions = new DynamicArray<byte>[12];
             for (var x = 0; x < _positions.Length; x++)
             {
-                _positions[x] = new DynamicArray<int>();
+                _positions[x] = new DynamicArray<byte>();
             }
 
             ulong bit = 1;
-            int i = 0;
+            byte i = 0;
             do
             {
                 _magicTable[(bit * _magic) >> 58] = i;
@@ -61,7 +61,19 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int BitScanReverse(this BitBoard b)
+        public static void GetPositions(this BitBoard b, PositionsList positionsList)
+        {
+            positionsList.Clear();
+            while (b.Any())
+            {
+                int position = BitScanForward(b);
+                positionsList.Add((byte) position);
+                b = b.Remove(position);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte BitScanReverse(this BitBoard b)
         {
             b |= b >> 1;
             b |= b >> 2;
@@ -74,7 +86,7 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int BitScanForward(this BitBoard b)
+        public static byte BitScanForward(this BitBoard b)
         {
             return _magicTable[(b.Lsb() * _magic) >> 58];
         }
@@ -94,13 +106,13 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DynamicArray<int> Coordinates(this BitBoard b, int index)
+        public static DynamicArray<byte> Coordinates(this BitBoard b, int index)
         {
             var coordinates = _positions[index];
             coordinates.Clear();
             while (!b.IsZero())
             {
-                int position = BitScanForward(b);
+                byte position = BitScanForward(b);
                 coordinates.Add(position);
                 b = b.Remove(position);
             }

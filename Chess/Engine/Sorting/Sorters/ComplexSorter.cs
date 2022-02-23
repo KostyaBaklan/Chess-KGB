@@ -42,7 +42,7 @@ namespace Engine.Sorting.Sorters
                     return;
                 }
 
-                if (IsBadWhiteSee(board, move))
+                if (IsBadWhiteSee(move))
                 {
                     return;
                 }
@@ -92,7 +92,7 @@ namespace Engine.Sorting.Sorters
                 else
                 {
                     Position.Do(move);
-                    if (IsCheckToBlack(board, move))
+                    if (IsCheckToBlack( move))
                     {
                         AdvancedMoveCollection.AddCheck(move);
                     }
@@ -124,7 +124,7 @@ namespace Engine.Sorting.Sorters
                     return;
                 }
 
-                if (IsBadBlackSee(board, move))
+                if (IsBadBlackSee(move))
                 {
                     return;
                 }
@@ -169,7 +169,7 @@ namespace Engine.Sorting.Sorters
                 else
                 {
                     Position.Do(move);
-                    if (IsCheckToWhite(board, move))
+                    if (IsCheckToWhite( move))
                     {
                         AdvancedMoveCollection.AddCheck(move);
                     }

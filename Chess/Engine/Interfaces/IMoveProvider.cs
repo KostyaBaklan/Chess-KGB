@@ -12,8 +12,9 @@ namespace Engine.Interfaces
         IEnumerable<IMove> GetAll();
         IEnumerable<IAttack> GetAttacks(Piece piece, Square cell);
         void GetAttacks(byte piece, Square cell, AttackList attackList);
-        IEnumerable<IAttack> GetAttacks(Piece piece, int @from);
-        IEnumerable<IAttack> GetAttacks(Piece piece, Square from, int to);
+        void GetAttacks(Piece piece, byte @from, AttackList attackList);
+        //IEnumerable<IAttack> GetAttacks(Piece piece, int @from);
+        bool AnyLegalAttacksTo(Piece piece, Square from, int to);
         IEnumerable<IAttack> GetAttacks(Piece piece, int from, int to);
         IEnumerable<IMove> GetMoves(Piece piece, Square cell);
         void GetMoves(byte piece, Square cell, MoveList moveList);

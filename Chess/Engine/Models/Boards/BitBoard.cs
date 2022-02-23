@@ -119,10 +119,12 @@ namespace Engine.Models.Boards
         public BitBoard Set(params int[] bits)
         {
             var v = this;
-            foreach (var bit in bits)
+            for (var index = 0; index < bits.Length; index++)
             {
+                var bit = bits[index];
                 v = v.Add(bit);
             }
+
             return v;
         }
 
