@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
-using Engine.Interfaces;
+using Engine.Models.Moves;
 
 namespace Engine.Sorting.Comparers
 {
-    public class AttackComparer : IComparer<IAttack>
+    public class AttackComparer : IComparer<AttackBase>
     {
         #region Implementation of IComparer<in IAttack>
 
-        public int Compare(IAttack x, IAttack y)
+        public int Compare(AttackBase x, AttackBase y)
         {
             return x.Captured.CompareTo(y.Captured);
         }

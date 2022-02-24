@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
+using Engine.Models.Moves;
 using Engine.Sorting.Sorters;
 
 namespace Engine.Interfaces
@@ -14,19 +15,19 @@ namespace Engine.Interfaces
         Turn GetTurn();
         bool GetPiece(Square cell, out Piece? piece);
 
-        void Make(IMove move);
+        void Make(MoveBase move);
         void UnMake();
-        void Do(IMove move);
-        void UnDo(IMove move);
+        void Do(MoveBase move);
+        void UnDo(MoveBase move);
         void SwapTurn();
 
-        IEnumerable<IAttack> GetAllAttacks(Square cell, Piece piece);
-        IEnumerable<IMove> GetAllMoves(Square cell, Piece piece);
-        IMove[] GetAllAttacks(IMoveSorter sorter);
-        IMove[] GetAllMoves(IMoveSorter sorter, IMove pvMove = null);
+        IEnumerable<AttackBase> GetAllAttacks(Square cell, Piece piece);
+        IEnumerable<MoveBase> GetAllMoves(Square cell, Piece piece);
+        MoveBase[] GetAllAttacks(IMoveSorter sorter);
+        MoveBase[] GetAllMoves(IMoveSorter sorter, MoveBase pvMove = null);
         int GetPieceValue(Square square);
         IBoard GetBoard();
-        IEnumerable<IMove> GetHistory();
+        IEnumerable<MoveBase> GetHistory();
         Phase GetPhase();
         bool CanWhitePromote();
         bool CanBlackPromote();

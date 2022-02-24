@@ -6,6 +6,7 @@ using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Boards;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
@@ -44,12 +45,12 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void Add(IMove move)
+        public virtual void Add(MoveBase move)
         {
             Moves[MoveHistoryService.GetPly()].Add(move.Key);
         }
 
-        public IMove[] Order(AttackList attacks, MoveList moves, IMove pvNode)
+        public MoveBase[] Order(AttackList attacks, MoveList moves, MoveBase pvNode)
         {
             int depth = MoveHistoryService.GetPly();
 
@@ -66,15 +67,15 @@ namespace Engine.Sorting.Sorters
 
             moveList.Sort(Comparer);
 
-            var m = new IMove[moveList.Count];
+            var m = new MoveBase[moveList.Count];
             moveList.CopyTo(m, 0);
             return m;
         }
 
-        public IMove[] Order(AttackList attacks)
+        public MoveBase[] Order(AttackList attacks)
         {
             var sortedAttacks = OrderAttacks(attacks);
-            if (sortedAttacks.Count == 0) return new IMove[0];
+            if (sortedAttacks.Count == 0) return new MoveBase[0];
 
             OrderAttacks(AttackCollection, sortedAttacks);
 
@@ -82,12 +83,12 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual Dictionary<Square, DynamicSortedList<IAttack>> OrderAttacks(AttackList attacks)
+        protected virtual Dictionary<Square, DynamicSortedList<AttackBase>> OrderAttacks(AttackList attacks)
         {
             var board = Position.GetBoard();
             var attackComparer = new AttackComparer();
 
-            Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks = new Dictionary<Square, DynamicSortedList<IAttack>>();
+            Dictionary<Square, DynamicSortedList<AttackBase>> sortedAttacks = new Dictionary<Square, DynamicSortedList<AttackBase>>();
             for (var index = 0; index < attacks.Count; index++)
             {
                 var attack = attacks[index];
@@ -98,7 +99,7 @@ namespace Engine.Sorting.Sorters
                 }
                 else
                 {
-                    sortedAttacks.Add(attack.To, new DynamicSortedList<IAttack>(attackComparer, attack));
+                    sortedAttacks.Add(attack.To, new DynamicSortedList<AttackBase>(attackComparer, attack));
                 }
             }
 
@@ -106,13 +107,13 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual void OrderAttacks(AttackCollection collection, Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks, IAttack pv)
+        protected virtual void OrderAttacks(AttackCollection collection, Dictionary<Square, DynamicSortedList<AttackBase>> sortedAttacks, AttackBase pv)
         {
             _moves.Clear();
             var maxValue = 0;
             int maxIndex = -1;
             var index = 0;
-            foreach (DynamicSortedList<IAttack> sortedAttack in sortedAttacks.Values)
+            foreach (DynamicSortedList<AttackBase> sortedAttack in sortedAttacks.Values)
             {
                 while (sortedAttack.Count > 0)
                 {
@@ -150,7 +151,7 @@ namespace Engine.Sorting.Sorters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void OrderAttacks(AttackCollection collection,
-            Dictionary<Square, DynamicSortedList<IAttack>> sortedAttacks)
+            Dictionary<Square, DynamicSortedList<AttackBase>> sortedAttacks)
         {
             _moves.Clear();
             var maxValue = 0;
@@ -199,9 +200,9 @@ namespace Engine.Sorting.Sorters
             collection.AddWinCapture(_moves);
         }
 
-        protected abstract IMove[] OrderInternal(AttackList attacks, MoveList moves,
+        protected abstract MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection);
-        protected abstract IMove[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection, IMove pvNode);
+        protected abstract MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
+            IKillerMoveCollection killerMoveCollection, MoveBase pvNode);
     }
 }

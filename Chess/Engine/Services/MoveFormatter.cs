@@ -9,13 +9,13 @@ namespace Engine.Services
     {
         #region Implementation of IMoveFormatter
 
-        public string Format(IMove move)
+        public string Format(MoveBase move)
         {
             var format = $"{FormatInternal(move)}";
-            return move.IsCheck() ? $"{format}+" : format;
+            return move.IsCheck ? $"{format}+" : format;
         }
 
-        private string FormatInternal(IMove move)
+        private string FormatInternal(MoveBase move)
         {
             if (move is Attack attack)
             {
@@ -35,7 +35,7 @@ namespace Engine.Services
             return FormatMove(move);
         }
 
-        private string FormatMove(IMove move)
+        private string FormatMove(MoveBase move)
         {
             var figure = GetFigure(move);
 
@@ -51,7 +51,7 @@ namespace Engine.Services
 
         #endregion
 
-        private static string GetFigure(IMove m)
+        private static string GetFigure(MoveBase m)
         {
             string figure = string.Empty;
 

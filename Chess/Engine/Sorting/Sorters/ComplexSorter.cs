@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using System.Runtime.CompilerServices;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
@@ -17,14 +19,14 @@ namespace Engine.Sorting.Sorters
         #region Overrides of MoveSorter
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void ProcessMove(IMove move)
+        protected override void ProcessMove(MoveBase move)
         {
             var board = Position.GetBoard();
 
             var phase = Position.GetPhase();
             if (move.Piece.IsWhite())
             {
-                if (move.Piece == Piece.WhiteKing && !MoveHistoryService.GetLastMove().IsCheck())
+                if (move.Piece == Piece.WhiteKing && !MoveHistoryService.GetLastMove().IsCheck)
                 {
                     if (phase != Phase.End)
                     {
@@ -106,7 +108,7 @@ namespace Engine.Sorting.Sorters
             }
             else
             {
-                if (move.Piece == Piece.BlackKing && !MoveHistoryService.GetLastMove().IsCheck())
+                if (move.Piece == Piece.BlackKing && !MoveHistoryService.GetLastMove().IsCheck)
                 {
                     if (phase != Phase.End)
                     {
@@ -184,13 +186,14 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool BlackRookUnderAttack(IBoard board, IMove move)
+        private bool BlackRookUnderAttack(IBoard board, MoveBase move)
         {
             var pieceBits = board.GetPieceBits(Piece.BlackRook);
             if (!pieceBits.Any()) return false;
-
-            foreach (var rookPosition in pieceBits.BitScan())
+            pieceBits.GetPositions(PositionsList);
+            for (int i = 0; i < PositionsList.Count; i++)
             {
+                var rookPosition = PositionsList[i];
                 if (MoveProvider.GetWhitePawnAttackTo(board, rookPosition).Any() ||
                     MoveProvider.GetWhiteKnightAttackTo(board, rookPosition).Any() ||
                     MoveProvider.GetWhiteBishopAttackTo(board, rookPosition).Any())
@@ -217,7 +220,7 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool BlackQueenUnderAttack(IBoard board, IMove move)
+        private bool BlackQueenUnderAttack(IBoard board, MoveBase move)
         {
             var pieceBits = board.GetPieceBits(Piece.BlackQueen);
             if (!pieceBits.Any()) return false;
@@ -248,7 +251,7 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool WhiteQueenUnderAttack(IBoard board, IMove move)
+        private bool WhiteQueenUnderAttack(IBoard board, MoveBase move)
         {
             var pieceBits = board.GetPieceBits(Piece.WhiteQueen);
             if (!pieceBits.Any()) return false;
@@ -279,13 +282,14 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool WhiteRookUnderAttack(IBoard board, IMove move)
+        private bool WhiteRookUnderAttack(IBoard board, MoveBase move)
         {
             var pieceBits = board.GetPieceBits(Piece.WhiteRook);
             if (!pieceBits.Any()) return false;
-
-            foreach (var rookPosition in pieceBits.BitScan())
+            pieceBits.GetPositions(PositionsList);
+            for (int i = 0; i < PositionsList.Count; i++)
             {
+                byte rookPosition = PositionsList[i];
                 if (MoveProvider.GetBlackPawnAttackTo(board, rookPosition).Any() ||
                     MoveProvider.GetBlackKnightAttackTo(board, rookPosition).Any() ||
                     MoveProvider.GetBlackBishopAttackTo(board, rookPosition).Any())

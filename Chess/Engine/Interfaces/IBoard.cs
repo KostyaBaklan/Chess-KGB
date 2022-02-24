@@ -1,6 +1,7 @@
 ﻿using Engine.DataStructures;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
+using Engine.Models.Moves;
 
 namespace Engine.Interfaces
 {
@@ -17,10 +18,10 @@ namespace Engine.Interfaces
         short GetValue();
         int GetStaticValue();
         Piece GetPiece(Square cell);
-        Piece GetPiece(int cell);
+        //Piece GetPiece(int cell);
         bool GetPiece(Square cell, out Piece? piece);
-        void SetOver(Square to, bool b);
-        bool IsOver(int square);
+        void SetOver(byte to, bool b);
+        bool IsOver(byte square);
         void DoWhiteSmallCastle();
         void DoBlackSmallCastle();
         void DoBlackBigCastle();
@@ -36,13 +37,13 @@ namespace Engine.Interfaces
         Square GetBlackKingPosition();
         DynamicArray<byte> GetPositions(int index);
         ulong GetKey();
-        Square[] GetPiecePositions(int piece);
+        Square[] GetPiecePositions(byte piece);
         BitBoard GetOccupied();
         BitBoard GetPieceBits(Piece piece);
         BitBoard GetPerimeter();
         Phase UpdatePhase();
-        int StaticExchange(IAttack attack);
-        Piece[] GetBoardSet();
+        int StaticExchange(AttackBase attack);
+        //Piece[] GetBoardSet();
         int GetBlackMaxValue();
         int GetWhiteMaxValue();
         bool CanWhitePromote();

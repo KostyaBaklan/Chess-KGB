@@ -8,6 +8,7 @@ using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Models.Moves;
 
 namespace Engine.Models.Boards
 {
@@ -297,7 +298,7 @@ namespace Engine.Models.Boards
             var piece = Piece.BlackPawn.AsByte();
             for (var i = 0; i < positions.Length; i++)
             {
-                int coordinate = positions[i];
+                byte coordinate = positions[i];
                 value += _evaluationService.GetFullValue(piece, coordinate, _phase);
                 if (_whites.IsSet((coordinate - 8).AsBitBoard()))
                 {
@@ -507,15 +508,15 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int BlackBackwardPawn(BitBoard fBit, int coordinate, int value, int file)
+        private int BlackBackwardPawn(BitBoard fBit, byte coordinate, int value, int file)
         {
             var b = fBit & _boards[Piece.BlackPawn.AsByte()];
             if (!b.Any()) return value;
 
-            int lsb = b.BitScanReverse();
+            byte lsb = b.BitScanReverse();
             if (!lsb.IsLessRank(coordinate)) return value;
 
-            var weakPosition = lsb / 8 * 8 + file;
+            byte weakPosition = (byte) (lsb / 8 * 8 + file);
             var attackPattern = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), weakPosition);
             var w = attackPattern & _boards[Piece.WhitePawn.AsByte()];
             if (w.Any())
@@ -535,7 +536,7 @@ namespace Engine.Models.Boards
             int lsb = w.BitScanForward();
             if (!lsb.IsGreaterRank(coordinate)) return value;
 
-            var weakPosition = lsb / 8 * 8 + file;
+            byte weakPosition = (byte) (lsb / 8 * 8 + file);
             var attackPattern = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), weakPosition);
             var b = attackPattern & _boards[Piece.BlackPawn.AsByte()];
             if (b.Any())
@@ -547,7 +548,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private byte[] GetPositionInternal(int piece)
+        private byte[] GetPositionInternal(byte piece)
         {
             var b = _boards[piece];
             byte[] positions = new byte[_pieceCount[piece]];
@@ -620,11 +621,11 @@ namespace Engine.Models.Boards
             return _pieces[cell.AsByte()];
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Piece GetPiece(int cell)
-        {
-            return _pieces[cell];
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public Piece GetPiece(int cell)
+        //{
+        //    return _pieces[cell];
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool GetPiece(Square cell, out Piece? piece)
@@ -644,12 +645,12 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetOver(Square to, bool b)
+        public void SetOver(byte to, bool b)
         {
-            _overBoard[to.AsByte()] = b;
+            _overBoard[to] = b;
         }
 
-        public bool IsOver(int square)
+        public bool IsOver(byte square)
         {
             return _overBoard[square];
         }
@@ -707,17 +708,9 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Square[] GetPiecePositions(int piece)
+        public Square[] GetPiecePositions(byte piece)
         {
-            int i = 0;
-            Square[] squares = new Square[_pieceCount[piece]];
-            var ints = _boards[piece].Coordinates(piece);
-            for (var index = 0; index < _pieceCount[piece]; index++)
-            {
-                squares[i++] = new Square(ints[index]);
-            }
-
-            return squares;
+            return _boards[piece].GetCoordinates(piece, _pieceCount[piece]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -791,12 +784,6 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Piece[] GetBoardSet()
-        {
-            return _pieces;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetBlackMaxValue()
         {
             int value = 0;
@@ -843,7 +830,7 @@ namespace Engine.Models.Boards
         #region SEE
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int StaticExchange(IAttack attack)
+        public int StaticExchange(AttackBase attack)
         {
             var boards = new BitBoard[_boards.Length];
             Array.Copy(_boards, boards, _boards.Length);

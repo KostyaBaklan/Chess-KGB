@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System;
 using System.Runtime.CompilerServices;
 using Engine.DataStructures;
 using Engine.Interfaces;
@@ -8,38 +8,25 @@ using Engine.Models.Helpers;
 
 namespace Engine.Models.Moves
 {
-    public abstract class MoveBase:IMove
+    public abstract class MoveBase : IEquatable<MoveBase>
     {
-        private bool _isCheck;
-
         protected MoveBase()
         {
-            _isCheck = false;
+            IsCheck = false;
             EmptyBoard = new BitBoard(0ul);
         }
 
         #region Implementation of IMove
 
-        public short Key { get; set; }
-        public int Difference { get; set; }
-        public int History { get; set; }
-        public Piece Piece { get; set; }
-        public Square From { get; set; }
-        public Square To { get; set; }
-        public MoveType Type { get; set; }
-        public BitBoard EmptyBoard { get; protected set; }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsCheck()
-        {
-            return _isCheck;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetMoveResult(bool isCheck)
-        {
-            _isCheck = isCheck;
-        }
+        public short Key;
+        public bool IsCheck;
+        public int Difference;
+        public int History;
+        public Piece Piece;
+        public Square From;
+        public Square To;
+        public MoveType Type;
+        public BitBoard EmptyBoard;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public abstract bool IsLegal(IBoard board);
@@ -83,8 +70,12 @@ namespace Engine.Models.Moves
         public void Set(params int[] squares)
         {
             BitBoard v = new BitBoard();
-            v = squares.Select(s => s.AsBitBoard())
-                .Aggregate(v, (current, square) => current | square);
+            for (var index = 0; index < squares.Length; index++)
+            {
+                var s = squares[index];
+                var board = s.AsBitBoard();
+                v = v | board;
+            }
 
             EmptyBoard = EmptyBoard |= v;
         }
@@ -101,37 +92,29 @@ namespace Engine.Models.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool Equals(object obj)
         {
-            if (obj is IMove move)
-            {
-                return Key == move.Key;
-            }
-
-            return false;
+            return !ReferenceEquals(null, obj) && Equals((MoveBase) obj);
         }
 
         #region Equality members
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(IMove other)
+        public bool Equals(MoveBase other)
         {
-            return Key == other.Key;
+            return Key == other?.Key;
         }
 
         public override int GetHashCode()
         {
-            return Key.GetHashCode();
+            return Key;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(MoveBase left, MoveBase right)
         {
-            return left.Key == right.Key;
+            return Equals(left, right);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(MoveBase left, MoveBase right)
         {
-            return left.Key != right.Key;
+            return !Equals(left, right);
         }
 
         #endregion

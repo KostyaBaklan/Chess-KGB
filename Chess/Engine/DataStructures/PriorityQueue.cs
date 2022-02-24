@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Engine.DataStructures.Moves;
-using Engine.Interfaces;
+using Engine.Models.Moves;
 
 namespace Engine.DataStructures
 {
@@ -103,7 +103,7 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove Maximum()
+        public MoveBase Maximum()
         {
             _size--;
             Swap(0, _size);
@@ -116,7 +116,7 @@ namespace Engine.DataStructures
             _size = 0;
         }
 
-        public IMove this[int index]
+        public MoveBase this[int index]
         {
             get { return _elements[index].Move; }
         }

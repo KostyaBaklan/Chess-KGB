@@ -56,7 +56,7 @@ namespace Engine.Models.Moves
         {
             if (Type == MoveType.Over)
             {
-                board.SetOver(To,true );
+                board.SetOver(To.AsByte(),true );
             }
             board.Move(Piece, From, To);
         }
@@ -66,7 +66,7 @@ namespace Engine.Models.Moves
         {
             if (Type == MoveType.Over)
             {
-                board.SetOver(To, false);
+                board.SetOver(To.AsByte(), false);
             }
             board.Move(Piece, To, From);
         }

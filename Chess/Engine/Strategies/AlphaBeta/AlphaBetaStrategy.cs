@@ -3,6 +3,7 @@ using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Models.Enums;
+using Engine.Models.Moves;
 using Engine.Models.Transposition;
 using Engine.Strategies.Base;
 
@@ -30,22 +31,22 @@ namespace Engine.Strategies.AlphaBeta
                 {
                     capacity = 5002903;
                 }
-                //else if (depth == 8)
-                //{
-                //    capacity = 10023499;
-                //}
-                //else if (depth == 7)
-                //{
-                //    capacity = 15486997;
-                //}
-                //else
-                //{
-                //    capacity = 22115983;
-                //}
-                else
+                else if (depth == 8)
                 {
                     capacity = 10023499;
                 }
+                else if (depth == 9)
+                {
+                    capacity = 15486997;
+                }
+                else
+                {
+                    capacity = 22115983;
+                }
+                //else
+                //{
+                //    capacity = 10023499;
+                //}
 
                 Table = new TranspositionTable(capacity, depth);
             }
@@ -70,11 +71,11 @@ namespace Engine.Strategies.AlphaBeta
 
         #region Overrides of StrategyBase
 
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
+        public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
             Result result = new Result();
 
-            IMove pv = pvMove;
+            MoveBase pv = pvMove;
             var key = Position.GetKey();
             if (pv == null)
             {
@@ -135,7 +136,7 @@ namespace Engine.Strategies.AlphaBeta
                 return Evaluate(alpha, beta);
             }
 
-            IMove pv = null;
+            MoveBase pv = null;
             var key = Position.GetKey();
 
             bool shouldUpdate = false;
@@ -178,7 +179,7 @@ namespace Engine.Strategies.AlphaBeta
             }
 
             int value = int.MinValue;
-            IMove bestMove = null;
+            MoveBase bestMove = null;
 
             var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
@@ -222,7 +223,7 @@ namespace Engine.Strategies.AlphaBeta
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected int StoreValue(int alpha, int beta, int depth, int value, IMove bestMove)
+        protected int StoreValue(int alpha, int beta, int depth, int value, MoveBase bestMove)
         {
             TranspositionEntry te = new TranspositionEntry
                 {Depth = (byte) depth, Value = (short) value, PvMove = bestMove.Key};

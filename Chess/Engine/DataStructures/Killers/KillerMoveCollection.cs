@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Moves;
 
@@ -9,13 +8,13 @@ namespace Engine.DataStructures.Killers
     {
         private readonly int _capacity;
         private int _index;
-        private readonly IMove[] _moves;
-        private static readonly IMove _default = new Move();
+        private readonly MoveBase[] _moves;
+        private static readonly MoveBase _default = new Move();
 
         public KillerMoveCollection(IConfigurationProvider configurationProvider)
         {
             _capacity = configurationProvider.GeneralConfiguration.KillerCapacity;
-            _moves = new IMove[_capacity];
+            _moves = new MoveBase[_capacity];
             for (int i = 0; i < _capacity; i++)
             {
                 _moves[i] = _default;
@@ -23,7 +22,7 @@ namespace Engine.DataStructures.Killers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Contains(IMove move)
+        public bool Contains(MoveBase move)
         {
             for (int i = 0; i < _capacity; i++)
             {
@@ -33,7 +32,7 @@ namespace Engine.DataStructures.Killers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(IMove move)
+        public void Add(MoveBase move)
         {
             _moves[_index % _capacity] = move;
             _index++;

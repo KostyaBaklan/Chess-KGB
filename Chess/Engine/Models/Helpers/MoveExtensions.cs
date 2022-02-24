@@ -44,63 +44,63 @@ namespace Engine.Models.Helpers
         //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteKingAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetWhiteKingAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), to) &
                    board.GetPieceBits(Piece.WhiteKing);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhitePawnAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetWhitePawnAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), to) &
                    board.GetPieceBits(Piece.WhitePawn);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteRookAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetWhiteRookAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return to.RookAttacks(board.GetOccupied()) & board.GetPieceBits(Piece.WhiteRook);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteQueenAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetWhiteQueenAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return to.QueenAttacks(board.GetOccupied()) & board.GetPieceBits(Piece.WhiteQueen);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteKnightAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetWhiteKnightAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return moveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), to) &
                    board.GetPieceBits(Piece.WhiteKnight);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteBishopAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetWhiteBishopAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return to.BishopAttacks(board.GetOccupied()) & board.GetPieceBits(Piece.WhiteBishop);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackKingAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetBlackKingAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), to) &
                 board.GetPieceBits(Piece.BlackKing);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackPawnAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetBlackPawnAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), to) &
                    board.GetPieceBits(Piece.BlackPawn);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackRookAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetBlackRookAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return to.RookAttacks(board.GetOccupied()) & board.GetPieceBits(Piece.BlackRook);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackQueenAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetBlackQueenAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return to.QueenAttacks(board.GetOccupied()) & board.GetPieceBits(Piece.BlackQueen);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackKnightAttackTo(this IMoveProvider moveProvider, IBoard board, int to)
+        public static BitBoard GetBlackKnightAttackTo(this IMoveProvider moveProvider, IBoard board, byte to)
         {
             return moveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), to) &
                    board.GetPieceBits(Piece.BlackKnight);
@@ -315,7 +315,7 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackPawnAttackPattern(this IMoveProvider moveProvider, int position)
+        public static BitBoard GetBlackPawnAttackPattern(this IMoveProvider moveProvider, byte position)
         {
             return moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), position);
         }
@@ -339,19 +339,19 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackKingAttackPattern(this IMoveProvider moveProvider, int position)
+        public static BitBoard GetBlackKingAttackPattern(this IMoveProvider moveProvider, byte position)
         {
             return moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), position);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetBlackKnightAttackPattern(this IMoveProvider moveProvider, int position)
+        public static BitBoard GetBlackKnightAttackPattern(this IMoveProvider moveProvider, byte position)
         {
             return moveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), position);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhitePawnAttackPattern(this IMoveProvider moveProvider, int position)
+        public static BitBoard GetWhitePawnAttackPattern(this IMoveProvider moveProvider, byte position)
         {
             return moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), position);
         }
@@ -375,13 +375,13 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteKnightAttackPattern(this IMoveProvider moveProvider, int position)
+        public static BitBoard GetWhiteKnightAttackPattern(this IMoveProvider moveProvider, byte position)
         {
             return moveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), position);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BitBoard GetWhiteKingAttackPattern(this IMoveProvider moveProvider, int position)
+        public static BitBoard GetWhiteKingAttackPattern(this IMoveProvider moveProvider, byte position)
         {
             return moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), position);
         }

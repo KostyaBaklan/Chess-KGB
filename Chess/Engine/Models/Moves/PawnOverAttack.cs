@@ -15,7 +15,7 @@ namespace Engine.Models.Moves
         }
 
         public Piece Victim { get; set; }
-        public int VictimSquare { get; set; }
+        public byte VictimSquare { get; set; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsLegal(IBoard board)
@@ -34,7 +34,7 @@ namespace Engine.Models.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
         {
-            board.SetOver(new Square(VictimSquare), false);
+            board.SetOver(VictimSquare, false);
             board.Remove(Victim, new Square(VictimSquare));
             board.Move(Piece, From, To);
         }
@@ -42,7 +42,7 @@ namespace Engine.Models.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void UnMake(IBoard board, ArrayStack<Piece?> figureHistory)
         {
-            board.SetOver(new Square(VictimSquare), true);
+            board.SetOver(VictimSquare, true);
             board.Move(Piece, To, From);
             board.Add(Victim, new Square(VictimSquare));
         }

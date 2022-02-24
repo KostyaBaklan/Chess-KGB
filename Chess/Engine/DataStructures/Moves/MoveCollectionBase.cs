@@ -1,11 +1,11 @@
-﻿using Engine.Interfaces;
+﻿using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
 {
     public abstract class MoveCollectionBase //: IMoveCollection
     {
-        //protected List<IMove> Moves;
+        //protected List<MoveBase> Moves;
         protected readonly IMoveComparer Comparer;
 
         protected MoveCollectionBase(IMoveComparer comparer)
@@ -15,9 +15,9 @@ namespace Engine.DataStructures.Moves
 
         protected int Count;
 
-        //public IMove this[int index] => Moves[index];
+        //public MoveBase this[int index] => Moves[index];
 
-        public abstract IMove[] Build();
+        public abstract MoveBase[] Build();
 
         #region Overrides of Object
 

@@ -2,6 +2,7 @@
 using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Enums;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
@@ -13,7 +14,7 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMove[] OrderInternal(AttackList attacks, MoveList moves,
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection)
         {
             var sortedAttacks = OrderAttacks(attacks);
@@ -26,13 +27,13 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMove[] OrderInternal(AttackList attacks, MoveList moves,
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection,
-            IMove pvNode)
+            MoveBase pvNode)
         {
             var sortedAttacks = OrderAttacks(attacks);
 
-            if (pvNode is IAttack attack)
+            if (pvNode is AttackBase attack)
             {
                 OrderAttacks(MoveCollection, sortedAttacks, attack);
 
@@ -49,7 +50,7 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ProcessMoves(MoveList moves, IKillerMoveCollection killerMoveCollection, IMove pvNode)
+        private void ProcessMoves(MoveList moves, IKillerMoveCollection killerMoveCollection, MoveBase pvNode)
         {
             if (Position.GetTurn() == Turn.White)
             {

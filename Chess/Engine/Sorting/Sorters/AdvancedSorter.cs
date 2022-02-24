@@ -6,6 +6,7 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
@@ -30,7 +31,7 @@ namespace Engine.Sorting.Sorters
         #region Overrides of MoveSorter
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMove[] OrderInternal(AttackList attacks, MoveList moves,
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection)
         {
             var sortedAttacks = OrderAttacks(attacks);
@@ -58,13 +59,13 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override IMove[] OrderInternal(AttackList attacks, MoveList moves,
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection,
-            IMove pvNode)
+            MoveBase pvNode)
         {
             var sortedAttacks = OrderAttacks(attacks);
 
-            if (pvNode is IAttack attack)
+            if (pvNode is AttackBase attack)
             {
                 OrderAttacks(AdvancedMoveCollection, sortedAttacks, attack);
 
@@ -118,12 +119,12 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual void ProcessMove(IMove move)
+        protected virtual void ProcessMove(MoveBase move)
         {
             var phase = Position.GetPhase();
             if (move.Piece.IsWhite())
             {
-                if (move.Piece == Piece.WhiteKing && !MoveHistoryService.GetLastMove().IsCheck())
+                if (move.Piece == Piece.WhiteKing && !MoveHistoryService.GetLastMove().IsCheck)
                 {
                     if (phase!=Phase.End)
                     {
@@ -196,7 +197,7 @@ namespace Engine.Sorting.Sorters
             }
             else
             {
-                if (move.Piece == Piece.BlackKing && !MoveHistoryService.GetLastMove().IsCheck())
+                if (move.Piece == Piece.BlackKing && !MoveHistoryService.GetLastMove().IsCheck)
                 {
                     if (phase!=Phase.End)
                     {
@@ -265,14 +266,14 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsCheckToWhite(IMove move)
+        protected bool IsCheckToWhite(MoveBase move)
         {
             var whiteKingPosition = Board.GetWhiteKingPosition();
             return MoveProvider.AnyLegalAttacksTo(move.Piece, move.To, whiteKingPosition.AsByte());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsBadBlackSee(IMove move)
+        protected bool IsBadBlackSee(MoveBase move)
         {
             var attackTo = MoveProvider.GetWhitePawnAttackTo(Board, move.To.AsByte());
             if (IsBadSee(move, attackTo, Piece.WhitePawn)) return true;
@@ -296,14 +297,14 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsCheckToBlack(IMove move)
+        protected bool IsCheckToBlack(MoveBase move)
         {
             var blackKingPosition = Board.GetBlackKingPosition();
             return MoveProvider.AnyLegalAttacksTo(move.Piece, move.To, blackKingPosition.AsByte());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsBadWhiteSee(IMove move)
+        protected bool IsBadWhiteSee(MoveBase move)
         {
             var attackTo = MoveProvider.GetBlackPawnAttackTo(Board, move.To.AsByte());
             if (IsBadSee(move, attackTo, Piece.BlackPawn)) return true;
@@ -327,7 +328,7 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsBadSee(IMove move, BitBoard attackTo,
+        protected bool IsBadSee(MoveBase move, BitBoard attackTo,
             Piece piece)
         {
             attackTo.GetPositions(PositionsList);

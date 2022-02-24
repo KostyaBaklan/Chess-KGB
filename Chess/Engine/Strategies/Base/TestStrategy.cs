@@ -1,5 +1,6 @@
 ﻿using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 
@@ -24,7 +25,7 @@ namespace Engine.Strategies.Base
             return Get(-10000, 10000, Depth);
         }
 
-        public IResult Get(int alpha, int beta, int depth, IMove pvMove = null, IMove cutMove = null)
+        public IResult Get(int alpha, int beta, int depth, MoveBase pvMove = null, MoveBase cutMove = null)
         {
             Result result = new Result();
 

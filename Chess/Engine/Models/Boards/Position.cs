@@ -8,6 +8,7 @@ using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Models.Moves;
 using Engine.Sorting.Sorters;
 
 namespace Engine.Models.Boards
@@ -150,7 +151,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IAttack> GetAllAttacks(Square cell, Piece piece)
+        public IEnumerable<AttackBase> GetAllAttacks(Square cell, Piece piece)
         {
             var attacks = _moveProvider.GetAttacks(piece, cell);
             foreach (var attack in attacks.Where(IsLigal))
@@ -160,7 +161,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> GetAllMoves(Square cell, Piece piece)
+        public IEnumerable<MoveBase> GetAllMoves(Square cell, Piece piece)
         {
             var moves = _moveProvider.GetMoves(piece, cell);
             foreach (var move in moves.Where(IsLigal))
@@ -170,7 +171,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove[] GetAllAttacks(IMoveSorter sorter)
+        public MoveBase[] GetAllAttacks(IMoveSorter sorter)
         {
             var pieces = _turn == Turn.White ? _white[(byte)_phase] : _black[(byte)_phase];
             var squares = GetSquares(pieces);
@@ -178,7 +179,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove[] GetAllMoves(IMoveSorter sorter, IMove pvMove = null)
+        public MoveBase[] GetAllMoves(IMoveSorter sorter, MoveBase pvMove = null)
         {
             var pieces = _turn == Turn.White ? _white[(byte)_phase] : _black[(byte)_phase];
             var squares = GetSquares(pieces);
@@ -189,7 +190,6 @@ namespace Engine.Models.Boards
         private MoveList PossibleMoves(Square[][] squares, byte[] pieces)
         {
             _moves.Clear();
-            _movesTemp.Clear();
             for (var index = 0; index < pieces.Length; index++)
             {
                 var p = pieces[index];
@@ -205,7 +205,6 @@ namespace Engine.Models.Boards
                             _moves.Add(_movesTemp[i]);
                         }
                     }
-                    _movesTemp.Clear();
                 }
             }
 
@@ -216,7 +215,6 @@ namespace Engine.Models.Boards
         private AttackList PossibleAttacks(Square[][] squares, byte[] pieces)
         {
             _attacks.Clear();
-            _attacksTemp.Clear();
             for (var index = 0; index < pieces.Length; index++)
             {
                 var p = pieces[index];
@@ -232,7 +230,6 @@ namespace Engine.Models.Boards
                             _attacks.Add(_attacksTemp[i]);
                         }
                     }
-                    _attacksTemp.Clear();
                 }
             }
 
@@ -252,13 +249,13 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> GetHistory()
+        public IEnumerable<MoveBase> GetHistory()
         {
             return _moveHistoryService.GetHistory();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsNotLegal(IMove move)
+        public bool IsNotLegal(MoveBase move)
         {
             return _turn != Turn.White
                 ? _moveProvider.AnyBlackCheck() || move.IsCastle() &&
@@ -299,28 +296,19 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsCheck()
+        public void Make(MoveBase move)
         {
-            //return _turn != Turn.White ? _checkService.IsBlackCheck(_board.GetKey(), _board) : _checkService.IsWhiteCheck(_board.GetKey(), _board);
-            //return _turn != Turn.White ? _moveProvider.IsCheckToWhite(_board) : _moveProvider.IsCheckToBlack(_board);
-
-            return _turn != Turn.White ? _moveProvider.AnyBlackCheck() : _moveProvider.AnyWhiteCheck();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Make(IMove move)
-        {
-            IMove previousMove = _moveHistoryService.GetLastMove();
+            MoveBase previousMove = _moveHistoryService.GetLastMove();
             if (previousMove != null && previousMove.Type == MoveType.Over && move.Type != MoveType.EatOver)
             {
-                _board.SetOver(previousMove.To, false);
+                _board.SetOver(previousMove.To.AsByte(), false);
             }
 
             _moveHistoryService.Add(move);
 
             move.Make(_board, _figureHistory);
 
-            move.SetMoveResult(IsCheck());
+            move.IsCheck = _turn != Turn.White ? _moveProvider.AnyBlackCheck() : _moveProvider.AnyWhiteCheck();
 
             //var set = _board.GetBoardSet();
 
@@ -337,17 +325,17 @@ namespace Engine.Models.Boards
         public void UnMake()
         {
             _moveHistoryService.Remove(_board.GetKey());
-            IMove move = _moveHistoryService.Remove();
+            MoveBase move = _moveHistoryService.Remove();
 
-            IMove previousMove = _moveHistoryService.GetLastMove();
+            MoveBase previousMove = _moveHistoryService.GetLastMove();
             if (previousMove != null && previousMove.Type == MoveType.Over)
             {
-                _board.SetOver(previousMove.To, true);
+                _board.SetOver(previousMove.To.AsByte(), true);
             }
 
             move.UnMake(_board, _figureHistory);
 
-            move.SetMoveResult(false);
+            move.IsCheck = false;
 
             _phase = _board.UpdatePhase();
 
@@ -355,7 +343,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Do(IMove move)
+        public void Do(MoveBase move)
         {
             move.Make(_board, _figureHistory);
 
@@ -363,7 +351,7 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UnDo(IMove move)
+        public void UnDo(MoveBase move)
         {
             move.UnMake(_board, _figureHistory);
 
@@ -373,7 +361,7 @@ namespace Engine.Models.Boards
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsLigal(IMove move)
+        private bool IsLigal(MoveBase move)
         {
             move.Make(_board, _figureHistory);
 

@@ -2,32 +2,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Engine.Interfaces;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
 {
-    public class MoveList:IEnumerable<IMove>
+    public class MoveList:IEnumerable<MoveBase>
     {
-        private readonly IMove[] _items;
+        private readonly MoveBase[] _items;
 
         public MoveList()
         {
-            _items = new IMove[128];
+            _items = new MoveBase[128];
         }
 
         #region Implementation of IReadOnlyCollection<out IMove>
 
         public int Count;
 
-        public IMove this[int i] => _items[i];
+        public MoveBase this[int i] => _items[i];
 
         #endregion
 
         #region Implementation of IEnumerable
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerator<IMove> GetEnumerator()
+        public IEnumerator<MoveBase> GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
             {
@@ -44,7 +44,7 @@ namespace Engine.DataStructures.Moves
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(IMove move)
+        public void Add(MoveBase move)
         {
             _items[Count++] = move;
         }
@@ -58,7 +58,7 @@ namespace Engine.DataStructures.Moves
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void CopyTo(IMove[] items, int index)
+        public void CopyTo(MoveBase[] items, int index)
         {
             Array.Copy(_items, 0, items, index, Count);
         }

@@ -1,13 +1,13 @@
 ﻿using Engine.DataStructures.Moves;
-using Engine.Interfaces;
+using Engine.Models.Moves;
 
 namespace Engine.Sorting.Sorters
 {
     public interface IMoveSorter
     {
-        //IMove[] Order(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves, IMove pvNode);
-        //IMove[] Order(IEnumerable<IAttack> attacks);
-        IMove[] Order(AttackList attacks, MoveList moves, IMove pvNode);
-        IMove[] Order(AttackList attacks);
+        //IMove[] Order(IEnumerable<AttackBase> attacks, IEnumerable<MoveBase> moves, MoveBase pvNode);
+        //IMove[] Order(IEnumerable<AttackBase> attacks);
+        MoveBase[] Order(AttackList attacks, MoveList moves, MoveBase pvNode);
+        MoveBase[] Order(AttackList attacks);
     }
 }

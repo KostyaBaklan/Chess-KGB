@@ -68,6 +68,7 @@
     <Compile Include="DataStructures\Killers\DoKillerMoves.cs" />
     <Compile Include="DataStructures\Moves\ExtendedMoveCollection.cs" />
     <Compile Include="DataStructures\PositionsList.cs" />
+    <Compile Include="Models\Moves\AttackBase.cs" />
     <Compile Include="Services\KillerMoveCollectionFactory.cs" />
     <Compile Include="DataStructures\Moves\MoveCollection.cs" />
     <Compile Include="DataStructures\Moves\MoveCollectionBase.cs" />
@@ -89,11 +90,9 @@
     <Compile Include="Interfaces\Config\LateMoveConfiguration.cs" />
     <Compile Include="Interfaces\Config\MultiCutConfiguration.cs" />
     <Compile Include="Interfaces\Config\NullConfiguration.cs" />
-    <Compile Include="Interfaces\IAttack.cs" />
     <Compile Include="Interfaces\Config\IConfigurationProvider.cs" />
     <Compile Include="Interfaces\IKillerMoveCollection.cs" />
     <Compile Include="Interfaces\IKillerMoveCollectionFactory.cs" />
-    <Compile Include="Interfaces\IMoveCollection.cs" />
     <Compile Include="Models\Boards\PieceBoard.cs" />
     <Compile Include="Models\Config\AlgorithmConfiguration.cs" />
     <Compile Include="Models\Config\BoardEvaluation.cs" />
@@ -125,7 +124,6 @@
     <Compile Include="Interfaces\ICacheService.cs" />
     <Compile Include="Interfaces\ICheckService.cs" />
     <Compile Include="Interfaces\IEvaluationService.cs" />
-    <Compile Include="Interfaces\IMove.cs" />
     <Compile Include="Interfaces\IMoveFormatter.cs" />
     <Compile Include="Interfaces\IMoveHistoryService.cs" />
     <Compile Include="Interfaces\IMoveProvider.cs" />

@@ -50,11 +50,11 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IEnumerable<int> BitScan(this BitBoard b)
+        public static IEnumerable<byte> BitScan(this BitBoard b)
         {
             while (b.Any())
             {
-                int position = BitScanForward(b);
+                byte position = BitScanForward(b);
                 yield return position;
                 b = b.Remove(position);
             }
@@ -106,6 +106,21 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Square[] GetCoordinates(this BitBoard b, int index, int size)
+        {
+            byte i = 0;
+            Square[] squares = new Square[size];
+            while (!b.IsZero())
+            {
+                byte position = BitScanForward(b);
+                squares[i++] = new Square(position);
+                b = b.Remove(position);
+            }
+
+            return squares;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DynamicArray<byte> Coordinates(this BitBoard b, int index)
         {
             var coordinates = _positions[index];
@@ -127,7 +142,7 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsLessRank(this int bit, int coordinate)
+        public static bool IsLessRank(this byte bit, byte coordinate)
         {
             return bit / 8 < coordinate / 8;
         }

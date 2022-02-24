@@ -678,7 +678,7 @@ namespace Engine.Services
                         To = new Square(i - 7),
                         Piece = figure,
                         Victim = Piece.WhitePawn,
-                        VictimSquare = i + 1
+                        VictimSquare = (byte) (i + 1)
                     };
                     moves[i].Add(new List<Attack> { a1});
                 }
@@ -691,7 +691,7 @@ namespace Engine.Services
                         To = new Square(i - 9),
                         Piece = figure,
                         Victim = Piece.WhitePawn,
-                        VictimSquare = i - 1
+                        VictimSquare = (byte) (i - 1)
                     };
                     moves[i].Add(new List<Attack> { a2});
                 }
@@ -785,7 +785,7 @@ namespace Engine.Services
                         To = new Square(i + 7),
                         Piece = figure,
                         Victim = Piece.BlackPawn,
-                        VictimSquare = i - 1
+                        VictimSquare = (byte) (i - 1)
                     };
                     moves[i].Add(new List<Attack> { a1});
                 }
@@ -798,7 +798,7 @@ namespace Engine.Services
                         To = new Square(i + 9),
                         Piece = figure,
                         Victim = Piece.BlackPawn,
-                        VictimSquare = i + 1
+                        VictimSquare = (byte) (i + 1)
                     };
                     moves[i].Add(new List<Attack> { a2});
                 }
@@ -1257,19 +1257,19 @@ namespace Engine.Services
         public int MovesCount => _all.Length;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove Get(short key)
+        public MoveBase Get(short key)
         {
             return _all[key];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> GetAll()
+        public IEnumerable<MoveBase> GetAll()
         {
             return _all;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IAttack> GetAttacks(Piece piece, Square cell)
+        public IEnumerable<AttackBase> GetAttacks(Piece piece, Square cell)
         {
             var lists = _attacks[piece.AsByte()][cell.AsByte()];
             for (var i = 0; i < lists.Count; i++)
@@ -1292,6 +1292,7 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetAttacks(byte piece, Square cell, AttackList attackList)
         {
+            attackList.Clear();
             var lists = _attacks[piece][cell.AsByte()];
             for (var i = 0; i < lists.Count; i++)
             {
@@ -1331,7 +1332,7 @@ namespace Engine.Services
             }
         }
 
-        public bool AnyLegalAttacksTo(Piece piece, Square @from, int to)
+        public bool AnyLegalAttacksTo(Piece piece, Square @from, byte to)
         {
             var attacks = _attacksTo[piece.AsByte()][@from.AsByte()][to];
             if (attacks == null) return false;
@@ -1347,41 +1348,20 @@ namespace Engine.Services
             return false;
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public IEnumerable<IAttack> GetAttacks(Piece piece, int @from)
-        //{
-        //    var lists = _attacks[piece.AsByte()][from];
-        //    for (var i = 0; i < lists.Count; i++)
-        //    {
-        //        var list = lists[i];
-        //        for (var j = 0; j < list.Count; j++)
-        //        {
-        //            var m = list[j];
-        //            if (m.IsLegal(_board))
-        //                yield return m;
-
-        //            else if (!_board.IsEmpty(m.EmptyBoard))
-        //            {
-        //                break;
-        //            }
-        //        }
-        //    }
-        //}
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IAttack> GetAttacks(Piece piece, Square @from, int to)
+        public IEnumerable<AttackBase> GetAttacks(Piece piece, Square @from, byte to)
         {
             return _attacksTo[piece.AsByte()][@from.AsByte()][to];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IAttack> GetAttacks(Piece piece, int @from, int to)
+        public IEnumerable<AttackBase> GetAttacks(Piece piece, byte @from, byte to)
         {
             return _attacksTo[piece.AsByte()][from][to];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> GetMoves(Piece piece, Square cell)
+        public IEnumerable<MoveBase> GetMoves(Piece piece, Square cell)
         {
             var lists = _moves[piece.AsByte()][cell.AsByte()];
             for (var i = 0; i < lists.Count; i++)
@@ -1403,6 +1383,7 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetMoves(byte piece, Square cell, MoveList moveList)
         {
+            moveList.Clear();
             var lists = _moves[piece][cell.AsByte()];
             for (var i = 0; i < lists.Count; i++)
             {
@@ -1423,17 +1404,13 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool AnyBlackCheck()
         {
-            var kingPosition = _board.GetWhiteKingPosition();
-
-            return  IsWhiteUnderAttack(kingPosition);
+            return  IsWhiteUnderAttack(_board.GetWhiteKingPosition());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool AnyWhiteCheck()
         {
-            var kingPosition = _board.GetBlackKingPosition();
-
-            return  IsBlackUnderAttack(kingPosition);
+            return  IsBlackUnderAttack(_board.GetBlackKingPosition());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1466,7 +1443,7 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsUnderAttack(int piece, byte to)
+        public bool IsUnderAttack(byte piece, byte to)
         {
             var positions = _board.GetPositions(piece);
             for (var p = 0; p < positions.Count; p++)
@@ -1487,7 +1464,7 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public BitBoard GetAttackPattern(byte piece, int position)
+        public BitBoard GetAttackPattern(byte piece, byte position)
         {
             return _attackPatterns[piece][position];
         }

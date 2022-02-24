@@ -13,7 +13,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBlackCheckByPawn(this IBoard board, Square from)
         {
-            return (_moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), from.AsByte()) &
+            return (_moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), @from.AsByte()) &
                     board.GetPieceBits(Piece.BlackKing)).Any();
         }
     }

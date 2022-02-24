@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using Engine.Interfaces;
+using Engine.Models.Moves;
 
 namespace Engine.DataStructures.Moves
 {
     public class MoveWrapper :IComparable<MoveWrapper>
     {
-        public MoveWrapper(int value, IMove move)
+        public MoveWrapper(int value, MoveBase move)
         {
             Value = value;
             Move = move;
         }
 
         public int Value { get; }
-        public IMove Move { get; }
+        public MoveBase Move { get; }
 
         #region Relational members
 

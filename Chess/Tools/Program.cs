@@ -10,6 +10,7 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 using Engine.Strategies.AlphaBeta;
@@ -51,21 +52,21 @@ namespace Tools
 
         #region Overrides of MoveSorter
 
-        protected override IMove[] OrderInternal(AttackList attacks, MoveList moves,
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
             IKillerMoveCollection killerMoveCollection)
         {
             return Array(attacks, moves);
         }
 
-        protected override IMove[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection, IMove pvNode)
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
+            IKillerMoveCollection killerMoveCollection, MoveBase pvNode)
         {
             return Array(attacks, moves);
         }
 
-        private IMove[] Array(IEnumerable<IAttack> attacks, IEnumerable<IMove> moves)
+        private MoveBase[] Array(IEnumerable<AttackBase> attacks, IEnumerable<MoveBase> moves)
         {
-            List<IMove> m = attacks.OfType<IMove>().ToList();
+            List<MoveBase> m = attacks.OfType<MoveBase>().ToList();
 
             var list = moves.ToList();
             list.Sort(Comparer);
@@ -183,7 +184,7 @@ namespace Tools
         {
             var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
             Dictionary<int, List<string>> attacks = new Dictionary<int, List<string>>();
-            for (int i = 0; i < 64; i++)
+            for (byte i = 0; i < 64; i++)
             {
                 var attackPattern = moveProvider.GetAttackPattern(Piece.WhiteQueen.AsByte(), i);
                 var count = attackPattern.Count();

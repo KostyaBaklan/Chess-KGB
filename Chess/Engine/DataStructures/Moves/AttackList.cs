@@ -2,21 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Engine.Interfaces;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
 {
-    public class AttackList : IEnumerable<IAttack>
+    public class AttackList : IEnumerable<AttackBase>
     {
-        private readonly IAttack[] _items;
+        private readonly AttackBase[] _items;
 
         public AttackList()
         {
-            _items = new IAttack[128];
+            _items = new AttackBase[128];
         }
 
-        public IAttack this[int i] => _items[i];
+        public AttackBase this[int i] => _items[i];
 
         #region Implementation of IReadOnlyCollection<out IMove>
 
@@ -27,7 +27,7 @@ namespace Engine.DataStructures.Moves
         #region Implementation of IEnumerable
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerator<IAttack> GetEnumerator()
+        public IEnumerator<AttackBase> GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
             {
@@ -44,7 +44,7 @@ namespace Engine.DataStructures.Moves
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(IAttack move)
+        public void Add(AttackBase move)
         {
             _items[Count++] = move;
         }
@@ -58,7 +58,7 @@ namespace Engine.DataStructures.Moves
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void CopyTo(IAttack[] items, int index)
+        public void CopyTo(AttackBase[] items, int index)
         {
             Array.Copy(_items, 0, items, index, Count);
         }
