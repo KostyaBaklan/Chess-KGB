@@ -35,7 +35,7 @@ namespace Engine.Services
 
             Clear(_blackTable);
 
-            isCheck = _moveProvider.AnyBlackCheck(board);
+            isCheck = _moveProvider.AnyBlackCheck();
             _blackTable.Add(key, isCheck);
             return isCheck;
         }
@@ -56,7 +56,7 @@ namespace Engine.Services
 
             Clear(_whiteTable);
 
-            isCheck = _moveProvider.AnyWhiteCheck(board);
+            isCheck = _moveProvider.AnyWhiteCheck();
             _whiteTable.Add(key, isCheck);
             return isCheck;
         }

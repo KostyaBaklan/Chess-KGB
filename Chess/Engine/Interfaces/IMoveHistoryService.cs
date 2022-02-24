@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
+using Engine.Models.Moves;
 
 namespace Engine.Interfaces
 {
     public interface IMoveHistoryService
     {
         int GetPly();
-        IMove GetLastMove();
-        void Add(IMove move);
-        IMove Remove();
+        MoveBase GetLastMove();
+        void Add(MoveBase move);
+        MoveBase Remove();
         bool CanDoBlackCastle();
         bool CanDoWhiteCastle();
         bool CanDoWhiteSmallCastle();
         bool CanDoWhiteBigCastle();
         bool CanDoBlackSmallCastle();
         bool CanDoBlackBigCastle();
-        bool IsAdditionalDebutMove(IMove move);
-        IEnumerable<IMove> GetHistory();
+        bool IsAdditionalDebutMove(MoveBase move);
+        IEnumerable<MoveBase> GetHistory();
         bool IsThreefoldRepetition(ulong board);
         void Add(ulong board);
         void Remove(ulong board);

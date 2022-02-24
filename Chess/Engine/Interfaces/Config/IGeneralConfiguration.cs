@@ -7,5 +7,7 @@
         double BlockTimeout { get; }
         bool UseFutility { get; }
         int FutilityDepth { get; }
+        bool UseHistory { get; }
+        int KillerCapacity { get; }
     }
 }

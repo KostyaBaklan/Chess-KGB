@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using Engine.Interfaces;
+using Engine.Models.Moves;
 
 namespace Engine.DataStructures.Moves
 {
     public class AttackWrapper : IComparable<AttackWrapper>
     {
-        public AttackWrapper(int value, IAttack move)
+        public AttackWrapper(int value, AttackBase move)
         {
             Value = value;
             Move = move;
         }
 
         public int Value { get; }
-        public IAttack Move { get; }
+        public AttackBase Move { get; }
 
         #region Relational members
 

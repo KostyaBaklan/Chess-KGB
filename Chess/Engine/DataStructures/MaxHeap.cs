@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Engine.Interfaces;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures
 {
     public class MaxHeap
     {
-        private IMove[] _elements;
+        private MoveBase[] _elements;
         private int _size;
         private readonly IMoveComparer _comparer;
 
@@ -19,10 +19,10 @@ namespace Engine.DataStructures
         public MaxHeap(int size, IMoveComparer comparer)
         {
             _comparer = comparer;
-            _elements = new IMove[size];
+            _elements = new MoveBase[size];
         }
 
-        public IMove this[int index] => _elements[index];
+        public MoveBase this[int index] => _elements[index];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int Parent(int i)
@@ -77,11 +77,11 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Insert(IMove element)
+        public void Insert(MoveBase element)
         {
             if (_elements.Length == _size)
             {
-                IMove[] elements = new IMove[_size + _size];
+                MoveBase[] elements = new MoveBase[_size + _size];
                 Array.Copy(_elements, elements, _size);
                 _elements = elements;
             }
@@ -98,7 +98,7 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove Maximum()
+        public MoveBase Maximum()
         {
             _size--;
             Swap(0, _size);
@@ -107,9 +107,9 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove[] GetOrderedItems()
+        public MoveBase[] GetOrderedItems()
         {
-            var elements = new IMove[_size];
+            var elements = new MoveBase[_size];
             if (_size <= 0) return elements;
 
             if (_size < 6)
@@ -145,7 +145,7 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> GetItems()
+        public IEnumerable<MoveBase> GetItems()
         {
             var count = _size;
             if (count <= 0) yield break;
@@ -157,7 +157,7 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void GetItems(List<IMove> moves)
+        public void GetItems(List<MoveBase> moves)
         {
             var count = _size;
             if (count <= 0) return;
@@ -169,7 +169,7 @@ namespace Engine.DataStructures
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void GetOrderedItems(List<IMove> moves)
+        public void GetOrderedItems(List<MoveBase> moves)
         {
             if (_size <= 0) return;
 

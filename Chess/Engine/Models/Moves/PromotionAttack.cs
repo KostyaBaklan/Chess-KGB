@@ -7,7 +7,12 @@ namespace Engine.Models.Moves
 {
     public class PromotionAttack : Attack
     {
-        public Piece PromotionPiece { get; set; }
+        public Piece PromotionPiece;
+
+        public PromotionAttack()
+        {
+            IsPromotion = true;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
@@ -32,12 +37,6 @@ namespace Engine.Models.Moves
         public override bool IsLegal(IBoard board)
         {
             return board.IsOpposite(To.AsBitBoard(), Piece);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool IsPromotion()
-        {
-            return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

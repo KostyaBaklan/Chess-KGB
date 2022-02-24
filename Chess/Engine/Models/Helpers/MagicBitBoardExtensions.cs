@@ -252,6 +252,13 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static BitBoard BishopAttacks(this byte square, BitBoard occupied)
+        {
+            return _magicBishopDb[square][
+                (occupied.And(_magicMovesBMask[square]) * _magicMovesBMagics[square]) >> 55];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static BitBoard RookAttacks(this int square, BitBoard occupied)
         {
             return _magicRookDb[square][
@@ -259,7 +266,20 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static BitBoard RookAttacks(this byte square, BitBoard occupied)
+        {
+            return _magicRookDb[square][
+                (occupied.And(_magicmovesRMask[square]) * _magicmovesRMagics[square]) >> 52];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static BitBoard QueenAttacks(this int square, BitBoard occupied)
+        {
+            return BishopAttacks(square, occupied) | RookAttacks(square, occupied);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static BitBoard QueenAttacks(this byte square, BitBoard occupied)
         {
             return BishopAttacks(square, occupied) | RookAttacks(square, occupied);
         }

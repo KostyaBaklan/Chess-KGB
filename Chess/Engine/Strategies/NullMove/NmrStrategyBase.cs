@@ -2,6 +2,7 @@
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
+using Engine.Models.Moves;
 using Engine.Models.Transposition;
 using Engine.Strategies.AlphaBeta.Null;
 
@@ -26,7 +27,7 @@ namespace Engine.Strategies.NullMove
                 return Evaluate(alpha, beta);
             }
 
-            IMove pv = null;
+            MoveBase pv = null;
             var key = Position.GetKey();
 
             var isNotEndGame = Position.GetPhase() != Phase.End;
@@ -69,7 +70,7 @@ namespace Engine.Strategies.NullMove
             }
 
             int value = short.MinValue;
-            IMove bestMove = null;
+            MoveBase bestMove = null;
 
             var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
@@ -78,7 +79,7 @@ namespace Engine.Strategies.NullMove
 
             int d = depth;
             var lastMove = MoveHistory.GetLastMove();
-            if (CanUseNull && !lastMove.IsCheck() && isNotEndGame && IsValidWindow(alpha, beta))
+            if (CanUseNull && !lastMove.IsCheck && isNotEndGame && IsValidWindow(alpha, beta))
             {
                 int r = depth > 6 ? MaxReduction : MinReduction;
                 if (depth > r)

@@ -10,23 +10,9 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
-using Engine.Strategies.AlphaBeta.Advanced;
-using Engine.Strategies.AlphaBeta.Extended;
-using Engine.Strategies.AlphaBeta.Null.Advanced;
-using Engine.Strategies.AlphaBeta.Null.Complex;
-using Engine.Strategies.AlphaBeta.Null.Extended;
-using Engine.Strategies.Aspiration.Original;
 using Engine.Strategies.Base;
-using Engine.Strategies.IterativeDeeping.Extended;
-using Engine.Strategies.LateMove;
 using Engine.Strategies.LateMove.Base;
-using Engine.Strategies.LateMove.Base.Null;
 using Engine.Strategies.LateMove.Deep;
-using Engine.Strategies.LateMove.Deep.Null;
-using Engine.Strategies.MultiCut;
-using Engine.Strategies.NullMove;
-using Engine.Strategies.PVS.Memory;
-using Engine.Strategies.PVS.Original;
 using Newtonsoft.Json;
 
 namespace Tests
@@ -53,87 +39,97 @@ namespace Tests
             evaluationService.Initialize(depth);
             IPosition position = new Position();
 
-            Dictionary<string, StrategyBase> strategies = new Dictionary<string, StrategyBase>
+            Dictionary<string, Func<short,IPosition,StrategyBase>> strategyFactories = new Dictionary<string, Func<short, IPosition, StrategyBase>>
             {
-                {"ab_es_hc", new AlphaBetaExtendedHistoryStrategy(depth, position)},
-                {"ab_es_hdc", new AlphaBetaExtendedHistoryDifferenceStrategy(depth, position)},
-                {"ab_es_dc", new AlphaBetaExtendedDifferenceStrategy(depth, position)},
-                {"ab_es_dhc", new AlphaBetaExtendedDifferenceHistoryStrategy(depth, position)},
+                {"lmr_bs_hc",(d, p)=>new LmrBasicHistoryStrategy(d, p)},
+                {"lmr_es_hc", (d, p)=>new LmrExtendedHistoryStrategy(d, p)},
+                {"lmr_as_hc", (d, p)=>new LmrAdvancedHistoryStrategy(d, p)},
 
-                {"ab_as_hc", new AlphaBetaAdvancedHistoryStrategy(depth, position)},
-                {"ab_as_hdc", new AlphaBetaAdvancedHistoryDifferenceStrategy(depth, position)},
-                {"ab_as_dc", new AlphaBetaAdvancedDifferenceStrategy(depth, position)},
-                {"ab_as_dhc", new AlphaBetaAdvancedDifferenceHistoryStrategy(depth, position)},
-
-                {"abn_es_hc", new AlphaBetaNullHistoryStrategy(depth, position)},
-                {"abn_es_hdc", new AlphaBetaNullHistoryDifferenceStrategy(depth, position)},
-                {"abn_es_dc", new AlphaBetaNullDifferenceStrategy(depth, position)},
-                {"abn_es_dhc", new AlphaBetaNullDifferenceHistoryStrategy(depth, position)},
-
-                {"abn_as_hc", new AlphaBetaAdvancedNullHistoryStrategy(depth, position)},
-                {"abn_as_hdc", new AlphaBetaAdvancedNullHistoryDifferenceStrategy(depth, position)},
-                {"abn_as_dc", new AlphaBetaAdvancedNullDifferenceStrategy(depth, position)},
-                {"abn_as_dhc", new AlphaBetaAdvancedNullDifferenceHistoryStrategy(depth, position)},
-
-                {"abn_cs_hc", new AlphaBetaComplexNullHistoryStrategy(depth, position)},
-                {"abn_cs_hdc", new AlphaBetaComplexNullHistoryDifferenceStrategy(depth, position)},
-
-                {"id_es_hc", new IdExtendedHistoryStrategy(depth, position)},
-                {"id_es_hdc", new IdExtendedHistoryDifferenceStrategy(depth, position)},
-                {"id_es_dc", new IdExtendedDifferenceStrategy(depth, position)},
-                {"id_es_dhc", new IdExtendedDifferenceHistoryStrategy(depth, position)},
-
-                {"a_es_hc", new AspirationHistoryStrategy(depth, position)},
-                {"a_es_hdc", new AspirationHistoryDifferenceStrategy(depth, position)},
-                {"a_es_dc", new AspirationDifferenceStrategy(depth, position)},
-                {"a_es_dhc", new AspirationDifferenceHistoryStrategy(depth, position)},
-
-                {"pv_es_hc", new PvsHistoryStrategy(depth, position)},
-                {"pv_es_hdc", new PvsHistoryDifferenceStrategy(depth, position)},
-                {"pv_es_dc", new PvsDifferenceStrategy(depth, position)},
-                {"pv_es_dhc", new PvsDifferenceHistoryStrategy(depth, position)},
-
-                {"pvm_es_hc", new PvsMemoryHistoryStrategy(depth, position)},
-                {"pvm_es_hdc", new PvsMemoryHistoryDifferenceStrategy(depth, position)},
-                {"pvm_es_dc", new PvsMemoryDifferenceStrategy(depth, position)},
-                {"pvm_es_dhc", new PvsMemoryDifferenceHistoryStrategy(depth, position)},
-
-                {"lmr_bs_hc", new LmrBasicHistoryStrategy(depth, position)},
-                {"lmr_es_hc", new LmrExtendedHistoryStrategy(depth, position)},
-                {"lmr_es_hdc", new LmrExtendedHistoryDifferenceStrategy(depth, position)},
-                {"lmr_as_hc", new LmrAdvancedHistoryStrategy(depth, position)},
-                {"lmr_as_hdc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)},
-                {"lmr_cs_hc", new LmrComplexHistoryStrategy(depth, position)},
-                {"lmr_cs_hdc", new LmrComplexHistoryDifferenceStrategy(depth, position)},
-
-                {"nmr_es_hc", new NmrExtendedHistoryStrategy(depth, position)},
-                {"nmr_es_hdc", new NmrExtendedHistoryDifferenceStrategy(depth, position)},
-                {"nmr_as_hc", new NmrAdvancedHistoryStrategy(depth, position)},
-                {"nmr_as_hdc", new NmrAdvancedHistoryDifferenceStrategy(depth, position)},
-                {"nmr_cs_hc", new NmrComplexHistoryStrategy(depth, position)},
-                {"nmr_cs_hdc", new NmrComplexHistoryDifferenceStrategy(depth, position)},
-
-                {"mc_es_hc", new MultiCutExtendedHistoryStrategy(depth, position)},
-                {"mc_es_hdc", new MultiCutExtendedHistoryDifferenceStrategy(depth, position)},
-                {"mc_as_hc", new MultiCutAdvancedHistoryStrategy(depth, position)},
-                {"mc_as_hdc", new MultiCutAdvancedHistoryDifferenceStrategy(depth, position)},
-                {"mc_cs_hc", new MultiCutComplexHistoryStrategy(depth, position)},
-                {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)},
-
-                {"lmrd_bs_hc", new LmrDeepBasicStrategy(depth, position)},
-                {"lmrd_es_hc", new LmrDeepExtendedStrategy(depth, position)},
-                {"lmrd_as_hc", new LmrDeepAdvancedStrategy(depth, position)},
-
-                {"lmrn_bs_hc", new LmrNullBasicStrategy(depth, position)},
-                {"lmrn_es_hc", new LmrNullExtendedStrategy(depth, position)},
-                {"lmrn_as_hc", new LmrNullAdvancedStrategy(depth, position)},
-
-                {"lmrnd_bs_hc", new LmrDeepNullBasicStrategy(depth, position)},
-                {"lmrnd_es_hc", new LmrDeepNullExtendedStrategy(depth, position)},
-                {"lmrnd_as_hc", new LmrDeepNullAdvancedStrategy(depth, position)}
+                {"lmrd_bs_hc",(d, p)=> new LmrDeepBasicStrategy(d, p)},
+                {"lmrd_es_hc",(d, p)=> new LmrDeepExtendedStrategy(d, p)},
+                {"lmrd_as_hc",(d, p)=> new LmrDeepAdvancedStrategy(d, p)}
             };
+            //Dictionary<string, StrategyBase> strategies = new Dictionary<string, StrategyBase>
+            //{
+            //    {"ab_es_hc", new AlphaBetaExtendedHistoryStrategy(depth, position)},
+            //    {"ab_es_hdc", new AlphaBetaExtendedHistoryDifferenceStrategy(depth, position)},
+            //    {"ab_es_dc", new AlphaBetaExtendedDifferenceStrategy(depth, position)},
+            //    {"ab_es_dhc", new AlphaBetaExtendedDifferenceHistoryStrategy(depth, position)},
 
-            StrategyBase strategy = strategies[args[0]];
+            //    {"ab_as_hc", new AlphaBetaAdvancedHistoryStrategy(depth, position)},
+            //    {"ab_as_hdc", new AlphaBetaAdvancedHistoryDifferenceStrategy(depth, position)},
+            //    {"ab_as_dc", new AlphaBetaAdvancedDifferenceStrategy(depth, position)},
+            //    {"ab_as_dhc", new AlphaBetaAdvancedDifferenceHistoryStrategy(depth, position)},
+
+            //    {"abn_es_hc", new AlphaBetaNullHistoryStrategy(depth, position)},
+            //    {"abn_es_hdc", new AlphaBetaNullHistoryDifferenceStrategy(depth, position)},
+            //    {"abn_es_dc", new AlphaBetaNullDifferenceStrategy(depth, position)},
+            //    {"abn_es_dhc", new AlphaBetaNullDifferenceHistoryStrategy(depth, position)},
+
+            //    {"abn_as_hc", new AlphaBetaAdvancedNullHistoryStrategy(depth, position)},
+            //    {"abn_as_hdc", new AlphaBetaAdvancedNullHistoryDifferenceStrategy(depth, position)},
+            //    {"abn_as_dc", new AlphaBetaAdvancedNullDifferenceStrategy(depth, position)},
+            //    {"abn_as_dhc", new AlphaBetaAdvancedNullDifferenceHistoryStrategy(depth, position)},
+
+            //    {"abn_cs_hc", new AlphaBetaComplexNullHistoryStrategy(depth, position)},
+            //    {"abn_cs_hdc", new AlphaBetaComplexNullHistoryDifferenceStrategy(depth, position)},
+
+            //    {"id_es_hc", new IdExtendedHistoryStrategy(depth, position)},
+            //    {"id_es_hdc", new IdExtendedHistoryDifferenceStrategy(depth, position)},
+            //    {"id_es_dc", new IdExtendedDifferenceStrategy(depth, position)},
+            //    {"id_es_dhc", new IdExtendedDifferenceHistoryStrategy(depth, position)},
+
+            //    {"a_es_hc", new AspirationHistoryStrategy(depth, position)},
+            //    {"a_es_hdc", new AspirationHistoryDifferenceStrategy(depth, position)},
+            //    {"a_es_dc", new AspirationDifferenceStrategy(depth, position)},
+            //    {"a_es_dhc", new AspirationDifferenceHistoryStrategy(depth, position)},
+
+            //    {"pv_es_hc", new PvsHistoryStrategy(depth, position)},
+            //    {"pv_es_hdc", new PvsHistoryDifferenceStrategy(depth, position)},
+            //    {"pv_es_dc", new PvsDifferenceStrategy(depth, position)},
+            //    {"pv_es_dhc", new PvsDifferenceHistoryStrategy(depth, position)},
+
+            //    {"pvm_es_hc", new PvsMemoryHistoryStrategy(depth, position)},
+            //    {"pvm_es_hdc", new PvsMemoryHistoryDifferenceStrategy(depth, position)},
+            //    {"pvm_es_dc", new PvsMemoryDifferenceStrategy(depth, position)},
+            //    {"pvm_es_dhc", new PvsMemoryDifferenceHistoryStrategy(depth, position)},
+
+            //    {"lmr_bs_hc", new LmrBasicHistoryStrategy(depth, position)},
+            //    {"lmr_es_hc", new LmrExtendedHistoryStrategy(depth, position)},
+            //    {"lmr_es_hdc", new LmrExtendedHistoryDifferenceStrategy(depth, position)},
+            //    {"lmr_as_hc", new LmrAdvancedHistoryStrategy(depth, position)},
+            //    {"lmr_as_hdc", new LmrAdvancedHistoryDifferenceStrategy(depth, position)},
+            //    {"lmr_cs_hc", new LmrComplexHistoryStrategy(depth, position)},
+            //    {"lmr_cs_hdc", new LmrComplexHistoryDifferenceStrategy(depth, position)},
+
+            //    {"nmr_es_hc", new NmrExtendedHistoryStrategy(depth, position)},
+            //    {"nmr_es_hdc", new NmrExtendedHistoryDifferenceStrategy(depth, position)},
+            //    {"nmr_as_hc", new NmrAdvancedHistoryStrategy(depth, position)},
+            //    {"nmr_as_hdc", new NmrAdvancedHistoryDifferenceStrategy(depth, position)},
+            //    {"nmr_cs_hc", new NmrComplexHistoryStrategy(depth, position)},
+            //    {"nmr_cs_hdc", new NmrComplexHistoryDifferenceStrategy(depth, position)},
+
+            //    {"mc_es_hc", new MultiCutExtendedHistoryStrategy(depth, position)},
+            //    {"mc_es_hdc", new MultiCutExtendedHistoryDifferenceStrategy(depth, position)},
+            //    {"mc_as_hc", new MultiCutAdvancedHistoryStrategy(depth, position)},
+            //    {"mc_as_hdc", new MultiCutAdvancedHistoryDifferenceStrategy(depth, position)},
+            //    {"mc_cs_hc", new MultiCutComplexHistoryStrategy(depth, position)},
+            //    {"mc_cs_hdc", new MultiCutComplexHistoryDifferenceStrategy(depth, position)},
+
+            //    {"lmrd_bs_hc", new LmrDeepBasicStrategy(depth, position)},
+            //    {"lmrd_es_hc", new LmrDeepExtendedStrategy(depth, position)},
+            //    {"lmrd_as_hc", new LmrDeepAdvancedStrategy(depth, position)},
+
+            //    {"lmrn_bs_hc", new LmrNullBasicStrategy(depth, position)},
+            //    {"lmrn_es_hc", new LmrNullExtendedStrategy(depth, position)},
+            //    {"lmrn_as_hc", new LmrNullAdvancedStrategy(depth, position)},
+
+            //    {"lmrnd_bs_hc", new LmrDeepNullBasicStrategy(depth, position)},
+            //    {"lmrnd_es_hc", new LmrDeepNullExtendedStrategy(depth, position)},
+            //    {"lmrnd_as_hc", new LmrDeepNullAdvancedStrategy(depth, position)}
+            //};
+
+            StrategyBase strategy = strategyFactories[args[0]](depth, position);
             _model.Strategy = strategy.ToString();
 
             var file = Path.Combine("Log", $"{strategy}_D{depth}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log");
@@ -157,16 +153,16 @@ namespace Tests
 
             var st = new TestStrategy(position);
 
-            position.Make(moveProvider.GetMoves(Piece.WhitePawn, Squares.E2, position.GetBoard()).FirstOrDefault(m=>m.To == Squares.E4));
-            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.E7, position.GetBoard()).FirstOrDefault(m => m.To == Squares.E5));
-            position.Make(moveProvider.GetMoves(Piece.WhiteKnight, Squares.G1, position.GetBoard()).FirstOrDefault(m => m.To == Squares.F3));
-            position.Make(moveProvider.GetMoves(Piece.BlackKnight, Squares.B8, position.GetBoard()).FirstOrDefault(m => m.To == Squares.C6));
-            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.F1, position.GetBoard()).FirstOrDefault(m => m.To == Squares.B5));
-            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.A7, position.GetBoard()).FirstOrDefault(m => m.To == Squares.A6));
-            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.B5, position.GetBoard()).FirstOrDefault(m => m.To == Squares.A4));
-            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.B7, position.GetBoard()).FirstOrDefault(m => m.To == Squares.B5));
-            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.A4, position.GetBoard()).FirstOrDefault(m => m.To == Squares.B3));
-            position.Make(moveProvider.GetMoves(Piece.BlackBishop, Squares.F8, position.GetBoard()).FirstOrDefault(m => m.To == Squares.C5));
+            position.Make(moveProvider.GetMoves(Piece.WhitePawn, Squares.E2).FirstOrDefault(m=>m.To == Squares.E4));
+            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.E7).FirstOrDefault(m => m.To == Squares.E5));
+            position.Make(moveProvider.GetMoves(Piece.WhiteKnight, Squares.G1).FirstOrDefault(m => m.To == Squares.F3));
+            position.Make(moveProvider.GetMoves(Piece.BlackKnight, Squares.B8).FirstOrDefault(m => m.To == Squares.C6));
+            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.F1).FirstOrDefault(m => m.To == Squares.B5));
+            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.A7).FirstOrDefault(m => m.To == Squares.A6));
+            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.B5).FirstOrDefault(m => m.To == Squares.A4));
+            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.B7).FirstOrDefault(m => m.To == Squares.B5));
+            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.A4).FirstOrDefault(m => m.To == Squares.B3));
+            position.Make(moveProvider.GetMoves(Piece.BlackBishop, Squares.F8).FirstOrDefault(m => m.To == Squares.C5));
 
             TimeSpan total = TimeSpan.Zero;
 

@@ -1,4 +1,5 @@
 ﻿using Engine.Interfaces;
+using Engine.Models.Moves;
 
 namespace Engine.Strategies.Base
 {
@@ -12,7 +13,7 @@ namespace Engine.Strategies.Base
 
         #region Overrides of StrategyBase
 
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
+        public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
             return InternalStrategy.GetResult(alpha, beta, depth, pvMove);
         }

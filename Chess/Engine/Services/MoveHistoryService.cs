@@ -7,6 +7,7 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Models.Moves;
 
 namespace Engine.Services
 {
@@ -17,7 +18,7 @@ namespace Engine.Services
         private readonly bool[] _whiteBigCastleHistory;
         private readonly bool[] _blackSmallCastleHistory;
         private readonly bool[] _blackBigCastleHistory;
-        private readonly ArrayStack<IMove> _history;
+        private readonly ArrayStack<MoveBase> _history;
         private readonly ArrayStack<ulong> _boardHistory;
 
         public MoveHistoryService()
@@ -28,7 +29,7 @@ namespace Engine.Services
             _whiteBigCastleHistory = new bool[historyDepth];
             _blackSmallCastleHistory = new bool[historyDepth];
             _blackBigCastleHistory = new bool[historyDepth];
-            _history = new ArrayStack<IMove>(historyDepth);
+            _history = new ArrayStack<MoveBase>(historyDepth);
             _boardHistory = new ArrayStack<ulong>(historyDepth);
         }
 
@@ -41,13 +42,13 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove GetLastMove()
+        public MoveBase GetLastMove()
         {
             return _history.Peek();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(IMove move)
+        public void Add(MoveBase move)
         {
             _history.Push(move);
             var ply = _ply;
@@ -125,7 +126,7 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IMove Remove()
+        public MoveBase Remove()
         {
             _ply--;
             return _history.Pop();
@@ -168,7 +169,7 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsAdditionalDebutMove(IMove move)
+        public bool IsAdditionalDebutMove(MoveBase move)
         {
             if (_ply >= 17) return false;
 
@@ -190,7 +191,7 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IMove> GetHistory()
+        public IEnumerable<MoveBase> GetHistory()
         {
             return _history.Items();
         }
@@ -198,10 +199,10 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsThreefoldRepetition(ulong board)
         {
-            if (_ply < 6) return false;
+            if (_ply < 8) return false;
 
             int count = 1;
-            for (var i = _boardHistory.Count - 3; i >= 4; i-=2)
+            for (var i = _boardHistory.Count - 5; i > 0; i-=4)
             {
                 if (_boardHistory[i] != board)
                 {

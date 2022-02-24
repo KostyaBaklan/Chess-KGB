@@ -16,13 +16,9 @@ using Engine.Interfaces.Config;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
-using Engine.Strategies.Aspiration.LateMove;
+using Engine.Models.Moves;
 using Engine.Strategies.Base;
-using Engine.Strategies.LateMove;
-using Engine.Strategies.LateMove.Base;
-using Engine.Strategies.LateMove.Base.Null;
 using Engine.Strategies.LateMove.Deep;
-using Engine.Strategies.LateMove.Deep.Null;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -35,7 +31,7 @@ namespace Kgb.ChessApp.Views
         private short _level;
         private readonly double _blockTimeout;
         private Turn _turn = Turn.White;
-        private List<IMove> _moves;
+        private List<MoveBase> _moves;
 
         private readonly IPosition _position;
         private StrategyBase _strategy;
@@ -236,7 +232,7 @@ namespace Kgb.ChessApp.Views
 
         private void SaveHistoryCommandExecute()
         {
-            IEnumerable<IMove> history = _position.GetHistory();
+            IEnumerable<MoveBase> history = _position.GetHistory();
             List<string> moves = new List<string>();
             bool isWhite = true;
             StringBuilder builder = new StringBuilder();
@@ -299,7 +295,7 @@ namespace Kgb.ChessApp.Views
                 case State.Idle:
                     Zero();
 
-                    IEnumerable<IMove> possibleMoves = GetAllMoves(cellViewModel.Cell,cellViewModel.Figure.Value);
+                    IEnumerable<MoveBase> possibleMoves = GetAllMoves(cellViewModel.Cell,cellViewModel.Figure.Value);
                     _moves = possibleMoves.ToList();
                     if (_moves.Any())
                     {
@@ -408,12 +404,12 @@ namespace Kgb.ChessApp.Views
                     TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private IEnumerable<IMove> GetAllMoves(Square cell, Piece piece)
+        private IEnumerable<MoveBase> GetAllMoves(Square cell, Piece piece)
         {
             return _position.GetAllAttacks(cell, piece).Concat(_position.GetAllMoves(cell, piece));
         }
 
-        private void MakeMove(IMove move, TimeSpan? time = null)
+        private void MakeMove(MoveBase move, TimeSpan? time = null)
         {
             _position.Make(move);
 

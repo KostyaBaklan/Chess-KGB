@@ -5,6 +5,7 @@ using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
+using Engine.Models.Moves;
 using Engine.Sorting.Sorters;
 
 namespace Engine.Strategies.Base
@@ -48,7 +49,7 @@ namespace Engine.Strategies.Base
 
         public abstract IResult GetResult();
 
-        public abstract IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null);
+        public abstract IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null);
 
         public virtual int Size => 0;
 
@@ -104,12 +105,12 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CheckMoves(IMove[] moves, out Result result)
+        protected bool CheckMoves(MoveBase[] moves, out Result result)
         {
             result = new Result();
             if (moves.Length == 0)
             {
-                result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
+                result.GameResult = MoveHistory.GetLastMove().IsCheck ? GameResult.Mate : GameResult.Pat;
                 return true;
             }
 
@@ -123,12 +124,12 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CheckMoves(int alpha, int beta, IMove[] moves, out int value)
+        protected bool CheckMoves(int alpha, int beta, MoveBase[] moves, out int value)
         {
             value = 0;
             if (moves.Length == 0)
             {
-                value = MoveHistory.GetLastMove().IsCheck()
+                value = MoveHistory.GetLastMove().IsCheck
                     ? -EvaluationService.GetMateValue()
                     : Position.GetValue();
                 return true;
@@ -141,12 +142,12 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected IMove[] GenerateMoves(int alpha, int beta, int depth, IMove pv = null)
+        protected MoveBase[] GenerateMoves(int alpha, int beta, int depth, MoveBase pv = null)
         {
             if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
                 return Position.GetAllMoves(Sorter, pv);
 
-            if (MoveHistory.GetLastMove().IsCheck()) return Position.GetAllMoves(Sorter, pv);
+            if (MoveHistory.GetLastMove().IsCheck) return Position.GetAllMoves(Sorter, pv);
 
             var positionValue = Position.GetValue();
 

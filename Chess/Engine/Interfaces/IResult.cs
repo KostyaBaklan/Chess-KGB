@@ -1,4 +1,5 @@
 ﻿using Engine.DataStructures;
+using Engine.Models.Moves;
 
 namespace Engine.Interfaces
 {
@@ -6,6 +7,6 @@ namespace Engine.Interfaces
     {
         int Value { get; }
         GameResult GameResult { get; }
-        IMove Move { get; }
+        MoveBase Move { get; }
     }
 }

@@ -15,7 +15,7 @@ namespace Engine.DataStructures
             Count = 1;
         }
 
-        public int Count { get; private set; }
+        public int Count;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Pop()

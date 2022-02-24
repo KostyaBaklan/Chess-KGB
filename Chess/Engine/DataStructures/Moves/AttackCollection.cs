@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Engine.Interfaces;
+﻿using System.Runtime.CompilerServices;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
@@ -26,38 +24,38 @@ namespace Engine.DataStructures.Moves
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddWinCapture(IMove move)
+        public void AddWinCapture(MoveBase move)
         {
             WinCaptures.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddTrade(IMove move)
+        public void AddTrade(MoveBase move)
         {
             Trades.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddLooseCapture(IMove move)
+        public void AddLooseCapture(MoveBase move)
         {
             LooseCaptures.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddHashMove(IMove move)
+        public void AddHashMove(MoveBase move)
         {
             HashMoves.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override IMove[] Build()
+        public override MoveBase[] Build()
         {
             var hashMovesCount = HashMoves.Count;
             var winCapturesCount = hashMovesCount + WinCaptures.Count;
             var capturesCount = winCapturesCount + Trades.Count;
             Count = capturesCount + LooseCaptures.Count;
 
-            IMove[] moves = new IMove[Count];
+            MoveBase[] moves = new MoveBase[Count];
 
             if (hashMovesCount > 0)
             {

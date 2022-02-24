@@ -3,8 +3,8 @@ using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
+using Engine.Models.Moves;
 using Engine.Models.Transposition;
-using Engine.Sorting.Sorters;
 using Engine.Strategies.LateMove.Base;
 
 namespace Engine.Strategies.LateMove.Deep
@@ -19,11 +19,11 @@ namespace Engine.Strategies.LateMove.Deep
                 .AlgorithmConfiguration.LateMoveConfiguration.LmrLateDepthThreshold;
         }
 
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
+        public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
             Result result = new Result();
 
-            IMove pv = pvMove;
+            MoveBase pv = pvMove;
             var key = Position.GetKey();
             var isNotEndGame = Position.GetPhase() != Phase.End;
             if (pv == null)
@@ -37,15 +37,13 @@ namespace Engine.Strategies.LateMove.Deep
                 }
             }
 
-            Sorter = MoveHistory.GetPly() > 4 ? MainSorter : InitialSorter;
-
             var moves = Position.GetAllMoves(Sorter, pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
             if (moves.Length > 1)
             {
-                var isCheck = MoveHistory.GetLastMove().IsCheck();
+                var isCheck = MoveHistory.GetLastMove().IsCheck;
                 if (isCheck)
                 {
                     for (var i = 0; i < moves.Length; i++)
@@ -128,7 +126,7 @@ namespace Engine.Strategies.LateMove.Deep
                 return Evaluate(alpha, beta);
             }
 
-            IMove pv = null;
+            MoveBase pv = null;
             var key = Position.GetKey();
             bool shouldUpdate = false;
             bool isInTable = false;
@@ -168,14 +166,14 @@ namespace Engine.Strategies.LateMove.Deep
             }
 
             int value = int.MinValue;
-            IMove bestMove = null;
+            MoveBase bestMove = null;
 
             var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck())
+            if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck)
             {
                 bool isNotEndGame = Position.GetPhase()!=Phase.End;
                 for (var i = 0; i < moves.Length; i++)

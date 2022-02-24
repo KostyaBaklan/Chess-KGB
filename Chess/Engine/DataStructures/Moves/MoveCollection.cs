@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Engine.Interfaces;
+﻿using System.Runtime.CompilerServices;
+using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves
@@ -18,19 +16,19 @@ namespace Engine.DataStructures.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddKillerMove(IMove move)
+        public void AddKillerMove(MoveBase move)
         {
             _killers.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddNonCapture(IMove move)
+        public void AddNonCapture(MoveBase move)
         {
             _nonCaptures.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override IMove[] Build()
+        public override MoveBase[] Build()
         {
             var hashMovesCount = HashMoves.Count;
             var winCapturesCount = hashMovesCount + WinCaptures.Count;
@@ -39,7 +37,7 @@ namespace Engine.DataStructures.Moves
             var nonCapturesCount = killersCount + _nonCaptures.Count;
             Count = nonCapturesCount + LooseCaptures.Count;
 
-            IMove[] moves = new IMove[Count];
+            MoveBase[] moves = new MoveBase[Count];
 
             if (hashMovesCount > 0)
             {

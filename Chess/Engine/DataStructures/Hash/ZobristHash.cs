@@ -7,7 +7,7 @@ namespace Engine.DataStructures.Hash
 {
     public class ZobristHash
     {
-        private ulong _key;
+        public ulong Key;
         private readonly ulong[][] _table;
 
         public ZobristHash()
@@ -34,15 +34,9 @@ namespace Engine.DataStructures.Hash
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ulong Key()
-        {
-            return _key;
-        }
-
         public void Initialize(BitBoard[] map)
         {
-            _key = 0L;
+            Key = 0L;
             for (var index = 0; index < map.Length; index++)
             {
                 var set = map[index];
@@ -50,7 +44,7 @@ namespace Engine.DataStructures.Hash
                 for (var i = 0; i < coordinates.Count; i++)
                 {
                     var coordinate = coordinates[i];
-                    _key = _key ^ _table[coordinate][index];
+                    Key = Key ^ _table[coordinate][index];
                 }
             }
         }
@@ -58,12 +52,12 @@ namespace Engine.DataStructures.Hash
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Update(byte coordinate, int figure)
         {
-            _key = _key ^ _table[coordinate][figure];
+            Key = Key ^ _table[coordinate][figure];
         }
 
         public void Update(byte from, byte to, byte figure)
         {
-            _key = _key ^ _table[from][figure] ^ _table[to][figure];
+            Key = Key ^ _table[from][figure] ^ _table[to][figure];
         }
     }
 }

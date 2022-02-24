@@ -4,6 +4,7 @@ using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
+using Engine.Models.Moves;
 using Engine.Models.Transposition;
 
 namespace Engine.Strategies.AlphaBeta.Null
@@ -25,12 +26,12 @@ namespace Engine.Strategies.AlphaBeta.Null
                 .AlgorithmConfiguration.NullConfiguration.NullWindow;
         }
 
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
+        public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
             CanUseNull = false;
             Result result = new Result();
 
-            IMove pv = pvMove;
+            MoveBase pv = pvMove;
 
             var isNotEndGame = Position.GetPhase() != Phase.End;
             var key = Position.GetKey();
@@ -95,7 +96,7 @@ namespace Engine.Strategies.AlphaBeta.Null
                 return Evaluate(alpha, beta);
             }
 
-            IMove pv = null;
+            MoveBase pv = null;
             var key = Position.GetKey();
 
             var isNotEndGame = Position.GetPhase() != Phase.End;
@@ -138,7 +139,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             }
 
             int value = short.MinValue;
-            IMove bestMove = null;
+            MoveBase bestMove = null;
 
             var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
@@ -146,7 +147,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             var lastMove = MoveHistory.GetLastMove();
-            if (CanUseNull && !lastMove.IsCheck() && isNotEndGame && IsValidWindow(alpha, beta))
+            if (CanUseNull && !lastMove.IsCheck && isNotEndGame && IsValidWindow(alpha, beta))
             {
                 int r = depth > 6 ? MaxReduction : MinReduction;
                 if (depth > r)

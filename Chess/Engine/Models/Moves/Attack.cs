@@ -5,21 +5,9 @@ using Engine.Models.Enums;
 
 namespace Engine.Models.Moves
 {
-    public class Attack : MoveBase, IAttack
+    public class Attack : AttackBase
     {
-        #region Implementation of IAttack
-
-        public Piece Captured { get; set; }
-
-        #endregion
-
         #region Overrides of MoveBase
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool IsAttack()
-        {
-            return true;
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
@@ -52,6 +40,12 @@ namespace Engine.Models.Moves
         public override bool IsLegalAttack(IBoard board)
         {
             return board.IsEmpty(EmptyBoard);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsReversable()
+        {
+            return false;
         }
 
         #endregion

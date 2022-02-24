@@ -1,7 +1,9 @@
-﻿namespace Engine.Interfaces
+﻿using Engine.Models.Moves;
+
+namespace Engine.Interfaces
 {
     public interface IMoveFormatter
     {
-        string Format(IMove move);
+        string Format(MoveBase move);
     }
 }

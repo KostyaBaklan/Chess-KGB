@@ -40,6 +40,10 @@
     <Reference Include="CommonServiceLocator">
       <HintPath>..\App\Libs\CommonServiceLocator.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\App\Libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -51,16 +55,26 @@
     <Compile Include="DataStructures\GameResult.cs" />
     <Compile Include="DataStructures\Hash\DynamicHash.cs" />
     <Compile Include="DataStructures\Hash\IDynamicHash.cs" />
+    <Compile Include="DataStructures\Killers\BiKillerMoves.cs" />
+    <Compile Include="DataStructures\Killers\KillerMoves.cs" />
+    <Compile Include="DataStructures\Killers\TiKillerMoves.cs" />
+    <Compile Include="DataStructures\Killers\TwoKillerMoves.cs" />
     <Compile Include="DataStructures\Moves\AdvancedMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\AttackCollection.cs" />
     <Compile Include="DataStructures\DynamicArray.cs" />
     <Compile Include="DataStructures\MaxHeap.cs" />
+    <Compile Include="DataStructures\Moves\AttackList.cs" />
     <Compile Include="DataStructures\Moves\AttackWrapper.cs" />
+    <Compile Include="DataStructures\Killers\DoKillerMoves.cs" />
     <Compile Include="DataStructures\Moves\ExtendedMoveCollection.cs" />
+    <Compile Include="DataStructures\PositionsList.cs" />
+    <Compile Include="Models\Moves\AttackBase.cs" />
+    <Compile Include="Services\KillerMoveCollectionFactory.cs" />
     <Compile Include="DataStructures\Moves\MoveCollection.cs" />
     <Compile Include="DataStructures\Moves\MoveCollectionBase.cs" />
     <Compile Include="DataStructures\Moves\MoveList.cs" />
     <Compile Include="DataStructures\Moves\MoveWrapper.cs" />
+    <Compile Include="DataStructures\Killers\TriKillerMoves.cs" />
     <Compile Include="DataStructures\Node.cs" />
     <Compile Include="DataStructures\PriorityQueue.cs" />
     <Compile Include="DataStructures\ZoobristKeyCollection.cs" />
@@ -76,10 +90,9 @@
     <Compile Include="Interfaces\Config\LateMoveConfiguration.cs" />
     <Compile Include="Interfaces\Config\MultiCutConfiguration.cs" />
     <Compile Include="Interfaces\Config\NullConfiguration.cs" />
-    <Compile Include="Interfaces\IAttack.cs" />
     <Compile Include="Interfaces\Config\IConfigurationProvider.cs" />
-    <Compile Include="Interfaces\IMoveCollection.cs" />
-    <Compile Include="Models\Boards\PieceBoard.cs" />
+    <Compile Include="Interfaces\IKillerMoveCollection.cs" />
+    <Compile Include="Interfaces\IKillerMoveCollectionFactory.cs" />
     <Compile Include="Models\Config\AlgorithmConfiguration.cs" />
     <Compile Include="Models\Config\BoardEvaluation.cs" />
     <Compile Include="Models\Config\Configuration.cs" />
@@ -97,11 +110,10 @@
     <Compile Include="Models\Config\TableConfigurationProvider.cs" />
     <Compile Include="Models\Enums\Phase.cs" />
     <Compile Include="Models\Helpers\BitBoardExtensions.cs" />
-    <Compile Include="Models\Helpers\BoardExtensions.cs" />
     <Compile Include="Models\Helpers\EnumerableExtensions.cs" />
     <Compile Include="Models\Helpers\MagicBitBoardExtensions.cs" />
     <Compile Include="Models\Helpers\MoveExtensions.cs" />
-    <Compile Include="DataStructures\Moves\KillerMoveCollection.cs" />
+    <Compile Include="DataStructures\Killers\KillerMoveCollection.cs" />
     <Compile Include="DataStructures\PieceSet.cs" />
     <Compile Include="DataStructures\Hash\TranspositionTable.cs" />
     <Compile Include="DataStructures\Hash\ZobristDictionary.cs" />
@@ -110,7 +122,6 @@
     <Compile Include="Interfaces\ICacheService.cs" />
     <Compile Include="Interfaces\ICheckService.cs" />
     <Compile Include="Interfaces\IEvaluationService.cs" />
-    <Compile Include="Interfaces\IMove.cs" />
     <Compile Include="Interfaces\IMoveFormatter.cs" />
     <Compile Include="Interfaces\IMoveHistoryService.cs" />
     <Compile Include="Interfaces\IMoveProvider.cs" />
@@ -263,11 +274,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Config\History.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Config\Table.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

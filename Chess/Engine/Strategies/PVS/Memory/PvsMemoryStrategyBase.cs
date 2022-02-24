@@ -2,6 +2,7 @@
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Models.Enums;
+using Engine.Models.Moves;
 using Engine.Models.Transposition;
 using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.PVS.Original;
@@ -59,9 +60,9 @@ namespace Engine.Strategies.PVS.Memory
 
         #region Overrides of ComplexStrategyBase
 
-        public override IResult GetResult(int alpha, int beta, int depth, IMove pvMove = null)
+        public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-            Result result = new Result(); IMove pv = pvMove;
+            Result result = new Result(); MoveBase pv = pvMove;
             var key = Position.GetKey();
             if (pv == null)
             {
@@ -78,7 +79,7 @@ namespace Engine.Strategies.PVS.Memory
             var moves = Position.GetAllMoves(Sorter, pv);
             if (moves.Length == 0)
             {
-                result.GameResult = MoveHistory.GetLastMove().IsCheck() ? GameResult.Mate : GameResult.Pat;
+                result.GameResult = MoveHistory.GetLastMove().IsCheck ? GameResult.Mate : GameResult.Pat;
                 return result;
             }
 
@@ -148,7 +149,7 @@ namespace Engine.Strategies.PVS.Memory
                 return Evaluate(alpha, beta);
             }
 
-            IMove pv = null;
+            MoveBase pv = null;
             var key = Position.GetKey();
             bool shouldUpdate = false;
             bool isInTable = false;
@@ -189,7 +190,7 @@ namespace Engine.Strategies.PVS.Memory
             }
 
             int value = int.MinValue;
-            IMove bestMove = null;
+            MoveBase bestMove = null;
 
             var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
