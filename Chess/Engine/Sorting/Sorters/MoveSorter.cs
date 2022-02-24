@@ -17,11 +17,13 @@ namespace Engine.Sorting.Sorters
         protected readonly IKillerMoveCollection[] Moves;
         protected readonly IMoveHistoryService MoveHistoryService;
         protected IMoveComparer Comparer;
+        protected IKillerMoveCollection CurrentKillers;
         protected readonly IPosition Position;
 
         protected AttackCollection AttackCollection;
         protected MoveCollection MoveCollection;
         protected readonly IBoard Board;
+        private readonly AttackComparer _attackComparer;
 
         protected MoveSorter(IPosition position, IMoveComparer comparer)
         {
@@ -37,7 +39,7 @@ namespace Engine.Sorting.Sorters
             {
                 Moves[i] = killerMoveCollectionFactory.Create();
             }
-
+            _attackComparer = new AttackComparer();
             AttackCollection = new AttackCollection(comparer);
             MoveCollection = new MoveCollection(comparer);
 
@@ -55,9 +57,12 @@ namespace Engine.Sorting.Sorters
             int depth = MoveHistoryService.GetPly();
 
             if (depth > 0)
+            {
+                CurrentKillers = Moves[depth];
                 return pvNode != null
-                    ? OrderInternal(attacks, moves, Moves[depth], pvNode)
-                    : OrderInternal(attacks, moves, Moves[depth]);
+                    ? OrderInternal(attacks, moves, pvNode)
+                    : OrderInternal(attacks, moves);
+            }
 
             MoveList moveList = new MoveList();
             foreach (var move in moves)
@@ -85,21 +90,18 @@ namespace Engine.Sorting.Sorters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual Dictionary<Square, DynamicSortedList<AttackBase>> OrderAttacks(AttackList attacks)
         {
-            var board = Position.GetBoard();
-            var attackComparer = new AttackComparer();
-
             Dictionary<Square, DynamicSortedList<AttackBase>> sortedAttacks = new Dictionary<Square, DynamicSortedList<AttackBase>>();
             for (var index = 0; index < attacks.Count; index++)
             {
                 var attack = attacks[index];
-                attack.Captured = board.GetPiece(attack.To);
+                attack.Captured = Board.GetPiece(attack.To);
                 if (sortedAttacks.TryGetValue(attack.To, out var set))
                 {
                     set.Push(attack);
                 }
                 else
                 {
-                    sortedAttacks.Add(attack.To, new DynamicSortedList<AttackBase>(attackComparer, attack));
+                    sortedAttacks.Add(attack.To, new DynamicSortedList<AttackBase>(_attackComparer, attack));
                 }
             }
 
@@ -118,7 +120,7 @@ namespace Engine.Sorting.Sorters
                 while (sortedAttack.Count > 0)
                 {
                     var attack = sortedAttack.Pop();
-                    if (attack.Equals(pv))
+                    if (attack.Key == pv.Key)
                     {
                         collection.AddHashMove(attack);
                         continue;
@@ -200,9 +202,7 @@ namespace Engine.Sorting.Sorters
             collection.AddWinCapture(_moves);
         }
 
-        protected abstract MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection);
-        protected abstract MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection, MoveBase pvNode);
+        protected abstract MoveBase[] OrderInternal(AttackList attacks, MoveList moves);
+        protected abstract MoveBase[] OrderInternal(AttackList attacks, MoveList moves,  MoveBase pvNode);
     }
 }

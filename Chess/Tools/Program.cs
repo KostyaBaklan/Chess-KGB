@@ -52,14 +52,13 @@ namespace Tools
 
         #region Overrides of MoveSorter
 
-        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection)
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves)
         {
             return Array(attacks, moves);
         }
 
         protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection, MoveBase pvNode)
+            MoveBase pvNode)
         {
             return Array(attacks, moves);
         }

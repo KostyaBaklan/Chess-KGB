@@ -14,21 +14,19 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection)
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves)
         {
             var sortedAttacks = OrderAttacks(attacks);
 
             OrderAttacks(MoveCollection, sortedAttacks);
 
-            ProcessMoves(moves, killerMoveCollection);
+            ProcessMoves(moves);
 
             return MoveCollection.Build();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection,
             MoveBase pvNode)
         {
             var sortedAttacks = OrderAttacks(attacks);
@@ -37,20 +35,20 @@ namespace Engine.Sorting.Sorters
             {
                 OrderAttacks(MoveCollection, sortedAttacks, attack);
 
-                ProcessMoves(moves, killerMoveCollection);
+                ProcessMoves(moves);
             }
             else
             {
                 OrderAttacks(MoveCollection, sortedAttacks);
 
-                ProcessMoves(moves, killerMoveCollection, pvNode);
+                ProcessMoves(moves, pvNode);
             }
 
             return MoveCollection.Build();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ProcessMoves(MoveList moves, IKillerMoveCollection killerMoveCollection, MoveBase pvNode)
+        private void ProcessMoves(MoveList moves, MoveBase pvNode)
         {
             if (Position.GetTurn() == Turn.White)
             {
@@ -59,11 +57,11 @@ namespace Engine.Sorting.Sorters
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (move.Equals(pvNode))
+                        if (move.Key == pvNode.Key)
                         {
                             MoveCollection.AddHashMove(move);
                         }
-                        else if (killerMoveCollection.Contains(move.Key) || move.IsPromotion())
+                        else if (CurrentKillers.Contains(move.Key) || move.IsPromotion)
                         {
                             MoveCollection.AddKillerMove(move);
                         }
@@ -78,11 +76,11 @@ namespace Engine.Sorting.Sorters
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (move.Equals(pvNode))
+                        if (move.Key == pvNode.Key)
                         {
                             MoveCollection.AddHashMove(move);
                         }
-                        else if (killerMoveCollection.Contains(move.Key))
+                        else if (CurrentKillers.Contains(move.Key))
                         {
                             MoveCollection.AddKillerMove(move);
                         }
@@ -100,11 +98,11 @@ namespace Engine.Sorting.Sorters
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (move.Equals(pvNode))
+                        if (move.Key == pvNode.Key)
                         {
                             MoveCollection.AddHashMove(move);
                         }
-                        else if (killerMoveCollection.Contains(move.Key) || move.IsPromotion())
+                        else if (CurrentKillers.Contains(move.Key) || move.IsPromotion)
                         {
                             MoveCollection.AddKillerMove(move);
                         }
@@ -119,11 +117,11 @@ namespace Engine.Sorting.Sorters
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (move.Equals(pvNode))
+                        if (move.Key == pvNode.Key)
                         {
                             MoveCollection.AddHashMove(move);
                         }
-                        else if (killerMoveCollection.Contains(move.Key))
+                        else if (CurrentKillers.Contains(move.Key))
                         {
                             MoveCollection.AddKillerMove(move);
                         }
@@ -137,7 +135,7 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ProcessMoves(MoveList moves, IKillerMoveCollection killerMoveCollection)
+        private void ProcessMoves(MoveList moves)
         {
             if (Position.GetTurn() == Turn.White)
             {
@@ -146,7 +144,7 @@ namespace Engine.Sorting.Sorters
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (killerMoveCollection.Contains(move.Key) || move.IsPromotion())
+                        if (CurrentKillers.Contains(move.Key) || move.IsPromotion)
                         {
                             MoveCollection.AddKillerMove(move);
                         }
@@ -161,7 +159,7 @@ namespace Engine.Sorting.Sorters
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (killerMoveCollection.Contains(move.Key))
+                        if (CurrentKillers.Contains(move.Key))
                         {
                             MoveCollection.AddKillerMove(move);
                         }
@@ -179,7 +177,7 @@ namespace Engine.Sorting.Sorters
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (killerMoveCollection.Contains(move.Key) || move.IsPromotion())
+                        if (CurrentKillers.Contains(move.Key) || move.IsPromotion)
                         {
                             MoveCollection.AddKillerMove(move);
                         }
@@ -194,7 +192,7 @@ namespace Engine.Sorting.Sorters
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (killerMoveCollection.Contains(move.Key))
+                        if (CurrentKillers.Contains(move.Key))
                         {
                             MoveCollection.AddKillerMove(move);
                         }

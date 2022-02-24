@@ -10,12 +10,6 @@ namespace Engine.Models.Moves
         #region Overrides of MoveBase
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool IsAttack()
-        {
-            return true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
         {
             Piece piece = board.GetPiece(To);

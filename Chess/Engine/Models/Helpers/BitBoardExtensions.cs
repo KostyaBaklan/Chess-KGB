@@ -66,8 +66,8 @@ namespace Engine.Models.Helpers
             positionsList.Clear();
             while (b.Any())
             {
-                int position = BitScanForward(b);
-                positionsList.Add((byte) position);
+                byte position = BitScanForward(b);
+                positionsList.Add( position);
                 b = b.Remove(position);
             }
         }
@@ -97,7 +97,7 @@ namespace Engine.Models.Helpers
             int count = 0;
             while (!b.IsZero())
             {
-                int position = BitScanForward(b);
+                byte position = BitScanForward(b);
                 count++;
                 b = b.Remove(position);
             }

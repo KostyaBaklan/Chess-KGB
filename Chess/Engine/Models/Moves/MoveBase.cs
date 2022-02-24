@@ -14,6 +14,9 @@ namespace Engine.Models.Moves
         {
             IsCheck = false;
             EmptyBoard = new BitBoard(0ul);
+            IsAttack = false;
+            IsPromotion = false;
+            IsCastle = false;
         }
 
         #region Implementation of IMove
@@ -27,6 +30,9 @@ namespace Engine.Models.Moves
         public Square To;
         public MoveType Type;
         public BitBoard EmptyBoard;
+        public bool IsAttack;
+        public bool IsCastle;
+        public bool IsPromotion;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public abstract bool IsLegal(IBoard board);
@@ -35,24 +41,6 @@ namespace Engine.Models.Moves
         public virtual bool IsLegalAttack(IBoard board)
         {
             return true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsAttack()
-        {
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsCastle()
-        {
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsPromotion()
-        {
-            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -14,8 +14,8 @@ namespace Engine.Models.Moves
             Type = MoveType.EatOver;
         }
 
-        public Piece Victim { get; set; }
-        public byte VictimSquare { get; set; }
+        public Piece Victim;
+        public byte VictimSquare;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsLegal(IBoard board)

@@ -31,8 +31,7 @@ namespace Engine.Sorting.Sorters
         #region Overrides of MoveSorter
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection)
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves)
         {
             var sortedAttacks = OrderAttacks(attacks);
 
@@ -41,11 +40,11 @@ namespace Engine.Sorting.Sorters
             for (var index = 0; index < moves.Count; index++)
             {
                 var move = moves[index];
-                if (killerMoveCollection.Contains(move.Key))
+                if (CurrentKillers.Contains(move.Key))
                 {
                     AdvancedMoveCollection.AddKillerMove(move);
                 }
-                else if (move.IsCastle() || move.IsPromotion())
+                else if (move.IsCastle || move.IsPromotion)
                 {
                     AdvancedMoveCollection.AddSuggested(move);
                 }
@@ -60,7 +59,6 @@ namespace Engine.Sorting.Sorters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            IKillerMoveCollection killerMoveCollection,
             MoveBase pvNode)
         {
             var sortedAttacks = OrderAttacks(attacks);
@@ -72,11 +70,11 @@ namespace Engine.Sorting.Sorters
                 for (var index = 0; index < moves.Count; index++)
                 {
                     var move = moves[index];
-                    if (killerMoveCollection.Contains(move.Key))
+                    if (CurrentKillers.Contains(move.Key))
                     {
                         AdvancedMoveCollection.AddKillerMove(move);
                     }
-                    else if (move.IsCastle() || move.IsPromotion())
+                    else if (move.IsCastle || move.IsPromotion)
                     {
                         AdvancedMoveCollection.AddSuggested(move);
                     }
@@ -93,17 +91,17 @@ namespace Engine.Sorting.Sorters
                 for (var index = 0; index < moves.Count; index++)
                 {
                     var move = moves[index];
-                    if (move.Equals(pvNode))
+                    if (move.Key == pvNode.Key)
                     {
                         AdvancedMoveCollection.AddHashMove(move);
                     }
                     else
                     {
-                        if (killerMoveCollection.Contains(move.Key))
+                        if (CurrentKillers.Contains(move.Key))
                         {
                             AdvancedMoveCollection.AddKillerMove(move);
                         }
-                        else if (move.IsCastle() || move.IsPromotion())
+                        else if (move.IsCastle || move.IsPromotion)
                         {
                             AdvancedMoveCollection.AddSuggested(move);
                         }

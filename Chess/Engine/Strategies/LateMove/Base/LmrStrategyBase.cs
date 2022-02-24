@@ -260,7 +260,7 @@ namespace Engine.Strategies.LateMove.Base
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool CanReduce(MoveBase move)
         {
-            return !move.IsAttack() && !move.IsPromotion() && !move.IsCheck;
+            return !move.IsAttack && !move.IsPromotion && !move.IsCheck;
         }
     }
 }

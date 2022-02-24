@@ -11,6 +11,7 @@ namespace Engine.Models.Moves
         public BigCastle()
         {
             Type = MoveType.BigCastle;
+            IsCastle = true;
         }
 
 
@@ -21,12 +22,6 @@ namespace Engine.Models.Moves
         }
 
         #region Overrides of MoveBase
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool IsCastle()
-        {
-            return true;
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsReversable()

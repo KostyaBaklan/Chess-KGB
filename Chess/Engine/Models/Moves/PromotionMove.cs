@@ -7,7 +7,12 @@ namespace Engine.Models.Moves
 {
     public class PromotionMove : Move
     {
-        public Piece PromotionPiece { get; set; }
+        public Piece PromotionPiece;
+
+        public PromotionMove()
+        {
+            IsPromotion = true;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
@@ -21,12 +26,6 @@ namespace Engine.Models.Moves
         {
             board.Add(Piece, From);
             board.Remove(PromotionPiece, To);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool IsPromotion()
-        {
-            return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

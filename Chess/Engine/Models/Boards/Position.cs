@@ -258,9 +258,9 @@ namespace Engine.Models.Boards
         public bool IsNotLegal(MoveBase move)
         {
             return _turn != Turn.White
-                ? _moveProvider.AnyBlackCheck() || move.IsCastle() &&
+                ? _moveProvider.AnyBlackCheck() || move.IsCastle &&
                   _moveProvider.IsWhiteUnderAttack(move.To == Squares.C1 ? Squares.D1 : Squares.F1)
-                : _moveProvider.AnyWhiteCheck() || move.IsCastle() &&
+                : _moveProvider.AnyWhiteCheck() || move.IsCastle &&
                   _moveProvider.IsBlackUnderAttack(move.To == Squares.C8 ? Squares.D8 : Squares.F8);
         }
 
