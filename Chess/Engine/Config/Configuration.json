@@ -22,7 +22,7 @@
     "NullConfiguration": {
       "NullWindow": 5,
       "NullDepthReduction": 4,
-      "NullDepthOffset": 3
+      "NullDepthOffset": 2
     },
     "MultiCutConfiguration": {
       "MultiCutReduction": 2,

@@ -50,13 +50,13 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWhite(this Piece piece)
         {
-            return (byte)piece < 6;
+            return piece < Piece.BlackPawn;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBlack(this Piece piece)
         {
-            return (byte)piece > 5;
+            return piece > Piece.WhiteKing;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

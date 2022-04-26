@@ -50,10 +50,10 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public abstract void Make(IBoard board, ArrayStack<Piece?> figureHistory);
+        public abstract void Make(IBoard board, ArrayStack<Piece> figureHistory);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public abstract void UnMake(IBoard board, ArrayStack<Piece?> figureHistory);
+        public abstract void UnMake(IBoard board, ArrayStack<Piece> figureHistory);
 
         public void Set(params int[] squares)
         {

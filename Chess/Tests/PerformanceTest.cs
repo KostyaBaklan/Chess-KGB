@@ -10,9 +10,12 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Base;
 using Engine.Strategies.LateMove.Base;
+using Engine.Strategies.LateMove.Base.Null;
 using Engine.Strategies.LateMove.Deep;
+using Engine.Strategies.LateMove.Deep.Null;
 using Newtonsoft.Json;
 
 namespace Tests
@@ -39,16 +42,28 @@ namespace Tests
             evaluationService.Initialize(depth);
             IPosition position = new Position();
 
-            Dictionary<string, Func<short,IPosition,StrategyBase>> strategyFactories = new Dictionary<string, Func<short, IPosition, StrategyBase>>
-            {
-                {"lmr_bs_hc",(d, p)=>new LmrBasicHistoryStrategy(d, p)},
-                {"lmr_es_hc", (d, p)=>new LmrExtendedHistoryStrategy(d, p)},
-                {"lmr_as_hc", (d, p)=>new LmrAdvancedHistoryStrategy(d, p)},
+            Dictionary<string, Func<short, IPosition, StrategyBase>> strategyFactories =
+                new Dictionary<string, Func<short, IPosition, StrategyBase>>
+                {
+                    {"lmr_bs_hc", (d, p) => new LmrBasicHistoryStrategy(d, p)},
+                    {"lmr_es_hc", (d, p) => new LmrExtendedHistoryStrategy(d, p)},
+                    {"lmr_as_hc", (d, p) => new LmrAdvancedHistoryStrategy(d, p)},
 
-                {"lmrd_bs_hc",(d, p)=> new LmrDeepBasicStrategy(d, p)},
-                {"lmrd_es_hc",(d, p)=> new LmrDeepExtendedStrategy(d, p)},
-                {"lmrd_as_hc",(d, p)=> new LmrDeepAdvancedStrategy(d, p)}
-            };
+                    {"lmrd_bs_hc", (d, p) => new LmrDeepBasicStrategy(d, p)},
+                    {"lmrd_es_hc", (d, p) => new LmrDeepExtendedStrategy(d, p)},
+                    {"lmrd_as_hc", (d, p) => new LmrDeepAdvancedStrategy(d, p)},
+
+                    {"lmrn_bs_hc", (d, p) => new LmrNullBasicStrategy(d, p)},
+                    {"lmrn_es_hc", (d, p) => new LmrNullExtendedStrategy(d, p)},
+                    {"lmrn_as_hc", (d, p) => new LmrNullAdvancedStrategy(d, p)},
+
+                    {"lmrdn_bs_hc", (d, p) => new LmrDeepNullBasicStrategy(d, p)},
+                    {"lmrdn_es_hc", (d, p) => new LmrDeepNullExtendedStrategy(d, p)},
+                    {"lmrdn_as_hc", (d, p) => new LmrDeepNullAdvancedStrategy(d, p)},
+
+                    {"lmra_es_hc", (d, p) => new LmrAspirationExtendedStrategy(d, p)},
+                    {"lmrda_es_hc", (d, p) => new LmrAspirationDeepExtendedStrategy(d, p)}
+                };
             //Dictionary<string, StrategyBase> strategies = new Dictionary<string, StrategyBase>
             //{
             //    {"ab_es_hc", new AlphaBetaExtendedHistoryStrategy(depth, position)},

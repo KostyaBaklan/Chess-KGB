@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Runtime.CompilerServices;
-using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;

@@ -30,7 +30,7 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
         {
             if (Piece.IsWhite())
                 board.DoWhiteSmallCastle();
@@ -39,7 +39,7 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void UnMake(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void UnMake(IBoard board, ArrayStack<Piece> figureHistory)
         {
             if (Piece.IsWhite())
                 board.UndoWhiteSmallCastle();

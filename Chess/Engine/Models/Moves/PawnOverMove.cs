@@ -52,7 +52,7 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
         {
             if (Type == MoveType.Over)
             {
@@ -62,7 +62,7 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void UnMake(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void UnMake(IBoard board, ArrayStack<Piece> figureHistory)
         {
             if (Type == MoveType.Over)
             {

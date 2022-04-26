@@ -1,6 +1,6 @@
 ﻿namespace Engine.Models.Enums
 {
-    public enum Phase
+    public enum Phase:byte
     {
         Opening,
         Middle,
