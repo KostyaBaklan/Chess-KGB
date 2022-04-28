@@ -49,6 +49,7 @@ namespace EvaluationEditor
             containerRegistry.RegisterSingleton(typeof(IMoveHistoryService), typeof(MoveHistoryService));
             containerRegistry.RegisterSingleton(typeof(IEvaluationService), typeof(EvaluationService));
             containerRegistry.RegisterSingleton(typeof(ICheckService), typeof(CheckService));
+            containerRegistry.RegisterSingleton(typeof(IAttackEvaluationService), typeof(AttackEvaluationService));
 
             containerRegistry.RegisterSingleton(typeof(EditorViewModel));
         }
