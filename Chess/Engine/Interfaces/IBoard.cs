@@ -14,7 +14,8 @@ namespace Engine.Interfaces
         bool CanDoWhiteSmallCastle();
         bool CanDoBlackBigCastle();
         bool CanDoWhiteBigCastle();
-        bool IsOpposite(BitBoard square, Piece piece);
+        bool IsWhiteOpposite(Square square);
+        bool IsBlackOpposite(Square square);
         short GetValue();
         int GetStaticValue();
         Piece GetPiece(Square cell);

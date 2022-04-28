@@ -68,6 +68,7 @@
     <Compile Include="DataStructures\Killers\DoKillerMoves.cs" />
     <Compile Include="DataStructures\Moves\ExtendedMoveCollection.cs" />
     <Compile Include="DataStructures\PositionsList.cs" />
+    <Compile Include="Models\Boards\AttackerBoard.cs" />
     <Compile Include="Models\Moves\AttackBase.cs" />
     <Compile Include="Services\KillerMoveCollectionFactory.cs" />
     <Compile Include="DataStructures\Moves\MoveCollection.cs" />

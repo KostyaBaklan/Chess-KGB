@@ -15,14 +15,14 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
         {
             board.Remove(Piece, From);
             board.Add(PromotionPiece, To);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void UnMake(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void UnMake(IBoard board, ArrayStack<Piece> figureHistory)
         {
             board.Add(Piece, From);
             board.Remove(PromotionPiece, To);

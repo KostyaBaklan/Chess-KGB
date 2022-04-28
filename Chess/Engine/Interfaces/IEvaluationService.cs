@@ -4,9 +4,9 @@ namespace Engine.Interfaces
 {
     public interface IEvaluationService : ICacheService
     {
-        int GetValue(int piece, Phase phase);
-        int GetValue(int piece, int square, Phase phase);
-        int GetFullValue(int piece, int square, Phase phase);
+        int GetValue(byte piece, Phase phase);
+        int GetValue(byte piece, byte square, Phase phase);
+        int GetFullValue(byte piece, byte square, Phase phase);
         int GetMateValue();
         int Evaluate(IPosition position);
         void Initialize(short depth);

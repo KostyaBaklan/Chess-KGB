@@ -2,6 +2,7 @@
 using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
+using Engine.Models.Helpers;
 
 namespace Engine.Models.Moves
 {
@@ -15,7 +16,7 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
         {
             board.Remove(Piece, From);
             Piece piece = board.GetPiece(To);
@@ -25,10 +26,10 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void UnMake(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void UnMake(IBoard board, ArrayStack<Piece> figureHistory)
         {
             board.Add(Piece, From);
-            Piece piece = figureHistory.Pop().Value;
+            Piece piece = figureHistory.Pop();
             board.Add(piece, To);
             board.Remove(PromotionPiece, To);
         }
@@ -36,7 +37,7 @@ namespace Engine.Models.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsLegal(IBoard board)
         {
-            return board.IsOpposite(To.AsBitBoard(), Piece);
+            return Piece.IsWhite() ? board.IsWhiteOpposite(To) : board.IsBlackOpposite(To);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

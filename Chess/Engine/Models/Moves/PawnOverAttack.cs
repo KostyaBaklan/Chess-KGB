@@ -32,7 +32,7 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Make(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
         {
             board.SetOver(VictimSquare, false);
             board.Remove(Victim, new Square(VictimSquare));
@@ -40,7 +40,7 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void UnMake(IBoard board, ArrayStack<Piece?> figureHistory)
+        public override void UnMake(IBoard board, ArrayStack<Piece> figureHistory)
         {
             board.SetOver(VictimSquare, true);
             board.Move(Piece, To, From);

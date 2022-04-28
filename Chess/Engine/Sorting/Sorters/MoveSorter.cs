@@ -56,7 +56,7 @@ namespace Engine.Sorting.Sorters
         {
             int depth = MoveHistoryService.GetPly();
 
-            if (depth > 0)
+            if (depth > 0 || pvNode!=null)
             {
                 CurrentKillers = Moves[depth];
                 return pvNode != null

@@ -126,18 +126,18 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetValue(int piece, Phase phase)
+        public int GetValue(byte piece, Phase phase)
         {
             return _values[(byte)phase][piece];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetValue(int piece, int square, Phase phase)
+        public int GetValue(byte piece, byte square, Phase phase)
         {
             return _staticValues[piece][(int)phase][square];
         }
 
-        public int GetFullValue(int piece, int square, Phase phase)
+        public int GetFullValue(byte piece, byte square, Phase phase)
         {
             return _values[(byte)phase][piece] + _staticValues[piece][(byte)phase][square];
         }

@@ -17,7 +17,7 @@ namespace Engine.Models.Boards
     {
         private Turn _turn;
         private Phase _phase;
-        private readonly ArrayStack<Piece?> _figureHistory;
+        private readonly ArrayStack<Piece> _figureHistory;
 
         private readonly byte[][] _white;
         private readonly byte[][] _black;
@@ -101,7 +101,7 @@ namespace Engine.Models.Boards
             _movesTemp = new MoveList();
 
             _board = new Board();
-            _figureHistory = new ArrayStack<Piece?>();
+            _figureHistory = new ArrayStack<Piece>();
             _moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
             _moveHistoryService = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
             _checkService = ServiceLocator.Current.GetInstance<ICheckService>();

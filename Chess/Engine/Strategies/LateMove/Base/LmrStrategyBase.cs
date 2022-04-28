@@ -220,14 +220,15 @@ namespace Engine.Strategies.LateMove.Base
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
-                    Position.Make(moves[i]);
+                    var move = moves[i];
+                    Position.Make(move);
 
                     var r = -Search(-beta, -alpha, depth - 1);
 
                     if (r > value)
                     {
                         value = r;
-                        bestMove = moves[i];
+                        bestMove = move;
                     }
 
                     Position.UnMake();
@@ -239,7 +240,7 @@ namespace Engine.Strategies.LateMove.Base
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(moves[i]);
+                    Sorter.Add(move);
                     break;
                 }
             }
