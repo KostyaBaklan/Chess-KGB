@@ -26,5 +26,6 @@ namespace Engine.Interfaces
         bool IsWhiteUnderAttack(Square square);
         bool IsBlackUnderAttack(Square square);
         void SetBoard(IBoard board);
+        void AgeHistory();
     }
 }

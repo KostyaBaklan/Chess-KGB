@@ -9,5 +9,6 @@
         int FutilityDepth { get; }
         bool UseHistory { get; }
         int KillerCapacity { get; }
+        bool UseAging { get; }
     }
 }

@@ -6,7 +6,8 @@
     "KillerCapacity": 2,
     "UseEvaluationCache": false,
     "UseFutility": true,
-    "UseHistory": true
+    "UseHistory": true,
+    "UseAging": false
   },
   "AlgorithmConfiguration": {
     "DepthOffset": 2,

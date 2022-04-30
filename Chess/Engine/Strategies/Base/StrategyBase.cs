@@ -25,6 +25,7 @@ namespace Engine.Strategies.Base
         protected IEvaluationService EvaluationService;
         protected readonly IMoveHistoryService MoveHistory;
         protected readonly IMoveProvider MoveProvider;
+        protected bool UseAging;
 
         protected StrategyBase(short depth, IPosition position)
         {
@@ -38,6 +39,8 @@ namespace Engine.Strategies.Base
                 .GeneralConfiguration.UseFutility;
             FutilityDepth = configurationProvider
                 .GeneralConfiguration.FutilityDepth;
+            UseAging = configurationProvider
+                .GeneralConfiguration.UseAging;
             Depth = depth;
             Position = position;
             EvaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
