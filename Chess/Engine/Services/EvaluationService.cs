@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
@@ -34,6 +35,7 @@ namespace Engine.Services
 
         private readonly int[][] _values;
         private readonly int[][][] _staticValues;
+        private readonly int[][][] _fullValues;
         private Dictionary<ulong, short> _table;
         private DynamicCollection<ulong>[] _depthTable;
         private readonly IMoveHistoryService _moveHistory;
@@ -95,10 +97,7 @@ namespace Engine.Services
             }
 
             _staticValues = new int[12][][];
-            for (var i = 0; i < _staticValues.Length; i++)
-            {
-                _staticValues[i] = new int[3][];
-            }
+            _fullValues = new int[12][][];
 
             short factor = configuration.Evaluation.Static.Factor;
             for (byte i = 0; i < 12; i++)
@@ -110,6 +109,18 @@ namespace Engine.Services
                     for (byte k = 0; k < 64; k++)
                     {
                         _staticValues[i][j][k] = staticValueProvider.GetValue(i, j, k)* factor;
+                    }
+                }
+            }
+            for (byte i = 0; i < 12; i++)
+            {
+                _fullValues[i] = new int[3][];
+                for (byte j = 0; j < 3; j++)
+                {
+                    _fullValues[i][j] = new int[64];
+                    for (byte k = 0; k < 64; k++)
+                    {
+                        _fullValues[i][j][k] = _staticValues[i][j][k] + _values[j][i];
                     }
                 }
             }
@@ -137,9 +148,10 @@ namespace Engine.Services
             return _staticValues[piece][(int)phase][square];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetFullValue(byte piece, byte square, Phase phase)
         {
-            return _values[(byte)phase][piece] + _staticValues[piece][(byte)phase][square];
+            return _fullValues[piece][(byte)phase][square];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

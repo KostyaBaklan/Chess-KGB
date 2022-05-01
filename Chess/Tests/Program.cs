@@ -9,9 +9,9 @@ namespace Tests
         {
             Boot.SetUp();
 
-            //PerformanceTest.Test(args);
+            PerformanceTest.Test(args);
 
-           PerformanceTest.Test(new[] { "lmrd_es_hc", "9", "4",false.ToString() });
+           //PerformanceTest.Test(new[] { "lmrd_es_hc", "9", "4",false.ToString() });
 
             //OpenningsTest.Opennings();
 
