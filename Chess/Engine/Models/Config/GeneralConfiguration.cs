@@ -13,6 +13,7 @@ namespace Engine.Models.Config
         public int FutilityDepth { get; set; }
         public bool UseHistory { get; set; }
         public int KillerCapacity { get; set; }
+        public bool UseAging { get; set; }
 
         #endregion
     }

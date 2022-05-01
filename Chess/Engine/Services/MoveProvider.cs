@@ -1443,6 +1443,18 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AgeHistory()
+        {
+            for (var i = 0; i < _all.Length; i++)
+            {
+                if (_all[i].History > 0)
+                {
+                    _all[i].History /= 2;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsUnderAttack(byte piece, byte to)
         {
             var positions = _board.GetPositions(piece);

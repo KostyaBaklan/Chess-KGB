@@ -66,6 +66,11 @@ namespace Engine.Strategies.AlphaBeta
                 depth++;
             }
 
+            if (UseAging)
+            {
+                MoveProvider.AgeHistory(); 
+            }
+
             return GetResult(-SearchValue, SearchValue, depth);
         }
 
