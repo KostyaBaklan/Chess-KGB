@@ -68,8 +68,10 @@
     <Compile Include="DataStructures\Killers\DoKillerMoves.cs" />
     <Compile Include="DataStructures\Moves\ExtendedMoveCollection.cs" />
     <Compile Include="DataStructures\PositionsList.cs" />
+    <Compile Include="Interfaces\IAttackEvaluationService.cs" />
     <Compile Include="Models\Boards\AttackerBoard.cs" />
     <Compile Include="Models\Moves\AttackBase.cs" />
+    <Compile Include="Services\AttackEvaluationService.cs" />
     <Compile Include="Services\KillerMoveCollectionFactory.cs" />
     <Compile Include="DataStructures\Moves\MoveCollection.cs" />
     <Compile Include="DataStructures\Moves\MoveCollectionBase.cs" />
@@ -198,6 +200,8 @@
     <Compile Include="Strategies\AlphaBeta\Null\Extended\AlphaBetaNullDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\NullMoveStrategy.cs" />
     <Compile Include="Strategies\Aspiration\AspirationStrategyBase.cs" />
+    <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationAdvancedStrategy.cs" />
+    <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepAdvancedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepExtendedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationExtendedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Original\AspirationDifferenceHistoryStrategy.cs" />

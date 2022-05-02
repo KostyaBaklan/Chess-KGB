@@ -100,6 +100,30 @@ namespace Engine.DataStructures.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SortBySee()
+        {
+            var capturesCount = Count / 2;
+
+            for (var i = 0; i < capturesCount; i++)
+            {
+                int index = i;
+                var max = _items[i].See;
+                for (int j = i + 1; j < Count; j++)
+                {
+                    if (_items[j].See <= max) continue;
+                    max = _items[j].See;
+                    index = j;
+                }
+
+                if (index == i) continue;
+
+                var temp = _items[index];
+                _items[index] = _items[i];
+                _items[i] = temp;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(AttackList moves)
         {
             Array.Copy(moves._items, 0, _items, Count, moves.Count);

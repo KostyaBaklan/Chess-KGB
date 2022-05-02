@@ -16,9 +16,7 @@ namespace Engine.Sorting.Sorters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves)
         {
-            var sortedAttacks = OrderAttacks(attacks);
-
-            OrderAttacks(MoveCollection, sortedAttacks);
+            OrderAttacks(MoveCollection, attacks);
 
             ProcessMoves(moves);
 
@@ -29,17 +27,15 @@ namespace Engine.Sorting.Sorters
         protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
             MoveBase pvNode)
         {
-            var sortedAttacks = OrderAttacks(attacks);
-
             if (pvNode is AttackBase attack)
             {
-                OrderAttacks(MoveCollection, sortedAttacks, attack);
+                OrderAttacks(MoveCollection, attacks, attack);
 
                 ProcessMoves(moves);
             }
             else
             {
-                OrderAttacks(MoveCollection, sortedAttacks);
+                OrderAttacks(MoveCollection, attacks);
 
                 ProcessMoves(moves, pvNode);
             }

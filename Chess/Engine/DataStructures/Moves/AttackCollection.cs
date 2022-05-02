@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
@@ -91,6 +92,15 @@ namespace Engine.DataStructures.Moves
             WinCaptures.Add(moves);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddWinCapture(AttackList attackList)
+        {
+            for (int i = 0; i < attackList.Count; i++)
+            {
+                WinCaptures.Add(attackList[i]);
+            }
+        }
+
         //protected void FindNull(IMove[] moves)
         //{
         //    var i = Array.FindIndex(moves, m => m == null);
@@ -104,5 +114,6 @@ namespace Engine.DataStructures.Moves
         //        }
         //    }
         //}
+
     }
 }
