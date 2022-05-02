@@ -5,6 +5,7 @@ using System.Text;
 using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Hash;
+using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
@@ -848,7 +849,7 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int StaticExchange(AttackBase attack)
         {
-            _attackEvaluationService.Initialize(_boards,_whites|_blacks,_phase, _pieceCount);
+            _attackEvaluationService.Initialize(_boards,_whites|_blacks,_phase);
             return _attackEvaluationService.StaticExchange(attack);
         }
 

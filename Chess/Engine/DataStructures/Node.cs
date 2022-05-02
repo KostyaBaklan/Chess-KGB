@@ -7,7 +7,7 @@
             Value = value;
         }
 
-        public T Value { get; }
-        public Node<T> Next { get; set; }
+        public T Value;
+        public Node<T> Next;
     }
 }

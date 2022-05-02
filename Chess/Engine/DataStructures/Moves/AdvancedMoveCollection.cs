@@ -63,9 +63,9 @@ namespace Engine.DataStructures.Moves
             var tradesCount = winCapturesCount + Trades.Count;
             var killersCount = tradesCount + _killers.Count;
             int checksCount = killersCount + _checks.Count;
-            var nonCapturesCount = checksCount + _nonCaptures.Count;
-            var looseTradesCount = nonCapturesCount + LooseTrades.Count;
-            Count = looseTradesCount + LooseCaptures.Count;
+            var nonCapturesCount = checksCount + LooseCaptures.Count;
+            var looseTradesCount = nonCapturesCount + _nonCaptures.Count;
+            Count = looseTradesCount + LooseTrades.Count;
 
             MoveBase[] moves = new MoveBase[Count];
 
@@ -99,23 +99,23 @@ namespace Engine.DataStructures.Moves
                 _checks.Clear();
             }
 
+            if (LooseCaptures.Count > 0)
+            {
+                LooseCaptures.CopyTo(moves, checksCount);
+                LooseCaptures.Clear();
+            }
+
             if (_nonCaptures.Count > 0)
             {
                 _nonCaptures.Sort(Comparer);
-                _nonCaptures.CopyTo(moves, checksCount);
+                _nonCaptures.CopyTo(moves, nonCapturesCount);
                 _nonCaptures.Clear();
             }
 
             if (LooseTrades.Count > 0)
             {
-                LooseTrades.CopyTo(moves, nonCapturesCount);
+                LooseTrades.CopyTo(moves, looseTradesCount);
                 LooseTrades.Clear();
-            }
-
-            if (LooseCaptures.Count > 0)
-            {
-                LooseCaptures.CopyTo(moves, looseTradesCount);
-                LooseCaptures.Clear();
             }
 
             Count = 0;

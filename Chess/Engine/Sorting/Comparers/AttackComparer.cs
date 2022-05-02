@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Engine.Models.Moves;
 
 namespace Engine.Sorting.Comparers
@@ -7,6 +8,7 @@ namespace Engine.Sorting.Comparers
     {
         #region Implementation of IComparer<in IAttack>
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Compare(AttackBase x, AttackBase y)
         {
             return x.Captured.CompareTo(y.Captured);

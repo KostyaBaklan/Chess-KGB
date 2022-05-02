@@ -6,7 +6,7 @@ namespace Engine.Interfaces
 {
     public interface IAttackEvaluationService
     {
-        void Initialize(BitBoard[] boards, BitBoard occ, Phase phase, int[] pieceCount);
+        void Initialize(BitBoard[] boards, BitBoard occ, Phase phase);
         int StaticExchange(AttackBase attack);
     }
 }

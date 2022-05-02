@@ -200,6 +200,8 @@
     <Compile Include="Strategies\AlphaBeta\Null\Extended\AlphaBetaNullDifferenceStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Null\NullMoveStrategy.cs" />
     <Compile Include="Strategies\Aspiration\AspirationStrategyBase.cs" />
+    <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationAdvancedStrategy.cs" />
+    <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepAdvancedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepExtendedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationExtendedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Original\AspirationDifferenceHistoryStrategy.cs" />
