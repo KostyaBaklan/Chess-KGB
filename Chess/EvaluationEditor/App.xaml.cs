@@ -50,6 +50,7 @@ namespace EvaluationEditor
             containerRegistry.RegisterSingleton(typeof(IEvaluationService), typeof(EvaluationService));
             containerRegistry.RegisterSingleton(typeof(ICheckService), typeof(CheckService));
             containerRegistry.RegisterSingleton(typeof(IAttackEvaluationService), typeof(AttackEvaluationService));
+            containerRegistry.RegisterSingleton(typeof(IOpeningService), typeof(OpeningService));
 
             containerRegistry.RegisterSingleton(typeof(EditorViewModel));
         }

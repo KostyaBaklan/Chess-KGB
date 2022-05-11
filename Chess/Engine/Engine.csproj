@@ -69,6 +69,7 @@
     <Compile Include="DataStructures\Moves\ExtendedMoveCollection.cs" />
     <Compile Include="DataStructures\PositionsList.cs" />
     <Compile Include="Interfaces\IAttackEvaluationService.cs" />
+    <Compile Include="Interfaces\IOpeningService.cs" />
     <Compile Include="Models\Boards\AttackerBoard.cs" />
     <Compile Include="Models\Moves\AttackBase.cs" />
     <Compile Include="Services\AttackEvaluationService.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="Services\MoveFormatter.cs" />
     <Compile Include="Services\MoveHistoryService.cs" />
     <Compile Include="Services\MoveProvider.cs" />
+    <Compile Include="Services\OpeningService.cs" />
     <Compile Include="Sorting\Comparers\DifferenceComparer.cs" />
     <Compile Include="Sorting\Comparers\DifferenceHistoryComparer.cs" />
     <Compile Include="Sorting\Comparers\HistoryDifferenceComparer.cs" />

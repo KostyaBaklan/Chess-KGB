@@ -1455,6 +1455,43 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MoveBase GetMoveTo(Piece piece, Square @from, Square to)
+        {
+            var lists = _moves[piece.AsByte()][@from.AsByte()];
+            for (var i = 0; i < lists.Count; i++)
+            {
+                var list = lists[i];
+                for (var j = 0; j < list.Count; j++)
+                {
+                    var m = list[j];
+
+                    if (m.To == to)
+                    {
+                        return m; 
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<MoveBase> GetPossibleMoves(Piece piece, Square cell)
+        {
+            var lists = _moves[piece.AsByte()][cell.AsByte()];
+            for (var i = 0; i < lists.Count; i++)
+            {
+                var list = lists[i];
+                for (var j = 0; j < list.Count; j++)
+                {
+                    var m = list[j];
+
+                    yield return m;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsUnderAttack(byte piece, byte to)
         {
             var positions = _board.GetPositions(piece);
