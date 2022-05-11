@@ -350,3 +350,8 @@ MigrationBackup/
 .ionide/
 /Chess/Redist
 /Chess/Tests/Redist
+/Chess/OpeningGenerator/Redist
+/Chess/OpeningTool/Redist
+/6/Moves
+/5/Moves
+/4

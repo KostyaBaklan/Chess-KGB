@@ -27,5 +27,7 @@ namespace Engine.Interfaces
         bool IsBlackUnderAttack(Square square);
         void SetBoard(IBoard board);
         void AgeHistory();
+        MoveBase GetMoveTo(Piece whiteKnight, Square from, Square to);
+        IEnumerable<MoveBase> GetPossibleMoves(Piece whiteKing, Square from);
     }
 }

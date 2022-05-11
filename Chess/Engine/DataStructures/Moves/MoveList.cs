@@ -98,6 +98,11 @@ namespace Engine.DataStructures.Moves
                 _items[i] = temp;
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void FullSort(IMoveComparer comparer)
+        {
+            Array.Sort(_items,0,Count,comparer);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(MoveList moves)

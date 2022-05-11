@@ -66,7 +66,7 @@ namespace Engine.Sorting.Sorters
                 moveList.Add(move);
             }
 
-            moveList.Sort(Comparer);
+            moveList.FullSort(Comparer);
 
             var m = new MoveBase[moveList.Count];
             moveList.CopyTo(m, 0);
@@ -76,6 +76,7 @@ namespace Engine.Sorting.Sorters
         public MoveBase[] Order(AttackList attacks)
         {
             if (attacks.Count == 0) return new MoveBase[0];
+            if (attacks.Count == 1) return new MoveBase[]{attacks[0]};
 
             OrderAttacks(AttackCollection, attacks);
 

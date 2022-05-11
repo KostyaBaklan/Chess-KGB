@@ -135,9 +135,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Libs\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.csproj">
       <Project>{a910ebd9-3a1d-4835-b97e-fca54ab03863}</Project>
@@ -196,6 +194,17 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="chess_icon_9bb_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libs\CommonServiceLocator.dll" />
+    <Content Include="Libs\MathNet.Numerics.dll" />
+    <Content Include="Libs\Newtonsoft.Json.dll" />
+    <Content Include="Libs\Prism.dll" />
+    <Content Include="Libs\Prism.Unity.Wpf.dll" />
+    <Content Include="Libs\Prism.Wpf.dll" />
+    <Content Include="Libs\System.Windows.Interactivity.dll" />
+    <Content Include="Libs\Unity.Abstractions.dll" />
+    <Content Include="Libs\Unity.Container.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
