@@ -3,6 +3,7 @@ using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
+using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Models.Transposition;
 using Engine.Strategies.LateMove.Base;
@@ -30,14 +31,11 @@ namespace Engine.Strategies.LateMove.Deep
             {
                 if (isNotEndGame && Table.TryGet(key, out var entry))
                 {
-                    if ((entry.Depth - depth) % 2 == 0)
-                    {
-                        pv = MoveProvider.Get(entry.PvMove);
-                    }
+                    pv = GetPv(entry.PvMove);
                 }
             }
 
-            var moves = Position.GetAllMoves(Sorter, pv);
+            var moves = Position.GetAllMoves(InitialSorter, pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -131,7 +129,7 @@ namespace Engine.Strategies.LateMove.Deep
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            if (Table.TryGet(key, out var entry))
+            if (Position.GetPhase() != Phase.End && Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -159,10 +157,7 @@ namespace Engine.Strategies.LateMove.Deep
                     shouldUpdate = true;
                 }
 
-                if ((entryDepth - depth) % 2 == 0)
-                {
-                    pv = MoveProvider.Get(entry.PvMove);
-                }
+                pv = GetPv(entry.PvMove);
             }
 
             int value = int.MinValue;

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommonServiceLocator;
 using Engine.DataStructures;
@@ -117,9 +118,11 @@ namespace Engine.Strategies.Base
                 return true;
             }
 
+            if (Position.GetPhase() == Phase.Opening) return false;
             if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
 
-            if (Position.GetValue() > 0) return false;
+            var value = Position.GetValue();
+            if (value > 0) return false;
 
             result.GameResult = GameResult.ThreefoldRepetition;
             return true;
@@ -138,6 +141,7 @@ namespace Engine.Strategies.Base
                 return true;
             }
 
+            if (Position.GetPhase() == Phase.Opening) return false;
             if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
 
             value = Position.GetValue();

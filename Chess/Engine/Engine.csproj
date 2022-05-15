@@ -67,6 +67,7 @@
     <Compile Include="DataStructures\Moves\AttackWrapper.cs" />
     <Compile Include="DataStructures\Killers\DoKillerMoves.cs" />
     <Compile Include="DataStructures\Moves\ExtendedMoveCollection.cs" />
+    <Compile Include="DataStructures\Moves\InitialMoveCollection.cs" />
     <Compile Include="DataStructures\PositionsList.cs" />
     <Compile Include="Interfaces\IAttackEvaluationService.cs" />
     <Compile Include="Interfaces\IOpeningService.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="Sorting\Sorters\ExtendedSorter.cs" />
     <Compile Include="Sorting\Sorters\IMoveSorter.cs" />
     <Compile Include="Sorting\Comparers\HistoryComparer.cs" />
+    <Compile Include="Sorting\Sorters\InitialSorter.cs" />
     <Compile Include="Sorting\Sorters\MoveSorter.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\AlphaBeta\Advanced\AlphaBetaAdvancedDifferenceStrategy.cs" />

@@ -29,6 +29,7 @@ namespace Engine.Strategies.Aspiration
             if (Position.GetPhase() == Phase.End)
             {
                 depth++;
+                return InternalStrategy.GetResult(-SearchValue, SearchValue, depth);
             }
 
             var d = depth - AspirationDepth;

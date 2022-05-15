@@ -50,5 +50,6 @@ namespace Engine.Interfaces
         int GetWhiteMaxValue();
         bool CanWhitePromote();
         bool CanBlackPromote();
+        BitBoard GetRank(int rank);
     }
 }
