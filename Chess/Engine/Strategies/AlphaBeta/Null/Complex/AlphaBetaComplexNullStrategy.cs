@@ -8,7 +8,7 @@ namespace Engine.Strategies.AlphaBeta.Null.Complex
     {
         protected AlphaBetaComplexNullStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position)
         {
-            Sorter = new ComplexSorter(position, comparer);
+            InitializeSorters(depth, position, new ComplexSorter(position, comparer));
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Engine.Strategies.LateMove.Base.Null
     {
         public LmrNullAdvancedStrategy(short depth, IPosition position) : base(depth, position)
         {
-            Sorter = new AdvancedSorter(position, new HistoryComparer());
+            InitializeSorters(depth, position, new AdvancedSorter(position, new HistoryComparer()));
         }
     }
 }

@@ -222,10 +222,8 @@
     <Compile Include="Interfaces\IResult.cs" />
     <Compile Include="Strategies\Base\IStrategy.cs" />
     <Compile Include="Strategies\Base\TestStrategy.cs" />
-    <Compile Include="Strategies\LateMove\Base\LmrAdvancedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\LateMove\Base\LmrAdvancedHistoryStrategy.cs" />
     <Compile Include="Strategies\LateMove\Base\LmrBasicHistoryStrategy.cs" />
-    <Compile Include="Strategies\LateMove\Base\LmrComplexHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\LateMove\Base\LmrComplexHistoryStrategy.cs" />
     <Compile Include="Strategies\LateMove\Base\Null\LmrNullStrategyBase.cs" />
     <Compile Include="Strategies\LateMove\Base\Null\LmrNullAdvancedStrategy.cs" />
@@ -236,7 +234,6 @@
     <Compile Include="Strategies\LateMove\Deep\LmrDeepBasicStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\LmrDeepExtendedStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\LmrDeepStrategyBase.cs" />
-    <Compile Include="Strategies\LateMove\Base\LmrExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\LateMove\Base\LmrExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\LateMove\Base\LmrStrategyBase.cs" />
     <Compile Include="Strategies\LateMove\Deep\Null\LmrDeepNullStrategyBase.cs" />

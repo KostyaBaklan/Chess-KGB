@@ -55,7 +55,7 @@ namespace Engine.Strategies.MultiCut
                 }
             }
 
-            var moves = Position.GetAllMoves(Sorter, pv);
+            var moves = Position.GetAllMoves(Sorters[depth], pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -204,7 +204,7 @@ namespace Engine.Strategies.MultiCut
 
                 if (alpha < beta) continue;
 
-                Sorter.Add(move);
+                Sorters[depth].Add(move);
                 break;
             }
 

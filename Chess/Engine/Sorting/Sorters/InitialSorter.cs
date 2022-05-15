@@ -25,7 +25,7 @@ namespace Engine.Sorting.Sorters
             PositionsList = new PositionsList();
             AttackList = new AttackList();
 
-            //InitialMoveCollection = new InitialMoveCollection(new HistoryDescendingComparer());
+            //InitialMoveCollection = new InitialMoveCollection(new HistoryDescendingComparer()));
             InitialMoveCollection = new InitialMoveCollection(comparer);
             Comparer = comparer;
         }

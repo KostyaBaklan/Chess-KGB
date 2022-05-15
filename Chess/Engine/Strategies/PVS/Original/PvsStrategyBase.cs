@@ -55,7 +55,7 @@ namespace Engine.Strategies.PVS.Original
         {
             Result result = new Result();
 
-            var moves = Position.GetAllMoves(Sorter, pvMove);
+            var moves = Position.GetAllMoves(Sorters[depth], pvMove);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -158,7 +158,7 @@ namespace Engine.Strategies.PVS.Original
 
                 if (alpha < beta) continue;
 
-                Sorter.Add(move);
+                Sorters[depth].Add(move);
                 break;
             }
 

@@ -16,7 +16,7 @@ namespace Engine.Strategies.Base
         //{
         //    Position = position;
         //    Depth = 5;
-        //    Sorter = new ExtendedSorter(position,new DifferenceComparer());
+        //    InitializeSorters(depth, position, new ExtendedSorter(position,new DifferenceComparer()));
         //}
 
         #region Overrides of StrategyBase
@@ -30,7 +30,7 @@ namespace Engine.Strategies.Base
         {
             Result result = new Result();
 
-            var moves = Position.GetAllMoves(Sorter);
+            var moves = Position.GetAllMoves(Sorters[depth]);
             for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
@@ -65,7 +65,7 @@ namespace Engine.Strategies.Base
             }
 
             int value = int.MinValue;
-            var moves = Position.GetAllMoves(Sorter);
+            var moves = Position.GetAllMoves(Sorters[depth]);
             for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
@@ -86,7 +86,7 @@ namespace Engine.Strategies.Base
 
                 if (alpha < beta) continue;
 
-                Sorter.Add(move);
+                Sorters[depth].Add(move);
                 break;
             }
 

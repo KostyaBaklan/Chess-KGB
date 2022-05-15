@@ -8,7 +8,11 @@ namespace Engine.Strategies.LateMove.Base
     {
         public LmrBasicHistoryStrategy(short depth, IPosition position) : base(depth, position)
         {
-            Sorter = new BasicSorter(position, new HistoryComparer());
+            InitializeSorters(depth, position, new BasicSorter(position, new HistoryComparer()));
         }
+
+        #region Overrides of LmrStrategyBase
+
+        #endregion
     }
 }

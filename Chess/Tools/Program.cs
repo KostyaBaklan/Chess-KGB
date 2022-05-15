@@ -40,7 +40,7 @@ namespace Tools
     {
         public HistoryToolStrategy(short depth, IPosition position) : base(depth, position)
         {
-            Sorter = new HistoryToolSorter(position, new DifferenceComparer());
+            InitializeSorters(depth, position, new HistoryToolSorter(position, new DifferenceComparer()));
         }
     }
 

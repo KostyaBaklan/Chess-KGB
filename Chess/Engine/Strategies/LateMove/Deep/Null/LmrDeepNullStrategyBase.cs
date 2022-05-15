@@ -47,7 +47,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                 }
             }
 
-            var moves = Position.GetAllMoves(Sorter, pv);
+            var moves = Position.GetAllMoves(Sorters[depth], pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -243,7 +243,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(move);
+                    Sorters[depth].Add(move);
                     break;
                 }
             }
@@ -271,7 +271,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(move);
+                    Sorters[depth].Add(move);
                     break;
                 }
             }

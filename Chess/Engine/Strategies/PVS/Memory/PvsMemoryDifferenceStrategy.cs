@@ -8,7 +8,7 @@ namespace Engine.Strategies.PVS.Memory
     {
         public PvsMemoryDifferenceStrategy(short depth, IPosition position) : base(depth, position)
         {
-            Sorter = new ExtendedSorter(position, new DifferenceComparer());
+            InitializeSorters(depth, position, new ExtendedSorter(position, new DifferenceComparer()));
         }
     }
 }

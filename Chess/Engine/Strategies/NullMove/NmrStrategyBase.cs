@@ -119,7 +119,7 @@ namespace Engine.Strategies.NullMove
 
                 if (alpha < beta) continue;
 
-                Sorter.Add(move);
+                Sorters[depth].Add(move);
                 break;
             }
 

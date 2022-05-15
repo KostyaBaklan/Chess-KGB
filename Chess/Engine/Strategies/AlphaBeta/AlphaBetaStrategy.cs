@@ -15,7 +15,6 @@ namespace Engine.Strategies.AlphaBeta
     public abstract class AlphaBetaStrategy : StrategyBase
     {
         protected readonly TranspositionTable Table;
-        protected InitialSorter InitialSorter;
 
         protected AlphaBetaStrategy(short depth, IPosition position, TranspositionTable table = null) : base(depth,
             position)
@@ -58,7 +57,6 @@ namespace Engine.Strategies.AlphaBeta
             {
                 Table = table;
             }
-            InitialSorter = new InitialSorter(position, new HistoryComparer());
         }
 
         public override int Size => Table.Count;
@@ -96,7 +94,7 @@ namespace Engine.Strategies.AlphaBeta
                 }
             }
 
-            var moves = Position.GetAllMoves(InitialSorter, pv);
+            var moves = Position.GetAllMoves(Sorters[depth], pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -212,7 +210,7 @@ namespace Engine.Strategies.AlphaBeta
 
                 if (alpha < beta) continue;
 
-                Sorter.Add(move);
+                Sorters[depth].Add(move);
                 break;
             }
 

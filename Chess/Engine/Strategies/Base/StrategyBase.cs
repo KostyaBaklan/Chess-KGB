@@ -7,6 +7,7 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
+using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 
 namespace Engine.Strategies.Base
@@ -15,13 +16,14 @@ namespace Engine.Strategies.Base
     {
         private bool _isBlocked;
         protected short Depth;
-        protected MoveSorter Sorter;
-        protected IPosition Position;
         protected int SearchValue;
         protected int ThreefoldRepetitionValue;
         protected int FutilityDepth;
         protected bool UseFutility;
         protected int[][] Margins;
+
+        protected IPosition Position;
+        protected MoveSorter[] Sorters;
 
         protected IEvaluationService EvaluationService;
         protected readonly IMoveHistoryService MoveHistory;
@@ -30,7 +32,6 @@ namespace Engine.Strategies.Base
 
         protected StrategyBase(short depth, IPosition position)
         {
-
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
             SearchValue = configurationProvider
                 .Evaluation.Static.Mate;
@@ -51,13 +52,33 @@ namespace Engine.Strategies.Base
             InitializeFutilityMargins();
         }
 
+        public virtual int Size => 0;
+
         public abstract IResult GetResult();
 
         public abstract IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null);
 
-        public virtual int Size => 0;
-
         public abstract int Search(int alpha, int beta, int depth);
+
+        protected void InitializeSorters(short depth, IPosition position, MoveSorter mainSorter)
+        {
+            Sorters = new MoveSorter[depth + 2];
+
+            var comparer = new HistoryComparer();
+            var initialSorter = new InitialSorter(position, comparer);
+            Sorters[0] = new BasicSorter(position, comparer);
+
+            var d = depth - 1;
+            for (int i = 1; i < d; i++)
+            {
+                Sorters[i] = mainSorter;
+            }
+
+            for (var i = d; i < Sorters.Length; i++)
+            {
+                Sorters[i] = initialSorter;
+            }
+        }
 
         protected int Evaluate(int alpha, int beta)
         {
@@ -70,7 +91,7 @@ namespace Engine.Strategies.Base
             if (alpha < standPat)
                 alpha = standPat;
 
-            var moves = Position.GetAllAttacks(Sorter);
+            var moves = Position.GetAllAttacks(Sorters[0]);
             for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
@@ -152,16 +173,16 @@ namespace Engine.Strategies.Base
         protected MoveBase[] GenerateMoves(int alpha, int beta, int depth, MoveBase pv = null)
         {
             if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
-                return Position.GetAllMoves(Sorter, pv);
+                return Position.GetAllMoves(Sorters[depth], pv);
 
-            if (MoveHistory.GetLastMove().IsCheck) return Position.GetAllMoves(Sorter, pv);
+            if (MoveHistory.GetLastMove().IsCheck) return Position.GetAllMoves(Sorters[depth], pv);
 
             var positionValue = Position.GetValue();
 
             var i = Margins[(byte)Position.GetPhase()][depth - 1];
-            if (positionValue + i > alpha) return Position.GetAllMoves(Sorter, pv);
+            if (positionValue + i > alpha) return Position.GetAllMoves(Sorters[depth], pv);
 
-            var moves = Position.GetAllAttacks(Sorter);
+            var moves = Position.GetAllAttacks(Sorters[depth]);
             return moves.Length == 0 ? null : moves;
         }
 
