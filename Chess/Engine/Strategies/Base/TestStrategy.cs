@@ -1,8 +1,6 @@
 ﻿using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Moves;
-using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 using Engine.Strategies.AlphaBeta.Extended;
 
 namespace Engine.Strategies.Base

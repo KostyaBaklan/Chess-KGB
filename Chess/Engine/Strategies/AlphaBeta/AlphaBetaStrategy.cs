@@ -6,8 +6,6 @@ using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Models.Transposition;
-using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 using Engine.Strategies.Base;
 
 namespace Engine.Strategies.AlphaBeta

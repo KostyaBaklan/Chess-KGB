@@ -40,14 +40,11 @@ namespace Engine.Strategies.LateMove.Base.Null
             {
                 if (isNotEndGame && Table.TryGet(key, out var entry))
                 {
-                    if ((entry.Depth - depth) % 2 == 0)
-                    {
-                        pv = MoveProvider.Get(entry.PvMove);
-                    }
+                    pv = GetPv(entry.PvMove);
                 }
             }
 
-            var moves = Position.GetAllMoves(Sorters[depth], pv);
+            var moves = Position.GetAllMoves(Sorters[Depth], pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -176,11 +173,7 @@ namespace Engine.Strategies.LateMove.Base.Null
                 {
                     shouldUpdate = true;
                 }
-
-                if ((entryDepth - depth) % 2 == 0)
-                {
-                    pv = MoveProvider.Get(entry.PvMove);
-                }
+                pv = GetPv(entry.PvMove);
             }
 
             int value = int.MinValue;
@@ -196,7 +189,7 @@ namespace Engine.Strategies.LateMove.Base.Null
                 IsValidWindow(alpha, beta))
             {
                 MakeNullMove();
-                var v = -Search(-beta, NullWindow - beta, depth - NullDepthReduction - 1);
+                var v = -NullSearch(-beta, NullWindow - beta, depth - NullDepthReduction - 1);
                 UndoNullMove();
                 if (v >= beta)
                 {
@@ -282,6 +275,78 @@ namespace Engine.Strategies.LateMove.Base.Null
             if (isInTable && !shouldUpdate) return value;
 
             return StoreValue(alpha, beta, depth, value, bestMove);
+        }
+
+        protected int NullSearch(int alpha, int beta, int depth)
+        {
+            if (depth <= 0)
+            {
+                return Evaluate(alpha, beta);
+            }
+
+            MoveBase pv = null;
+            var key = Position.GetKey();
+
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (isNotEndGame && Table.TryGet(key, out var entry))
+            {
+                var entryDepth = entry.Depth;
+
+                if (entryDepth >= depth)
+                {
+                    if (entry.Type == TranspositionEntryType.Exact)
+                    {
+                        return entry.Value;
+                    }
+
+                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
+                    {
+                        alpha = entry.Value;
+                    }
+                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
+                    {
+                        beta = entry.Value;
+                    }
+
+                    if (alpha >= beta)
+                        return entry.Value;
+                }
+
+                pv = GetPv(entry.PvMove);
+            }
+
+            int value = int.MinValue;
+
+            var moves = GenerateMoves(alpha, beta, depth, pv);
+            if (moves == null) return alpha;
+
+            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
+
+            for (var i = 0; i < moves.Length; i++)
+            {
+                var move = moves[i];
+
+                Position.Make(move);
+
+                var r = -NullSearch(-beta,-alpha, depth - 1);
+                if (r > value)
+                {
+                    value = r;
+                }
+
+                Position.UnMake();
+
+                if (value > alpha)
+                {
+                    alpha = value;
+                }
+
+                if (alpha < beta) continue;
+
+                //Sorters[depth].Add(move);
+                break;
+            }
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
