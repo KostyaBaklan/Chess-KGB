@@ -9,8 +9,6 @@ using Common;
 using CommonServiceLocator;
 using Engine.Interfaces;
 using Engine.Models.Boards;
-using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 
 namespace OpeningGenerator
 {

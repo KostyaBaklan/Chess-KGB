@@ -4,11 +4,8 @@ using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
-using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Models.Transposition;
-using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 using Engine.Strategies.AlphaBeta;
 
 namespace Engine.Strategies.LateMove.Base

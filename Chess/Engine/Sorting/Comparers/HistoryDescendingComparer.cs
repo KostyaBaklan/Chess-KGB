@@ -3,7 +3,7 @@ using Engine.Models.Moves;
 
 namespace Engine.Sorting.Comparers
 {
-    public class HistoryComparer : IMoveComparer
+    public class HistoryDescendingComparer : IMoveComparer
     {
         #region Implementation of IComparer<in IMove>
 

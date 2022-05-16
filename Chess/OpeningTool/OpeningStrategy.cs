@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Engine.DataStructures;
-using Engine.DataStructures.Moves;
+﻿using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 using Engine.Strategies.LateMove.Base;
-using Engine.Strategies.LateMove.Deep;
 
 namespace OpeningTool
 {
