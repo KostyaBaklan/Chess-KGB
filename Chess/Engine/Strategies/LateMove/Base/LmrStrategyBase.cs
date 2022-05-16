@@ -42,7 +42,7 @@ namespace Engine.Strategies.LateMove.Base
                 }
             }
 
-            var moves = Position.GetAllMoves(Sorters[depth], pv);
+            var moves = Position.GetAllMoves(Sorters[Depth], pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
