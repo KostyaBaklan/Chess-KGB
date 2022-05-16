@@ -4,8 +4,11 @@ using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
+using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Models.Transposition;
+using Engine.Sorting.Comparers;
+using Engine.Sorting.Sorters;
 using Engine.Strategies.AlphaBeta;
 
 namespace Engine.Strategies.LateMove.Base
@@ -35,14 +38,11 @@ namespace Engine.Strategies.LateMove.Base
             {
                 if (isNotEndGame && Table.TryGet(key, out var entry))
                 {
-                    if ((entry.Depth - depth) % 2 == 0)
-                    {
-                        pv = MoveProvider.Get(entry.PvMove);
-                    }
+                    pv = GetPv(entry.PvMove);
                 }
             }
 
-            var moves = Position.GetAllMoves(Sorter, pv);
+            var moves = Position.GetAllMoves(Sorters[Depth], pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -133,8 +133,8 @@ namespace Engine.Strategies.LateMove.Base
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            //var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (Table.TryGet(key, out var entry))
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (isNotEndGame && Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -161,11 +161,7 @@ namespace Engine.Strategies.LateMove.Base
                 {
                     shouldUpdate = true;
                 }
-
-                if ((entryDepth - depth) % 2 == 0)
-                {
-                    pv = MoveProvider.Get(entry.PvMove);
-                }
+                pv = GetPv(entry.PvMove);
             }
 
             int value = int.MinValue;
@@ -212,7 +208,7 @@ namespace Engine.Strategies.LateMove.Base
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(move);
+                    Sorters[depth].Add(move);
                     break;
                 }
             }
@@ -240,7 +236,7 @@ namespace Engine.Strategies.LateMove.Base
 
                     if (alpha < beta) continue;
 
-                    Sorter.Add(move);
+                    Sorters[depth].Add(move);
                     break;
                 }
             }

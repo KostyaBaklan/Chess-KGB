@@ -76,7 +76,7 @@ namespace Engine.Strategies.PVS.Memory
                 }
             }
 
-            var moves = Position.GetAllMoves(Sorter, pv);
+            var moves = Position.GetAllMoves(Sorters[depth], pv);
             if (moves.Length == 0)
             {
                 result.GameResult = MoveHistory.GetLastMove().IsCheck ? GameResult.Mate : GameResult.Pat;
@@ -232,7 +232,7 @@ namespace Engine.Strategies.PVS.Memory
 
                 if (alpha < beta) continue;
 
-                Sorter.Add(move);
+                Sorters[depth].Add(move);
                 break;
             }
 

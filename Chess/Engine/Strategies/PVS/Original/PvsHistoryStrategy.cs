@@ -8,7 +8,7 @@ namespace Engine.Strategies.PVS.Original
     {
         public PvsHistoryStrategy(short depth, IPosition position) : base(depth, position)
         {
-            Sorter = new ExtendedSorter(position,new HistoryComparer());
+            InitializeSorters(depth, position, new ExtendedSorter(position,new HistoryComparer()));
         }
     }
 }

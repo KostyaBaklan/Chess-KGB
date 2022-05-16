@@ -3,8 +3,11 @@ using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Models.Enums;
+using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Models.Transposition;
+using Engine.Sorting.Comparers;
+using Engine.Sorting.Sorters;
 using Engine.Strategies.Base;
 
 namespace Engine.Strategies.AlphaBeta
@@ -87,14 +90,11 @@ namespace Engine.Strategies.AlphaBeta
                 var isNotEndGame = Position.GetPhase() != Phase.End;
                 if (isNotEndGame && Table.TryGet(key, out var entry))
                 {
-                    if ((entry.Depth - depth) % 2 == 0)
-                    {
-                        pv = MoveProvider.Get(entry.PvMove);
-                    }
+                    pv = GetPv(entry.PvMove);
                 }
             }
 
-            var moves = Position.GetAllMoves(Sorter, pv);
+            var moves = Position.GetAllMoves(Sorters[depth], pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -177,10 +177,7 @@ namespace Engine.Strategies.AlphaBeta
                     shouldUpdate = true;
                 }
 
-                if ((entryDepth - depth) % 2 == 0)
-                {
-                    pv = MoveProvider.Get(entry.PvMove);
-                }
+                pv = GetPv(entry.PvMove);
             }
 
             int value = int.MinValue;
@@ -213,7 +210,7 @@ namespace Engine.Strategies.AlphaBeta
 
                 if (alpha < beta) continue;
 
-                Sorter.Add(move);
+                Sorters[depth].Add(move);
                 break;
             }
 
@@ -253,6 +250,14 @@ namespace Engine.Strategies.AlphaBeta
         public void Clear()
         {
             Table.Clear();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected MoveBase GetPv(short entry)
+        {
+            var pv = MoveProvider.Get(entry);
+            var turn = Position.GetTurn();
+            return pv.Piece.IsWhite() && turn != Turn.White || pv.Piece.IsBlack() && turn != Turn.Black ? null : pv;
         }
 
         #region Overrides of StrategyBase

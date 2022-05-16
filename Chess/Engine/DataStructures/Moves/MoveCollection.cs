@@ -38,42 +38,59 @@ namespace Engine.DataStructures.Moves
             Count = nonCapturesCount + _nonCaptures.Count;
 
             MoveBase[] moves = new MoveBase[Count];
-
-            if (hashMovesCount > 0)
+            if (killersCount > 0)
             {
-                HashMoves.CopyTo(moves, 0);
-                HashMoves.Clear();
+                if (hashMovesCount > 0)
+                {
+                    HashMoves.CopyTo(moves, 0);
+                    HashMoves.Clear();
+                }
+
+                if (WinCaptures.Count > 0)
+                {
+                    WinCaptures.CopyTo(moves, hashMovesCount);
+                    WinCaptures.Clear();
+                }
+
+                if (Trades.Count > 0)
+                {
+                    Trades.CopyTo(moves, winCapturesCount);
+                    Trades.Clear();
+                }
+
+                if (_killers.Count > 0)
+                {
+                    _killers.CopyTo(moves, tradesCount);
+                    _killers.Clear();
+                }
+
+                if (LooseCaptures.Count > 0)
+                {
+                    LooseCaptures.CopyTo(moves, killersCount);
+                    LooseCaptures.Clear();
+                }
+
+                if (_nonCaptures.Count > 0)
+                {
+                    _nonCaptures.Sort(Comparer);
+                    _nonCaptures.CopyTo(moves, nonCapturesCount);
+                    _nonCaptures.Clear();
+                }
             }
-
-            if (WinCaptures.Count > 0)
+            else
             {
-                WinCaptures.CopyTo(moves, hashMovesCount);
-                WinCaptures.Clear();
-            }
-
-            if (Trades.Count > 0)
-            {
-                Trades.CopyTo(moves, winCapturesCount);
-                Trades.Clear();
-            }
-
-            if (_killers.Count > 0)
-            {
-                _killers.CopyTo(moves, tradesCount);
-                _killers.Clear();
-            }
-
-            if (LooseCaptures.Count > 0)
-            {
-                LooseCaptures.CopyTo(moves, killersCount);
-                LooseCaptures.Clear();
-            }
-
-            if (_nonCaptures.Count > 0)
-            {
-                _nonCaptures.Sort(Comparer);
-                _nonCaptures.CopyTo(moves, nonCapturesCount);
-                _nonCaptures.Clear();
+                var capturesCount = _nonCaptures.Count;
+                if (capturesCount > 0)
+                {
+                    _nonCaptures.Sort(Comparer);
+                    _nonCaptures.CopyTo(moves, 0);
+                    _nonCaptures.Clear();
+                }
+                if (LooseCaptures.Count > 0)
+                {
+                    LooseCaptures.CopyTo(moves, capturesCount);
+                    LooseCaptures.Clear();
+                }
             }
 
             Count = 0;

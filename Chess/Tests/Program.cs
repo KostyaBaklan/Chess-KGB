@@ -11,7 +11,12 @@ namespace Tests
 
             PerformanceTest.Test(args);
 
-           //PerformanceTest.Test(new[] { "lmrd_es_hc", "9", "4",false.ToString() });
+           //PerformanceTest.Test(new[] { "lmr_bs_hc", "4", "4",false.ToString() });
+           //PerformanceTest.Test(new[] { "lmrd_bs_hc", "4", "4", false.ToString() });
+           //PerformanceTest.Test(new[] { "lmr_es_hc", "4", "4", false.ToString() });
+           //PerformanceTest.Test(new[] { "lmrd_es_hc", "4", "4", false.ToString() });
+           //PerformanceTest.Test(new[] { "lmr_as_hc", "4", "4", false.ToString() });
+           //PerformanceTest.Test(new[] { "lmrd_as_hc", "4", "4", false.ToString() });
 
             //OpenningsTest.Opennings();
 

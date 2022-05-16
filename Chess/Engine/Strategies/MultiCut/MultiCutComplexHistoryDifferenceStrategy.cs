@@ -10,7 +10,7 @@ namespace Engine.Strategies.MultiCut
         public MultiCutComplexHistoryDifferenceStrategy(short depth, IPosition position, TranspositionTable table = null)
             : base(depth, position, table)
         {
-            Sorter = new ComplexSorter(position, new HistoryDifferenceComparer());
+            InitializeSorters(depth, position, new ComplexSorter(position, new HistoryDifferenceComparer()));
         }
     }
 }

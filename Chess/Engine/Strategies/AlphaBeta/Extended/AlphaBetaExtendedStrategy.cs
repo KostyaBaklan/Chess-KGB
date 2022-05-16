@@ -9,7 +9,7 @@ namespace Engine.Strategies.AlphaBeta.Extended
     {
         protected AlphaBetaExtendedStrategy(short depth, IPosition position, IMoveComparer comparer, TranspositionTable table = null) : base(depth, position, table)
         {
-            Sorter = new ExtendedSorter(position, comparer);
+            InitializeSorters(depth, position, new ExtendedSorter(position, comparer));
         }
     }
 }

@@ -20,7 +20,7 @@ namespace OpeningTool
         public OpeningStrategy(short depth, IPosition position) : base(depth,position)
         {
             _filter = new MoveFilter(MoveProvider);
-            Sorter = new ExtendedSorter(position, new HistoryComparer());
+            InitializeSorters(depth, position, new ExtendedSorter(position, new HistoryComparer()));
             OpeningSorter = new OpeningSorter(position, new HistoryComparer());
         }
 

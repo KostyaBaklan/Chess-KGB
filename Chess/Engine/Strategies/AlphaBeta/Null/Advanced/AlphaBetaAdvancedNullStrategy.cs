@@ -8,7 +8,7 @@ namespace Engine.Strategies.AlphaBeta.Null.Advanced
     {
         protected AlphaBetaAdvancedNullStrategy(short depth, IPosition position, IMoveComparer comparer) : base(depth, position)
         {
-            Sorter = new AdvancedSorter(position, comparer);
+            InitializeSorters(depth, position, new AdvancedSorter(position, comparer));
         }
     }
 }

@@ -755,7 +755,7 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool IsEndGame()
         {
-            return IsEndGameForWhite() && IsEndGameForBlack();
+            return IsEndGameForWhite() || IsEndGameForBlack();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -840,6 +840,12 @@ namespace Engine.Models.Boards
         public bool CanBlackPromote()
         {
             return (_ranks[1] & _boards[Piece.BlackPawn.AsByte()]).Any();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetRank(int rank)
+        {
+            return _ranks[rank];
         }
 
         #endregion

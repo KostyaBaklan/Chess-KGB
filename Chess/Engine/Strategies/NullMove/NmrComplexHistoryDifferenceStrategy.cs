@@ -8,7 +8,7 @@ namespace Engine.Strategies.NullMove
     {
         public NmrComplexHistoryDifferenceStrategy(short depth, IPosition position) : base(depth, position)
         {
-            Sorter = new ComplexSorter(position, new HistoryDifferenceComparer());
+            InitializeSorters(depth, position, new ComplexSorter(position, new HistoryDifferenceComparer()));
         }
     }
 }

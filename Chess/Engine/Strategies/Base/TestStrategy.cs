@@ -3,33 +3,34 @@ using Engine.Interfaces;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
+using Engine.Strategies.AlphaBeta.Extended;
 
 namespace Engine.Strategies.Base
 {
-    public class TestStrategy
+    public class TestStrategy:AlphaBetaExtendedDifferenceHistoryStrategy
     {
-        protected short Depth;
-        protected MoveSorter Sorter;
-        protected IPosition Position;
-        public TestStrategy(IPosition position)
-        {
-            Position = position;
-            Depth = 5;
-            Sorter = new ExtendedSorter(position,new DifferenceComparer());
-        }
+        //protected short Depth;
+        //protected MoveSorter Sorter;
+        //protected IPosition Position;
+        //public TestStrategy(IPosition position)
+        //{
+        //    Position = position;
+        //    Depth = 5;
+        //    InitializeSorters(depth, position, new ExtendedSorter(position,new DifferenceComparer()));
+        //}
 
         #region Overrides of StrategyBase
 
         public IResult Get()
         {
-            return Get(-10000, 10000, Depth);
+            return GetResult(-10000, 10000, Depth);
         }
 
         public IResult Get(int alpha, int beta, int depth, MoveBase pvMove = null, MoveBase cutMove = null)
         {
             Result result = new Result();
 
-            var moves = Position.GetAllMoves(Sorter);
+            var moves = Position.GetAllMoves(Sorters[depth]);
             for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
@@ -64,7 +65,7 @@ namespace Engine.Strategies.Base
             }
 
             int value = int.MinValue;
-            var moves = Position.GetAllMoves(Sorter);
+            var moves = Position.GetAllMoves(Sorters[depth]);
             for (var i = 0; i < moves.Length; i++)
             {
                 var move = moves[i];
@@ -85,7 +86,7 @@ namespace Engine.Strategies.Base
 
                 if (alpha < beta) continue;
 
-                Sorter.Add(move);
+                Sorters[depth].Add(move);
                 break;
             }
 
@@ -94,5 +95,9 @@ namespace Engine.Strategies.Base
         }
 
         #endregion
+
+        public TestStrategy(IPosition position) : base(5, position)
+        {
+        }
     }
 }

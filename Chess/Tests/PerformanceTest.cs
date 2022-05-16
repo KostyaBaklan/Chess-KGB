@@ -168,16 +168,25 @@ namespace Tests
 
             var st = new TestStrategy(position);
 
-            position.Make(moveProvider.GetMoves(Piece.WhitePawn, Squares.E2).FirstOrDefault(m=>m.To == Squares.E4));
-            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.E7).FirstOrDefault(m => m.To == Squares.E5));
+            position.Make(moveProvider.GetMoves(Piece.WhitePawn, Squares.C2).FirstOrDefault(m => m.To == Squares.C4));
+            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.E7).FirstOrDefault(m => m.To == Squares.E6));
+            position.Make(moveProvider.GetMoves(Piece.WhitePawn, Squares.D2).FirstOrDefault(m => m.To == Squares.D4));
+            position.Make(moveProvider.GetMoves(Piece.BlackKnight, Squares.G8).FirstOrDefault(m => m.To == Squares.F6));
+            position.Make(moveProvider.GetMoves(Piece.WhiteKnight, Squares.B1).FirstOrDefault(m => m.To == Squares.C3));
+            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.D7).FirstOrDefault(m => m.To == Squares.D5));
             position.Make(moveProvider.GetMoves(Piece.WhiteKnight, Squares.G1).FirstOrDefault(m => m.To == Squares.F3));
-            position.Make(moveProvider.GetMoves(Piece.BlackKnight, Squares.B8).FirstOrDefault(m => m.To == Squares.C6));
-            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.F1).FirstOrDefault(m => m.To == Squares.B5));
-            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.A7).FirstOrDefault(m => m.To == Squares.A6));
-            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.B5).FirstOrDefault(m => m.To == Squares.A4));
-            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.B7).FirstOrDefault(m => m.To == Squares.B5));
-            position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.A4).FirstOrDefault(m => m.To == Squares.B3));
-            position.Make(moveProvider.GetMoves(Piece.BlackBishop, Squares.F8).FirstOrDefault(m => m.To == Squares.C5));
+            position.Make(moveProvider.GetMoves(Piece.BlackBishop, Squares.F8).FirstOrDefault(m => m.To == Squares.B4));
+
+            //position.Make(moveProvider.GetMoves(Piece.WhitePawn, Squares.E2).FirstOrDefault(m => m.To == Squares.E4));
+            //position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.E7).FirstOrDefault(m => m.To == Squares.E5));
+            //position.Make(moveProvider.GetMoves(Piece.WhiteKnight, Squares.G1).FirstOrDefault(m => m.To == Squares.F3));
+            //position.Make(moveProvider.GetMoves(Piece.BlackKnight, Squares.B8).FirstOrDefault(m => m.To == Squares.C6));
+            //position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.F1).FirstOrDefault(m => m.To == Squares.B5));
+            //position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.A7).FirstOrDefault(m => m.To == Squares.A6));
+            //position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.B5).FirstOrDefault(m => m.To == Squares.A4));
+            //position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.B7).FirstOrDefault(m => m.To == Squares.B5));
+            //position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.A4).FirstOrDefault(m => m.To == Squares.B3));
+            //position.Make(moveProvider.GetMoves(Piece.BlackBishop, Squares.F8).FirstOrDefault(m => m.To == Squares.C5));
 
             TimeSpan total = TimeSpan.Zero;
 

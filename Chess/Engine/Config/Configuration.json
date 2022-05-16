@@ -18,7 +18,8 @@
     },
     "AspirationConfiguration": {
       "AspirationWindow": 250,
-      "AspirationDepth": 2
+      "AspirationDepth": 2,
+      "AspirationMinDepth": 6
     },
     "NullConfiguration": {
       "NullWindow": 5,
