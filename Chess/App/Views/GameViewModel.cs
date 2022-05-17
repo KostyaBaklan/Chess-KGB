@@ -20,6 +20,7 @@ using Engine.Models.Moves;
 using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Aspiration.Null;
 using Engine.Strategies.Base;
+using Engine.Strategies.LateMove.Base.Null;
 using Engine.Strategies.LateMove.Deep.Null;
 using Kgb.ChessApp.Models;
 using Prism.Commands;
@@ -179,7 +180,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrAspirationDeepExtendedStrategy(level, _position);
+            _strategy = new LmrAspirationDeepNullExtendedStrategy(level, _position);
             _level = level;
             Title = $"Strategy={_strategy}, Level={level}";
 
