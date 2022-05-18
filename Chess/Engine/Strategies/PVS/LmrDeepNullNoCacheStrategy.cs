@@ -1,41 +1,59 @@
-﻿using CommonServiceLocator;
+﻿using System.Runtime.CompilerServices;
+using CommonServiceLocator;
 using Engine.DataStructures;
-using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
-using Engine.Models.Transposition;
-using Engine.Strategies.LateMove.Base;
+using Engine.Sorting.Comparers;
+using Engine.Sorting.Sorters;
+using Engine.Strategies.Base;
 
-namespace Engine.Strategies.LateMove.Deep
+namespace Engine.Strategies.PVS
 {
-    public abstract class LmrDeepStrategyBase : LmrStrategyBase
+    public class LmrDeepNullNoCacheStrategy : StrategyBase
     {
+        protected bool CanUseNull;
+        protected bool IsNull;
+        protected int NullWindow;
+        protected int NullDepthReduction;
+        protected int NullDepthOffset;
         protected int LmrLateDepthThreshold;
+        protected int DepthReduction;
+        protected int LmrDepthThreshold;
 
-        protected LmrDeepStrategyBase(short depth, IPosition position, TranspositionTable table = null) : base(depth, position, table)
+        public LmrDeepNullNoCacheStrategy(short depth, IPosition position) : base(depth, position)
         {
-            LmrLateDepthThreshold = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+            CanUseNull = false;
+            var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
+            NullWindow = configurationProvider
+                .AlgorithmConfiguration.NullConfiguration.NullWindow;
+            NullDepthReduction = configurationProvider
+                .AlgorithmConfiguration.DepthReduction;
+            NullDepthOffset = configurationProvider
+                .AlgorithmConfiguration.NullConfiguration.NullDepthOffset;
+            LmrDepthThreshold = configurationProvider
+                .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthThreshold;
+            DepthReduction = configurationProvider
+                .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthReduction;
+            LmrLateDepthThreshold = configurationProvider
                 .AlgorithmConfiguration.LateMoveConfiguration.LmrLateDepthThreshold;
+
+            InitializeSorters(depth, position, new ExtendedSorter(position,new HistoryComparer()));
+        }
+
+        #region Overrides of StrategyBase
+
+        public override IResult GetResult()
+        {
+            return GetResult(-SearchValue, SearchValue, Depth);
         }
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
             Result result = new Result();
 
-            MoveBase pv = pvMove;
-            var key = Position.GetKey();
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (pv == null)
-            {
-                if (isNotEndGame && Table.TryGet(key, out var entry))
-                {
-                    pv = GetPv(entry.PvMove);
-                }
-            }
-
-            var moves = Position.GetAllMoves(Sorters[Depth], pv);
+            var moves = Position.GetAllMoves(Sorters[Depth]);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -46,12 +64,16 @@ namespace Engine.Strategies.LateMove.Deep
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
+                        IsNull = false;
                         var move = moves[i];
+                        SwitchNull();
                         Position.Make(move);
 
                         var value = -Search(-beta, -alpha, depth - 1);
 
                         Position.UnMake();
+                        SwitchNull();
+
                         if (value > result.Value)
                         {
                             result.Value = value;
@@ -71,13 +93,15 @@ namespace Engine.Strategies.LateMove.Deep
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
+                        IsNull = false;
                         var move = moves[i];
+                        SwitchNull();
                         Position.Make(move);
 
                         int value;
                         if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
                         {
-                            var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                            var reduction = Position.GetPhase()!=Phase.End && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
@@ -90,6 +114,8 @@ namespace Engine.Strategies.LateMove.Deep
                         }
 
                         Position.UnMake();
+                        SwitchNull();
+
                         if (value > result.Value)
                         {
                             result.Value = value;
@@ -116,7 +142,6 @@ namespace Engine.Strategies.LateMove.Deep
             return result;
         }
 
-
         public override int Search(int alpha, int beta, int depth)
         {
             if (depth <= 0)
@@ -124,53 +149,30 @@ namespace Engine.Strategies.LateMove.Deep
                 return Evaluate(alpha, beta);
             }
 
-            MoveBase pv = null;
-            var key = Position.GetKey();
-            bool shouldUpdate = false;
-            bool isInTable = false;
-
-            if (Position.GetPhase() != Phase.End && Table.TryGet(key, out var entry))
-            {
-                isInTable = true;
-                var entryDepth = entry.Depth;
-                if (entryDepth >= depth)
-                {
-                    if (entry.Type == TranspositionEntryType.Exact)
-                    {
-                        return entry.Value;
-                    }
-
-                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
-                    {
-                        alpha = entry.Value;
-                    }
-                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
-                    {
-                        beta = entry.Value;
-                    }
-
-                    if (alpha >= beta)
-                        return entry.Value;
-                }
-                else
-                {
-                    shouldUpdate = true;
-                }
-
-                pv = GetPv(entry.PvMove);
-            }
-
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck)
+            var isWasCheck = MoveHistory.GetLastMove().IsCheck;
+            bool isNotEndGame = Position.GetPhase()!=Phase.End;
+            if (CanUseNull && !isWasCheck && isNotEndGame && depth > NullDepthReduction + NullDepthOffset &&
+                IsValidWindow(alpha, beta))
             {
-                bool isNotEndGame = Position.GetPhase()!=Phase.End;
+                MakeNullMove();
+                var v = -NullSearch(-beta, NullWindow - beta, depth - NullDepthReduction - 1);
+                UndoNullMove();
+                if (v >= beta)
+                {
+                    return v;
+                }
+            }
+
+            if (!isWasCheck && depth > DepthReduction + 1)
+            {
                 for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
@@ -240,10 +242,88 @@ namespace Engine.Strategies.LateMove.Deep
             }
 
             bestMove.History += 1 << depth;
-
-            if (isInTable && !shouldUpdate) return value;
-
-            return StoreValue(alpha, beta, depth, value, bestMove);
+            return value;
         }
+
+        protected int NullSearch(int alpha, int beta, int depth)
+        {
+            if (depth <= 0)
+            {
+                return Evaluate(alpha, beta);
+            }
+
+            int value = int.MinValue;
+
+            var moves = GenerateMoves(alpha, beta, depth);
+            if (moves == null) return alpha;
+
+            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
+
+            for (var i = 0; i < moves.Length; i++)
+            {
+                var move = moves[i];
+
+                Position.Make(move);
+
+                var r = -NullSearch(-beta, -alpha, depth - 1);
+                if (r > value)
+                {
+                    value = r;
+                }
+
+                Position.UnMake();
+
+                if (value > alpha)
+                {
+                    alpha = value;
+                }
+
+                if (alpha < beta) continue;
+                break;
+            }
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool IsValidWindow(int alpha, int beta)
+        {
+            return beta < SearchValue && beta - alpha > NullWindow;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void UndoNullMove()
+        {
+            SwitchNull();
+            Position.SwapTurn();
+            IsNull = false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void MakeNullMove()
+        {
+            SwitchNull();
+            Position.SwapTurn();
+            IsNull = true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void SwitchNull()
+        {
+            CanUseNull = !CanUseNull;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool IsLmr(int i)
+        {
+            return i > LmrDepthThreshold;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool CanReduce(MoveBase move)
+        {
+            return !move.IsAttack && !move.IsPromotion && !move.IsCheck;
+        }
+
+        #endregion
     }
 }

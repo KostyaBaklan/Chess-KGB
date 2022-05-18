@@ -12,7 +12,7 @@
   "AlgorithmConfiguration": {
     "DepthOffset": 2,
     "DepthReduction": 2,
-    "NonPvIterations": 4,
+    "MaxEndGameDepth": 4,
     "IterativeDeepingConfiguration": {
       "InitialDepth": 3
     },
@@ -21,10 +21,16 @@
       "AspirationDepth": 2,
       "AspirationMinDepth": 6
     },
+    "PvsConfiguration": {
+      "NonPvIterations": 2,
+      "PvsMinDepth": 6,
+      "PvsDepthStep": 2,
+      "PvsDepthIterations":  3 
+    },
     "NullConfiguration": {
       "NullWindow": 5,
       "NullDepthReduction": 4,
-      "NullDepthOffset": 0
+      "NullDepthOffset": 1
     },
     "MultiCutConfiguration": {
       "MultiCutReduction": 2,

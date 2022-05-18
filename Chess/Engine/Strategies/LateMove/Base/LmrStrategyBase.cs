@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
+using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
@@ -15,7 +16,7 @@ namespace Engine.Strategies.LateMove.Base
         protected int DepthReduction;
         protected int LmrDepthThreshold;
 
-        protected LmrStrategyBase(short depth, IPosition position) : base(depth, position)
+        protected LmrStrategyBase(short depth, IPosition position, TranspositionTable table = null) : base(depth, position,table)
         {
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
             LmrDepthThreshold = configurationProvider

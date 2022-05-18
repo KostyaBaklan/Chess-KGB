@@ -1,45 +1,67 @@
-﻿using CommonServiceLocator;
+﻿using System;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
-using Engine.Strategies.AlphaBeta.Extended;
+using Engine.Models.Transposition;
+using Engine.Strategies.AlphaBeta;
 using Engine.Strategies.Base;
+using Engine.Strategies.LateMove.Base;
+using Engine.Strategies.LateMove.Deep;
 
-namespace Engine.Strategies.PVS.Original
+namespace Engine.Strategies.PVS
 {
-    public abstract class PvsStrategyBase : ComplexStrategyBase
+    public abstract class PvsStrategyBase : AlphaBetaStrategy
     {
         protected int NonPvIterations;
         protected int DepthOffset;
         protected int NullWindow;
+        protected int MaxEndGameDepth;
+        protected int PvsMinDepth;
+        protected int PvsDepthStep;
+        protected int PvsDepthIterations;
+
+        protected StrategyBase InitialStrategy;
+        protected StrategyBase EndGameStrategy;
 
         protected PvsStrategyBase(short depth, IPosition position) : base(depth, position)
         {
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
             NonPvIterations = configurationProvider
-                .AlgorithmConfiguration.NonPvIterations;
+                .AlgorithmConfiguration.PvsConfiguration.NonPvIterations;
+            PvsMinDepth = configurationProvider
+                .AlgorithmConfiguration.PvsConfiguration.PvsMinDepth;
+            PvsDepthStep = configurationProvider
+                .AlgorithmConfiguration.PvsConfiguration.PvsDepthStep;
+            PvsDepthIterations = configurationProvider
+                .AlgorithmConfiguration.PvsConfiguration.PvsDepthIterations;
+            MaxEndGameDepth = configurationProvider
+                .AlgorithmConfiguration.MaxEndGameDepth;
             DepthOffset = configurationProvider
                 .AlgorithmConfiguration.DepthOffset;
             NullWindow = configurationProvider
                 .AlgorithmConfiguration.NullConfiguration.NullWindow;
-            InternalStrategy = new AlphaBetaExtendedHistoryStrategy(depth, position);
+            EndGameStrategy = new LmrDeepNullNoCacheStrategy(depth, position);
+            InitialStrategy = new LmrDeepExtendedStrategy(depth,position,Table);
         }
+
 
         public override IResult GetResult()
         {
-            var depth = Depth;
             if (Position.GetPhase() == Phase.End)
             {
-                depth++;
+                return EndGameStrategy.GetResult(-SearchValue, SearchValue,Math.Min(Depth + 1, MaxEndGameDepth));
             }
 
-            var depthOffset = depth - DepthOffset;
-            var result = InternalStrategy.GetResult(-SearchValue, SearchValue, depthOffset);
+            //int x = (depth - PvsMinDepth) / PvsDepthStep;
+            //var initialDepth = depth - PvsDepthStep * x;
+            var initialDepth = Math.Max(Depth - PvsDepthIterations, PvsMinDepth);
+            var result = InitialStrategy.GetResult(-SearchValue, SearchValue, initialDepth);
             if (result.GameResult == GameResult.Continue)
             {
-                for (int d = depthOffset + 1; d <= depth; d++)
+                for (int d = initialDepth+1; d <= Depth; d++)
                 {
                     result = GetResult(-SearchValue, SearchValue, d, result.Move);
                     if (result.GameResult != GameResult.Continue) break;
@@ -55,7 +77,18 @@ namespace Engine.Strategies.PVS.Original
         {
             Result result = new Result();
 
-            var moves = Position.GetAllMoves(Sorters[depth], pvMove);
+            MoveBase pv = pvMove;
+            var key = Position.GetKey();
+            if (pv == null)
+            {
+                var isNotEndGame = Position.GetPhase() != Phase.End;
+                if (isNotEndGame && Table.TryGet(key, out var entry))
+                {
+                    pv = GetPv(entry.PvMove);
+                }
+            }
+
+            var moves = Position.GetAllMoves(Sorters[Depth], pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -75,9 +108,9 @@ namespace Engine.Strategies.PVS.Original
                     else
                     {
                         score = -Search(-alpha - NullWindow, -alpha, depth - 1);
-                        if (alpha < score && score < beta && depth > 1)
+                        if (alpha < score && score < beta)
                         {
-                            score = -Search(-beta, -score, depth - 1);
+                            score = -Search(-beta, -alpha, depth - 1);
                         }
                     }
 
@@ -114,11 +147,49 @@ namespace Engine.Strategies.PVS.Original
             {
                 return Evaluate(alpha, beta);
             }
+            MoveBase pv = null;
+            var key = Position.GetKey();
 
-            int value = int.MinValue;
+            bool shouldUpdate = false;
+            bool isInTable = false;
+
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (isNotEndGame && Table.TryGet(key, out var entry))
+            {
+                isInTable = true;
+                var entryDepth = entry.Depth;
+
+                if (entryDepth >= depth)
+                {
+                    if (entry.Type == TranspositionEntryType.Exact)
+                    {
+                        return entry.Value;
+                    }
+
+                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
+                    {
+                        alpha = entry.Value;
+                    }
+                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
+                    {
+                        beta = entry.Value;
+                    }
+
+                    if (alpha >= beta)
+                        return entry.Value;
+                }
+                else
+                {
+                    shouldUpdate = true;
+                }
+
+                pv = GetPv(entry.PvMove);
+            }
+
+            int value = short.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GenerateMoves(alpha, beta, depth);
+            var moves = GenerateMoves(alpha, beta, depth,pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
@@ -137,9 +208,9 @@ namespace Engine.Strategies.PVS.Original
                 else
                 {
                     score = -Search(-alpha - NullWindow, -alpha, depth - 1);
-                    if (alpha < score && score < beta && depth > 1)
+                    if (alpha < score && score < beta)
                     {
-                        score = -Search(-beta, -score, depth - 1);
+                        score = -Search(-beta, -alpha, depth - 1);
                     }
                 }
 
@@ -164,7 +235,11 @@ namespace Engine.Strategies.PVS.Original
 
             bestMove.History += 1 << depth;
 
-            return value;
+            if (!isNotEndGame) return value;
+
+            if (isInTable && !shouldUpdate) return value;
+
+            return StoreValue(alpha, beta, depth, value, bestMove);
         }
 
         #endregion

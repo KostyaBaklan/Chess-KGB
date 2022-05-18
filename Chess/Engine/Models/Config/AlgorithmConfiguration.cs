@@ -6,14 +6,15 @@ namespace Engine.Models.Config
     {
         #region Implementation of IAlgorithmConfiguration
 
-        public int NonPvIterations { get; set; }
         public int DepthOffset { get; set; }
         public int DepthReduction { get; set; }
+        public int MaxEndGameDepth { get; set; }
         public IterativeDeepingConfiguration IterativeDeepingConfiguration { get; set; }
         public AspirationConfiguration AspirationConfiguration { get; set; }
         public NullConfiguration NullConfiguration { get; set; }
         public MultiCutConfiguration MultiCutConfiguration { get; set; }
         public LateMoveConfiguration LateMoveConfiguration { get; set; }
+        public PvsConfiguration PvsConfiguration { get; set; }
 
         #endregion
     }

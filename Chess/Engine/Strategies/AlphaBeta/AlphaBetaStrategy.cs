@@ -92,7 +92,7 @@ namespace Engine.Strategies.AlphaBeta
                 }
             }
 
-            var moves = Position.GetAllMoves(Sorters[depth], pv);
+            var moves = Position.GetAllMoves(Sorters[Depth], pv);
 
             if (CheckMoves(moves, out var res)) return res;
 
@@ -178,7 +178,7 @@ namespace Engine.Strategies.AlphaBeta
                 pv = GetPv(entry.PvMove);
             }
 
-            int value = int.MinValue;
+            int value = short.MinValue;
             MoveBase bestMove = null;
 
             var moves = GenerateMoves(alpha, beta, depth, pv);

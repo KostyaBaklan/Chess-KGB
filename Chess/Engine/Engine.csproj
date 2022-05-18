@@ -69,6 +69,7 @@
     <Compile Include="DataStructures\Moves\ExtendedMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\InitialMoveCollection.cs" />
     <Compile Include="DataStructures\PositionsList.cs" />
+    <Compile Include="Interfaces\Config\PvsConfiguration.cs" />
     <Compile Include="Interfaces\IAttackEvaluationService.cs" />
     <Compile Include="Interfaces\IOpeningService.cs" />
     <Compile Include="Models\Boards\AttackerBoard.cs" />
@@ -260,18 +261,9 @@
     <Compile Include="Strategies\NullMove\NmrExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\NullMove\NmrExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\NullMove\NmrStrategyBase.cs" />
-    <Compile Include="Strategies\PVS\NWS\NwsHistoryStrategy.cs" />
-    <Compile Include="Strategies\PVS\NWS\NwsStrategyBase.cs" />
-    <Compile Include="Strategies\PVS\Original\PvsDifferenceHistoryStrategy.cs" />
-    <Compile Include="Strategies\PVS\Original\PvsDifferenceStrategy.cs" />
-    <Compile Include="Strategies\PVS\Original\PvsHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\PVS\Original\PvsHistoryStrategy.cs" />
-    <Compile Include="Strategies\PVS\Memory\PvsMemoryDifferenceHistoryStrategy.cs" />
-    <Compile Include="Strategies\PVS\Memory\PvsMemoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\PVS\Memory\PvsMemoryHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\PVS\Memory\PvsMemoryHistoryStrategy.cs" />
-    <Compile Include="Strategies\PVS\Memory\PvsMemoryStrategyBase.cs" />
-    <Compile Include="Strategies\PVS\Original\PvsStrategyBase.cs" />
+    <Compile Include="Strategies\PVS\LmrDeepNullNoCacheStrategy.cs" />
+    <Compile Include="Strategies\PVS\PvsExtendedStrategy.cs" />
+    <Compile Include="Strategies\PVS\PvsStrategyBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\StaticTables.json">
