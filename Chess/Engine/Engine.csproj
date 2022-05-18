@@ -163,6 +163,7 @@
     <Compile Include="Services\MoveHistoryService.cs" />
     <Compile Include="Services\MoveProvider.cs" />
     <Compile Include="Services\OpeningService.cs" />
+    <Compile Include="Sorting\Comparers\AttackSeeComparer.cs" />
     <Compile Include="Sorting\Comparers\DifferenceComparer.cs" />
     <Compile Include="Sorting\Comparers\DifferenceHistoryComparer.cs" />
     <Compile Include="Sorting\Comparers\HistoryDescendingComparer.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Sorting\Comparers\IMoveComparer.cs" />
     <Compile Include="Sorting\Sorters\AdvancedSorter.cs" />
     <Compile Include="Sorting\Comparers\AttackComparer.cs" />
+    <Compile Include="Sorting\Sorters\AttackSorter.cs" />
     <Compile Include="Sorting\Sorters\BasicSorter.cs" />
     <Compile Include="Sorting\Sorters\ComplexSorter.cs" />
     <Compile Include="Sorting\Sorters\ExtendedSorter.cs" />
