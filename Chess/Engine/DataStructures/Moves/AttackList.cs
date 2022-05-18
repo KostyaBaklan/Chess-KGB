@@ -135,5 +135,10 @@ namespace Engine.DataStructures.Moves
         {
             return $"Count={Count}";
         }
+
+        public void FullSort(IComparer<AttackBase> comparer)
+        {
+            Array.Sort(_items, 0, Count, comparer);
+        }
     }
 }

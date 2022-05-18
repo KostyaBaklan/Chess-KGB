@@ -22,7 +22,7 @@ namespace Engine.Strategies.Base
         protected int[][] Margins;
 
         protected IPosition Position;
-        protected MoveSorter[] Sorters;
+        protected IMoveSorter[] Sorters;
 
         protected IEvaluationService EvaluationService;
         protected readonly IMoveHistoryService MoveHistory;
@@ -61,10 +61,11 @@ namespace Engine.Strategies.Base
 
         protected void InitializeSorters(short depth, IPosition position, MoveSorter mainSorter)
         {
-            Sorters = new MoveSorter[depth + 2];
+            Sorters = new IMoveSorter[depth + 2];
 
             var comparer = new HistoryComparer();
             var initialSorter = new InitialSorter(position, comparer);
+            //Sorters[0] = new AttackSorter(position.GetBoard());
             Sorters[0] = new BasicSorter(position, comparer);
 
             var d = depth - 1;
