@@ -2,13 +2,14 @@
 {
     public interface IAlgorithmConfiguration
     {
-        int NonPvIterations { get; }
         int DepthOffset { get; }
         int DepthReduction { get; }
+        int MaxEndGameDepth { get; }
         IterativeDeepingConfiguration IterativeDeepingConfiguration { get; }
         AspirationConfiguration AspirationConfiguration { get; }
         NullConfiguration NullConfiguration { get; }
         MultiCutConfiguration MultiCutConfiguration { get; }
         LateMoveConfiguration LateMoveConfiguration { get; }
+        PvsConfiguration PvsConfiguration { get; }
     }
 }
