@@ -11,6 +11,7 @@ using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Strategies.Aspiration.LateMove;
+using Engine.Strategies.Aspiration.Null;
 using Engine.Strategies.Base;
 using Engine.Strategies.LateMove.Base;
 using Engine.Strategies.LateMove.Base.Null;
@@ -62,7 +63,8 @@ namespace Tests
                     {"lmrdn_as_hc", (d, p) => new LmrDeepNullAdvancedStrategy(d, p)},
 
                     {"lmra_es_hc", (d, p) => new LmrAspirationExtendedStrategy(d, p)},
-                    {"lmrda_es_hc", (d, p) => new LmrAspirationDeepExtendedStrategy(d, p)}
+                    {"lmrda_es_hc", (d, p) => new LmrAspirationDeepExtendedStrategy(d, p)},
+                    {"lmrdan_es_hc", (d, p) => new LmrAspirationDeepNullExtendedStrategy(d, p)}
                 };
             //Dictionary<string, StrategyBase> strategies = new Dictionary<string, StrategyBase>
             //{

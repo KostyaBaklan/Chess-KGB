@@ -26,7 +26,7 @@ namespace Engine.Strategies.LateMove.Base
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-            ResetSorterFlags();
+            
             Result result = new Result();
 
             MoveBase pv = pvMove;
@@ -155,7 +155,7 @@ namespace Engine.Strategies.LateMove.Base
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GetMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
 
             if (moves == null) return alpha;
 

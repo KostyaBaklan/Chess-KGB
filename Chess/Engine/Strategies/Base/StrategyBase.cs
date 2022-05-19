@@ -25,13 +25,12 @@ namespace Engine.Strategies.Base
 
         protected IPosition Position;
         protected IMoveSorter[] Sorters;
-        protected bool[] UseInitialSorter;
 
         protected IEvaluationService EvaluationService;
         protected readonly IMoveHistoryService MoveHistory;
         protected readonly IMoveProvider MoveProvider;
         protected bool UseAging;
-        protected LmrDeepNoCacheStrategy _endGameStrategy;
+        private LmrDeepNoCacheStrategy _endGameStrategy;
 
         protected LmrDeepNoCacheStrategy EndGameStrategy
         {
@@ -60,8 +59,6 @@ namespace Engine.Strategies.Base
             MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
             InitializeFutilityMargins();
-            UseInitialSorter = new bool[Depth+2];
-            ResetSorterFlags();
         }
 
         public virtual int Size => 0;
@@ -81,7 +78,7 @@ namespace Engine.Strategies.Base
             //Sorters[0] = new AttackSorter(position.GetBoard());
             Sorters[0] = new BasicSorter(position, comparer);
 
-            var d = depth;
+            var d = depth - 1;
             for (int i = 1; i < d; i++)
             {
                 Sorters[i] = mainSorter;
@@ -90,14 +87,6 @@ namespace Engine.Strategies.Base
             for (var i = d; i < Sorters.Length; i++)
             {
                 Sorters[i] = initialSorter;
-            }
-        }
-
-        protected void ResetSorterFlags()
-        {
-            for (var i = 0; i < UseInitialSorter.Length; i++)
-            {
-                UseInitialSorter[i] = true;
             }
         }
 
@@ -188,23 +177,6 @@ namespace Engine.Strategies.Base
 
             value = Position.GetValue();
             return true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected MoveBase[] GetMoves(int alpha, int beta, int depth, MoveBase pv = null)
-        {
-            MoveBase[] moves;
-            if (UseInitialSorter[depth])
-            {
-                UseInitialSorter[depth] = false;
-                moves = GeneratePvMoves(alpha, beta, depth, pv);
-            }
-            else
-            {
-                moves = GenerateMoves(alpha, beta, depth, pv);
-            }
-
-            return moves;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -39,7 +39,7 @@ namespace Engine.Strategies.End
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-            ResetSorterFlags();
+            
             Result result = new Result();
 
             var moves = Position.GetAllMoves(Sorters[Depth]);
@@ -135,7 +135,7 @@ namespace Engine.Strategies.End
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GetMoves(alpha, beta, depth);
+            var moves = GenerateMoves(alpha, beta, depth);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;

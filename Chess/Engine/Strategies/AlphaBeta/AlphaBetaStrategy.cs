@@ -83,7 +83,7 @@ namespace Engine.Strategies.AlphaBeta
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-            ResetSorterFlags();
+            
             Result result = new Result();
 
             MoveBase pv = pvMove;
@@ -176,7 +176,7 @@ namespace Engine.Strategies.AlphaBeta
             int value = short.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GetMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;

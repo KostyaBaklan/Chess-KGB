@@ -140,7 +140,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             int value = short.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GetMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
