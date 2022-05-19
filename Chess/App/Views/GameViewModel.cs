@@ -17,6 +17,7 @@ using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Moves;
+using Engine.Strategies.AlphaBeta.Extended;
 using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Aspiration.Null;
 using Engine.Strategies.Base;
@@ -182,7 +183,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrDeepExtendedStrategy(level, _position);
+            _strategy = new AlphaBetaExtendedHistoryStrategy(level, _position);
             _level = level;
             Title = $"Strategy={_strategy}, Level={level}";
 

@@ -127,11 +127,6 @@ namespace Engine.Sorting.Sorters
                     }
                 }
 
-                if (IsBadWhiteSee(move))
-                {
-                    return;
-                }
-
                 if (phase == Phase.Opening)
                 {
                     switch (move.Piece)
@@ -177,17 +172,28 @@ namespace Engine.Sorting.Sorters
                 else
                 {
                     Position.Do(move);
-                    if (IsCheckToBlack(move))
+                    try
                     {
-                        AdvancedMoveCollection.AddCheck(move);
-                    }
-                    else
-                    {
-                        AdvancedMoveCollection.AddNonCapture(move);
-                    }
+                        if (IsBadWhiteSee(move))
+                        {
+                            return;
+                        }
 
-                    Position.UnDo(move);
+                        if (IsCheckToBlack(move))
+                        {
+                            AdvancedMoveCollection.AddSuggested(move);
+                        }
+                        else
+                        {
+                            AdvancedMoveCollection.AddNonCapture(move);
+                        }
+                    }
+                    finally
+                    {
+                        Position.UnDo(move);
+                    }
                 }
+
             }
             else
             {
@@ -198,11 +204,6 @@ namespace Engine.Sorting.Sorters
                         AdvancedMoveCollection.AddNonSuggested(move);
                         return; 
                     }
-                }
-
-                if (IsBadBlackSee(move))
-                {
-                    return;
                 }
 
                 if (phase == Phase.Opening)
@@ -245,16 +246,26 @@ namespace Engine.Sorting.Sorters
                 else
                 {
                     Position.Do(move);
-                    if (IsCheckToWhite(move))
+                    try
                     {
-                        AdvancedMoveCollection.AddCheck(move);
-                    }
-                    else
-                    {
-                        AdvancedMoveCollection.AddNonCapture(move);
-                    }
+                        if (IsBadBlackSee(move))
+                        {
+                            return;
+                        }
 
-                    Position.UnDo(move);
+                        if (IsCheckToWhite(move))
+                        {
+                            AdvancedMoveCollection.AddSuggested(move);
+                        }
+                        else
+                        {
+                            AdvancedMoveCollection.AddNonCapture(move);
+                        }
+                    }
+                    finally
+                    {
+                        Position.UnDo(move);
+                    }
                 }
             }
         }

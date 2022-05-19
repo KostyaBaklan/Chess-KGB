@@ -5,7 +5,6 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
-using Engine.Models.Transposition;
 
 namespace Engine.Strategies.LateMove.Base.Null
 {
@@ -31,6 +30,7 @@ namespace Engine.Strategies.LateMove.Base.Null
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
+            ResetSorterFlags();
             Result result = new Result();
 
             MoveBase pv = pvMove;
@@ -152,20 +152,10 @@ namespace Engine.Strategies.LateMove.Base.Null
                 var entryDepth = entry.Depth;
                 if (entryDepth >= depth)
                 {
-                    if (entry.Type == TranspositionEntryType.Exact)
-                    {
-                        return entry.Value;
-                    }
-
-                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
+                    if (entry.Value > alpha)
                     {
                         alpha = entry.Value;
                     }
-                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
-                    {
-                        beta = entry.Value;
-                    }
-
                     if (alpha >= beta)
                         return entry.Value;
                 }
@@ -179,7 +169,7 @@ namespace Engine.Strategies.LateMove.Base.Null
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GetMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
@@ -274,7 +264,7 @@ namespace Engine.Strategies.LateMove.Base.Null
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue(alpha, beta, depth, value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove);
         }
 
         protected int NullSearch(int alpha, int beta, int depth)
@@ -294,20 +284,10 @@ namespace Engine.Strategies.LateMove.Base.Null
 
                 if (entryDepth >= depth)
                 {
-                    if (entry.Type == TranspositionEntryType.Exact)
-                    {
-                        return entry.Value;
-                    }
-
-                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
+                    if (entry.Value > alpha)
                     {
                         alpha = entry.Value;
                     }
-                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
-                    {
-                        beta = entry.Value;
-                    }
-
                     if (alpha >= beta)
                         return entry.Value;
                 }

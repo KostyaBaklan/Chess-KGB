@@ -220,6 +220,7 @@
     <Compile Include="Strategies\Aspiration\Original\AspirationHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Original\AspirationHistoryStrategy.cs" />
     <Compile Include="Strategies\Base\ComplexStrategyBase.cs" />
+    <Compile Include="Strategies\End\LmrDeepNoCacheStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceHistoryStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedDifferenceStrategy.cs" />
     <Compile Include="Strategies\IterativeDeeping\Extended\IdExtendedHistoryDifferenceStrategy.cs" />
@@ -247,18 +248,8 @@
     <Compile Include="Strategies\LateMove\Deep\Null\LmrDeepNullExtendedStrategy.cs" />
     <Compile Include="Strategies\MTD\MtdHistoryStrategy.cs" />
     <Compile Include="Strategies\MTD\MtdStrategyBase.cs" />
-    <Compile Include="Strategies\MultiCut\MultiCutAdvancedHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\MultiCut\MultiCutAdvancedHistoryStrategy.cs" />
-    <Compile Include="Strategies\MultiCut\MultiCutComplexHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\MultiCut\MultiCutComplexHistoryStrategy.cs" />
-    <Compile Include="Strategies\MultiCut\MultiCutExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\MultiCut\MultiCutExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\MultiCut\MultiCutStrategyBase.cs" />
-    <Compile Include="Strategies\NullMove\NmrAdvancedHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\NullMove\NmrAdvancedHistoryStrategy.cs" />
-    <Compile Include="Strategies\NullMove\NmrComplexHistoryDifferenceStrategy.cs" />
-    <Compile Include="Strategies\NullMove\NmrComplexHistoryStrategy.cs" />
-    <Compile Include="Strategies\NullMove\NmrExtendedHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\NullMove\NmrExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\NullMove\NmrStrategyBase.cs" />
     <Compile Include="Strategies\PVS\LmrDeepNullNoCacheStrategy.cs" />

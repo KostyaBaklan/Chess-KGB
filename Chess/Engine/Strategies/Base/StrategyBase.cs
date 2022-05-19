@@ -8,6 +8,7 @@ using Engine.Models.Enums;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
+using Engine.Strategies.End;
 
 namespace Engine.Strategies.Base
 {
@@ -19,19 +20,29 @@ namespace Engine.Strategies.Base
         protected int ThreefoldRepetitionValue;
         protected int FutilityDepth;
         protected bool UseFutility;
+        protected int MaxEndGameDepth;
         protected int[][] Margins;
 
         protected IPosition Position;
         protected IMoveSorter[] Sorters;
+        protected bool[] UseInitialSorter;
 
         protected IEvaluationService EvaluationService;
         protected readonly IMoveHistoryService MoveHistory;
         protected readonly IMoveProvider MoveProvider;
         protected bool UseAging;
+        protected LmrDeepNoCacheStrategy _endGameStrategy;
+
+        protected LmrDeepNoCacheStrategy EndGameStrategy
+        {
+            get { return _endGameStrategy ?? (_endGameStrategy = new LmrDeepNoCacheStrategy(Depth, Position)); }
+        }
 
         protected StrategyBase(short depth, IPosition position)
         {
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
+            MaxEndGameDepth = configurationProvider
+                .AlgorithmConfiguration.MaxEndGameDepth;
             SearchValue = configurationProvider
                 .Evaluation.Static.Mate;
             ThreefoldRepetitionValue = configurationProvider
@@ -49,6 +60,8 @@ namespace Engine.Strategies.Base
             MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
             InitializeFutilityMargins();
+            UseInitialSorter = new bool[Depth+2];
+            ResetSorterFlags();
         }
 
         public virtual int Size => 0;
@@ -68,7 +81,7 @@ namespace Engine.Strategies.Base
             //Sorters[0] = new AttackSorter(position.GetBoard());
             Sorters[0] = new BasicSorter(position, comparer);
 
-            var d = depth - 1;
+            var d = depth;
             for (int i = 1; i < d; i++)
             {
                 Sorters[i] = mainSorter;
@@ -77,6 +90,14 @@ namespace Engine.Strategies.Base
             for (var i = d; i < Sorters.Length; i++)
             {
                 Sorters[i] = initialSorter;
+            }
+        }
+
+        protected void ResetSorterFlags()
+        {
+            for (var i = 0; i < UseInitialSorter.Length; i++)
+            {
+                UseInitialSorter[i] = true;
             }
         }
 
@@ -167,6 +188,40 @@ namespace Engine.Strategies.Base
 
             value = Position.GetValue();
             return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected MoveBase[] GetMoves(int alpha, int beta, int depth, MoveBase pv = null)
+        {
+            MoveBase[] moves;
+            if (UseInitialSorter[depth])
+            {
+                UseInitialSorter[depth] = false;
+                moves = GeneratePvMoves(alpha, beta, depth, pv);
+            }
+            else
+            {
+                moves = GenerateMoves(alpha, beta, depth, pv);
+            }
+
+            return moves;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected MoveBase[] GeneratePvMoves(int alpha, int beta, int depth, MoveBase pv = null)
+        {
+            if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
+                return Position.GetAllMoves(Sorters[Depth], pv);
+
+            if (MoveHistory.GetLastMove().IsCheck) return Position.GetAllMoves(Sorters[Depth], pv);
+
+            var positionValue = Position.GetValue();
+
+            var i = Margins[(byte)Position.GetPhase()][depth - 1];
+            if (positionValue + i > alpha) return Position.GetAllMoves(Sorters[Depth], pv);
+
+            var moves = Position.GetAllAttacks(Sorters[depth]);
+            return moves.Length == 0 ? null : moves;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

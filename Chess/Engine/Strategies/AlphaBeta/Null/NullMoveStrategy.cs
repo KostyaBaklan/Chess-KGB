@@ -5,7 +5,6 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
-using Engine.Models.Transposition;
 
 namespace Engine.Strategies.AlphaBeta.Null
 {
@@ -110,19 +109,19 @@ namespace Engine.Strategies.AlphaBeta.Null
                 var entryDepth = entry.Depth;
                 if (entryDepth >= depth)
                 {
-                    if (entry.Type == TranspositionEntryType.Exact)
-                    {
-                        return entry.Value;
-                    }
+                    //if (entry.Type == TranspositionEntryType.Exact)
+                    //{
+                    //    return entry.Value;
+                    //}
 
-                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
-                    {
-                        alpha = entry.Value;
-                    }
-                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
-                    {
-                        beta = entry.Value;
-                    }
+                    //if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
+                    //{
+                    //    alpha = entry.Value;
+                    //}
+                    //else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
+                    //{
+                    //    beta = entry.Value;
+                    //}
 
                     if (alpha >= beta)
                         return entry.Value;
@@ -141,7 +140,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             int value = short.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GetMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
@@ -195,7 +194,7 @@ namespace Engine.Strategies.AlphaBeta.Null
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue(alpha, beta, depth, value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
