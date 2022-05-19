@@ -2,7 +2,6 @@
 using CommonServiceLocator;
 using Engine.DataStructures.Moves;
 using Engine.Interfaces;
-using Engine.Interfaces.Config;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
@@ -26,15 +25,8 @@ namespace Engine.Sorting.Sorters
             attackList = new AttackList();
             Board = position.GetBoard();
             Comparer = comparer;
+            Moves = ServiceLocator.Current.GetInstance<IKillerMoveCollectionFactory>().CreateMoves();
             Position = position;
-            var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
-            var killerMoveCollectionFactory = ServiceLocator.Current.GetInstance < IKillerMoveCollectionFactory>();
-            Moves = new IKillerMoveCollection[configurationProvider
-                .GeneralConfiguration.GameDepth];
-            for (var i = 0; i < Moves.Length; i++)
-            {
-                Moves[i] = killerMoveCollectionFactory.Create();
-            }
 
             AttackCollection = new AttackCollection(comparer);
             MoveCollection = new MoveCollection(comparer);

@@ -3,5 +3,7 @@
     public interface IKillerMoveCollectionFactory
     {
         IKillerMoveCollection Create();
+
+        IKillerMoveCollection[] CreateMoves();
     }
 }

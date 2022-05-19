@@ -101,514 +101,514 @@ namespace OpeningTool
             //CheckBadBlackCenterPawns();
         }
 
-        private static void CheckBadBlackCenterPawns()
-        {
-            Boot.SetUp();
-
-            var position = new Position();
-
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
-
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
-
-
-            Stopwatch timer = Stopwatch.StartNew();
-
-            HashSet<string> candidates = new HashSet<string>();
-            HashSet<string> bad = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
-            int x = 0;
-            HashSet<Square> whiteSet = new HashSet<Square>
-            {
-                Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
-            };
-            HashSet<Square> blackSet = new HashSet<Square>
-            {
-                Squares.C5, Squares.D5,Squares.E5, Squares.F5
-            };
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                var ms = new string[] { strings[1], strings[3] }.Select(s => moveProvider.Get(short.Parse(s))).ToList();
-                if (ms.All(IsPawn) && ms.All(m => !blackSet.Contains(m.To)))
-                {
-                    var item = CreateValue(strings, moveProvider);
-                    candidates.Add(item);
-                    bad.Add(CreateKey(strings));
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
-            }
-
-            BuildChangeCandidates("Seq_x.txt", bad);
-            BuildChangeCandidates("BadPos.txt", candidates);
-            BuildChangeCandidates("tempS.txt", toSave);
-
-            var timerElapsed = timer.Elapsed;
-
-            Console.WriteLine($"Finished = {timerElapsed}");
-
-            Console.ReadLine();
-        }
-
-        private static void CheckBadWhiteCenterPawns()
-        {
-            Boot.SetUp();
-
-            var position = new Position();
-
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
-
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
-
-
-            Stopwatch timer = Stopwatch.StartNew();
-
-            HashSet<string> candidates = new HashSet<string>();
-            HashSet<string> bad = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
-            int x = 0;
-            HashSet<Square> whiteSet = new HashSet<Square>
-            {
-                Squares.C4, Squares.D4,Squares.E4, Squares.F4
-            };
-            HashSet<Square> blackSet = new HashSet<Square>
-            {
-                Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
-            };
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                var ms = new string[] { strings[0], strings[2], strings[4] }.Select(s => moveProvider.Get(short.Parse(s))).ToList();
-                if (ms.All(IsPawn) && ms.All(m => !whiteSet.Contains(m.To)))
-                {
-                    var item = CreateValue(strings, moveProvider);
-                    candidates.Add(item);
-                    bad.Add(CreateKey(strings));
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
-            }
-
-            BuildChangeCandidates("Seq_x.txt", bad);
-            BuildChangeCandidates("BadPos.txt", candidates);
-            BuildChangeCandidates("tempS.txt", toSave);
-
-            var timerElapsed = timer.Elapsed;
-
-            Console.WriteLine($"Finished = {timerElapsed}");
-
-            Console.ReadLine();
-        }
-
-        private static void CheckBadBlackPawns()
-        {
-            Boot.SetUp();
-
-            var position = new Position();
-
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
-
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
-
-
-            Stopwatch timer = Stopwatch.StartNew();
-
-            HashSet<string> candidates = new HashSet<string>();
-            HashSet<string> bad = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
-            int x = 0;
-            HashSet<Square> whiteSet = new HashSet<Square>
-            {
-                Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
-            };
-            HashSet<Square> blackSet = new HashSet<Square>
-            {
-                Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
-            };
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                var ms = new string[] { strings[1], strings[3] }.Select(s => moveProvider.Get(short.Parse(s))).ToList();
-                if (ms.All(IsPawn) && ms.All(m => blackSet.Contains(m.To)))
-                {
-                    var item = CreateValue(strings, moveProvider);
-                    candidates.Add(item);
-                    bad.Add(CreateKey(strings));
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
-            }
-
-            BuildChangeCandidates("Seq_x.txt", bad);
-            BuildChangeCandidates("BadPos.txt", candidates);
-            BuildChangeCandidates("tempS.txt", toSave);
-
-            var timerElapsed = timer.Elapsed;
-
-            Console.WriteLine($"Finished = {timerElapsed}");
-
-            Console.ReadLine();
-        }
-
-        private static void CheckBadWhitePawns()
-        {
-            Boot.SetUp();
-
-            var position = new Position();
-
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
-
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
-
-
-            Stopwatch timer = Stopwatch.StartNew();
-
-            HashSet<string> candidates = new HashSet<string>();
-            HashSet<string> bad = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
-            int x = 0;
-            HashSet<Square> whiteSet = new HashSet<Square>
-            {
-                Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
-            };
-            HashSet<Square> blackSet = new HashSet<Square>
-            {
-                Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
-            };
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                var ms = new string[]{strings[0],strings[2],strings[4]}.Select(s => moveProvider.Get(short.Parse(s))).ToList();
-                if (ms.All(IsPawn) && ms.All(m=>whiteSet.Contains(m.To)))
-                {
-                    var item = CreateValue(strings, moveProvider);
-                    candidates.Add(item);
-                    bad.Add(CreateKey(strings));
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
-            }
-
-            BuildChangeCandidates("Seq_x.txt", bad);
-            BuildChangeCandidates("BadPos.txt", candidates);
-            BuildChangeCandidates("tempS.txt", toSave);
-
-            var timerElapsed = timer.Elapsed;
-
-            Console.WriteLine($"Finished = {timerElapsed}");
-
-            Console.ReadLine();
-        }
-
-        private static void CheckAllPawns()
-        {
-            Boot.SetUp();
-
-            var position = new Position();
-
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
-
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
-
-
-            Stopwatch timer = Stopwatch.StartNew();
-
-            HashSet<string> candidates = new HashSet<string>();
-            HashSet<string> bad = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
-            int x = 0;
-            HashSet<Square> whiteSet = new HashSet<Square>
-            {
-                Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
-            };
-            HashSet<Square> blackSet = new HashSet<Square>
-            {
-                Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
-            };
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                var ms = strings.Select(s => moveProvider.Get(short.Parse(s))).ToList();
-                if (ms.All(IsPawn))
-                {
-                    var item = CreateValue(strings, moveProvider);
-                    candidates.Add(item);
-                    bad.Add(CreateKey(strings));
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
-            }
-
-            BuildChangeCandidates("Seq_x.txt", bad);
-            BuildChangeCandidates("BadPos.txt", candidates);
-            BuildChangeCandidates("tempS.txt", toSave);
-
-            var timerElapsed = timer.Elapsed;
-
-            Console.WriteLine($"Finished = {timerElapsed}");
-
-            Console.ReadLine();
-        }
-
-        private static void CheckBadCenterPawns()
-        {
-            Boot.SetUp();
-
-            var position = new Position();
-
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
-
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
-
-
-            Stopwatch timer = Stopwatch.StartNew();
-
-            HashSet<string> candidates = new HashSet<string>();
-            HashSet<string> bad = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
-            int x = 0;
-            HashSet<Square> whiteSet = new HashSet<Square>
-            {
-                Squares.C4, Squares.D4,Squares.E4, Squares.F4
-            };
-            HashSet<Square> blackSet = new HashSet<Square>
-            {
-                Squares.C5, Squares.D5,Squares.E5, Squares.F5
-            };
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                var ms = strings.Select(s => moveProvider.Get(short.Parse(s))).ToList();
-                if (ms.All(IsPawn))
-                {
-                    bool isBad = ms.Count(m=>!whiteSet.Contains(m.To)) <= 1 && ms.Count(m => !blackSet.Contains(m.To)) <=1;
-                    if (isBad)
-                    {
-                        var item = CreateValue(strings, moveProvider);
-                        candidates.Add(item);
-                        bad.Add(CreateKey(strings));
-                    }
-                    else
-                    {
-                        toSave.Add(keys);
-                    }
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
-            }
-
-            BuildChangeCandidates("Seq_x.txt", bad);
-            BuildChangeCandidates("BadPos.txt", candidates);
-            BuildChangeCandidates("tempS.txt", toSave);
-
-            var timerElapsed = timer.Elapsed;
-
-            Console.WriteLine($"Finished = {timerElapsed}");
-
-            Console.ReadLine();
-        }
-
-        private static void CheckBadPawns()
-        {
-            Boot.SetUp();
-
-            var position = new Position();
-
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
-
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
-
-
-            Stopwatch timer = Stopwatch.StartNew();
-
-            HashSet<string> candidates = new HashSet<string>();
-            HashSet<string> bad = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
-            int x = 0;
-            HashSet<Square> whiteSet = new HashSet<Square>
-            {
-                Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
-            };
-            HashSet<Square> blackSet = new HashSet<Square>
-            {
-                Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
-            };
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                var ms = strings.Select(s => moveProvider.Get(short.Parse(s))).ToList();
-                if (ms.All(IsPawn))
-                {
-                    bool isBad = true;
-                    for (var i = 0; i < ms.Count; i++)
-                    {
-                        if (i % 2 == 0)
-                        {
-                            if (!whiteSet.Contains(ms[i].To))
-                            {
-                                isBad = false;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            if (!blackSet.Contains(ms[i].To))
-                            {
-                                isBad = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (isBad)
-                    {
-                        var item = CreateValue(strings, moveProvider);
-                        candidates.Add(item);
-                        bad.Add(CreateKey(strings));
-                    }
-                    else
-                    {
-                        toSave.Add(keys);
-                    }
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
-            }
-
-            BuildChangeCandidates("Seq_x.txt", bad);
-            BuildChangeCandidates("BadPos.txt", candidates);
-            BuildChangeCandidates("tempS.txt", toSave);
-
-            var timerElapsed = timer.Elapsed;
-
-            Console.WriteLine($"Finished = {timerElapsed}");
-
-            Console.ReadLine();
-        }
+        //private static void CheckBadBlackCenterPawns()
+        //{
+        //    Boot.SetUp();
+
+        //    var position = new Position();
+
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+
+
+        //    Stopwatch timer = Stopwatch.StartNew();
+
+        //    HashSet<string> candidates = new HashSet<string>();
+        //    HashSet<string> bad = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
+        //    int x = 0;
+        //    HashSet<Square> whiteSet = new HashSet<Square>
+        //    {
+        //        Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
+        //    };
+        //    HashSet<Square> blackSet = new HashSet<Square>
+        //    {
+        //        Squares.C5, Squares.D5,Squares.E5, Squares.F5
+        //    };
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        //        var ms = new string[] { strings[1], strings[3] }.Select(s => moveProvider.Get(short.Parse(s))).ToList();
+        //        if (ms.All(IsPawn) && ms.All(m => !blackSet.Contains(m.To)))
+        //        {
+        //            var item = CreateValue(strings, moveProvider);
+        //            candidates.Add(item);
+        //            bad.Add(CreateKey(strings));
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
+        //    }
+
+        //    BuildChangeCandidates("Seq_x.txt", bad);
+        //    BuildChangeCandidates("BadPos.txt", candidates);
+        //    BuildChangeCandidates("tempS.txt", toSave);
+
+        //    var timerElapsed = timer.Elapsed;
+
+        //    Console.WriteLine($"Finished = {timerElapsed}");
+
+        //    Console.ReadLine();
+        //}
+
+        //private static void CheckBadWhiteCenterPawns()
+        //{
+        //    Boot.SetUp();
+
+        //    var position = new Position();
+
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+
+
+        //    Stopwatch timer = Stopwatch.StartNew();
+
+        //    HashSet<string> candidates = new HashSet<string>();
+        //    HashSet<string> bad = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
+        //    int x = 0;
+        //    HashSet<Square> whiteSet = new HashSet<Square>
+        //    {
+        //        Squares.C4, Squares.D4,Squares.E4, Squares.F4
+        //    };
+        //    HashSet<Square> blackSet = new HashSet<Square>
+        //    {
+        //        Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
+        //    };
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        //        var ms = new string[] { strings[0], strings[2], strings[4] }.Select(s => moveProvider.Get(short.Parse(s))).ToList();
+        //        if (ms.All(IsPawn) && ms.All(m => !whiteSet.Contains(m.To)))
+        //        {
+        //            var item = CreateValue(strings, moveProvider);
+        //            candidates.Add(item);
+        //            bad.Add(CreateKey(strings));
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
+        //    }
+
+        //    BuildChangeCandidates("Seq_x.txt", bad);
+        //    BuildChangeCandidates("BadPos.txt", candidates);
+        //    BuildChangeCandidates("tempS.txt", toSave);
+
+        //    var timerElapsed = timer.Elapsed;
+
+        //    Console.WriteLine($"Finished = {timerElapsed}");
+
+        //    Console.ReadLine();
+        //}
+
+        //private static void CheckBadBlackPawns()
+        //{
+        //    Boot.SetUp();
+
+        //    var position = new Position();
+
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+
+
+        //    Stopwatch timer = Stopwatch.StartNew();
+
+        //    HashSet<string> candidates = new HashSet<string>();
+        //    HashSet<string> bad = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
+        //    int x = 0;
+        //    HashSet<Square> whiteSet = new HashSet<Square>
+        //    {
+        //        Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
+        //    };
+        //    HashSet<Square> blackSet = new HashSet<Square>
+        //    {
+        //        Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
+        //    };
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        //        var ms = new string[] { strings[1], strings[3] }.Select(s => moveProvider.Get(short.Parse(s))).ToList();
+        //        if (ms.All(IsPawn) && ms.All(m => blackSet.Contains(m.To)))
+        //        {
+        //            var item = CreateValue(strings, moveProvider);
+        //            candidates.Add(item);
+        //            bad.Add(CreateKey(strings));
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
+        //    }
+
+        //    BuildChangeCandidates("Seq_x.txt", bad);
+        //    BuildChangeCandidates("BadPos.txt", candidates);
+        //    BuildChangeCandidates("tempS.txt", toSave);
+
+        //    var timerElapsed = timer.Elapsed;
+
+        //    Console.WriteLine($"Finished = {timerElapsed}");
+
+        //    Console.ReadLine();
+        //}
+
+        //private static void CheckBadWhitePawns()
+        //{
+        //    Boot.SetUp();
+
+        //    var position = new Position();
+
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+
+
+        //    Stopwatch timer = Stopwatch.StartNew();
+
+        //    HashSet<string> candidates = new HashSet<string>();
+        //    HashSet<string> bad = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
+        //    int x = 0;
+        //    HashSet<Square> whiteSet = new HashSet<Square>
+        //    {
+        //        Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
+        //    };
+        //    HashSet<Square> blackSet = new HashSet<Square>
+        //    {
+        //        Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
+        //    };
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        //        var ms = new string[]{strings[0],strings[2],strings[4]}.Select(s => moveProvider.Get(short.Parse(s))).ToList();
+        //        if (ms.All(IsPawn) && ms.All(m=>whiteSet.Contains(m.To)))
+        //        {
+        //            var item = CreateValue(strings, moveProvider);
+        //            candidates.Add(item);
+        //            bad.Add(CreateKey(strings));
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
+        //    }
+
+        //    BuildChangeCandidates("Seq_x.txt", bad);
+        //    BuildChangeCandidates("BadPos.txt", candidates);
+        //    BuildChangeCandidates("tempS.txt", toSave);
+
+        //    var timerElapsed = timer.Elapsed;
+
+        //    Console.WriteLine($"Finished = {timerElapsed}");
+
+        //    Console.ReadLine();
+        //}
+
+        //private static void CheckAllPawns()
+        //{
+        //    Boot.SetUp();
+
+        //    var position = new Position();
+
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+
+
+        //    Stopwatch timer = Stopwatch.StartNew();
+
+        //    HashSet<string> candidates = new HashSet<string>();
+        //    HashSet<string> bad = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
+        //    int x = 0;
+        //    HashSet<Square> whiteSet = new HashSet<Square>
+        //    {
+        //        Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
+        //    };
+        //    HashSet<Square> blackSet = new HashSet<Square>
+        //    {
+        //        Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
+        //    };
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        //        var ms = strings.Select(s => moveProvider.Get(short.Parse(s))).ToList();
+        //        if (ms.All(IsPawn))
+        //        {
+        //            var item = CreateValue(strings, moveProvider);
+        //            candidates.Add(item);
+        //            bad.Add(CreateKey(strings));
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
+        //    }
+
+        //    BuildChangeCandidates("Seq_x.txt", bad);
+        //    BuildChangeCandidates("BadPos.txt", candidates);
+        //    BuildChangeCandidates("tempS.txt", toSave);
+
+        //    var timerElapsed = timer.Elapsed;
+
+        //    Console.WriteLine($"Finished = {timerElapsed}");
+
+        //    Console.ReadLine();
+        //}
+
+        //private static void CheckBadCenterPawns()
+        //{
+        //    Boot.SetUp();
+
+        //    var position = new Position();
+
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+
+
+        //    Stopwatch timer = Stopwatch.StartNew();
+
+        //    HashSet<string> candidates = new HashSet<string>();
+        //    HashSet<string> bad = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
+        //    int x = 0;
+        //    HashSet<Square> whiteSet = new HashSet<Square>
+        //    {
+        //        Squares.C4, Squares.D4,Squares.E4, Squares.F4
+        //    };
+        //    HashSet<Square> blackSet = new HashSet<Square>
+        //    {
+        //        Squares.C5, Squares.D5,Squares.E5, Squares.F5
+        //    };
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        //        var ms = strings.Select(s => moveProvider.Get(short.Parse(s))).ToList();
+        //        if (ms.All(IsPawn))
+        //        {
+        //            bool isBad = ms.Count(m=>!whiteSet.Contains(m.To)) <= 1 && ms.Count(m => !blackSet.Contains(m.To)) <=1;
+        //            if (isBad)
+        //            {
+        //                var item = CreateValue(strings, moveProvider);
+        //                candidates.Add(item);
+        //                bad.Add(CreateKey(strings));
+        //            }
+        //            else
+        //            {
+        //                toSave.Add(keys);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
+        //    }
+
+        //    BuildChangeCandidates("Seq_x.txt", bad);
+        //    BuildChangeCandidates("BadPos.txt", candidates);
+        //    BuildChangeCandidates("tempS.txt", toSave);
+
+        //    var timerElapsed = timer.Elapsed;
+
+        //    Console.WriteLine($"Finished = {timerElapsed}");
+
+        //    Console.ReadLine();
+        //}
+
+        //private static void CheckBadPawns()
+        //{
+        //    Boot.SetUp();
+
+        //    var position = new Position();
+
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+
+
+        //    Stopwatch timer = Stopwatch.StartNew();
+
+        //    HashSet<string> candidates = new HashSet<string>();
+        //    HashSet<string> bad = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
+        //    int x = 0;
+        //    HashSet<Square> whiteSet = new HashSet<Square>
+        //    {
+        //        Squares.A3, Squares.B3, Squares.C3, Squares.D3,Squares.E3, Squares.F3, Squares.G3, Squares.H3
+        //    };
+        //    HashSet<Square> blackSet = new HashSet<Square>
+        //    {
+        //        Squares.A6, Squares.B6, Squares.C6, Squares.D6,Squares.E6, Squares.F6, Squares.G6, Squares.H6
+        //    };
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        //        var ms = strings.Select(s => moveProvider.Get(short.Parse(s))).ToList();
+        //        if (ms.All(IsPawn))
+        //        {
+        //            bool isBad = true;
+        //            for (var i = 0; i < ms.Count; i++)
+        //            {
+        //                if (i % 2 == 0)
+        //                {
+        //                    if (!whiteSet.Contains(ms[i].To))
+        //                    {
+        //                        isBad = false;
+        //                        break;
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    if (!blackSet.Contains(ms[i].To))
+        //                    {
+        //                        isBad = false;
+        //                        break;
+        //                    }
+        //                }
+        //            }
+        //            if (isBad)
+        //            {
+        //                var item = CreateValue(strings, moveProvider);
+        //                candidates.Add(item);
+        //                bad.Add(CreateKey(strings));
+        //            }
+        //            else
+        //            {
+        //                toSave.Add(keys);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
+        //    }
+
+        //    BuildChangeCandidates("Seq_x.txt", bad);
+        //    BuildChangeCandidates("BadPos.txt", candidates);
+        //    BuildChangeCandidates("tempS.txt", toSave);
+
+        //    var timerElapsed = timer.Elapsed;
+
+        //    Console.WriteLine($"Finished = {timerElapsed}");
+
+        //    Console.ReadLine();
+        //}
 
         private static bool IsPawn(MoveBase moveBase)
         {
             return moveBase.Piece == Piece.WhitePawn || moveBase.Piece == Piece.BlackPawn;
         }
 
-        private static void CheckBishopMoves()
-        {
-            Boot.SetUp();
+        //private static void CheckBishopMoves()
+        //{
+        //    Boot.SetUp();
 
-            var position = new Position();
+        //    var position = new Position();
 
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
 
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
 
-            Stopwatch timer = Stopwatch.StartNew();
+        //    Stopwatch timer = Stopwatch.StartNew();
 
-            HashSet<string> candidates = new HashSet<string>();
-            HashSet<string> bad = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
-            int x = 0;
-            HashSet<Square> whiteSet = new HashSet<Square>
-            {
-                Squares.A3, Squares.H3, Squares.E3, Squares.D3
-            };
-            HashSet<Square> blackSet = new HashSet<Square>
-            {
-                Squares.A6, Squares.H6, Squares.E6, Squares.D6
-            };
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                var moveBase = moveProvider.Get(short.Parse(strings.Last()));
-                if (moveBase.Piece == Piece.WhiteBishop && whiteSet.Contains(moveBase.To))
-                {
-                    var item = CreateValue(strings, moveProvider);
-                    candidates.Add(item);
-                    bad.Add(CreateKey(strings));
-                }
-                else if (moveBase.Piece == Piece.BlackBishop && blackSet.Contains(moveBase.To))
-                {
-                    var item = CreateValue(strings, moveProvider);
-                    candidates.Add(item);
-                    bad.Add(CreateKey(strings));
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
-            }
+        //    HashSet<string> candidates = new HashSet<string>();
+        //    HashSet<string> bad = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
+        //    int x = 0;
+        //    HashSet<Square> whiteSet = new HashSet<Square>
+        //    {
+        //        Squares.A3, Squares.H3, Squares.E3, Squares.D3
+        //    };
+        //    HashSet<Square> blackSet = new HashSet<Square>
+        //    {
+        //        Squares.A6, Squares.H6, Squares.E6, Squares.D6
+        //    };
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        //        var moveBase = moveProvider.Get(short.Parse(strings.Last()));
+        //        if (moveBase.Piece == Piece.WhiteBishop && whiteSet.Contains(moveBase.To))
+        //        {
+        //            var item = CreateValue(strings, moveProvider);
+        //            candidates.Add(item);
+        //            bad.Add(CreateKey(strings));
+        //        }
+        //        else if (moveBase.Piece == Piece.BlackBishop && blackSet.Contains(moveBase.To))
+        //        {
+        //            var item = CreateValue(strings, moveProvider);
+        //            candidates.Add(item);
+        //            bad.Add(CreateKey(strings));
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
+        //    }
 
-            BuildChangeCandidates("Seq_x.txt", bad);
-            BuildChangeCandidates("BadPos.txt", candidates);
-            BuildChangeCandidates("tempS.txt", toSave);
+        //    BuildChangeCandidates("Seq_x.txt", bad);
+        //    BuildChangeCandidates("BadPos.txt", candidates);
+        //    BuildChangeCandidates("tempS.txt", toSave);
 
-            var timerElapsed = timer.Elapsed;
+        //    var timerElapsed = timer.Elapsed;
 
-            Console.WriteLine($"Finished = {timerElapsed}");
+        //    Console.WriteLine($"Finished = {timerElapsed}");
 
-            Console.ReadLine();
-        }
+        //    Console.ReadLine();
+        //}
 
-        private static void RemoveBad()
-        {
-            Boot.SetUp();
+        //private static void RemoveBad()
+        //{
+        //    Boot.SetUp();
 
-            var position = new Position();
+        //    var position = new Position();
 
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
 
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
-            Stopwatch timer = Stopwatch.StartNew();
+        //    Stopwatch timer = Stopwatch.StartNew();
 
-            HashSet<string> toRemove = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
+        //    HashSet<string> toRemove = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
 
-            MoveFilter filter = new MoveFilter(moveProvider);
+        //    MoveFilter filter = new MoveFilter(moveProvider);
 
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var collection = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                if (collection.Any(key => filter.IsBad(key)))
-                {
-                    var value = CreateValue(collection, moveProvider);
-                    toRemove.Add(value);
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
-            }
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var collection = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        //        if (collection.Any(key => filter.IsBad(key)))
+        //        {
+        //            var value = CreateValue(collection, moveProvider);
+        //            toRemove.Add(value);
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
+        //    }
 
-            BuildChangeCandidates("Change.txt", toRemove);
-            BuildChangeCandidates("tempS.txt", toSave);
+        //    BuildChangeCandidates("Change.txt", toRemove);
+        //    BuildChangeCandidates("tempS.txt", toSave);
 
-            //RemoveSpecifiedMoves(moveProvider);
+        //    //RemoveSpecifiedMoves(moveProvider);
 
-            //var openingService = ServiceLocator.Current.GetInstance<IOpeningService>();
+        //    //var openingService = ServiceLocator.Current.GetInstance<IOpeningService>();
 
-            //CheckSequences(openingService, moveProvider, position);
+        //    //CheckSequences(openingService, moveProvider, position);
 
-            var timerElapsed = timer.Elapsed;
+        //    var timerElapsed = timer.Elapsed;
 
-            Console.WriteLine($"Finished = {timerElapsed}");
+        //    Console.WriteLine($"Finished = {timerElapsed}");
 
-            Console.ReadLine();
-        }
+        //    Console.ReadLine();
+        //}
 
         private static void RemoveBadSeq()
         {
@@ -643,59 +643,59 @@ namespace OpeningTool
             Console.ReadLine();
         }
 
-        private static void RemoveBadPositions()
-        {
-            Boot.SetUp();
+        //private static void RemoveBadPositions()
+        //{
+        //    Boot.SetUp();
 
-            var position = new Position();
+        //    var position = new Position();
 
-            IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
+        //    IMoveSorter sorter = new ExtendedSorter(position, new HistoryComparer());
 
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+        //    var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
-            Stopwatch timer = Stopwatch.StartNew();
+        //    Stopwatch timer = Stopwatch.StartNew();
 
-            HashSet<string> candidates = new HashSet<string>();
-            HashSet<string> bad = new HashSet<string>();
-            HashSet<string> toSave = new HashSet<string>();
+        //    HashSet<string> candidates = new HashSet<string>();
+        //    HashSet<string> bad = new HashSet<string>();
+        //    HashSet<string> toSave = new HashSet<string>();
 
-            foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
-            {
-                var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                var moves = strings.Select(s => moveProvider.Get(short.Parse(s))).ToArray();
-                foreach (var move in moves)
-                {
-                    position.Make(move);
-                }
+        //    foreach (var keys in File.ReadLines(Path.Combine("Moves", "temp.txt")))
+        //    {
+        //        var strings = keys.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+        //        var moves = strings.Select(s => moveProvider.Get(short.Parse(s))).ToArray();
+        //        foreach (var move in moves)
+        //        {
+        //            position.Make(move);
+        //        }
 
-                var v = Evaluate(short.MinValue, short.MaxValue, position, sorter);
-                if (moves.Length % 2 == 0 && v < -80 || moves.Length % 2 == 1 && v > 100)
-                {
-                    var item = $"{keys}-{CreateValue(moves.Select(m => m.Key.ToString()).ToList(), moveProvider)}-V={v}";
-                    candidates.Add(item);
-                    bad.Add(CreateKey(strings));
-                }
-                else
-                {
-                    toSave.Add(keys);
-                }
+        //        var v = Evaluate(short.MinValue, short.MaxValue, position, sorter);
+        //        if (moves.Length % 2 == 0 && v < -80 || moves.Length % 2 == 1 && v > 100)
+        //        {
+        //            var item = $"{keys}-{CreateValue(moves.Select(m => m.Key.ToString()).ToList(), moveProvider)}-V={v}";
+        //            candidates.Add(item);
+        //            bad.Add(CreateKey(strings));
+        //        }
+        //        else
+        //        {
+        //            toSave.Add(keys);
+        //        }
 
-                foreach (var move in moves)
-                {
-                    position.UnMake();
-                }
-            }
+        //        foreach (var move in moves)
+        //        {
+        //            position.UnMake();
+        //        }
+        //    }
 
-            BuildChangeCandidates("Seq_x.txt", bad);
-            BuildChangeCandidates("BadPos.txt", candidates);
-            BuildChangeCandidates("tempS.txt", toSave);
+        //    BuildChangeCandidates("Seq_x.txt", bad);
+        //    BuildChangeCandidates("BadPos.txt", candidates);
+        //    BuildChangeCandidates("tempS.txt", toSave);
 
-            var timerElapsed = timer.Elapsed;
+        //    var timerElapsed = timer.Elapsed;
 
-            Console.WriteLine($"Finished = {timerElapsed}");
+        //    Console.WriteLine($"Finished = {timerElapsed}");
 
-            Console.ReadLine();
-        }
+        //    Console.ReadLine();
+        //}
 
         protected static int Evaluate(int alpha, int beta,IPosition position, IMoveSorter sorter)
         {

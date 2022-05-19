@@ -5,10 +5,8 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
-using Engine.Models.Transposition;
 using Engine.Strategies.AlphaBeta;
 using Engine.Strategies.Base;
-using Engine.Strategies.LateMove.Base;
 using Engine.Strategies.LateMove.Deep;
 
 namespace Engine.Strategies.PVS
@@ -18,13 +16,11 @@ namespace Engine.Strategies.PVS
         protected int NonPvIterations;
         protected int DepthOffset;
         protected int NullWindow;
-        protected int MaxEndGameDepth;
         protected int PvsMinDepth;
         protected int PvsDepthStep;
         protected int PvsDepthIterations;
 
         protected StrategyBase InitialStrategy;
-        protected StrategyBase EndGameStrategy;
 
         protected PvsStrategyBase(short depth, IPosition position) : base(depth, position)
         {
@@ -43,7 +39,6 @@ namespace Engine.Strategies.PVS
                 .AlgorithmConfiguration.DepthOffset;
             NullWindow = configurationProvider
                 .AlgorithmConfiguration.NullConfiguration.NullWindow;
-            EndGameStrategy = new LmrDeepNullNoCacheStrategy(depth, position);
             InitialStrategy = new LmrDeepExtendedStrategy(depth,position,Table);
         }
 
@@ -161,20 +156,10 @@ namespace Engine.Strategies.PVS
 
                 if (entryDepth >= depth)
                 {
-                    if (entry.Type == TranspositionEntryType.Exact)
-                    {
-                        return entry.Value;
-                    }
-
-                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
+                    if (entry.Value > alpha)
                     {
                         alpha = entry.Value;
                     }
-                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
-                    {
-                        beta = entry.Value;
-                    }
-
                     if (alpha >= beta)
                         return entry.Value;
                 }
@@ -189,7 +174,7 @@ namespace Engine.Strategies.PVS
             int value = short.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GenerateMoves(alpha, beta, depth,pv);
+            var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
@@ -239,7 +224,7 @@ namespace Engine.Strategies.PVS
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue(alpha, beta, depth, value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove);
         }
 
         #endregion

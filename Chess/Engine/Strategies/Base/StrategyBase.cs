@@ -8,6 +8,7 @@ using Engine.Models.Enums;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
+using Engine.Strategies.End;
 
 namespace Engine.Strategies.Base
 {
@@ -19,6 +20,7 @@ namespace Engine.Strategies.Base
         protected int ThreefoldRepetitionValue;
         protected int FutilityDepth;
         protected bool UseFutility;
+        protected int MaxEndGameDepth;
         protected int[][] Margins;
 
         protected IPosition Position;
@@ -28,10 +30,18 @@ namespace Engine.Strategies.Base
         protected readonly IMoveHistoryService MoveHistory;
         protected readonly IMoveProvider MoveProvider;
         protected bool UseAging;
+        private LmrDeepNoCacheStrategy _endGameStrategy;
+
+        protected LmrDeepNoCacheStrategy EndGameStrategy
+        {
+            get { return _endGameStrategy ?? (_endGameStrategy = new LmrDeepNoCacheStrategy(Depth, Position)); }
+        }
 
         protected StrategyBase(short depth, IPosition position)
         {
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
+            MaxEndGameDepth = configurationProvider
+                .AlgorithmConfiguration.MaxEndGameDepth;
             SearchValue = configurationProvider
                 .Evaluation.Static.Mate;
             ThreefoldRepetitionValue = configurationProvider
@@ -167,6 +177,23 @@ namespace Engine.Strategies.Base
 
             value = Position.GetValue();
             return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected MoveBase[] GeneratePvMoves(int alpha, int beta, int depth, MoveBase pv = null)
+        {
+            if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
+                return Position.GetAllMoves(Sorters[Depth], pv);
+
+            if (MoveHistory.GetLastMove().IsCheck) return Position.GetAllMoves(Sorters[Depth], pv);
+
+            var positionValue = Position.GetValue();
+
+            var i = Margins[(byte)Position.GetPhase()][depth - 1];
+            if (positionValue + i > alpha) return Position.GetAllMoves(Sorters[Depth], pv);
+
+            var moves = Position.GetAllAttacks(Sorters[depth]);
+            return moves.Length == 0 ? null : moves;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

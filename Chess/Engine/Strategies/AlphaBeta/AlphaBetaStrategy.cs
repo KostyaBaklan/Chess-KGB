@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
@@ -38,16 +39,20 @@ namespace Engine.Strategies.AlphaBeta
                 }
                 else if (depth == 9)
                 {
-                    capacity = 15486997;
+                    capacity = 18337973;
+                }
+                else if (depth == 10)
+                {
+                    capacity = 24495841;
+                }
+                else if (depth == 11)
+                {
+                    capacity = 30794419;
                 }
                 else
                 {
-                    capacity = 22115983;
+                    capacity = 35727019;
                 }
-                //else
-                //{
-                //    capacity = 10023499;
-                //}
 
                 Table = new TranspositionTable(capacity, depth);
             }
@@ -61,10 +66,9 @@ namespace Engine.Strategies.AlphaBeta
 
         public override IResult GetResult()
         {
-            var depth = Depth;
             if (Position.GetPhase() == Phase.End)
             {
-                depth++;
+                return EndGameStrategy.GetResult(-SearchValue, SearchValue, Math.Min(Depth + 1, MaxEndGameDepth));
             }
 
             if (UseAging)
@@ -72,13 +76,14 @@ namespace Engine.Strategies.AlphaBeta
                 MoveProvider.AgeHistory(); 
             }
 
-            return GetResult(-SearchValue, SearchValue, depth);
+            return GetResult(-SearchValue, SearchValue, Depth);
         }
 
         #region Overrides of StrategyBase
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
+            
             Result result = new Result();
 
             MoveBase pv = pvMove;
@@ -153,20 +158,10 @@ namespace Engine.Strategies.AlphaBeta
 
                 if (entryDepth >= depth)
                 {
-                    if (entry.Type == TranspositionEntryType.Exact)
-                    {
-                        return entry.Value;
-                    }
-
-                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
+                    if (entry.Value > alpha)
                     {
                         alpha = entry.Value;
                     }
-                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
-                    {
-                        beta = entry.Value;
-                    }
-
                     if (alpha >= beta)
                         return entry.Value;
                 }
@@ -218,27 +213,15 @@ namespace Engine.Strategies.AlphaBeta
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue(alpha, beta, depth, value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove);
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected int StoreValue(int alpha, int beta, int depth, int value, MoveBase bestMove)
+        protected int StoreValue(byte depth, short value, MoveBase bestMove)
         {
             TranspositionEntry te = new TranspositionEntry
-                {Depth = (byte) depth, Value = (short) value, PvMove = bestMove.Key};
-            if (value <= alpha)
-            {
-                te.Type = TranspositionEntryType.LowerBound;
-            }
-            else if (value >= beta)
-            {
-                te.Type = TranspositionEntryType.UpperBound;
-            }
-            else
-            {
-                te.Type = TranspositionEntryType.Exact;
-            }
+                {Depth = depth, Value = value, PvMove = bestMove.Key};
 
             Table.Set(Position.GetKey(), te);
 

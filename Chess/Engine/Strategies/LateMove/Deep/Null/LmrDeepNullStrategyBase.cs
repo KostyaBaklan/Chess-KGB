@@ -5,7 +5,6 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
-using Engine.Models.Transposition;
 
 namespace Engine.Strategies.LateMove.Deep.Null
 {
@@ -31,6 +30,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
+            
             Result result = new Result();
 
             MoveBase pv = pvMove;
@@ -152,20 +152,10 @@ namespace Engine.Strategies.LateMove.Deep.Null
                 var entryDepth = entry.Depth;
                 if (entryDepth >= depth)
                 {
-                    if (entry.Type == TranspositionEntryType.Exact)
-                    {
-                        return entry.Value;
-                    }
-
-                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
+                    if (entry.Value > alpha)
                     {
                         alpha = entry.Value;
                     }
-                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
-                    {
-                        beta = entry.Value;
-                    }
-
                     if (alpha >= beta)
                         return entry.Value;
                 }
@@ -273,7 +263,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue(alpha, beta, depth, value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove);
         }
 
         protected int NullSearch(int alpha, int beta, int depth)
@@ -293,20 +283,10 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
                 if (entryDepth >= depth)
                 {
-                    if (entry.Type == TranspositionEntryType.Exact)
-                    {
-                        return entry.Value;
-                    }
-
-                    if (entry.Type == TranspositionEntryType.LowerBound && entry.Value > alpha)
+                    if (entry.Value > alpha)
                     {
                         alpha = entry.Value;
                     }
-                    else if (entry.Type == TranspositionEntryType.UpperBound && entry.Value < beta)
-                    {
-                        beta = entry.Value;
-                    }
-
                     if (alpha >= beta)
                         return entry.Value;
                 }
