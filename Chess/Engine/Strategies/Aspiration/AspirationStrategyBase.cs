@@ -65,8 +65,8 @@ namespace Engine.Strategies.Aspiration
             //return result;
 
             var depth = Depth;
-            int x = (depth - AspirationMinDepth) / AspirationDepth;
-            var t = depth - AspirationDepth * x;
+            //int x = (depth - AspirationMinDepth) / AspirationDepth;
+            var t = depth - AspirationDepth * AspirationIterations;
 
             var result = InternalStrategy.GetResult(-SearchValue, SearchValue, t);
             for (int d = t + AspirationDepth; d <= depth; d += AspirationDepth)
