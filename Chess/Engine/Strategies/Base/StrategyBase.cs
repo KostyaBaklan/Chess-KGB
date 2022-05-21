@@ -30,11 +30,11 @@ namespace Engine.Strategies.Base
         protected readonly IMoveHistoryService MoveHistory;
         protected readonly IMoveProvider MoveProvider;
         protected bool UseAging;
-        private LmrDeepNoCacheStrategy _endGameStrategy;
+        private LmrNoCacheStrategy _endGameStrategy;
 
-        protected LmrDeepNoCacheStrategy EndGameStrategy
+        protected LmrNoCacheStrategy EndGameStrategy
         {
-            get { return _endGameStrategy ?? (_endGameStrategy = new LmrDeepNoCacheStrategy(Depth, Position)); }
+            get { return _endGameStrategy ?? (_endGameStrategy = new LmrNoCacheStrategy(Depth, Position)); }
         }
 
         protected StrategyBase(short depth, IPosition position)

@@ -21,7 +21,6 @@ namespace Engine.Strategies.LateMove.Deep
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-            
             Result result = new Result();
 
             MoveBase pv = pvMove;
@@ -42,7 +41,7 @@ namespace Engine.Strategies.LateMove.Deep
             if (moves.Length > 1)
             {
                 var isCheck = MoveHistory.GetLastMove().IsCheck;
-                if (isCheck)
+                if (isCheck || !isNotEndGame)
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
@@ -77,7 +76,7 @@ namespace Engine.Strategies.LateMove.Deep
                         int value;
                         if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
                         {
-                            var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                            var reduction =  i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
@@ -129,7 +128,7 @@ namespace Engine.Strategies.LateMove.Deep
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            if (Position.GetPhase() != Phase.End && Table.TryGet(key, out var entry))
+            if (Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -160,7 +159,6 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck)
             {
-                bool isNotEndGame = Position.GetPhase()!=Phase.End;
                 for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
@@ -169,7 +167,7 @@ namespace Engine.Strategies.LateMove.Deep
                     int r;
                     if (IsLmr(i) && CanReduce(move))
                     {
-                        var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                        var reduction = i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
                         r = -Search(-beta, -alpha, depth - reduction);
                         if (r > alpha)
                         {

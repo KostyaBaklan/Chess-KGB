@@ -30,15 +30,13 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-            
             Result result = new Result();
 
             MoveBase pv = pvMove;
             var key = Position.GetKey();
-            var isNotEndGame = Position.GetPhase() != Phase.End;
             if (pv == null)
             {
-                if (isNotEndGame && Table.TryGet(key, out var entry))
+                if (Table.TryGet(key, out var entry))
                 {
                     pv = GetPv(entry.PvMove);
                 }
@@ -92,7 +90,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                         int value;
                         if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
                         {
-                            var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                            var reduction = i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
@@ -145,8 +143,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (isNotEndGame && Table.TryGet(key, out var entry))
+            if (Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -175,7 +172,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             var isWasCheck = MoveHistory.GetLastMove().IsCheck;
-            if (CanUseNull && !isWasCheck && isNotEndGame && depth > NullDepthReduction + NullDepthOffset &&
+            if (CanUseNull && !isWasCheck && Position.GetPhase()!=Phase.End && depth > NullDepthReduction + NullDepthOffset &&
                 IsValidWindow(alpha, beta))
             {
                 MakeNullMove();
@@ -197,7 +194,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                     int r;
                     if (IsLmr(i) && CanReduce(move))
                     {
-                        var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                        var reduction = i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
                         r = -Search(-beta, -alpha, depth - reduction);
                         if (r > alpha)
                         {

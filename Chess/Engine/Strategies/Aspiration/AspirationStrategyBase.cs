@@ -1,5 +1,6 @@
 ﻿using System;
 using CommonServiceLocator;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
@@ -12,6 +13,7 @@ namespace Engine.Strategies.Aspiration
         protected int AspirationWindow;
         protected int AspirationDepth;
         protected int AspirationMinDepth;
+        protected int AspirationIterations;
 
         protected AspirationStrategyBase(short depth, IPosition position) : base(depth, position)
         {
@@ -23,6 +25,8 @@ namespace Engine.Strategies.Aspiration
                 .AspirationDepth;
             AspirationMinDepth = configuration
                 .AspirationMinDepth;
+            AspirationIterations = configuration
+                .AspirationIterations;
         }
 
 
@@ -34,6 +38,31 @@ namespace Engine.Strategies.Aspiration
             {
                 return EndGameStrategy.GetResult(-SearchValue, SearchValue, Math.Min(Depth + 1, MaxEndGameDepth));
             }
+
+            //IResult result = new Result
+            //{
+            //    GameResult = GameResult.Continue,
+            //    Move = null,
+            //    Value = 0
+            //};
+
+            //for (int d = Depth - AspirationIterations; d <= Depth; d++)
+            //{
+            //    var alpha = result.Value - AspirationWindow;
+            //    var beta = result.Value + AspirationWindow;
+
+            //    result = InternalStrategy.GetResult(alpha, beta, d, result.Move);
+            //    if (result.Value >= beta)
+            //    {
+            //        result = InternalStrategy.GetResult(result.Value, SearchValue, d, result.Move);
+            //    }
+            //    else if (result.Value <= alpha)
+            //    {
+            //        result = InternalStrategy.GetResult(-SearchValue, result.Value, d, result.Move);
+            //    }
+            //}
+
+            //return result;
 
             var depth = Depth;
             int x = (depth - AspirationMinDepth) / AspirationDepth;
