@@ -40,8 +40,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (moves.Length > 1)
             {
-                var isCheck = MoveHistory.GetLastMove().IsCheck;
-                if (isCheck || !isNotEndGame)
+                if (MoveHistory.GetLastMove().IsCheck || !isNotEndGame)
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
@@ -76,7 +75,7 @@ namespace Engine.Strategies.LateMove.Deep
                         int value;
                         if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
                         {
-                            var reduction =  i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                            var reduction =  i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
@@ -157,7 +156,34 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck)
+            if (depth < DepthLateReduction || MoveHistory.GetLastMove().IsCheck)
+            {
+                for (var i = 0; i < moves.Length; i++)
+                {
+                    var move = moves[i];
+                    Position.Make(move);
+
+                    var r = -Search(-beta, -alpha, depth - 1);
+
+                    if (r > value)
+                    {
+                        value = r;
+                        bestMove = move;
+                    }
+
+                    Position.UnMake();
+
+                    if (value > alpha)
+                    {
+                        alpha = value;
+                    }
+
+                    if (alpha < beta) continue;
+                    Sorters[depth].Add(move.Key);
+                    break;
+                }
+            }
+            else
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
@@ -167,7 +193,7 @@ namespace Engine.Strategies.LateMove.Deep
                     int r;
                     if (IsLmr(i) && CanReduce(move))
                     {
-                        var reduction = i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                        var reduction = i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
                         r = -Search(-beta, -alpha, depth - reduction);
                         if (r > alpha)
                         {
@@ -193,34 +219,7 @@ namespace Engine.Strategies.LateMove.Deep
                     }
 
                     if (alpha < beta) continue;
-                    Sorters[depth].Add(move);
-                    break;
-                }
-            }
-            else
-            {
-                for (var i = 0; i < moves.Length; i++)
-                {
-                    var move = moves[i];
-                    Position.Make(move);
-
-                    var r = -Search(-beta, -alpha, depth - 1);
-
-                    if (r > value)
-                    {
-                        value = r;
-                        bestMove = move;
-                    }
-
-                    Position.UnMake();
-
-                    if (value > alpha)
-                    {
-                        alpha = value;
-                    }
-
-                    if (alpha < beta) continue;
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }

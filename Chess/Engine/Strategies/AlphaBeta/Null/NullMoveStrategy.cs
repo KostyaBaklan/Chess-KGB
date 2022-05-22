@@ -182,7 +182,7 @@ namespace Engine.Strategies.AlphaBeta.Null
 
                 if (alpha < beta) continue;
 
-                Sorters[depth].Add(move);
+                Sorters[depth].Add(move.Key);
                 break;
             }
 

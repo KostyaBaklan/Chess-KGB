@@ -193,7 +193,7 @@ namespace Engine.Strategies.MultiCut
 
                 if (alpha < beta) continue;
 
-                Sorters[depth].Add(move);
+                Sorters[depth].Add(move.Key);
                 break;
             }
 

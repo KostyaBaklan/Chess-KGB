@@ -35,9 +35,9 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void Add(MoveBase move)
+        public virtual void Add(short move)
         {
-            Moves[MoveHistoryService.GetPly()].Add(move.Key);
+            Moves[MoveHistoryService.GetPly()].Add(move);
         }
 
         public MoveBase[] Order(AttackList attacks, MoveList moves, MoveBase pvNode)

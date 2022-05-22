@@ -14,6 +14,7 @@ namespace Engine.Strategies.LateMove.Base
     {
         protected int DepthReduction;
         protected int LmrDepthThreshold;
+        protected int DepthLateReduction;
 
         protected LmrStrategyBase(short depth, IPosition position, TranspositionTable table = null) : base(depth, position,table)
         {
@@ -22,6 +23,7 @@ namespace Engine.Strategies.LateMove.Base
                 .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthThreshold;
             DepthReduction = configurationProvider
                     .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthReduction;
+            DepthLateReduction = DepthReduction + 1;
         }
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
@@ -193,7 +195,7 @@ namespace Engine.Strategies.LateMove.Base
                     }
 
                     if (alpha < beta) continue;
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -220,7 +222,7 @@ namespace Engine.Strategies.LateMove.Base
                     }
 
                     if (alpha < beta) continue;
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }

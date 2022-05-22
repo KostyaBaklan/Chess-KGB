@@ -187,7 +187,7 @@ namespace Engine.Strategies.LateMove.Base.Null
                 }
             }
 
-            if (!isWasCheck && depth > DepthReduction + 1)
+            if (!isWasCheck && depth > DepthLateReduction)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
@@ -223,7 +223,7 @@ namespace Engine.Strategies.LateMove.Base.Null
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -251,7 +251,7 @@ namespace Engine.Strategies.LateMove.Base.Null
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -323,7 +323,7 @@ namespace Engine.Strategies.LateMove.Base.Null
 
                 if (alpha < beta) continue;
 
-                //Sorters[depth].Add(move);
+                //Sorters[depth].Add(move.Key);
                 break;
             }
             return value;

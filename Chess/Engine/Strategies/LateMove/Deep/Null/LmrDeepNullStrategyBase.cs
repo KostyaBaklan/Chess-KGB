@@ -90,7 +90,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                         int value;
                         if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
                         {
-                            var reduction = i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                            var reduction = i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
@@ -184,7 +184,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                 }
             }
 
-            if (!isWasCheck && depth > DepthReduction + 1)
+            if (!isWasCheck && depth > DepthLateReduction)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
@@ -194,7 +194,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                     int r;
                     if (IsLmr(i) && CanReduce(move))
                     {
-                        var reduction = i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                        var reduction = i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
                         r = -Search(-beta, -alpha, depth - reduction);
                         if (r > alpha)
                         {
@@ -221,7 +221,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -249,7 +249,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -319,7 +319,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
                 if (alpha < beta) continue;
 
-                //Sorters[depth].Add(move);
+                //Sorters[depth].Add(move.Key);
                 break;
             }
             return value;
