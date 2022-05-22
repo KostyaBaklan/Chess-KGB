@@ -25,7 +25,6 @@ namespace Engine.Sorting.Sorters
             PositionsList = new PositionsList();
             AttackList = new AttackList();
 
-            //InitialMoveCollection = new InitialMoveCollection(new HistoryDescendingComparer()));
             InitialMoveCollection = new InitialMoveCollection(comparer);
             Comparer = comparer;
         }
@@ -118,11 +117,10 @@ namespace Engine.Sorting.Sorters
         protected void ProcessMove(MoveBase move)
         {
             var phase = Position.GetPhase();
-            var board = Position.GetBoard();
             switch (move.Piece)
             {
                 case Piece.WhitePawn:
-                    if ((move.To.AsBitBoard() & board.GetRank(6)).Any())
+                    if ((move.To.AsBitBoard() & Board.GetRank(6)).Any())
                     {
                         InitialMoveCollection.AddSuggested(move);
                         return;
@@ -181,7 +179,7 @@ namespace Engine.Sorting.Sorters
                     }
                     break;
                 case Piece.BlackPawn:
-                    if ((move.To.AsBitBoard() & board.GetRank(1)).Any())
+                    if ((move.To.AsBitBoard() & Board.GetRank(1)).Any())
                     {
                         InitialMoveCollection.AddSuggested(move);
                         return;
@@ -231,6 +229,14 @@ namespace Engine.Sorting.Sorters
             {
                 if (move.Piece.IsWhite())
                 {
+                    if (WhiteQueenUnderAttack(move))
+                    {
+                        return;
+                    }
+                    if (WhiteRookUnderAttack(move))
+                    {
+                        return;
+                    }
                     if (IsBadWhiteSee(move))
                     {
                         return;
@@ -247,6 +253,14 @@ namespace Engine.Sorting.Sorters
                 }
                 else
                 {
+                    if (BlackQueenUnderAttack(move))
+                    {
+                        return;
+                    }
+                    if (BlackRookUnderAttack(move))
+                    {
+                        return;
+                    }
                     if (IsBadBlackSee(move))
                     {
                         return;
@@ -266,6 +280,92 @@ namespace Engine.Sorting.Sorters
             {
                 Position.UnDo(move);
             }
+        }
+
+        private bool WhiteRookUnderAttack(MoveBase move)
+        {
+            var pieceBits = Board.GetPieceBits(Piece.WhiteRook);
+            if (!pieceBits.Any()) return false;
+
+            pieceBits.GetPositions(PositionsList);
+            for (int i = 0; i < PositionsList.Count; i++)
+            {
+                byte rookPosition = PositionsList[i];
+                if (MoveProvider.GetBlackPawnAttackTo(Board, rookPosition).Any() ||
+                    MoveProvider.GetBlackKnightAttackTo(Board, rookPosition).Any() ||
+                    MoveProvider.GetBlackBishopAttackTo(Board, rookPosition).Any())
+                {
+                    InitialMoveCollection.AddNonSuggested(move);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool BlackRookUnderAttack(MoveBase move)
+        {
+            var pieceBits = Board.GetPieceBits(Piece.BlackRook);
+            if (!pieceBits.Any()) return false;
+
+            pieceBits.GetPositions(PositionsList);
+            for (int i = 0; i < PositionsList.Count; i++)
+            {
+                byte rookPosition = PositionsList[i];
+                if (MoveProvider.GetWhitePawnAttackTo(Board, rookPosition).Any() ||
+                    MoveProvider.GetWhiteKnightAttackTo(Board, rookPosition).Any() ||
+                    MoveProvider.GetWhiteBishopAttackTo(Board, rookPosition).Any())
+                {
+                    InitialMoveCollection.AddNonSuggested(move);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool BlackQueenUnderAttack(MoveBase move)
+        {
+            var pieceBits = Board.GetPieceBits(Piece.BlackQueen);
+            if (!pieceBits.Any()) return false;
+
+            pieceBits.GetPositions(PositionsList);
+            for (int i = 0; i < PositionsList.Count; i++)
+            {
+                byte queenPosition = PositionsList[i];
+                if (MoveProvider.GetWhitePawnAttackTo(Board, queenPosition).Any() ||
+                    MoveProvider.GetWhiteKnightAttackTo(Board, queenPosition).Any() ||
+                    MoveProvider.GetWhiteBishopAttackTo(Board, queenPosition).Any() ||
+                    MoveProvider.GetWhiteRookAttackTo(Board, queenPosition).Any())
+                {
+                    InitialMoveCollection.AddBad(move);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool WhiteQueenUnderAttack(MoveBase move)
+        {
+            var pieceBits = Board.GetPieceBits(Piece.WhiteQueen);
+            if (!pieceBits.Any()) return false;
+
+            pieceBits.GetPositions(PositionsList);
+            for (int i = 0; i < PositionsList.Count; i++)
+            {
+                byte queenPosition = PositionsList[i];
+                if (MoveProvider.GetBlackPawnAttackTo(Board, queenPosition).Any() ||
+                    MoveProvider.GetBlackKnightAttackTo(Board, queenPosition).Any() ||
+                    MoveProvider.GetBlackBishopAttackTo(Board, queenPosition).Any() ||
+                    MoveProvider.GetBlackRookAttackTo(Board, queenPosition).Any())
+                {
+                    InitialMoveCollection.AddBad(move);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
