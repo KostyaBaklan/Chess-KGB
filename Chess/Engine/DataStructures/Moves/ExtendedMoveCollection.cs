@@ -47,8 +47,10 @@ namespace Engine.DataStructures.Moves
             var hashMovesCount = HashMoves.Count;
             var winCapturesCount = hashMovesCount + WinCaptures.Count;
             var tradesCount = winCapturesCount + Trades.Count;
-            var killersCount = tradesCount + _killers.Count;
-            int checksCount = killersCount+_suggested.Count;
+            var killersCount = tradesCount + _suggested.Count;
+            int checksCount = killersCount + _killers.Count;
+            //var killersCount = tradesCount + _killers.Count;
+            //int checksCount = killersCount + _suggested.Count;
             var nonCapturesCount = checksCount + LooseCaptures.Count;
             Count = nonCapturesCount + _nonCaptures.Count;
 
@@ -74,16 +76,16 @@ namespace Engine.DataStructures.Moves
                     Trades.Clear();
                 }
 
-                if (_killers.Count > 0)
-                {
-                    _killers.CopyTo(moves, tradesCount);
-                    _killers.Clear();
-                }
-
                 if (_suggested.Count > 0)
                 {
-                    _suggested.CopyTo(moves, killersCount);
+                    _suggested.CopyTo(moves, tradesCount);
                     _suggested.Clear();
+                }
+
+                if (_killers.Count > 0)
+                {
+                    _killers.CopyTo(moves, killersCount);
+                    _killers.Clear();
                 }
 
                 if (LooseCaptures.Count > 0)
@@ -97,7 +99,7 @@ namespace Engine.DataStructures.Moves
                     _nonCaptures.Sort(Comparer);
                     _nonCaptures.CopyTo(moves, nonCapturesCount);
                     _nonCaptures.Clear();
-                } 
+                }
             }
             else
             {
