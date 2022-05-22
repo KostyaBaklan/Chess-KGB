@@ -46,7 +46,7 @@ namespace Engine.Sorting.Sorters
             return moves;
         }
 
-        public void Add(MoveBase move)
+        public void Add(short move)
         {
             throw new NotSupportedException();
         }

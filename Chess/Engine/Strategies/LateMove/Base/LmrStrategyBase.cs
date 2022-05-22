@@ -14,6 +14,7 @@ namespace Engine.Strategies.LateMove.Base
     {
         protected int DepthReduction;
         protected int LmrDepthThreshold;
+        protected int DepthLateReduction;
 
         protected LmrStrategyBase(short depth, IPosition position, TranspositionTable table = null) : base(depth, position,table)
         {
@@ -22,19 +23,18 @@ namespace Engine.Strategies.LateMove.Base
                 .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthThreshold;
             DepthReduction = configurationProvider
                     .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthReduction;
+            DepthLateReduction = DepthReduction + 1;
         }
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-            
             Result result = new Result();
 
             MoveBase pv = pvMove;
             var key = Position.GetKey();
-            var isNotEndGame = Position.GetPhase() != Phase.End;
             if (pv == null)
             {
-                if (isNotEndGame && Table.TryGet(key, out var entry))
+                if (Table.TryGet(key, out var entry))
                 {
                     pv = GetPv(entry.PvMove);
                 }
@@ -131,8 +131,7 @@ namespace Engine.Strategies.LateMove.Base
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (isNotEndGame && Table.TryGet(key, out var entry))
+            if (Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -147,7 +146,7 @@ namespace Engine.Strategies.LateMove.Base
                 }
                 else
                 {
-                    shouldUpdate = true;
+                    shouldUpdate = Position.GetPhase() != Phase.End;
                 }
                 pv = GetPv(entry.PvMove);
             }
@@ -196,8 +195,7 @@ namespace Engine.Strategies.LateMove.Base
                     }
 
                     if (alpha < beta) continue;
-
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -224,8 +222,7 @@ namespace Engine.Strategies.LateMove.Base
                     }
 
                     if (alpha < beta) continue;
-
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -234,7 +231,7 @@ namespace Engine.Strategies.LateMove.Base
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue((byte) depth, (short) value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove.Key);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

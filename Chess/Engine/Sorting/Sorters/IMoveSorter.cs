@@ -9,6 +9,6 @@ namespace Engine.Sorting.Sorters
         //IMove[] Order(IEnumerable<AttackBase> attacks);
         MoveBase[] Order(AttackList attacks, MoveList moves, MoveBase pvNode);
         MoveBase[] Order(AttackList attacks);
-        void Add(MoveBase move);
+        void Add(short move);
     }
 }

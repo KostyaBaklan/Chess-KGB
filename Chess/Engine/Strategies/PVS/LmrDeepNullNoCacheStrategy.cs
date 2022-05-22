@@ -208,7 +208,7 @@ namespace Engine.Strategies.PVS
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -236,7 +236,7 @@ namespace Engine.Strategies.PVS
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }

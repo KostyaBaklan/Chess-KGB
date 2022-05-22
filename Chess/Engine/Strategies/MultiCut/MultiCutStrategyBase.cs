@@ -193,7 +193,7 @@ namespace Engine.Strategies.MultiCut
 
                 if (alpha < beta) continue;
 
-                Sorters[depth].Add(move);
+                Sorters[depth].Add(move.Key);
                 break;
             }
 
@@ -203,7 +203,7 @@ namespace Engine.Strategies.MultiCut
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue((byte) depth, (short) value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove.Key);
         }
     }
 }

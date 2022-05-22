@@ -30,15 +30,13 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-            
             Result result = new Result();
 
             MoveBase pv = pvMove;
             var key = Position.GetKey();
-            var isNotEndGame = Position.GetPhase() != Phase.End;
             if (pv == null)
             {
-                if (isNotEndGame && Table.TryGet(key, out var entry))
+                if (Table.TryGet(key, out var entry))
                 {
                     pv = GetPv(entry.PvMove);
                 }
@@ -92,7 +90,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                         int value;
                         if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
                         {
-                            var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                            var reduction = i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
@@ -145,8 +143,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (isNotEndGame && Table.TryGet(key, out var entry))
+            if (Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -175,7 +172,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
             var isWasCheck = MoveHistory.GetLastMove().IsCheck;
-            if (CanUseNull && !isWasCheck && isNotEndGame && depth > NullDepthReduction + NullDepthOffset &&
+            if (CanUseNull && !isWasCheck && Position.GetPhase()!=Phase.End && depth > NullDepthReduction + NullDepthOffset &&
                 IsValidWindow(alpha, beta))
             {
                 MakeNullMove();
@@ -187,7 +184,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                 }
             }
 
-            if (!isWasCheck && depth > DepthReduction + 1)
+            if (!isWasCheck && depth > DepthLateReduction)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
@@ -197,7 +194,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
                     int r;
                     if (IsLmr(i) && CanReduce(move))
                     {
-                        var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
+                        var reduction = i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
                         r = -Search(-beta, -alpha, depth - reduction);
                         if (r > alpha)
                         {
@@ -224,7 +221,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -252,7 +249,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move);
+                    Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -263,7 +260,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue((byte) depth, (short) value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove.Key);
         }
 
         protected int NullSearch(int alpha, int beta, int depth)
@@ -322,7 +319,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
                 if (alpha < beta) continue;
 
-                //Sorters[depth].Add(move);
+                //Sorters[depth].Add(move.Key);
                 break;
             }
             return value;

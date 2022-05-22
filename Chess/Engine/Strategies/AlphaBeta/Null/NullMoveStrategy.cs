@@ -182,7 +182,7 @@ namespace Engine.Strategies.AlphaBeta.Null
 
                 if (alpha < beta) continue;
 
-                Sorters[depth].Add(move);
+                Sorters[depth].Add(move.Key);
                 break;
             }
 
@@ -194,7 +194,7 @@ namespace Engine.Strategies.AlphaBeta.Null
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue((byte) depth, (short) value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove.Key);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
