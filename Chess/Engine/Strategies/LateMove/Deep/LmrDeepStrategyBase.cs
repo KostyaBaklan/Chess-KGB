@@ -193,7 +193,6 @@ namespace Engine.Strategies.LateMove.Deep
                     }
 
                     if (alpha < beta) continue;
-
                     Sorters[depth].Add(move);
                     break;
                 }
@@ -221,7 +220,6 @@ namespace Engine.Strategies.LateMove.Deep
                     }
 
                     if (alpha < beta) continue;
-
                     Sorters[depth].Add(move);
                     break;
                 }
@@ -231,7 +229,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue((byte) depth, (short) value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove.Key);
         }
     }
 }

@@ -224,7 +224,7 @@ namespace Engine.Strategies.PVS
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue((byte) depth, (short) value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove.Key);
         }
 
         #endregion

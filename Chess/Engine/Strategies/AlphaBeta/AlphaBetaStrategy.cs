@@ -83,7 +83,6 @@ namespace Engine.Strategies.AlphaBeta
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-            
             Result result = new Result();
 
             MoveBase pv = pvMove;
@@ -202,7 +201,6 @@ namespace Engine.Strategies.AlphaBeta
                 }
 
                 if (alpha < beta) continue;
-
                 Sorters[depth].Add(move);
                 break;
             }
@@ -213,15 +211,15 @@ namespace Engine.Strategies.AlphaBeta
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue((byte) depth, (short) value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove.Key);
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected int StoreValue(byte depth, short value, MoveBase bestMove)
+        protected int StoreValue(byte depth, short value, short bestMove)
         {
             TranspositionEntry te = new TranspositionEntry
-                {Depth = depth, Value = value, PvMove = bestMove.Key};
+                {Depth = depth, Value = value, PvMove = bestMove};
 
             Table.Set(Position.GetKey(), te);
 

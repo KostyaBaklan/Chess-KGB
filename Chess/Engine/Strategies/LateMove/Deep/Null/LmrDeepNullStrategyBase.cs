@@ -260,7 +260,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue((byte) depth, (short) value, bestMove);
+            return StoreValue((byte) depth, (short) value, bestMove.Key);
         }
 
         protected int NullSearch(int alpha, int beta, int depth)

@@ -216,9 +216,6 @@
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationExtendedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Null\LmrAspirationDeepNullExtendedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Null\LmrAspirationNullExtendedStrategy.cs" />
-    <Compile Include="Strategies\Aspiration\Original\AspirationDifferenceHistoryStrategy.cs" />
-    <Compile Include="Strategies\Aspiration\Original\AspirationDifferenceStrategy.cs" />
-    <Compile Include="Strategies\Aspiration\Original\AspirationHistoryDifferenceStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Original\AspirationHistoryStrategy.cs" />
     <Compile Include="Strategies\Base\ComplexStrategyBase.cs" />
     <Compile Include="Strategies\End\LmrNoCacheStrategy.cs" />
