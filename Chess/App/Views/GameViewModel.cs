@@ -20,6 +20,7 @@ using Engine.Models.Moves;
 using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Base;
 using Kgb.ChessApp.Models;
+using MathNet.Numerics.Statistics;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -29,9 +30,11 @@ namespace Kgb.ChessApp.Views
     public class GameViewModel : BindableBase, INavigationAware
     {
         private short _level;
+        private Turn _machine;
         private readonly double _blockTimeout;
         private Turn _turn = Turn.White;
         private List<MoveBase> _moves;
+        private Stack<TimeSpan> _times;
 
         private readonly IPosition _position;
         private StrategyBase _strategy;
@@ -43,6 +46,7 @@ namespace Kgb.ChessApp.Views
 
         public GameViewModel(IMoveFormatter moveFormatter)
         {
+            _times = new Stack<TimeSpan>();
             _blockTimeout = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
                 .GeneralConfiguration.BlockTimeout;
             _moveFormatter = moveFormatter;
@@ -156,6 +160,38 @@ namespace Kgb.ChessApp.Views
         {
             get => _title;
             set => SetProperty(ref _title, value);
+        }
+
+        private TimeSpan _maximum;
+
+        public TimeSpan Maximum
+        {
+            get => _maximum;
+            set => SetProperty(ref _maximum, value);
+        }
+
+        private TimeSpan _minimum;
+
+        public TimeSpan Minimum
+        {
+            get => _minimum;
+            set => SetProperty(ref _minimum, value);
+        }
+
+        private TimeSpan _average;
+
+        public TimeSpan Average
+        {
+            get => _average;
+            set => SetProperty(ref _average, value);
+        }
+
+        private TimeSpan _std;
+
+        public TimeSpan Std
+        {
+            get => _std;
+            set => SetProperty(ref _std, value);
         }
 
         public ObservableCollection<MoveModel> MoveItems { get; }
@@ -279,6 +315,12 @@ namespace Kgb.ChessApp.Views
             UpdateView();
 
             _turn = _position.GetTurn();
+
+            if (_useMachine && _machine == _turn)
+            {
+                _times.Pop();
+                UpdateTime();
+            }
         }
 
         private bool SelectionCommandCanExecute(CellViewModel arg)
@@ -346,6 +388,8 @@ namespace Kgb.ChessApp.Views
         {
             if (!_useMachine) return;
 
+            _machine = _position.GetTurn();
+
             Task.Delay(10)
                 .ContinueWith(t =>
                 {
@@ -376,6 +420,9 @@ namespace Kgb.ChessApp.Views
                         }
                         if (tResult != null)
                         {
+                            _times.Push(tResult.Item2);
+                            UpdateTime();
+
                             MessageBox.Show($"Elapsed = {tResult.Item2} !");
                             switch (t.Result.Item1.GameResult)
                             {
@@ -402,6 +449,27 @@ namespace Kgb.ChessApp.Views
                     },
                     CancellationToken.None, TaskContinuationOptions.LongRunning,
                     TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        private void UpdateTime()
+        {
+            if (_times.Any())
+            {
+                Maximum = _times.Max();
+                Minimum = _times.Min();
+
+                var enumerable = _times.Select(t => t.TotalMilliseconds).ToList();
+                Average = TimeSpan.FromMilliseconds(enumerable.Average());
+                var standardDeviation = enumerable.StandardDeviation();
+                if (!double.IsNaN(standardDeviation))
+                {
+                    Std = TimeSpan.FromMilliseconds(standardDeviation);  
+                }
+            }
+            else
+            {
+                Maximum = Minimum = Average = Std = TimeSpan.Zero;
+            }
         }
 
         private IEnumerable<MoveBase> GetAllMoves(Square cell, Piece piece)
