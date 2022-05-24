@@ -44,6 +44,7 @@ namespace Common
             container.RegisterInstance(tableConfigurationProvider);
 
             container.RegisterSingleton(typeof(IMoveProvider), typeof(MoveProvider));
+            container.RegisterSingleton(typeof(IMoveSorterProvider), typeof(MoveSorterProvider));
             container.RegisterSingleton(typeof(IMoveFormatter), typeof(MoveFormatter));
             container.RegisterSingleton(typeof(IMoveHistoryService), typeof(MoveHistoryService));
             container.RegisterSingleton(typeof(IEvaluationService), typeof(EvaluationService));

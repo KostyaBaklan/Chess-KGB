@@ -164,6 +164,7 @@
     <Compile Include="Services\MoveFormatter.cs" />
     <Compile Include="Services\MoveHistoryService.cs" />
     <Compile Include="Services\MoveProvider.cs" />
+    <Compile Include="Services\MoveSorterProvider.cs" />
     <Compile Include="Services\OpeningService.cs" />
     <Compile Include="Sorting\Comparers\AttackSeeComparer.cs" />
     <Compile Include="Sorting\Comparers\DifferenceComparer.cs" />
@@ -176,6 +177,7 @@
     <Compile Include="Sorting\Comparers\AttackComparer.cs" />
     <Compile Include="Sorting\Sorters\AttackSorter.cs" />
     <Compile Include="Sorting\Sorters\BasicSorter.cs" />
+    <Compile Include="Sorting\Sorters\BasicSorterPlus.cs" />
     <Compile Include="Sorting\Sorters\ComplexSorter.cs" />
     <Compile Include="Sorting\Sorters\ExtendedSorter.cs" />
     <Compile Include="Sorting\Sorters\IMoveSorter.cs" />
@@ -211,6 +213,7 @@
     <Compile Include="Strategies\Aspiration\AspirationStrategyBase.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationAdvancedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepAdvancedStrategy.cs" />
+    <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepBasicPlusStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepBasicStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepExtendedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationExtendedStrategy.cs" />
@@ -235,6 +238,7 @@
     <Compile Include="Strategies\LateMove\Base\Null\LmrNullBasicStrategy.cs" />
     <Compile Include="Strategies\LateMove\Base\Null\LmrNullExtendedStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\LmrDeepAdvancedStrategy.cs" />
+    <Compile Include="Strategies\LateMove\Deep\LmrDeepBasicPlusStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\LmrDeepBasicStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\LmrDeepExtendedStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\LmrDeepStrategyBase.cs" />

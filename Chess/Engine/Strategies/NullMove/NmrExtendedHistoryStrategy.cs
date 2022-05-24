@@ -1,6 +1,5 @@
 ﻿using Engine.Interfaces;
 using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 
 namespace Engine.Strategies.NullMove
 {
@@ -8,7 +7,7 @@ namespace Engine.Strategies.NullMove
     {
         public NmrExtendedHistoryStrategy(short depth, IPosition position) : base(depth, position)
         {
-            InitializeSorters(depth, position, new ExtendedSorter(position, new HistoryComparer()));
+            InitializeSorters(depth, position, MoveSorterProvider.GetExtended(position, new HistoryComparer()));
         }
     }
 }

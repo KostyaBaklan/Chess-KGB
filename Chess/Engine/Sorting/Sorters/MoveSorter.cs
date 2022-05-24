@@ -140,7 +140,6 @@ namespace Engine.Sorting.Sorters
                 }
             }
 
-            if (attackList.Count <= 0) return;
             if (attackList.Count > 1)
             {
                 attackList.SortBySee();

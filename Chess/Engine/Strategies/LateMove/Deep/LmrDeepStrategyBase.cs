@@ -127,7 +127,8 @@ namespace Engine.Strategies.LateMove.Deep
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            if (Table.TryGet(key, out var entry))
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (isNotEndGame && Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -156,7 +157,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (depth < DepthLateReduction || MoveHistory.GetLastMove().IsCheck)
+            if (depth <= DepthLateReduction || MoveHistory.GetLastMove().IsCheck)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
@@ -183,7 +184,7 @@ namespace Engine.Strategies.LateMove.Deep
                     break;
                 }
             }
-            else
+            else if (isNotEndGame)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
@@ -223,10 +224,49 @@ namespace Engine.Strategies.LateMove.Deep
                     break;
                 }
             }
+            else
+            {
+                for (var i = 0; i < moves.Length; i++)
+                {
+                    var move = moves[i];
+                    Position.Make(move);
+
+                    int r;
+                    if (IsLmr(i) && CanReduce(move))
+                    {
+                        r = -Search(-beta, -alpha, depth - DepthReduction);
+                        if (r > alpha)
+                        {
+                            r = -Search(-beta, -alpha, depth - 1);
+                        }
+                    }
+                    else
+                    {
+                        r = -Search(-beta, -alpha, depth - 1);
+                    }
+
+                    if (r > value)
+                    {
+                        value = r;
+                        bestMove = move;
+                    }
+
+                    Position.UnMake();
+
+                    if (value > alpha)
+                    {
+                        alpha = value;
+                    }
+
+                    if (alpha < beta) continue;
+                    Sorters[depth].Add(move.Key);
+                    break;
+                }
+            }
 
             bestMove.History += 1 << depth;
 
-            if (isInTable && !shouldUpdate) return value;
+            if (isInTable && !shouldUpdate||!isNotEndGame) return value;
 
             return StoreValue((byte) depth, (short) value, bestMove.Key);
         }

@@ -3,7 +3,6 @@ using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 using Engine.Strategies.LateMove.Base;
 
 namespace OpeningTool
@@ -16,7 +15,7 @@ namespace OpeningTool
         public OpeningStrategy(short depth, IPosition position) : base(depth,position)
         {
             _filter = new MoveFilter(MoveProvider);
-            InitializeSorters(depth, position, new ExtendedSorter(position, new HistoryComparer()));
+            InitializeSorters(depth, position, MoveSorterProvider.GetExtended(position, new HistoryComparer()));
             OpeningSorter = new OpeningSorter(position, new HistoryComparer());
         }
 

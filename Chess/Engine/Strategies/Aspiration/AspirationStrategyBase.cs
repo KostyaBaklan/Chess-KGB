@@ -72,7 +72,6 @@ namespace Engine.Strategies.Aspiration
             {
                 var alpha = result.Value - AspirationWindow;
                 var beta = result.Value + AspirationWindow;
-
                 result = InternalStrategy.GetResult(alpha, beta, d, result.Move);
                 if (result.Value >= beta)
                 {

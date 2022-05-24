@@ -29,6 +29,7 @@ namespace Engine.Strategies.Base
         protected IEvaluationService EvaluationService;
         protected readonly IMoveHistoryService MoveHistory;
         protected readonly IMoveProvider MoveProvider;
+        protected readonly IMoveSorterProvider MoveSorterProvider;
         protected bool UseAging;
         private LmrNoCacheStrategy _endGameStrategy;
 
@@ -57,6 +58,7 @@ namespace Engine.Strategies.Base
             EvaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
             MoveHistory = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
             MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+            MoveSorterProvider = ServiceLocator.Current.GetInstance<IMoveSorterProvider>();
 
             InitializeFutilityMargins();
         }
@@ -74,9 +76,9 @@ namespace Engine.Strategies.Base
             Sorters = new IMoveSorter[depth + 2];
 
             var comparer = new HistoryComparer();
-            var initialSorter = new InitialSorter(position, comparer);
+            var initialSorter = MoveSorterProvider.GetInitial(position, comparer);
             //Sorters[0] = new AttackSorter(position.GetBoard());
-            Sorters[0] = new BasicSorter(position, comparer);
+            Sorters[0] = MoveSorterProvider.GetBasic(position, comparer);
 
             var d = depth - 1;
             for (int i = 1; i < d; i++)

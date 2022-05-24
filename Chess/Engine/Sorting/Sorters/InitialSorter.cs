@@ -12,7 +12,7 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters
 {
-    public class InitialSorter : MoveSorter
+    public abstract class InitialSorter : MoveSorter
     {
         protected readonly PositionsList PositionsList;
         protected readonly AttackList AttackList;
@@ -20,98 +20,14 @@ namespace Engine.Sorting.Sorters
 
         protected readonly IMoveProvider MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
-        public InitialSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
+        protected InitialSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
         {
             PositionsList = new PositionsList();
             AttackList = new AttackList();
-
-            InitialMoveCollection = new InitialMoveCollection(comparer);
             Comparer = comparer;
         }
 
         #region Overrides of MoveSorter
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves)
-        {
-            OrderAttacks(InitialMoveCollection, attacks);
-
-            for (var index = 0; index < moves.Count; index++)
-            {
-                var move = moves[index];
-                if (CurrentKillers.Contains(move.Key))
-                {
-                    InitialMoveCollection.AddKillerMove(move);
-                }
-                else if (move.IsCastle || move.IsPromotion)
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                }
-                else
-                {
-                    ProcessMove(move);
-                }
-            }
-
-            return InitialMoveCollection.Build();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            MoveBase pvNode)
-        {
-            if (pvNode is AttackBase attack)
-            {
-                OrderAttacks(InitialMoveCollection, attacks, attack);
-
-                for (var index = 0; index < moves.Count; index++)
-                {
-                    var move = moves[index];
-                    if (CurrentKillers.Contains(move.Key))
-                    {
-                        InitialMoveCollection.AddKillerMove(move);
-                    }
-                    else if (move.IsCastle || move.IsPromotion)
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                    }
-                    else
-                    {
-                        ProcessMove(move);
-                    }
-                }
-            }
-            else
-            {
-                OrderAttacks(InitialMoveCollection, attacks);
-
-                for (var index = 0; index < moves.Count; index++)
-                {
-                    var move = moves[index];
-                    if (move.Key == pvNode.Key)
-                    {
-                        InitialMoveCollection.AddHashMove(move);
-                    }
-                    else
-                    {
-                        if (CurrentKillers.Contains(move.Key))
-                        {
-                            InitialMoveCollection.AddKillerMove(move);
-                        }
-                        else if (move.IsCastle || move.IsPromotion)
-                        {
-                            InitialMoveCollection.AddSuggested(move);
-                        }
-                        else
-                        {
-                            ProcessMove(move);
-                        }
-                    }
-                }
-            }
-
-            return InitialMoveCollection.Build();
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void ProcessMove(MoveBase move)
@@ -224,7 +140,7 @@ namespace Engine.Sorting.Sorters
                     throw new ArgumentOutOfRangeException();
             }
 
-            Position.Do(move);
+            Position.Make(move);
             try
             {
                 if (move.Piece.IsWhite())
@@ -278,11 +194,11 @@ namespace Engine.Sorting.Sorters
             }
             finally
             {
-                Position.UnDo(move);
+                Position.UnMake();
             }
         }
 
-        private bool WhiteRookUnderAttack(MoveBase move)
+        protected bool WhiteRookUnderAttack(MoveBase move)
         {
             var pieceBits = Board.GetPieceBits(Piece.WhiteRook);
             if (!pieceBits.Any()) return false;
@@ -303,7 +219,7 @@ namespace Engine.Sorting.Sorters
             return false;
         }
 
-        private bool BlackRookUnderAttack(MoveBase move)
+        protected bool BlackRookUnderAttack(MoveBase move)
         {
             var pieceBits = Board.GetPieceBits(Piece.BlackRook);
             if (!pieceBits.Any()) return false;
@@ -324,7 +240,7 @@ namespace Engine.Sorting.Sorters
             return false;
         }
 
-        private bool BlackQueenUnderAttack(MoveBase move)
+        protected bool BlackQueenUnderAttack(MoveBase move)
         {
             var pieceBits = Board.GetPieceBits(Piece.BlackQueen);
             if (!pieceBits.Any()) return false;
@@ -346,7 +262,7 @@ namespace Engine.Sorting.Sorters
             return false;
         }
 
-        private bool WhiteQueenUnderAttack(MoveBase move)
+        protected bool WhiteQueenUnderAttack(MoveBase move)
         {
             var pieceBits = Board.GetPieceBits(Piece.WhiteQueen);
             if (!pieceBits.Any()) return false;
@@ -431,6 +347,34 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void ProcessPromotion(MoveBase move)
+        {
+            var value = Position.GetValue();
+
+            Position.Make(move);
+            try
+            {
+                var promotionValue = -Evaluate(-10000, 10000);
+                if (promotionValue > value)
+                {
+                    InitialMoveCollection.AddWinCapture(move);
+                }
+                else if(value > promotionValue)
+                {
+                    InitialMoveCollection.AddLooseCapture(move);
+                }
+                else
+                {
+                    InitialMoveCollection.AddTrade(move);
+                }
+            }
+            finally
+            {
+                Position.UnMake();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool IsBadSee(MoveBase move, BitBoard attackTo,
             Piece piece)
         {
@@ -456,6 +400,249 @@ namespace Engine.Sorting.Sorters
             }
 
             return false;
+        }
+
+        protected int Evaluate(int alpha, int beta)
+        {
+            int standPat = Position.GetValue();
+            if (standPat >= beta)
+            {
+                return beta;
+            }
+
+            if (alpha < standPat)
+                alpha = standPat;
+
+            var moves = Position.GetAllAttacks(this);
+            for (var i = 0; i < moves.Length; i++)
+            {
+                var move = moves[i];
+                Position.Make(move);
+
+                int score = -Evaluate(-beta, -alpha);
+
+                Position.UnMake();
+
+                if (score >= beta)
+                {
+                    return beta;
+                }
+
+                if (score > alpha)
+                    alpha = score;
+            }
+
+            return alpha;
+        }
+
+        #endregion
+    }
+    public class InitialKillerSorter : InitialSorter
+    {
+        public InitialKillerSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
+        {
+            InitialMoveCollection = new InitialKillerMoveCollection(comparer);
+        }
+
+        #region Overrides of MoveSorter
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves)
+        {
+            OrderAttacks(InitialMoveCollection, attacks);
+
+            for (var index = 0; index < moves.Count; index++)
+            {
+                var move = moves[index];
+                if (move.IsPromotion)
+                {
+                    ProcessPromotion(move);
+                }
+                else if (CurrentKillers.Contains(move.Key))
+                {
+                    InitialMoveCollection.AddKillerMove(move);
+                }
+                else if (move.IsCastle)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                }
+                else
+                {
+                    ProcessMove(move);
+                }
+            }
+
+            return InitialMoveCollection.Build();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
+            MoveBase pvNode)
+        {
+            if (pvNode is AttackBase attack)
+            {
+                OrderAttacks(InitialMoveCollection, attacks, attack);
+
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.IsPromotion)
+                    {
+                        ProcessPromotion(move);
+                    }
+                    else if (CurrentKillers.Contains(move.Key))
+                    {
+                        InitialMoveCollection.AddKillerMove(move);
+                    }
+                    else if (move.IsCastle)
+                    {
+                        InitialMoveCollection.AddSuggested(move);
+                    }
+                    else
+                    {
+                        ProcessMove(move);
+                    }
+                }
+            }
+            else
+            {
+                OrderAttacks(InitialMoveCollection, attacks);
+
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.Key == pvNode.Key)
+                    {
+                        InitialMoveCollection.AddHashMove(move);
+                    }
+                    else
+                    {
+                        if (move.IsPromotion)
+                        {
+                            ProcessPromotion(move);
+                        }
+                        else if (CurrentKillers.Contains(move.Key))
+                        {
+                            InitialMoveCollection.AddKillerMove(move);
+                        }
+                        else if (move.IsCastle)
+                        {
+                            InitialMoveCollection.AddSuggested(move);
+                        }
+                        else
+                        {
+                            ProcessMove(move);
+                        }
+                    }
+                }
+            }
+
+            return InitialMoveCollection.Build();
+        }
+
+        #endregion
+    }
+    public class InitialSuggestedSorter : InitialSorter
+    {
+        public InitialSuggestedSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
+        {
+            InitialMoveCollection = new InitialSuggestedMoveCollection(comparer);
+        }
+
+        #region Overrides of MoveSorter
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves)
+        {
+            OrderAttacks(InitialMoveCollection, attacks);
+
+            for (var index = 0; index < moves.Count; index++)
+            {
+                var move = moves[index];
+                if (move.IsPromotion)
+                {
+                    ProcessPromotion(move);
+                }
+                else if (move.IsCastle)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                }
+                else if (CurrentKillers.Contains(move.Key))
+                {
+                    InitialMoveCollection.AddKillerMove(move);
+                }
+                else
+                {
+                    ProcessMove(move);
+                }
+            }
+
+            return InitialMoveCollection.Build();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
+            MoveBase pvNode)
+        {
+            if (pvNode is AttackBase attack)
+            {
+                OrderAttacks(InitialMoveCollection, attacks, attack);
+
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.IsPromotion)
+                    {
+                        ProcessPromotion(move);
+                    }
+                    else if (move.IsCastle)
+                    {
+                        InitialMoveCollection.AddSuggested(move);
+                    }
+                    else if (CurrentKillers.Contains(move.Key))
+                    {
+                        InitialMoveCollection.AddKillerMove(move);
+                    }
+                    else
+                    {
+                        ProcessMove(move);
+                    }
+                }
+            }
+            else
+            {
+                OrderAttacks(InitialMoveCollection, attacks);
+
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.Key == pvNode.Key)
+                    {
+                        InitialMoveCollection.AddHashMove(move);
+                    }
+                    else
+                    {
+                        if (move.IsPromotion)
+                        {
+                            ProcessPromotion(move);
+                        }
+                        else if (CurrentKillers.Contains(move.Key))
+                        {
+                            InitialMoveCollection.AddKillerMove(move);
+                        }
+                        else if (move.IsCastle)
+                        {
+                            InitialMoveCollection.AddSuggested(move);
+                        }
+                        else
+                        {
+                            ProcessMove(move);
+                        }
+                    }
+                }
+            }
+
+            return InitialMoveCollection.Build();
         }
 
         #endregion
