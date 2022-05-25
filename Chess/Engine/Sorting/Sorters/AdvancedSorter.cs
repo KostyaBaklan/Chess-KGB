@@ -2,6 +2,7 @@
 using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Moves;
+using Engine.DataStructures.Moves.Collections;
 using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;

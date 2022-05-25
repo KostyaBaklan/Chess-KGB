@@ -21,6 +21,7 @@ namespace Engine.Strategies.Base
         protected int FutilityDepth;
         protected bool UseFutility;
         protected int MaxEndGameDepth;
+        protected int SortDepth;
         protected int[][] Margins;
 
         protected IPosition Position;
@@ -43,6 +44,8 @@ namespace Engine.Strategies.Base
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
             MaxEndGameDepth = configurationProvider
                 .AlgorithmConfiguration.MaxEndGameDepth;
+            SortDepth = configurationProvider
+                .GeneralConfiguration.SortDepth;
             SearchValue = configurationProvider
                 .Evaluation.Static.Mate;
             ThreefoldRepetitionValue = configurationProvider
@@ -80,7 +83,7 @@ namespace Engine.Strategies.Base
             //Sorters[0] = new AttackSorter(position.GetBoard());
             Sorters[0] = MoveSorterProvider.GetBasic(position, comparer);
 
-            var d = depth - 1;
+            var d = depth - SortDepth;
             for (int i = 1; i < d; i++)
             {
                 Sorters[i] = mainSorter;

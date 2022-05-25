@@ -15,7 +15,7 @@ namespace Engine.Services
 
         public MoveSorter GetInitial(IPosition position, IMoveComparer comparer)
         {
-            return new InitialSuggestedSorter(position, comparer);
+            return new InitialKillerSorter(position, comparer);
         }
 
         public MoveSorter GetExtended(IPosition position, IMoveComparer comparer)

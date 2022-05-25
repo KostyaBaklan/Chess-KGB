@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures.Moves;
+using Engine.DataStructures.Moves.Collections;
 using Engine.Interfaces;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;

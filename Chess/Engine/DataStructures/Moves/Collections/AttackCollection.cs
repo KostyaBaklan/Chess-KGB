@@ -2,7 +2,7 @@
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
-namespace Engine.DataStructures.Moves
+namespace Engine.DataStructures.Moves.Collections
 {
     public class AttackCollection : MoveCollectionBase
     {
