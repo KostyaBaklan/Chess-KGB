@@ -2,53 +2,12 @@
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
-namespace Engine.DataStructures.Moves
+namespace Engine.DataStructures.Moves.Collections.Initial
 {
-    public class InitialMoveCollection : AttackCollection
+    public class InitialSuggestedMoveCollection : InitialMoveCollection
     {
-        private readonly MoveList _killers;
-        private readonly MoveList _nonCaptures;
-        private readonly MoveList _notSuggested;
-        private readonly MoveList _suggested;
-        private readonly MoveList _bad;
-
-        public InitialMoveCollection(IMoveComparer comparer) : base(comparer)
+        public InitialSuggestedMoveCollection(IMoveComparer comparer) : base(comparer)
         {
-            _killers = new MoveList();
-            _nonCaptures = new MoveList();
-            _notSuggested = new MoveList();
-            _suggested = new MoveList();
-            _bad = new MoveList();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddKillerMove(MoveBase move)
-        {
-            _killers.Add(move);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddSuggested(MoveBase move)
-        {
-            _suggested.Add(move);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddNonCapture(MoveBase move)
-        {
-            _nonCaptures.Add(move);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddNonSuggested(MoveBase move)
-        {
-            _notSuggested.Add(move);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddBad(MoveBase move)
-        {
-            _bad.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -122,7 +81,7 @@ namespace Engine.DataStructures.Moves
                 {
                     _bad.CopyTo(moves, notSuggestedCount);
                     _bad.Clear();
-                } 
+                }
             }
             else
             {

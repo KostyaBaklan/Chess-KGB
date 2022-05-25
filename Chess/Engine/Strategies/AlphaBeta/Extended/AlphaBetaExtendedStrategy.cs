@@ -1,7 +1,6 @@
 ﻿using Engine.DataStructures.Hash;
 using Engine.Interfaces;
 using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 
 namespace Engine.Strategies.AlphaBeta.Extended
 {
@@ -9,7 +8,7 @@ namespace Engine.Strategies.AlphaBeta.Extended
     {
         protected AlphaBetaExtendedStrategy(short depth, IPosition position, IMoveComparer comparer, TranspositionTable table = null) : base(depth, position, table)
         {
-            InitializeSorters(depth, position, new ExtendedSorter(position, comparer));
+            InitializeSorters(depth, position, MoveSorterProvider.GetExtended(position, comparer));
         }
     }
 }

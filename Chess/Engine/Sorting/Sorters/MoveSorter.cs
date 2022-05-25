@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures.Moves;
+using Engine.DataStructures.Moves.Collections;
 using Engine.Interfaces;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
@@ -140,7 +141,6 @@ namespace Engine.Sorting.Sorters
                 }
             }
 
-            if (attackList.Count <= 0) return;
             if (attackList.Count > 1)
             {
                 attackList.SortBySee();

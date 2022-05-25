@@ -45,6 +45,7 @@ namespace Kgb.ChessApp
             containerRegistry.RegisterInstance(tableConfigurationProvider);
 
             containerRegistry.RegisterSingleton(typeof(IMoveProvider), typeof(MoveProvider));
+            containerRegistry.RegisterSingleton(typeof(IMoveSorterProvider), typeof(MoveSorterProvider));
             containerRegistry.RegisterSingleton(typeof(IMoveFormatter), typeof(MoveFormatter));
             containerRegistry.RegisterSingleton(typeof(IMoveHistoryService), typeof(MoveHistoryService));
             containerRegistry.RegisterSingleton(typeof(IEvaluationService), typeof(EvaluationService));

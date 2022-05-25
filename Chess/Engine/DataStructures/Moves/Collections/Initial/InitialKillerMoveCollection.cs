@@ -2,29 +2,12 @@
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
-namespace Engine.DataStructures.Moves
+namespace Engine.DataStructures.Moves.Collections.Initial
 {
-    public class MoveCollection: AttackCollection
+    public class InitialKillerMoveCollection : InitialMoveCollection
     {
-        private readonly MoveList _killers;
-        private readonly MoveList _nonCaptures;
-
-        public MoveCollection(IMoveComparer comparer) : base(comparer)
+        public InitialKillerMoveCollection(IMoveComparer comparer) : base(comparer)
         {
-            _killers = new MoveList();
-            _nonCaptures = new MoveList();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddKillerMove(MoveBase move)
-        {
-            _killers.Add(move);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddNonCapture(MoveBase move)
-        {
-            _nonCaptures.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -34,11 +17,14 @@ namespace Engine.DataStructures.Moves
             var winCapturesCount = hashMovesCount + WinCaptures.Count;
             var tradesCount = winCapturesCount + Trades.Count;
             var killersCount = tradesCount + _killers.Count;
-            var nonCapturesCount = killersCount + LooseCaptures.Count;
-            Count = nonCapturesCount + _nonCaptures.Count;
+            var suggestedCount = killersCount + _suggested.Count;
+            var looseCapturesCount = suggestedCount + LooseCaptures.Count;
+            var nonCapturesCount = looseCapturesCount + _nonCaptures.Count;
+            var notSuggestedCount = nonCapturesCount + _notSuggested.Count;
+            Count = notSuggestedCount + _bad.Count;
 
             MoveBase[] moves = new MoveBase[Count];
-            if (killersCount > 0)
+            if (suggestedCount > 0)
             {
                 if (hashMovesCount > 0)
                 {
@@ -64,17 +50,37 @@ namespace Engine.DataStructures.Moves
                     _killers.Clear();
                 }
 
+                if (_suggested.Count > 0)
+                {
+                    _suggested.FullSort(Comparer);
+                    _suggested.CopyTo(moves, killersCount);
+                    _suggested.Clear();
+                }
+
                 if (LooseCaptures.Count > 0)
                 {
-                    LooseCaptures.CopyTo(moves, killersCount);
+                    LooseCaptures.CopyTo(moves, suggestedCount);
                     LooseCaptures.Clear();
                 }
 
                 if (_nonCaptures.Count > 0)
                 {
-                    _nonCaptures.Sort(Comparer);
-                    _nonCaptures.CopyTo(moves, nonCapturesCount);
+                    _nonCaptures.FullSort(Comparer);
+                    _nonCaptures.CopyTo(moves, looseCapturesCount);
                     _nonCaptures.Clear();
+                }
+
+                if (_notSuggested.Count > 0)
+                {
+                    _notSuggested.FullSort(Comparer);
+                    _notSuggested.CopyTo(moves, nonCapturesCount);
+                    _notSuggested.Clear();
+                }
+
+                if (_bad.Count > 0)
+                {
+                    _bad.CopyTo(moves, notSuggestedCount);
+                    _bad.Clear();
                 }
             }
             else
@@ -82,7 +88,7 @@ namespace Engine.DataStructures.Moves
                 var capturesCount = _nonCaptures.Count;
                 if (capturesCount > 0)
                 {
-                    _nonCaptures.Sort(Comparer);
+                    _nonCaptures.FullSort(Comparer);
                     _nonCaptures.CopyTo(moves, 0);
                     _nonCaptures.Clear();
                 }
@@ -90,6 +96,19 @@ namespace Engine.DataStructures.Moves
                 {
                     LooseCaptures.CopyTo(moves, capturesCount);
                     LooseCaptures.Clear();
+                }
+
+                if (_notSuggested.Count > 0)
+                {
+                    _notSuggested.FullSort(Comparer);
+                    _notSuggested.CopyTo(moves, nonCapturesCount);
+                    _notSuggested.Clear();
+                }
+
+                if (_bad.Count > 0)
+                {
+                    _bad.CopyTo(moves, notSuggestedCount);
+                    _bad.Clear();
                 }
             }
 

@@ -5,7 +5,7 @@ using Engine.Models.Enums;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
-namespace Engine.Sorting.Sorters
+namespace Engine.Sorting.Sorters.Basic
 {
     public class BasicSorter : MoveSorter
     {

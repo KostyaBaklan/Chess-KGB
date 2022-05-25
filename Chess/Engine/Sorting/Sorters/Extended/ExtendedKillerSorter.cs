@@ -1,52 +1,22 @@
 ﻿using System.Runtime.CompilerServices;
 using Engine.DataStructures.Moves;
+using Engine.DataStructures.Moves.Collections.Extended;
 using Engine.Interfaces;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
-namespace Engine.Sorting.Sorters
+namespace Engine.Sorting.Sorters.Extended
 {
-    public class ExtendedSorter : MoveSorter
+    public class ExtendedKillerSorter : ExtendedSorter
     {
-        protected ExtendedMoveCollection ExtendedMoveCollection;
-        public ExtendedSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
+        public ExtendedKillerSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
         {
-            ExtendedMoveCollection = new ExtendedMoveCollection(comparer);
+            ExtendedMoveCollection = new ExtendedKillerMoveCollection(comparer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves)
-        {
-           OrderAttacks(ExtendedMoveCollection, attacks);
-
-            ProcessMoves(moves);
-
-            return ExtendedMoveCollection.Build();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves,
-            MoveBase pvNode)
-        {
-            if (pvNode is AttackBase attack)
-            {
-                OrderAttacks(ExtendedMoveCollection, attacks, attack);
-
-                ProcessMoves(moves);
-            }
-            else
-            {
-                OrderAttacks(ExtendedMoveCollection, attacks);
-
-                ProcessMoves(moves, pvNode);
-            }
-
-            return ExtendedMoveCollection.Build();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ProcessMoves(MoveList moves)
+        protected override void ProcessMoves(MoveList moves)
         {
             if (Position.GetTurn() == Turn.White)
             {
@@ -61,7 +31,7 @@ namespace Engine.Sorting.Sorters
                             {
                                 ExtendedMoveCollection.AddKillerMove(move);
                             }
-                            else if (move.IsCastle || move.IsPromotion)
+                            else if (move.IsCastle|| move.IsPromotion)
                             {
                                 ExtendedMoveCollection.AddSuggested(move);
                             }
@@ -142,7 +112,7 @@ namespace Engine.Sorting.Sorters
                             {
                                 ExtendedMoveCollection.AddKillerMove(move);
                             }
-                            else if (move.IsCastle || move.IsPromotion)
+                            else if (move.IsCastle|| move.IsPromotion)
                             {
                                 ExtendedMoveCollection.AddSuggested(move);
                             }
@@ -213,7 +183,7 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ProcessMoves(MoveList moves,  MoveBase pvNode)
+        protected override void ProcessMoves(MoveList moves, MoveBase pvNode)
         {
             if (Position.GetTurn() == Turn.White)
             {
@@ -230,11 +200,15 @@ namespace Engine.Sorting.Sorters
                             }
                             else
                             {
-                                if (CurrentKillers.Contains(move.Key))
+                                if (move.IsPromotion)
+                                {
+                                    ExtendedMoveCollection.AddTrade(move);
+                                }
+                                else if (CurrentKillers.Contains(move.Key))
                                 {
                                     ExtendedMoveCollection.AddKillerMove(move);
                                 }
-                                else if (move.IsCastle || move.IsPromotion)
+                                else if (move.IsCastle)
                                 {
                                     ExtendedMoveCollection.AddSuggested(move);
                                 }
@@ -285,11 +259,15 @@ namespace Engine.Sorting.Sorters
                             }
                             else
                             {
-                                if (CurrentKillers.Contains(move.Key))
+                                if (move.IsPromotion)
+                                {
+                                    ExtendedMoveCollection.AddTrade(move);
+                                }
+                                else if (CurrentKillers.Contains(move.Key))
                                 {
                                     ExtendedMoveCollection.AddKillerMove(move);
                                 }
-                                else if (move.IsPromotion)
+                                else if (move.IsCastle)
                                 {
                                     ExtendedMoveCollection.AddSuggested(move);
                                 }
@@ -343,7 +321,7 @@ namespace Engine.Sorting.Sorters
                                 {
                                     ExtendedMoveCollection.AddKillerMove(move);
                                 }
-                                else if (move.IsCastle || move.IsPromotion)
+                                else if (move.IsCastle|| move.IsPromotion)
                                 {
                                     ExtendedMoveCollection.AddSuggested(move);
                                 }

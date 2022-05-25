@@ -21,6 +21,7 @@ namespace Engine.Strategies.LateMove.Deep
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
+
             Result result = new Result();
 
             MoveBase pv = pvMove;
@@ -40,7 +41,8 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (moves.Length > 1)
             {
-                if (MoveHistory.GetLastMove().IsCheck || !isNotEndGame)
+                var isCheck = MoveHistory.GetLastMove().IsCheck;
+                if (isCheck)
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
@@ -75,7 +77,7 @@ namespace Engine.Strategies.LateMove.Deep
                         int value;
                         if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
                         {
-                            var reduction =  i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
+                            var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
@@ -127,7 +129,8 @@ namespace Engine.Strategies.LateMove.Deep
             bool shouldUpdate = false;
             bool isInTable = false;
 
-            if (Table.TryGet(key, out var entry))
+            var isNotEndGame = Position.GetPhase() != Phase.End;
+            if (isNotEndGame && Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -179,6 +182,47 @@ namespace Engine.Strategies.LateMove.Deep
                     }
 
                     if (alpha < beta) continue;
+
+                    Sorters[depth].Add(move.Key);
+                    break;
+                }
+            }
+            else if (!isNotEndGame || depth == DepthLateReduction)
+            {
+                for (var i = 0; i < moves.Length; i++)
+                {
+                    var move = moves[i];
+                    Position.Make(move);
+
+                    int r;
+                    if (IsLmr(i) && CanReduce(move))
+                    {
+                        r = -Search(-beta, -alpha, depth - DepthReduction);
+                        if (r > alpha)
+                        {
+                            r = -Search(-beta, -alpha, depth - 1);
+                        }
+                    }
+                    else
+                    {
+                        r = -Search(-beta, -alpha, depth - 1);
+                    }
+
+                    if (r > value)
+                    {
+                        value = r;
+                        bestMove = move;
+                    }
+
+                    Position.UnMake();
+
+                    if (value > alpha)
+                    {
+                        alpha = value;
+                    }
+
+                    if (alpha < beta) continue;
+
                     Sorters[depth].Add(move.Key);
                     break;
                 }
@@ -219,6 +263,7 @@ namespace Engine.Strategies.LateMove.Deep
                     }
 
                     if (alpha < beta) continue;
+
                     Sorters[depth].Add(move.Key);
                     break;
                 }
@@ -228,7 +273,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (isInTable && !shouldUpdate) return value;
 
-            return StoreValue((byte) depth, (short) value, bestMove.Key);
+            return StoreValue((byte)depth, (short)value, bestMove.Key);
         }
     }
 }

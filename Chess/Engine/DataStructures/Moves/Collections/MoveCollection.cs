@@ -2,25 +2,17 @@
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
-namespace Engine.DataStructures.Moves
+namespace Engine.DataStructures.Moves.Collections
 {
-    public class ExtendedMoveCollection : AttackCollection
+    public class MoveCollection: AttackCollection
     {
         private readonly MoveList _killers;
         private readonly MoveList _nonCaptures;
-        private readonly MoveList _suggested;
 
-        public ExtendedMoveCollection(IMoveComparer comparer) : base(comparer)
+        public MoveCollection(IMoveComparer comparer) : base(comparer)
         {
             _killers = new MoveList();
             _nonCaptures = new MoveList();
-            _suggested = new MoveList();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddCheck(MoveBase move)
-        {
-            _suggested.Add(move);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -36,27 +28,17 @@ namespace Engine.DataStructures.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddSuggested(MoveBase move)
-        {
-            _suggested.Add(move);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override MoveBase[] Build()
         {
             var hashMovesCount = HashMoves.Count;
             var winCapturesCount = hashMovesCount + WinCaptures.Count;
             var tradesCount = winCapturesCount + Trades.Count;
-            var killersCount = tradesCount + _suggested.Count;
-            int checksCount = killersCount + _killers.Count;
-            //var killersCount = tradesCount + _killers.Count;
-            //int checksCount = killersCount + _suggested.Count;
-            var nonCapturesCount = checksCount + LooseCaptures.Count;
+            var killersCount = tradesCount + _killers.Count;
+            var nonCapturesCount = killersCount + LooseCaptures.Count;
             Count = nonCapturesCount + _nonCaptures.Count;
 
             MoveBase[] moves = new MoveBase[Count];
-
-            if (checksCount > 0)
+            if (killersCount > 0)
             {
                 if (hashMovesCount > 0)
                 {
@@ -76,21 +58,15 @@ namespace Engine.DataStructures.Moves
                     Trades.Clear();
                 }
 
-                if (_suggested.Count > 0)
-                {
-                    _suggested.CopyTo(moves, tradesCount);
-                    _suggested.Clear();
-                }
-
                 if (_killers.Count > 0)
                 {
-                    _killers.CopyTo(moves, killersCount);
+                    _killers.CopyTo(moves, tradesCount);
                     _killers.Clear();
                 }
 
                 if (LooseCaptures.Count > 0)
                 {
-                    LooseCaptures.CopyTo(moves, checksCount);
+                    LooseCaptures.CopyTo(moves, killersCount);
                     LooseCaptures.Clear();
                 }
 
@@ -116,6 +92,7 @@ namespace Engine.DataStructures.Moves
                     LooseCaptures.Clear();
                 }
             }
+
             Count = 0;
             return moves;
         }

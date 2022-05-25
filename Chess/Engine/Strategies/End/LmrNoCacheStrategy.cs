@@ -5,7 +5,6 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 using Engine.Strategies.Base;
 
 namespace Engine.Strategies.End
@@ -23,7 +22,7 @@ namespace Engine.Strategies.End
             DepthReduction = configurationProvider
                 .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthReduction;
 
-            InitializeSorters(depth, position, new ExtendedSorter(position, new HistoryComparer()));
+            InitializeSorters(depth, position, MoveSorterProvider.GetExtended(position, new HistoryComparer()));
         }
 
         #region Overrides of StrategyBase

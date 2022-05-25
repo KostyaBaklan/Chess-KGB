@@ -22,6 +22,8 @@ namespace Engine.Interfaces
         bool AnyBlackCheck();
         bool AnyWhiteCheck();
         bool IsUnderAttack(byte piece, byte to);
+        void GetWhiteAttacksTo(byte to, AttackList attackList);
+        void GetBlackAttacksTo(byte to, AttackList attackList);
         BitBoard GetAttackPattern(byte piece, byte position);
         bool IsWhiteUnderAttack(Square square);
         bool IsBlackUnderAttack(Square square);
