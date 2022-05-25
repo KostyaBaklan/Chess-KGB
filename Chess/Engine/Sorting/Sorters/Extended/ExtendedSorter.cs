@@ -5,7 +5,7 @@ using Engine.Interfaces;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
-namespace Engine.Sorting.Sorters
+namespace Engine.Sorting.Sorters.Extended
 {
     public abstract class ExtendedSorter : MoveSorter
     {

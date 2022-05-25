@@ -11,7 +11,7 @@ using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
-namespace Engine.Sorting.Sorters
+namespace Engine.Sorting.Sorters.Initial
 {
     public abstract class InitialSorter : MoveSorter
     {
