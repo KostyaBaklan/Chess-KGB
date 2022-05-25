@@ -1512,6 +1512,46 @@ namespace Engine.Services
             return false;
         }
 
+        public void GetWhiteAttacksTo(byte to, AttackList attackList)
+        {
+            attackList.Clear();
+            GetAttacksTo(Piece.WhitePawn.AsByte(), to, attackList);
+            GetAttacksTo(Piece.WhiteKnight.AsByte(), to, attackList);
+            GetAttacksTo(Piece.WhiteQueen.AsByte(), to, attackList);
+            GetAttacksTo(Piece.WhiteBishop.AsByte(), to, attackList);
+            GetAttacksTo(Piece.WhiteRook.AsByte(), to, attackList);
+            GetAttacksTo(Piece.WhiteKing.AsByte(), to, attackList);
+        }
+
+        public void GetBlackAttacksTo(byte to, AttackList attackList)
+        {
+            attackList.Clear();
+            GetAttacksTo(Piece.BlackPawn.AsByte(), to, attackList);
+            GetAttacksTo(Piece.BlackKnight.AsByte(), to, attackList);
+            GetAttacksTo(Piece.BlackQueen.AsByte(), to, attackList);
+            GetAttacksTo(Piece.BlackBishop.AsByte(), to, attackList);
+            GetAttacksTo(Piece.BlackRook.AsByte(), to, attackList);
+            GetAttacksTo(Piece.BlackKing.AsByte(), to, attackList);
+        }
+
+        private void GetAttacksTo(byte piece, byte to, AttackList attackList)
+        {
+            var positions = _board.GetPositions(piece);
+            for (var p = 0; p < positions.Count; p++)
+            {
+                var moveWrappers = _attacksTo[piece][positions[p]][to];
+                if (moveWrappers == null) continue;
+
+                for (var i = 0; i < moveWrappers.Count; i++)
+                {
+                    if (moveWrappers[i].IsLegalAttack(_board))
+                    {
+                        attackList.Add(moveWrappers[i]);
+                    }
+                }
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BitBoard GetAttackPattern(byte piece, byte position)
         {

@@ -24,12 +24,11 @@ namespace Engine.Sorting.Sorters.Initial
             for (var index = 0; index < moves.Count; index++)
             {
                 var move = moves[index];
-                //if (move.IsPromotion)
-                //{
-                //    ProcessPromotion(move);
-                //}
-                //else 
-                if (move.IsCastle||move.IsPromotion)
+                if (move.IsPromotion)
+                {
+                    ProcessPromotion(move);
+                }
+                else if (move.IsCastle)
                 {
                     InitialMoveCollection.AddSuggested(move);
                 }
@@ -57,12 +56,11 @@ namespace Engine.Sorting.Sorters.Initial
                 for (var index = 0; index < moves.Count; index++)
                 {
                     var move = moves[index];
-                    //if (move.IsPromotion)
-                    //{
-                    //    ProcessPromotion(move);
-                    //}
-                    //else 
-                    if (move.IsCastle || move.IsPromotion)
+                    if (move.IsPromotion)
+                    {
+                        ProcessPromotion(move);
+                    }
+                    else if (move.IsCastle)
                     {
                         InitialMoveCollection.AddSuggested(move);
                     }
@@ -89,12 +87,11 @@ namespace Engine.Sorting.Sorters.Initial
                     }
                     else
                     {
-                        //if (move.IsPromotion)
-                        //{
-                        //    ProcessPromotion(move);
-                        //}
-                        //else 
-                        if (move.IsCastle || move.IsPromotion)
+                        if (move.IsPromotion)
+                        {
+                            ProcessPromotion(move);
+                        }
+                        else if (move.IsCastle)
                         {
                             InitialMoveCollection.AddSuggested(move);
                         }

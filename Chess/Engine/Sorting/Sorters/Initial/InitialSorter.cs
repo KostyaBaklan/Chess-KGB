@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
@@ -350,17 +351,67 @@ namespace Engine.Sorting.Sorters.Initial
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void ProcessPromotion(MoveBase move)
         {
-            var value = Position.GetValue();
+            Debugger.Launch();
+            //var value = Position.GetValue();
 
             Position.Make(move);
             try
             {
-                var promotionValue = -Evaluate(-10000, 10000);
-                if (promotionValue > value)
+                if (move.Piece.IsWhite())
+                {
+                    MoveProvider.GetWhiteAttacksTo(move.To.AsByte(),AttackList);
+                    StaticExchange(move, Piece.WhitePawn);
+                }
+                else
+                {
+                    MoveProvider.GetBlackAttacksTo(move.To.AsByte(), AttackList);
+                    StaticExchange(move, Piece.BlackPawn);
+                }
+                //var promotionValue = -Evaluate(-10000, 10000);
+                //if (promotionValue > value)
+                //{
+                //    InitialMoveCollection.AddWinCapture(move);
+                //}
+                //else if(value > promotionValue)
+                //{
+                //    InitialMoveCollection.AddLooseCapture(move);
+                //}
+                //else
+                //{
+                //    InitialMoveCollection.AddTrade(move);
+                //}
+            }
+            finally
+            {
+                Position.UnMake();
+            }
+        }
+
+        private void StaticExchange(MoveBase move, Piece captured)
+        {
+            if (AttackList.Count == 0)
+            {
+                InitialMoveCollection.AddWinCapture(move);
+            }
+            else
+            {
+                int max = short.MinValue;
+                for (int i = 0; i < AttackList.Count; i++)
+                {
+                    var attack = AttackList[i];
+                    attack.Captured = captured;
+                    var see = Board.StaticExchange(attack);
+                    if (see > max)
+                    {
+                        max = see;
+                    }
+                }
+
+                if (max < 0)
                 {
                     InitialMoveCollection.AddWinCapture(move);
                 }
-                else if(value > promotionValue)
+                else if (max > 0)
                 {
                     InitialMoveCollection.AddLooseCapture(move);
                 }
@@ -368,10 +419,6 @@ namespace Engine.Sorting.Sorters.Initial
                 {
                     InitialMoveCollection.AddTrade(move);
                 }
-            }
-            finally
-            {
-                Position.UnMake();
             }
         }
 
