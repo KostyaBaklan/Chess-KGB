@@ -13,6 +13,7 @@ namespace Engine.Interfaces
 
         //int GetUnitValue();
         int GetMinorDefendedByPawnValue(Phase phase);
+        int GetKnightAttackedByPawnValue(Phase phase);
 
         int GetBlockedPawnValue(Phase phase);
         int GetPassedPawnValue(Phase phase);
@@ -27,5 +28,7 @@ namespace Engine.Interfaces
         int GetRentgenValue(Phase phase);
         int GetRookConnectionValue(Phase phase);
         int GetRookOnHalfOpenFileValue(Phase phase);
+        int GetBishopBlockedByPawnValue(Phase phase);
+        int GetRookBlockedByKingValue(Phase phase);
     }
 }

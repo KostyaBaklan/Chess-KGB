@@ -3,7 +3,7 @@
     "GameDepth": 384,
     "BlockTimeout": 1,
     "FutilityDepth": 2,
-    "SortDepth": 1,
+    "SortDepth": 2,
     "KillerCapacity": 2,
     "UseEvaluationCache": false,
     "UseFutility": true,
@@ -54,7 +54,7 @@
       "ThreefoldRepetitionValue": 500,
       "Opening": {
         "NotAbleCastleValue": 10,
-        "EarlyQueenValue": 4,
+        "EarlyQueenValue": 2,
         "DoubleBishopValue": 10,
         "MinorDefendedByPawnValue": 1,
         "BlockedPawnValue": 1,
@@ -65,7 +65,10 @@
         "RookOnOpenFileValue": 8,
         "RookOnHalfOpenFileValue": 2,
         "RentgenValue": 1,
-        "RookConnectionValue": 2
+        "RookConnectionValue": 2,
+        "KnightAttackedByPawnValue": 1,
+        "BishopBlockedByPawnValue": 1,
+        "RookBlockedByKingValue": 1
       },
       "Middle": {
         "NotAbleCastleValue": 10,
@@ -80,7 +83,10 @@
         "RookOnOpenFileValue": 10,
         "RookOnHalfOpenFileValue": 5,
         "RentgenValue": 1,
-        "RookConnectionValue": 4
+        "RookConnectionValue": 4,
+        "KnightAttackedByPawnValue": 1,
+        "BishopBlockedByPawnValue": 2,
+        "RookBlockedByKingValue": 2
       },
       "End": {
         "NotAbleCastleValue": 10,
@@ -95,7 +101,10 @@
         "RookOnOpenFileValue": 12,
         "RookOnHalfOpenFileValue": 8,
         "RentgenValue": 1,
-        "RookConnectionValue": 2
+        "RookConnectionValue": 2,
+        "KnightAttackedByPawnValue": 1,
+        "BishopBlockedByPawnValue": 1,
+        "RookBlockedByKingValue": 1
       }
     },
     "Opening": {

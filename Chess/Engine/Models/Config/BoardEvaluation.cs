@@ -15,5 +15,8 @@
         public short RentgenValue { get; set; }
         public int RookConnectionValue { get; set; }
         public int RookOnHalfOpenFileValue { get; set; }
+        public int KnightAttackedByPawnValue { get; set; }
+        public int BishopBlockedByPawnValue { get; set; }
+        public int RookBlockedByKingValue { get; set; }
     }
 }
