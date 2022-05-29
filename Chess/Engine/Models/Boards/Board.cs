@@ -43,6 +43,8 @@ namespace Engine.Models.Boards
         private BitBoard[] _ranks;
         private BitBoard[] _files;
         private BitBoard[] _boards;
+        private BitBoard[] _whiteKingShield;
+        private BitBoard[] _blackKingShield;
         private int[] _pieceCount;
         private readonly bool[] _overBoard;
         private readonly Piece[] _pieces;
@@ -81,6 +83,30 @@ namespace Engine.Models.Boards
 
             _blackQueenOpening = Squares.D8.AsBitBoard() | Squares.E8.AsBitBoard() | Squares.C8.AsBitBoard() |
                                  Squares.D7.AsBitBoard() | Squares.E7.AsBitBoard() | Squares.C7.AsBitBoard();
+
+            _whiteKingShield = new BitBoard[64];
+            for (byte i = 0; i < 16; i++)
+            {
+                _whiteKingShield[i] = _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), i) |
+                                      _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), (byte) (i + 8));
+            }
+            for (byte i = 16; i < 64; i++)
+            {
+                _whiteKingShield[i] = _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), i);
+            }
+
+            _blackKingShield = new BitBoard[64];
+
+            for (byte i = (byte) (_blackKingShield.Length - 1); i >= 48; i--)
+            {
+                _blackKingShield[i] = _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), i) |
+                                      _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), (byte)(i - 8));
+            }
+
+            for (byte i = 0; i < 48; i++)
+            {
+                _blackKingShield[i] = _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), i);
+            }
         }
 
         #region Implementation of IBoard
@@ -173,7 +199,27 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetBlackKingValue()
         {
-            return _evaluationService.GetValue(Piece.BlackKing.AsByte(), _boards[Piece.BlackKing.AsByte()].BitScanForward(), _phase);
+            var kingPosition = _boards[Piece.BlackKing.AsByte()].BitScanForward();
+            var value = _evaluationService.GetValue(Piece.BlackKing.AsByte(), kingPosition, _phase);
+            return value + BlackKingSafety(kingPosition);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int BlackKingSafety(byte kingPosition)
+        {
+            return BlackKingShieldValue(kingPosition) + BlackKingAttackValue(kingPosition);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int BlackKingAttackValue(byte kingPosition)
+        {
+            return 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int BlackKingShieldValue(byte kingPosition)
+        {
+            return 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -417,7 +463,27 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetWhiteKingValue()
         {
-            return _evaluationService.GetValue(Piece.WhiteKing.AsByte(), _boards[Piece.WhiteKing.AsByte()].BitScanForward(), _phase);
+            var kingPosition = _boards[Piece.WhiteKing.AsByte()].BitScanForward();
+            var value = _evaluationService.GetValue(Piece.WhiteKing.AsByte(), kingPosition, _phase);
+            return value + WhiteKingSafety(kingPosition);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int WhiteKingSafety(byte kingPosition)
+        {
+            return WhiteKingShieldValue(kingPosition) + WhiteKingAttackValue(kingPosition);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int WhiteKingAttackValue(byte kingPosition)
+        {
+            return 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int WhiteKingShieldValue(byte kingPosition)
+        {
+            return 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
