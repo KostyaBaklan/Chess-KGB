@@ -74,6 +74,8 @@ namespace Engine.Services
                 SetAttackPatterns(piece);
             }
 
+            SetPawnAttackPatterns();
+
             SetValues();
 
             List<MoveBase> all = new List<MoveBase>();
@@ -123,6 +125,27 @@ namespace Engine.Services
                     }
                 } 
             }
+        }
+
+        private void SetPawnAttackPatterns()
+        {
+            _attackPatterns[Piece.WhitePawn.AsByte()][Squares.A1.AsByte()] = Squares.B2.AsBitBoard();
+            _attackPatterns[Piece.WhitePawn.AsByte()][Squares.B1.AsByte()] = Squares.A2.AsBitBoard() | Squares.C2.AsBitBoard();
+            _attackPatterns[Piece.WhitePawn.AsByte()][Squares.C1.AsByte()] = Squares.B2.AsBitBoard() | Squares.D2.AsBitBoard();
+            _attackPatterns[Piece.WhitePawn.AsByte()][Squares.D1.AsByte()] = Squares.C2.AsBitBoard() | Squares.E2.AsBitBoard();
+            _attackPatterns[Piece.WhitePawn.AsByte()][Squares.E1.AsByte()] = Squares.D2.AsBitBoard() | Squares.F2.AsBitBoard();
+            _attackPatterns[Piece.WhitePawn.AsByte()][Squares.F1.AsByte()] = Squares.E2.AsBitBoard() | Squares.G2.AsBitBoard();
+            _attackPatterns[Piece.WhitePawn.AsByte()][Squares.G1.AsByte()] = Squares.F2.AsBitBoard()| Squares.H2.AsBitBoard();
+            _attackPatterns[Piece.WhitePawn.AsByte()][Squares.H1.AsByte()] = Squares.G2.AsBitBoard();
+
+            _attackPatterns[Piece.BlackPawn.AsByte()][Squares.A8.AsByte()] = Squares.B7.AsBitBoard();
+            _attackPatterns[Piece.BlackPawn.AsByte()][Squares.B8.AsByte()] = Squares.A7.AsBitBoard() | Squares.C7.AsBitBoard();
+            _attackPatterns[Piece.BlackPawn.AsByte()][Squares.C8.AsByte()] = Squares.B7.AsBitBoard() | Squares.D7.AsBitBoard();
+            _attackPatterns[Piece.BlackPawn.AsByte()][Squares.D8.AsByte()] = Squares.C7.AsBitBoard() | Squares.E7.AsBitBoard();
+            _attackPatterns[Piece.BlackPawn.AsByte()][Squares.E8.AsByte()] = Squares.D7.AsBitBoard() | Squares.F7.AsBitBoard();
+            _attackPatterns[Piece.BlackPawn.AsByte()][Squares.F8.AsByte()] = Squares.E7.AsBitBoard() | Squares.G7.AsBitBoard();
+            _attackPatterns[Piece.BlackPawn.AsByte()][Squares.G8.AsByte()] = Squares.F7.AsBitBoard() | Squares.H7.AsBitBoard();
+            _attackPatterns[Piece.BlackPawn.AsByte()][Squares.H8.AsByte()] = Squares.G7.AsBitBoard();
         }
 
         #region Private

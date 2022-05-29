@@ -31,6 +31,9 @@ namespace Engine.Services
         private readonly int[] _rookOnHalfOpenFileValue;
         private readonly int[] _rentgenValue;
         private readonly int[] _rookConnectionValue;
+        private readonly int[] _knightAttackedByPawnValue;
+        private readonly int[] _bishopBlockedByPawnValue;
+        private readonly int[] _rookBlockedByKingValue;
 
         private readonly int[][] _values;
         private readonly int[][][] _staticValues;
@@ -59,6 +62,9 @@ namespace Engine.Services
             _rookOnHalfOpenFileValue = new int[3];
             _rentgenValue = new int[3];
             _rookConnectionValue = new int[3];
+            _knightAttackedByPawnValue = new int[3];
+            _bishopBlockedByPawnValue = new int[3];
+            _rookBlockedByKingValue = new int[3];
             for (byte i = 0; i < 3; i++)
             {
                 var evaluationStatic = configuration.Evaluation.Static.GetBoard(i);
@@ -75,6 +81,9 @@ namespace Engine.Services
                 _rentgenValue[i] = evaluationStatic.RentgenValue * _unitValue;
                 _rookConnectionValue[i] = evaluationStatic.RookConnectionValue * _unitValue;
                 _rookOnHalfOpenFileValue[i] = evaluationStatic.RookOnHalfOpenFileValue * _unitValue;
+                _knightAttackedByPawnValue[i] = evaluationStatic.KnightAttackedByPawnValue * _unitValue;
+                _bishopBlockedByPawnValue[i] = evaluationStatic.BishopBlockedByPawnValue * _unitValue;
+                _rookBlockedByKingValue[i] = evaluationStatic.RookBlockedByKingValue * _unitValue;
             }
 
             _values = new int[3][];
@@ -256,6 +265,12 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKnightAttackedByPawnValue(Phase phase)
+        {
+            return _knightAttackedByPawnValue[(byte)phase];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetBlockedPawnValue(Phase phase)
         {
             return _blockedPawnValue[(byte)phase];
@@ -325,6 +340,18 @@ namespace Engine.Services
         public int GetRookOnHalfOpenFileValue(Phase phase)
         {
             return _rookOnHalfOpenFileValue[(byte)phase];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetBishopBlockedByPawnValue(Phase phase)
+        {
+            return _bishopBlockedByPawnValue[(byte)phase];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetRookBlockedByKingValue(Phase phase)
+        {
+            return _rookBlockedByKingValue[(byte)phase];
         }
 
         #endregion

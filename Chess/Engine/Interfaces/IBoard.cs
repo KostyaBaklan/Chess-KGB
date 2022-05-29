@@ -50,5 +50,13 @@ namespace Engine.Interfaces
         bool CanWhitePromote();
         bool CanBlackPromote();
         BitBoard GetRank(int rank);
+        BitBoard GetWhitePieceBits();
+        BitBoard GetBlackPieceBits();
+        BitBoard GetWhitePieceForKnightBits();
+        BitBoard GetWhitePieceForBishopBits();
+        BitBoard GetBlackPieceForKnightBits();
+        BitBoard GetBlackPieceForBishopBits();
+        BitBoard GetBlackBits();
+        BitBoard GetWhiteBits();
     }
 }
