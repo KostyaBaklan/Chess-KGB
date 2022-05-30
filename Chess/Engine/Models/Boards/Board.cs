@@ -45,6 +45,13 @@ namespace Engine.Models.Boards
         private BitBoard[] _boards;
         private BitBoard[] _whiteKingShield;
         private BitBoard[] _blackKingShield;
+        private BitBoard[] _whiteKingFaceShield;
+        private BitBoard[] _blackKingFaceShield;
+        private BitBoard[] _whiteKingFace;
+        private BitBoard[] _blackKingFace;
+        private BitBoard[][] _whiteKingOpenFile;
+        private BitBoard[][] _blackKingOpenFile;
+
         private int[] _pieceCount;
         private readonly bool[] _overBoard;
         private readonly Piece[] _pieces;
@@ -84,12 +91,18 @@ namespace Engine.Models.Boards
             _blackQueenOpening = Squares.D8.AsBitBoard() | Squares.E8.AsBitBoard() | Squares.C8.AsBitBoard() |
                                  Squares.D7.AsBitBoard() | Squares.E7.AsBitBoard() | Squares.C7.AsBitBoard();
 
+            SetKingSafety();
+        }
+
+        private void SetKingSafety()
+        {
             _whiteKingShield = new BitBoard[64];
             for (byte i = 0; i < 16; i++)
             {
                 _whiteKingShield[i] = _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), i) |
                                       _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), (byte) (i + 8));
             }
+
             for (byte i = 16; i < 64; i++)
             {
                 _whiteKingShield[i] = _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), i);
@@ -100,12 +113,78 @@ namespace Engine.Models.Boards
             for (byte i = (byte) (_blackKingShield.Length - 1); i >= 48; i--)
             {
                 _blackKingShield[i] = _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), i) |
-                                      _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), (byte)(i - 8));
+                                      _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), (byte) (i - 8));
             }
 
             for (byte i = 0; i < 48; i++)
             {
                 _blackKingShield[i] = _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), i);
+            }
+
+            _whiteKingFace = new BitBoard[64];
+            for (byte i = 0; i < 32; i++)
+            {
+                _whiteKingFace[i] = _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), i) &
+                                    _ranks[i / 8 + 1];
+            }
+
+            _blackKingFace = new BitBoard[64];
+            for (byte i = 32; i < 64; i++)
+            {
+                _blackKingFace[i] = _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), i) &
+                                    _ranks[i / 8 - 1];
+            }
+
+            _whiteKingFaceShield = new BitBoard[64];
+            for (byte i = 0; i < 32; i++)
+            {
+                _whiteKingFaceShield[i] = _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), (byte) (i + 8)) &
+                                          _ranks[i / 8 + 2];
+            }
+
+            _blackKingFaceShield = new BitBoard[64];
+            for (byte i = 32; i < 64; i++)
+            {
+                _blackKingFaceShield[i] = _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), (byte) (i - 8)) &
+                                          _ranks[i / 8 - 2];
+            }
+
+            _whiteKingOpenFile = new BitBoard[64][];
+            for (var i = 0; i < _whiteKingOpenFile.Length; i++)
+            {
+                var rank = i % 8;
+                if (rank == 0)
+                {
+                    _whiteKingOpenFile[i] = new[] { _files[0] ^ i.AsBitBoard(), _files[1] };
+                }
+                else if (rank == 7)
+                {
+                    _whiteKingOpenFile[i] = new[] { _files[7] ^ i.AsBitBoard(), _files[6] };
+                }
+                else
+                {
+                    _whiteKingOpenFile[i] = new[]
+                        {_files[rank - 1], _files[rank] ^ i.AsBitBoard(), _files[rank + 1]};
+                }
+            }
+
+            _blackKingOpenFile = new BitBoard[64][];
+            for (var i = 0; i < _blackKingOpenFile.Length; i++)
+            {
+                var rank = i % 8;
+                if (rank == 0)
+                {
+                    _blackKingOpenFile[i] = new[] { _files[0] ^ i.AsBitBoard(), _files[1]};
+                }
+                else if (rank == 7)
+                {
+                    _blackKingOpenFile[i] = new[] { _files[7] ^ i.AsBitBoard(), _files[6]};
+                }
+                else
+                {
+                    _blackKingOpenFile[i] = new[]
+                        {_files[rank - 1], _files[rank] ^ i.AsBitBoard(), _files[rank + 1]};
+                }
             }
         }
 
@@ -159,6 +238,11 @@ namespace Engine.Models.Boards
             return GetWhiteStaticValue() - GetBlackStaticValue();
         }
 
+        public int GetKingSafetyValue()
+        {
+            return WhiteKingSafety(_boards[Piece.WhiteKing.AsByte()].BitScanForward()) - BlackKingSafety(_boards[Piece.BlackKing.AsByte()].BitScanForward());
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetBlackStaticValue()
         {
@@ -187,6 +271,7 @@ namespace Engine.Models.Boards
         public short GetValue()
         {
             return (short) (GetWhiteValue() - GetBlackValue());
+            //return (short)(GetWhiteKingValue() - GetBlackKingValue());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -207,19 +292,129 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int BlackKingSafety(byte kingPosition)
         {
-            return BlackKingShieldValue(kingPosition) + BlackKingAttackValue(kingPosition);
+            var blackKingShieldValue = BlackKingShieldValue(kingPosition);
+            var blackKingAttackValue = BlackKingAttackValue(kingPosition);
+            var blackKingOpenValue = BlackKingOpenValue(kingPosition);
+            return blackKingShieldValue - blackKingAttackValue - blackKingOpenValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int BlackKingOpenValue(byte kingPosition)
+        {
+            int value = 0;
+            var boards = _blackKingOpenFile[kingPosition];
+            for (var i = 0; i < boards.Length; i++)
+            {
+                if ((boards[i] & _blacks).IsZero())
+                {
+                    value += 20;
+                }
+            }
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int BlackKingAttackValue(byte kingPosition)
         {
-            return 0;
+            int attackingPiecesCount = 0;
+            int valueOfAttacks = 0;
+            var shield = _blackKingShield[kingPosition];
+
+            var positions = GetPositionInternal(Piece.WhitePawn.AsByte());
+            int pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (_moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), positions[i]) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetPawnAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.WhiteKnight.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (_moveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), positions[i]) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetKnightAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.WhiteKing.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (_moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), positions[i]) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetKingAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.WhiteBishop.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (positions[i].BishopAttacks(~_empty) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetBishopAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.WhiteRook.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (positions[i].RookAttacks(~_empty) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetRookAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.WhiteQueen.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (positions[i].QueenAttacks(~_empty) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            double value = valueOfAttacks * _evaluationService.GetAttackWeight(attackingPiecesCount);
+
+            return _evaluationService.GetUnitValue() * (int)Math.Ceiling(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int BlackKingShieldValue(byte kingPosition)
         {
-            return 0;
+            var face = _blackKingFace[kingPosition] & _blacks;
+            var preFace = _blackKingFaceShield[kingPosition] & _blacks;
+            return 10 * face.Count() + 5 * preFace.Count();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -471,19 +666,129 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int WhiteKingSafety(byte kingPosition)
         {
-            return WhiteKingShieldValue(kingPosition) + WhiteKingAttackValue(kingPosition);
+            var whiteKingShieldValue = WhiteKingShieldValue(kingPosition);
+            var whiteKingAttackValue = WhiteKingAttackValue(kingPosition);
+            var whiteKingOpenValue = WhiteKingOpenValue(kingPosition);
+            return whiteKingShieldValue - whiteKingAttackValue - whiteKingOpenValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int WhiteKingOpenValue(byte kingPosition)
+        {
+            int value = 0;
+            var boards = _whiteKingOpenFile[kingPosition];
+            for (var i = 0; i < boards.Length; i++)
+            {
+                if ((boards[i] & _whites).IsZero())
+                {
+                    value += 20;
+                }
+            }
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int WhiteKingAttackValue(byte kingPosition)
         {
-            return 0;
+            int attackingPiecesCount = 0;
+            int valueOfAttacks = 0;
+            var shield = _whiteKingShield[kingPosition];
+
+            var positions = GetPositionInternal(Piece.BlackPawn.AsByte());
+            int pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (_moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), positions[i]) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetPawnAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.BlackKnight.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (_moveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), positions[i]) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetKnightAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.BlackKing.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (_moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), positions[i]) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetKingAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.BlackBishop.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (positions[i].BishopAttacks(~_empty) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetBishopAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.BlackRook.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (positions[i].RookAttacks(~_empty) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetRookAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            positions = GetPositionInternal(Piece.BlackQueen.AsByte());
+            pieceAttacks = 0;
+            for (var i = 0; i < positions.Length; i++)
+            {
+                var attacks = (positions[i].QueenAttacks(~_empty) & shield).Count();
+                pieceAttacks += attacks;
+                valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
+            }
+
+            if (pieceAttacks > 0)
+            {
+                attackingPiecesCount++;
+            }
+
+            double value = valueOfAttacks * _evaluationService.GetAttackWeight(attackingPiecesCount);
+
+            return _evaluationService.GetUnitValue() * (int)Math.Ceiling(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int WhiteKingShieldValue(byte kingPosition)
         {
-            return 0;
+            var face = _whiteKingFace[kingPosition] & _whites;
+            var preFace = _whiteKingFaceShield[kingPosition] & _whites;
+            return 10 * face.Count() + 5*preFace.Count();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

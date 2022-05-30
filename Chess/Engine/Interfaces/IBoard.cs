@@ -18,6 +18,7 @@ namespace Engine.Interfaces
         bool IsBlackOpposite(Square square);
         short GetValue();
         int GetStaticValue();
+        int GetKingSafetyValue();
         Piece GetPiece(Square cell);
         //Piece GetPiece(int cell);
         bool GetPiece(Square cell, out Piece? piece);

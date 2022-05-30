@@ -11,7 +11,7 @@ namespace Engine.Interfaces
         int Evaluate(IPosition position);
         void Initialize(short depth);
 
-        //int GetUnitValue();
+        int GetUnitValue();
         int GetMinorDefendedByPawnValue(Phase phase);
         int GetKnightAttackedByPawnValue(Phase phase);
 
@@ -30,5 +30,13 @@ namespace Engine.Interfaces
         int GetRookOnHalfOpenFileValue(Phase phase);
         int GetBishopBlockedByPawnValue(Phase phase);
         int GetRookBlockedByKingValue(Phase phase);
+
+        int GetPawnAttackValue();
+        int GetKnightAttackValue();
+        int GetBishopAttackValue();
+        int GetRookAttackValue();
+        int GetQueenAttackValue();
+        int GetKingAttackValue();
+        double GetAttackWeight(int attackCount);
     }
 }

@@ -137,6 +137,14 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKingSafetyValue()
+        {
+            if (_turn == Turn.White)
+                return _board.GetKingSafetyValue();
+            return (short)-_board.GetKingSafetyValue();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetOpponentMaxValue()
         {
             if (_turn == Turn.White)

@@ -12,6 +12,7 @@ namespace Engine.Interfaces.Config
         BoardEvaluation Opening { get; set; }
         BoardEvaluation Middle { get; set; }
         BoardEvaluation End { get; set; }
+        KingSafetyEvaluation KingSafety { get; }
 
         BoardEvaluation GetBoard(byte phase);
     }

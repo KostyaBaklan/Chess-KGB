@@ -105,6 +105,11 @@
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 1,
         "RookBlockedByKingValue": 1
+      },
+      "KingSafety": {
+        "AttackValueFactor": 500.0,
+        "PieceAttackValue": [ 5, 20, 20, 40, 80, 5 ],
+        "AttackWeight": [ 0.0, 10.0, 50.0, 75.0, 80.0, 85.0, 90.0, 95.0 ]
       }
     },
     "Opening": {
@@ -130,6 +135,6 @@
       "Rook": 1025,
       "Queen": 1850,
       "King": 6000
-    }
+    } 
   }
 }
