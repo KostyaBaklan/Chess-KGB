@@ -275,7 +275,7 @@ namespace Engine.Sorting.Sorters
         protected bool IsCheckToWhite(MoveBase move)
         {
             var whiteKingPosition = Board.GetWhiteKingPosition();
-            return MoveProvider.AnyLegalAttacksTo(move.Piece, move.To, whiteKingPosition.AsByte());
+            return MoveProvider.AnyLegalAttacksTo(move.Piece, move.To, whiteKingPosition);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -306,7 +306,7 @@ namespace Engine.Sorting.Sorters
         protected bool IsCheckToBlack(MoveBase move)
         {
             var blackKingPosition = Board.GetBlackKingPosition();
-            return MoveProvider.AnyLegalAttacksTo(move.Piece, move.To, blackKingPosition.AsByte());
+            return MoveProvider.AnyLegalAttacksTo(move.Piece, move.To, blackKingPosition);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

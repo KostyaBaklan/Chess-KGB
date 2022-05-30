@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Engine.DataStructures;
 using Engine.DataStructures.Moves;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
@@ -17,9 +18,11 @@ namespace Engine.Services
     public class MoveProvider : IMoveProvider
     {
         private readonly MoveBase[] _all;
-        private readonly List<List<MoveBase>>[][] _moves;
-        private readonly List<List<Attack>>[][] _attacks;
-        private readonly List<Attack>[][][] _attacksTo;
+        private readonly DynamicArray<MoveList>[][] _moves;
+        private readonly DynamicArray<AttackList>[][] _attacks;
+        private List<List<MoveBase>>[][] _movesTemp;
+        private List<List<Attack>>[][] _attacksTemp;
+        private readonly Attack[][][][] _attacksTo;
         private readonly BitBoard[][] _attackPatterns;
         private static readonly int _squaresNumber = 64;
         private readonly int _piecesNumbers = 12;
@@ -30,21 +33,25 @@ namespace Engine.Services
         public MoveProvider(IEvaluationService evaluationService, IConfigurationProvider configurationProvider)
         {
             _evaluationService = evaluationService;
-            _moves = new List<List<MoveBase>>[_piecesNumbers][];
-            _attacks = new List<List<Attack>>[_piecesNumbers][];
+            _moves = new DynamicArray<MoveList>[_piecesNumbers][];
+            _attacks = new DynamicArray<AttackList>[_piecesNumbers][];
+            _movesTemp = new List<List<MoveBase>>[_piecesNumbers][];
+            _attacksTemp = new List<List<Attack>>[_piecesNumbers][];
             _attackPatterns = new BitBoard[_piecesNumbers][];
-            _attacksTo = new List<Attack>[_piecesNumbers][][];
+            _attacksTo = new Attack[_piecesNumbers][][][];
 
             foreach (var piece in Enum.GetValues(typeof(Piece)).OfType<Piece>())
             {
-                _moves[piece.AsByte()] = new List<List<MoveBase>>[_squaresNumber];
-                _attacks[piece.AsByte()] = new List<List<Attack>>[_squaresNumber];
+                _moves[piece.AsByte()] = new DynamicArray<MoveList>[_squaresNumber];
+                _attacks[piece.AsByte()] = new DynamicArray<AttackList>[_squaresNumber];
+                _movesTemp[piece.AsByte()] = new List<List<MoveBase>>[_squaresNumber];
+                _attacksTemp[piece.AsByte()] = new List<List<Attack>>[_squaresNumber];
                 _attackPatterns[piece.AsByte()] = new BitBoard[_squaresNumber];
-                _attacksTo[piece.AsByte()] = new List<Attack>[_squaresNumber][];
+                _attacksTo[piece.AsByte()] = new Attack[_squaresNumber][][];
                 for (int square = 0; square < _squaresNumber; square++)
                 {
-                    _moves[piece.AsByte()][square] = new List<List<MoveBase>>();
-                    _attacks[piece.AsByte()][square] = new List<List<Attack>>();
+                    _movesTemp[piece.AsByte()][square] = new List<List<MoveBase>>();
+                    _attacksTemp[piece.AsByte()][square] = new List<List<Attack>>();
                     _attackPatterns[piece.AsByte()][square] = new BitBoard(0);
                 }
 
@@ -53,10 +60,10 @@ namespace Engine.Services
 
                 for (int i = 0; i < _squaresNumber; i++)
                 {
-                    Dictionary<byte, List<Attack>> attacksTo = _attacks[piece.AsByte()][i].SelectMany(m => m)
+                    Dictionary<byte, Attack[]> attacksTo = _attacksTemp[piece.AsByte()][i].SelectMany(m => m)
                         .GroupBy(g => g.To.AsByte())
-                        .ToDictionary(key => key.Key, v => v.ToList());
-                    List<Attack>[] aTo = new List<Attack>[_squaresNumber];
+                        .ToDictionary(key => key.Key, v => v.ToArray());
+                    Attack[][] aTo = new Attack[_squaresNumber][];
                     for (byte q = 0; q < aTo.Length; q++)
                     {
                         if (attacksTo.TryGetValue(q, out var list))
@@ -79,13 +86,13 @@ namespace Engine.Services
             SetValues();
 
             List<MoveBase> all = new List<MoveBase>();
-            for (var i = 0; i < _attacks.Length; i++)
+            for (var i = 0; i < _attacksTemp.Length; i++)
             {
-                for (var j = 0; j < _attacks[i].Length; j++)
+                for (var j = 0; j < _attacksTemp[i].Length; j++)
                 {
-                    for (var k = 0; k < _attacks[i][j].Count; k++)
+                    for (var k = 0; k < _attacksTemp[i][j].Count; k++)
                     {
-                        foreach (var attack in _attacks[i][j][k])
+                        foreach (var attack in _attacksTemp[i][j][k])
                         {
                             all.Add(attack);
                         }
@@ -93,13 +100,13 @@ namespace Engine.Services
                 }
             }
 
-            for (var i = 0; i < _moves.Length; i++)
+            for (var i = 0; i < _movesTemp.Length; i++)
             {
-                for (var j = 0; j < _moves[i].Length; j++)
+                for (var j = 0; j < _movesTemp[i].Length; j++)
                 {
-                    for (var k = 0; k < _moves[i][j].Count; k++)
+                    for (var k = 0; k < _movesTemp[i][j].Count; k++)
                     {
-                        foreach (var move in _moves[i][j][k])
+                        foreach (var move in _movesTemp[i][j][k])
                         {
                             all.Add(move);
                         }
@@ -125,6 +132,82 @@ namespace Engine.Services
                     }
                 } 
             }
+
+            SetMoves();
+            SetAttacks();
+        }
+
+        private void SetAttacks()
+        {
+            for (byte p = 0; p < _piecesNumbers; p++)
+            {
+                for (byte s = 0; s < _squaresNumber; s++)
+                {
+                    if (_attacksTemp[p][s] == null) continue;
+
+                    var dynamicArray = new DynamicArray<AttackList>(_attacksTemp[p][s].Count);
+                    for (var i = 0; i < _attacksTemp[p][s].Count; i++)
+                    {
+                        if (_attacksTemp[p][s][i] == null) continue;
+
+                        AttackList moves = new AttackList(_attacksTemp[p][s][i].Count);
+                        for (var j = 0; j < _attacksTemp[p][s][i].Count; j++)
+                        {
+                            moves.Add(_attacksTemp[p][s][i][j]);
+                        }
+                        dynamicArray.Add(moves);
+                        _attacksTemp[p][s][i].Clear();
+                        _attacksTemp[p][s][i] = null;
+                    }
+
+                    _attacksTemp[p][s].Clear();
+                    _attacksTemp[p][s] = null;
+                    _attacks[p][s] = dynamicArray;
+                }
+
+                Array.Clear(_attacksTemp[p], 0, _attacksTemp[p].Length);
+                _attacksTemp[p] = null;
+            }
+
+            Array.Clear(_attacksTemp, 0, _attacksTemp.Length);
+            _attacksTemp = null;
+        }
+
+        private void SetMoves()
+        {
+            for (byte p = 0; p < _piecesNumbers; p++)
+            {
+                for (byte s = 0; s < _squaresNumber; s++)
+                {
+                    if (_movesTemp[p][s] == null) continue;
+
+                    var dynamicArray = new DynamicArray<MoveList>(_movesTemp[p][s].Count);
+                    for (var i = 0; i < _movesTemp[p][s].Count; i++)
+                    {
+                        if (_movesTemp[p][s][i] == null) continue;
+
+                        MoveList moves = new MoveList(_movesTemp[p][s][i].Count);
+                        for (var j = 0; j < _movesTemp[p][s][i].Count; j++)
+                        {
+                            moves.Add(_movesTemp[p][s][i][j]);
+                        }
+
+                        dynamicArray.Add(moves);
+                        _movesTemp[p][s][i].Clear();
+                        _movesTemp[p][s][i] = null;
+                    }
+
+                    _movesTemp[p][s].Clear();
+                    _movesTemp[p][s] = null;
+                    _moves[p][s] = dynamicArray;
+                }
+
+                Array.Clear(_movesTemp[p], 0, _movesTemp[p].Length);
+                _movesTemp[p] = null;
+            }
+
+            Array.Clear(_movesTemp, 0, _movesTemp.Length);
+            _movesTemp = null;
         }
 
         private void SetPawnAttackPatterns()
@@ -152,7 +235,7 @@ namespace Engine.Services
 
         private void SetValues()
         {
-            foreach (var move in from lists in _moves from list in lists from moves in list from move in moves select move)
+            foreach (var move in from lists in _movesTemp from list in lists from moves in list from move in moves select move)
             {
                 SetValueForMove(move);
             }
@@ -166,7 +249,7 @@ namespace Engine.Services
 
         private void SetAttackPatterns(Piece piece)
         {
-            foreach (List<List<Attack>> attacks in _attacks[piece.AsByte()])
+            foreach (List<List<Attack>> attacks in _attacksTemp[piece.AsByte()])
             {
                 if (attacks == null) continue;
 
@@ -271,7 +354,7 @@ namespace Engine.Services
         private void SetBlackQueenAttacks()
         {
             var piece = Piece.BlackQueen;
-            var moves = _attacks[(int)piece];
+            var moves = _attacksTemp[(int)piece];
             SetStrightAttacks(piece, MoveType.EatByQueen, moves);
             SetDiagonalAttacks(piece, MoveType.EatByQueen, moves);
         }
@@ -279,7 +362,7 @@ namespace Engine.Services
         private void SetWhiteQueenAttacks()
         {
             var piece = Piece.WhiteQueen;
-            var moves = _attacks[(int)piece];
+            var moves = _attacksTemp[(int)piece];
             SetStrightAttacks(piece, MoveType.EatByQueen, moves);
             SetDiagonalAttacks(piece, MoveType.EatByQueen, moves);
         }
@@ -287,7 +370,7 @@ namespace Engine.Services
         private void SetBlackQueenMoves()
         {
             var piece = Piece.BlackQueen;
-            var moves = _moves[(int)piece];
+            var moves = _movesTemp[(int)piece];
             SetDiagonalMoves(piece, MoveType.MoveQueen, moves);
             SetStrightMoves(piece, MoveType.MoveQueen, moves);
         }
@@ -295,7 +378,7 @@ namespace Engine.Services
         private void SetWhiteQueenMoves()
         {
             var piece = Piece.WhiteQueen;
-            var moves = _moves[(int)piece];
+            var moves = _movesTemp[(int)piece];
             SetDiagonalMoves(piece, MoveType.MoveQueen, moves);
             SetStrightMoves(piece, MoveType.MoveQueen, moves);
         }
@@ -307,28 +390,28 @@ namespace Engine.Services
         private void SetBlackRookAttacks()
         {
             var piece = Piece.BlackRook;
-            var moves = _attacks[(int)piece];
+            var moves = _attacksTemp[(int)piece];
             SetStrightAttacks(piece, MoveType.EatByRook, moves);
         }
 
         private void SetWhiteRookAttacks()
         {
             var piece = Piece.WhiteRook;
-            var moves = _attacks[(int)piece];
+            var moves = _attacksTemp[(int)piece];
             SetStrightAttacks(piece, MoveType.EatByRook, moves);
         }
 
         private void SetBlackRookMoves()
         {
             var piece = Piece.BlackRook;
-            var moves = _moves[(int)piece];
+            var moves = _movesTemp[(int)piece];
             SetStrightMoves(piece, MoveType.MoveRook, moves);
         }
 
         private void SetWhiteRookMoves()
         {
             var piece = Piece.WhiteRook;
-            var moves = _moves[(int)piece];
+            var moves = _movesTemp[(int)piece];
             SetStrightMoves(piece, MoveType.MoveRook, moves);
         }
 
@@ -339,28 +422,28 @@ namespace Engine.Services
         private void SetBlackBishopAttacks()
         {
             var piece = Piece.BlackBishop;
-            var moves = _attacks[(int)piece];
+            var moves = _attacksTemp[(int)piece];
             SetDiagonalAttacks(piece, MoveType.EatByBishop, moves);
         }
 
         private void SetWhiteBishopAttacks()
         {
             var piece = Piece.WhiteBishop;
-            var moves = _attacks[(int)piece];
+            var moves = _attacksTemp[(int)piece];
             SetDiagonalAttacks(piece, MoveType.EatByBishop, moves);
         }
 
         private void SetBlackBishopMoves()
         {
             var piece = Piece.BlackBishop;
-            var moves = _moves[(int) piece];
+            var moves = _movesTemp[(int) piece];
             SetDiagonalMoves(piece, MoveType.MoveBishop, moves);
         }
 
         private void SetMovesWhiteBishop()
         {
             var piece = Piece.WhiteBishop;
-            var moves = _moves[(int)piece];
+            var moves = _movesTemp[(int)piece];
             SetDiagonalMoves(piece, MoveType.MoveBishop, moves);
         }
 
@@ -372,7 +455,7 @@ namespace Engine.Services
         {
             var figure = Piece.BlackKing;
             var type = MoveType.EatByKing;
-            var moves = _attacks[(int)figure];
+            var moves = _attacksTemp[(int)figure];
 
             for (int from = 0; from < _squaresNumber; from++)
             {
@@ -389,7 +472,7 @@ namespace Engine.Services
         {
             var figure = Piece.WhiteKing;
             var type = MoveType.EatByKing;
-            var moves = _attacks[(int)figure];
+            var moves = _attacksTemp[(int)figure];
 
             for (int from = 0; from < _squaresNumber; from++)
             {
@@ -406,7 +489,7 @@ namespace Engine.Services
         {
             var figure = Piece.BlackKing;
             var type = MoveType.MoveKing;
-            var moves = _moves[(int)figure];
+            var moves = _movesTemp[(int)figure];
 
             var small = new SmallCastle
             { From = new Square(60), To = new Square(62), Piece = figure };
@@ -434,7 +517,7 @@ namespace Engine.Services
         {
             var figure = Piece.WhiteKing;
             var type = MoveType.MoveKing;
-            var moves = _moves[(int)figure];
+            var moves = _movesTemp[(int)figure];
 
             var small = new SmallCastle
             { From = new Square(4), To = new Square(6), Piece = figure };
@@ -507,7 +590,7 @@ namespace Engine.Services
         {
             var figure = Piece.BlackKnight;
             var type = MoveType.EatByKnight;
-            var moves = _attacks[(int)figure];
+            var moves = _attacksTemp[(int)figure];
 
             for (int from = 0; from < _squaresNumber; from++)
             {
@@ -524,7 +607,7 @@ namespace Engine.Services
         {
             var figure = Piece.WhiteKnight;
             var type = MoveType.EatByKnight;
-            var moves = _attacks[(int)figure];
+            var moves = _attacksTemp[(int)figure];
 
             for (int from = 0; from < _squaresNumber; from++)
             {
@@ -541,7 +624,7 @@ namespace Engine.Services
         {
             var figure = Piece.BlackKnight;
             var type = MoveType.MoveKnight;
-            var moves = _moves[(int)figure];
+            var moves = _movesTemp[(int)figure];
 
             for (int from = 0; from < _squaresNumber; from++)
             {
@@ -559,7 +642,7 @@ namespace Engine.Services
         {
             var figure = Piece.WhiteKnight;
             var type = MoveType.MoveKnight;
-            var moves = _moves[(int) figure];
+            var moves = _movesTemp[(int) figure];
 
             for (int from = 0; from < _squaresNumber; from++)
             {
@@ -616,7 +699,7 @@ namespace Engine.Services
         private void SetBlackPawnAttacks()
         {
             var figure = Piece.BlackPawn;
-            var moves = _attacks[(int)figure];
+            var moves = _attacksTemp[(int)figure];
 
             for (int i = 16; i < 56; i++)
             {
@@ -724,7 +807,7 @@ namespace Engine.Services
         private void SetWhitePawnAttacks()
         {
             var figure = Piece.WhitePawn;
-            var moves = _attacks[(int)figure];
+            var moves = _attacksTemp[(int)figure];
 
             for (int i = 8; i < 48; i++)
             {
@@ -831,7 +914,7 @@ namespace Engine.Services
         private void SetBlackPawnMoves()
         {
             var figure = Piece.BlackPawn;
-            var moves = _moves[(int)figure];
+            var moves = _movesTemp[(int)figure];
             for (int i = 48; i < 56; i++)
             {
                 var move = new PawnOverMove
@@ -880,7 +963,7 @@ namespace Engine.Services
         private void SetWhitePawnMoves()
         {
             var figure = Piece.WhitePawn;
-            var moves = _moves[(int)figure];
+            var moves = _movesTemp[(int)figure];
             for (int i = 8; i < 16; i++)
             {
                 var move = new PawnOverMove
@@ -1360,7 +1443,7 @@ namespace Engine.Services
             var attacks = _attacksTo[piece.AsByte()][@from.AsByte()][to];
             if (attacks == null) return false;
 
-            for (var i = 0; i < attacks.Count; i++)
+            for (var i = 0; i < attacks.Length; i++)
             {
                 if (attacks[i].IsLegalAttack(_board))
                 {
@@ -1434,6 +1517,28 @@ namespace Engine.Services
         public bool AnyWhiteCheck()
         {
             return  IsBlackUnderAttack(_board.GetBlackKingPosition());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsWhiteUnderAttack(byte to)
+        {
+            return IsUnderAttack(Piece.BlackBishop.AsByte(), to) ||
+                   IsUnderAttack(Piece.BlackKnight.AsByte(), to) ||
+                   IsUnderAttack(Piece.BlackQueen.AsByte(), to) ||
+                   IsUnderAttack(Piece.BlackRook.AsByte(), to) ||
+                   IsUnderAttack(Piece.BlackPawn.AsByte(), to) ||
+                   IsUnderAttack(Piece.BlackKing.AsByte(), to);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsBlackUnderAttack(byte to)
+        {
+            return IsUnderAttack(Piece.WhiteBishop.AsByte(), to) ||
+                   IsUnderAttack(Piece.WhiteKnight.AsByte(), to) ||
+                   IsUnderAttack(Piece.WhiteQueen.AsByte(), to) ||
+                   IsUnderAttack(Piece.WhiteRook.AsByte(), to) ||
+                   IsUnderAttack(Piece.WhitePawn.AsByte(), to) ||
+                   IsUnderAttack(Piece.WhiteKing.AsByte(), to);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1523,7 +1628,7 @@ namespace Engine.Services
                 var moveWrappers = _attacksTo[piece][positions[p]][to];
                 if (moveWrappers == null) continue;
 
-                for (var i = 0; i < moveWrappers.Count; i++)
+                for (var i = 0; i < moveWrappers.Length; i++)
                 {
                     if (moveWrappers[i].IsLegalAttack(_board))
                     {
@@ -1565,7 +1670,7 @@ namespace Engine.Services
                 var moveWrappers = _attacksTo[piece][positions[p]][to];
                 if (moveWrappers == null) continue;
 
-                for (var i = 0; i < moveWrappers.Count; i++)
+                for (var i = 0; i < moveWrappers.Length; i++)
                 {
                     if (moveWrappers[i].IsLegalAttack(_board))
                     {

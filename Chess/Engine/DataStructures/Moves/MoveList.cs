@@ -11,14 +11,18 @@ namespace Engine.DataStructures.Moves
     {
         private readonly MoveBase[] _items;
 
-        public MoveList()
+        public MoveList():this(128)
         {
-            _items = new MoveBase[128];
         }
 
         #region Implementation of IReadOnlyCollection<out IMove>
 
         public int Count;
+
+        public MoveList(int capacity)
+        {
+            _items = new MoveBase[capacity];
+        }
 
         public MoveBase this[int i] => _items[i];
 

@@ -35,8 +35,8 @@ namespace Engine.Interfaces
         void Remove(Piece victim, Square square);
         void Add(Piece victim, Square square);
         void Move(Piece piece, Square from,Square to);
-        Square GetWhiteKingPosition();
-        Square GetBlackKingPosition();
+        byte GetWhiteKingPosition();
+        byte GetBlackKingPosition();
         DynamicArray<byte> GetPositions(byte index);
         ulong GetKey();
         Square[] GetPiecePositions(byte piece);

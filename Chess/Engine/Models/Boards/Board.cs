@@ -1276,15 +1276,15 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Square GetWhiteKingPosition()
+        public byte GetWhiteKingPosition()
         {
-            return new Square(_boards[Piece.WhiteKing.AsByte()].BitScanForward());
+            return _boards[Piece.WhiteKing.AsByte()].BitScanForward();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Square GetBlackKingPosition()
+        public byte GetBlackKingPosition()
         {
-            return new Square(_boards[Piece.BlackKing.AsByte()].BitScanForward());
+            return _boards[Piece.BlackKing.AsByte()].BitScanForward();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
