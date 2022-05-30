@@ -11,6 +11,7 @@ namespace Engine.Interfaces
         ulong GetKey();
         short GetValue();
         int GetStaticValue();
+        int GetKingSafetyValue();
         int GetOpponentMaxValue();
         Turn GetTurn();
         bool GetPiece(Square cell, out Piece? piece);

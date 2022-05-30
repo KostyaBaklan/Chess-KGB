@@ -18,6 +18,7 @@ namespace Engine.Interfaces
         bool IsBlackOpposite(Square square);
         short GetValue();
         int GetStaticValue();
+        int GetKingSafetyValue();
         Piece GetPiece(Square cell);
         //Piece GetPiece(int cell);
         bool GetPiece(Square cell, out Piece? piece);
@@ -36,7 +37,7 @@ namespace Engine.Interfaces
         void Move(Piece piece, Square from,Square to);
         Square GetWhiteKingPosition();
         Square GetBlackKingPosition();
-        DynamicArray<byte> GetPositions(int index);
+        DynamicArray<byte> GetPositions(byte index);
         ulong GetKey();
         Square[] GetPiecePositions(byte piece);
         BitBoard GetOccupied();

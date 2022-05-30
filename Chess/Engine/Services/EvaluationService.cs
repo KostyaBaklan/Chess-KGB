@@ -35,6 +35,13 @@ namespace Engine.Services
         private readonly int[] _bishopBlockedByPawnValue;
         private readonly int[] _rookBlockedByKingValue;
 
+        private readonly int _KingShieldPreFaceValue;
+        private readonly int _KingShieldFaceValue;
+        private readonly int _KingZoneOpenFileValue;
+        private readonly double _pieceAttackFactor;
+        private readonly int[] _pieceAttackValue;
+        private readonly double[] _pieceAttackWeight;
+
         private readonly int[][] _values;
         private readonly int[][][] _staticValues;
         private readonly int[][][] _fullValues;
@@ -46,8 +53,9 @@ namespace Engine.Services
         {
             _moveHistory = moveHistory;
 
-            _unitValue = configuration.Evaluation.Static.Unit;
-            _mateValue = configuration.Evaluation.Static.Mate;
+            var evaluationProvider = configuration.Evaluation;
+            _unitValue = evaluationProvider.Static.Unit;
+            _mateValue = evaluationProvider.Static.Mate;
 
             _notAbleCastleValue = new int[3];
             _earlyQueenValue = new int[3];
@@ -67,7 +75,7 @@ namespace Engine.Services
             _rookBlockedByKingValue = new int[3];
             for (byte i = 0; i < 3; i++)
             {
-                var evaluationStatic = configuration.Evaluation.Static.GetBoard(i);
+                var evaluationStatic = evaluationProvider.Static.GetBoard(i);
                 _notAbleCastleValue[i] = evaluationStatic.NotAbleCastleValue * _unitValue;
                 _earlyQueenValue[i] = evaluationStatic.EarlyQueenValue * _unitValue;
                 _doubleBishopValue[i] = evaluationStatic.DoubleBishopValue * _unitValue;
@@ -90,24 +98,24 @@ namespace Engine.Services
             for (byte i = 0; i < 3; i++)
             {
                 _values[i] = new int[12];
-                _values[i][Piece.WhitePawn.AsByte()] = configuration.Evaluation.GetPiece(i).Pawn;
-                _values[i][Piece.BlackPawn.AsByte()] = configuration.Evaluation.GetPiece(i).Pawn;
-                _values[i][Piece.WhiteKnight.AsByte()] = configuration.Evaluation.GetPiece(i).Knight;
-                _values[i][Piece.BlackKnight.AsByte()] = configuration.Evaluation.GetPiece(i).Knight;
-                _values[i][Piece.WhiteBishop.AsByte()] = configuration.Evaluation.GetPiece(i).Bishop;
-                _values[i][Piece.BlackBishop.AsByte()] = configuration.Evaluation.GetPiece(i).Bishop;
-                _values[i][Piece.WhiteKing.AsByte()] = configuration.Evaluation.GetPiece(i).King;
-                _values[i][Piece.BlackKing.AsByte()] = configuration.Evaluation.GetPiece(i).King;
-                _values[i][Piece.WhiteRook.AsByte()] = configuration.Evaluation.GetPiece(i).Rook;
-                _values[i][Piece.BlackRook.AsByte()] = configuration.Evaluation.GetPiece(i).Rook;
-                _values[i][Piece.WhiteQueen.AsByte()] = configuration.Evaluation.GetPiece(i).Queen;
-                _values[i][Piece.BlackQueen.AsByte()] = configuration.Evaluation.GetPiece(i).Queen;
+                _values[i][Piece.WhitePawn.AsByte()] = evaluationProvider.GetPiece(i).Pawn;
+                _values[i][Piece.BlackPawn.AsByte()] = evaluationProvider.GetPiece(i).Pawn;
+                _values[i][Piece.WhiteKnight.AsByte()] = evaluationProvider.GetPiece(i).Knight;
+                _values[i][Piece.BlackKnight.AsByte()] = evaluationProvider.GetPiece(i).Knight;
+                _values[i][Piece.WhiteBishop.AsByte()] = evaluationProvider.GetPiece(i).Bishop;
+                _values[i][Piece.BlackBishop.AsByte()] = evaluationProvider.GetPiece(i).Bishop;
+                _values[i][Piece.WhiteKing.AsByte()] = evaluationProvider.GetPiece(i).King;
+                _values[i][Piece.BlackKing.AsByte()] = evaluationProvider.GetPiece(i).King;
+                _values[i][Piece.WhiteRook.AsByte()] = evaluationProvider.GetPiece(i).Rook;
+                _values[i][Piece.BlackRook.AsByte()] = evaluationProvider.GetPiece(i).Rook;
+                _values[i][Piece.WhiteQueen.AsByte()] = evaluationProvider.GetPiece(i).Queen;
+                _values[i][Piece.BlackQueen.AsByte()] = evaluationProvider.GetPiece(i).Queen;
             }
 
             _staticValues = new int[12][][];
             _fullValues = new int[12][][];
 
-            short factor = configuration.Evaluation.Static.Factor;
+            short factor = evaluationProvider.Static.Factor;
             for (byte i = 0; i < 12; i++)
             {
                 _staticValues[i] = new int[3][];
@@ -132,6 +140,14 @@ namespace Engine.Services
                     }
                 }
             }
+
+            _KingShieldFaceValue = evaluationProvider.Static.KingSafety.KingShieldFaceValue;
+            _KingShieldPreFaceValue = evaluationProvider.Static.KingSafety.KingShieldPreFaceValue;
+            _KingZoneOpenFileValue = evaluationProvider.Static.KingSafety.KingZoneOpenFileValue;
+
+            _pieceAttackFactor = evaluationProvider.Static.KingSafety.AttackValueFactor;
+            _pieceAttackValue = evaluationProvider.Static.KingSafety.PieceAttackValue;
+            _pieceAttackWeight= evaluationProvider.Static.KingSafety.AttackWeight;
         }
 
         #region Implementation of ICacheService
@@ -352,6 +368,66 @@ namespace Engine.Services
         public int GetRookBlockedByKingValue(Phase phase)
         {
             return _rookBlockedByKingValue[(byte)phase];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetPawnAttackValue()
+        {
+            return _pieceAttackValue[0];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKnightAttackValue()
+        {
+            return _pieceAttackValue[1];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetBishopAttackValue()
+        {
+            return _pieceAttackValue[2];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetRookAttackValue()
+        {
+            return _pieceAttackValue[3];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetQueenAttackValue()
+        {
+            return _pieceAttackValue[4];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKingAttackValue()
+        {
+            return _pieceAttackValue[5];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double GetAttackWeight(int attackCount)
+        {
+            return _pieceAttackWeight[attackCount] / _pieceAttackFactor;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKingZoneOpenFileValue()
+        {
+            return _KingZoneOpenFileValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKingShieldFaceValue()
+        {
+            return _KingShieldFaceValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKingShieldPreFaceValue()
+        {
+            return _KingShieldPreFaceValue;
         }
 
         #endregion

@@ -34,7 +34,7 @@ namespace Kgb.ChessApp.Views
         private readonly double _blockTimeout;
         private Turn _turn = Turn.White;
         private List<MoveBase> _moves;
-        private Stack<TimeSpan> _times;
+        private readonly Stack<TimeSpan> _times;
 
         private readonly IPosition _position;
         private StrategyBase _strategy;
@@ -489,7 +489,7 @@ namespace Kgb.ChessApp.Views
                 {
                     Number = 1,
                     White = $" {_moveFormatter.Format(move)} ",
-                    WhiteValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} "
+                    WhiteValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} K={-_position.GetKingSafetyValue()}"
                 };
                 MoveItems.Add(model);
                 mm = model;
@@ -502,7 +502,7 @@ namespace Kgb.ChessApp.Views
                     {
                         Number = lastModel.Number + 1,
                         White = $" {_moveFormatter.Format(move)} ",
-                        WhiteValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} "
+                        WhiteValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} K={-_position.GetKingSafetyValue()}"
                     };
                     MoveItems.Add(model);
                     mm = model;
@@ -510,7 +510,7 @@ namespace Kgb.ChessApp.Views
                 else
                 {
                     lastModel.Black = $" {_moveFormatter.Format(move)} ";
-                    lastModel.BlackValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} ";
+                    lastModel.BlackValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} K={-_position.GetKingSafetyValue()}";
                     var process = Process.GetCurrentProcess();
                     lastModel.Memory = $" {process.WorkingSet64 / 1024/1024} MB";
                     lastModel.Evaluation = _evaluationService.Size;

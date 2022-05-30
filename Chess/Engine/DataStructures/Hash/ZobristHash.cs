@@ -37,7 +37,7 @@ namespace Engine.DataStructures.Hash
         public void Initialize(BitBoard[] map)
         {
             Key = 0L;
-            for (var index = 0; index < map.Length; index++)
+            for (byte index = 0; index < map.Length; index++)
             {
                 var set = map[index];
                 var coordinates = set.Coordinates(index);

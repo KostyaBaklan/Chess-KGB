@@ -79,6 +79,7 @@
     <Compile Include="Interfaces\IMoveSorterProvider.cs" />
     <Compile Include="Interfaces\IOpeningService.cs" />
     <Compile Include="Models\Boards\AttackerBoard.cs" />
+    <Compile Include="Models\Config\KingSafetyEvaluation.cs" />
     <Compile Include="Models\Moves\AttackBase.cs" />
     <Compile Include="Services\AttackEvaluationService.cs" />
     <Compile Include="Services\KillerMoveCollectionFactory.cs" />

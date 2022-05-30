@@ -95,7 +95,7 @@ namespace Engine.Models.Helpers
         public static int Count(this BitBoard b)
         {
             int count = 0;
-            while (!b.IsZero())
+            while (b.Any())
             {
                 byte position = BitScanForward(b);
                 count++;
@@ -110,7 +110,7 @@ namespace Engine.Models.Helpers
         {
             byte i = 0;
             Square[] squares = new Square[size];
-            while (!b.IsZero())
+            while (b.Any())
             {
                 byte position = BitScanForward(b);
                 squares[i++] = new Square(position);
@@ -121,11 +121,11 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DynamicArray<byte> Coordinates(this BitBoard b, int index)
+        public static DynamicArray<byte> Coordinates(this BitBoard b, byte index)
         {
             var coordinates = _positions[index];
             coordinates.Clear();
-            while (!b.IsZero())
+            while (b.Any())
             {
                 byte position = BitScanForward(b);
                 coordinates.Add(position);

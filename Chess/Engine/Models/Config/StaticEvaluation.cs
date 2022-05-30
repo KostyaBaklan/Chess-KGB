@@ -14,6 +14,7 @@ namespace Engine.Models.Config
         public BoardEvaluation Opening { get; set; }
         public BoardEvaluation Middle { get; set; }
         public BoardEvaluation End { get; set; }
+        public KingSafetyEvaluation KingSafety { get; set; }
 
         public BoardEvaluation GetBoard(byte phase)
         {

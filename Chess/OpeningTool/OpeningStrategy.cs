@@ -9,7 +9,7 @@ namespace OpeningTool
 {
     internal class OpeningStrategy : LmrStrategyBase
     {
-        private MoveFilter _filter;
+        private readonly MoveFilter _filter;
         protected OpeningSorter OpeningSorter;
 
         public OpeningStrategy(short depth, IPosition position) : base(depth,position)
