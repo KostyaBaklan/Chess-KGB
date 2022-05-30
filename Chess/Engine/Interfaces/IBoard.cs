@@ -37,7 +37,7 @@ namespace Engine.Interfaces
         void Move(Piece piece, Square from,Square to);
         Square GetWhiteKingPosition();
         Square GetBlackKingPosition();
-        DynamicArray<byte> GetPositions(int index);
+        DynamicArray<byte> GetPositions(byte index);
         ulong GetKey();
         Square[] GetPiecePositions(byte piece);
         BitBoard GetOccupied();

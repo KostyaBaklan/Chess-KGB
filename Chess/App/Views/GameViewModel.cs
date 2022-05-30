@@ -34,7 +34,7 @@ namespace Kgb.ChessApp.Views
         private readonly double _blockTimeout;
         private Turn _turn = Turn.White;
         private List<MoveBase> _moves;
-        private Stack<TimeSpan> _times;
+        private readonly Stack<TimeSpan> _times;
 
         private readonly IPosition _position;
         private StrategyBase _strategy;

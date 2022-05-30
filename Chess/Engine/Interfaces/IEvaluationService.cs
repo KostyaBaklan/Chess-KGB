@@ -38,5 +38,8 @@ namespace Engine.Interfaces
         int GetQueenAttackValue();
         int GetKingAttackValue();
         double GetAttackWeight(int attackCount);
+        int GetKingZoneOpenFileValue();
+        int GetKingShieldFaceValue();
+        int GetKingShieldPreFaceValue();
     }
 }

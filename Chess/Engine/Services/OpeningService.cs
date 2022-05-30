@@ -9,7 +9,7 @@ namespace Engine.Services
 {
     public class OpeningService: IOpeningService
     {
-        private Dictionary<string, ICollection<string>> _sequences;
+        private readonly Dictionary<string, ICollection<string>> _sequences;
         private IMoveProvider _moveProvider;
 
         public OpeningService(IMoveProvider moveProvider)

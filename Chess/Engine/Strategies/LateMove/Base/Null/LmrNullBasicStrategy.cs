@@ -1,6 +1,5 @@
 ﻿using Engine.Interfaces;
 using Engine.Sorting.Comparers;
-using Engine.Sorting.Sorters;
 using Engine.Sorting.Sorters.Basic;
 
 namespace Engine.Strategies.LateMove.Base.Null

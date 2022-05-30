@@ -35,6 +35,9 @@ namespace Engine.Services
         private readonly int[] _bishopBlockedByPawnValue;
         private readonly int[] _rookBlockedByKingValue;
 
+        private readonly int _KingShieldPreFaceValue;
+        private readonly int _KingShieldFaceValue;
+        private readonly int _KingZoneOpenFileValue;
         private readonly double _pieceAttackFactor;
         private readonly int[] _pieceAttackValue;
         private readonly double[] _pieceAttackWeight;
@@ -137,6 +140,10 @@ namespace Engine.Services
                     }
                 }
             }
+
+            _KingShieldFaceValue = evaluationProvider.Static.KingSafety.KingShieldFaceValue;
+            _KingShieldPreFaceValue = evaluationProvider.Static.KingSafety.KingShieldPreFaceValue;
+            _KingZoneOpenFileValue = evaluationProvider.Static.KingSafety.KingZoneOpenFileValue;
 
             _pieceAttackFactor = evaluationProvider.Static.KingSafety.AttackValueFactor;
             _pieceAttackValue = evaluationProvider.Static.KingSafety.PieceAttackValue;
@@ -403,6 +410,24 @@ namespace Engine.Services
         public double GetAttackWeight(int attackCount)
         {
             return _pieceAttackWeight[attackCount] / _pieceAttackFactor;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKingZoneOpenFileValue()
+        {
+            return _KingZoneOpenFileValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKingShieldFaceValue()
+        {
+            return _KingShieldFaceValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetKingShieldPreFaceValue()
+        {
+            return _KingShieldPreFaceValue;
         }
 
         #endregion

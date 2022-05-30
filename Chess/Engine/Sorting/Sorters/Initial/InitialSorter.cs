@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
@@ -16,7 +15,7 @@ namespace Engine.Sorting.Sorters.Initial
 {
     public abstract class InitialSorter : MoveSorter
     {
-        private BitBoard _minorStartPositions;
+        private readonly BitBoard _minorStartPositions;
         protected readonly PositionsList PositionsList;
         protected readonly AttackList AttackList;
         protected InitialMoveCollection InitialMoveCollection;
@@ -47,11 +46,7 @@ namespace Engine.Sorting.Sorters.Initial
                         InitialMoveCollection.AddSuggested(move);
                         return;
                     }
-                    else if ((move.To.AsBitBoard() & Board.GetBlackPieceBits()).Any())
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
+
                     break;
                 case Piece.WhiteKnight:
                 case Piece.WhiteBishop:
@@ -62,17 +57,20 @@ namespace Engine.Sorting.Sorters.Initial
                         if ((move.To.AsBitBoard() & Board.GetPerimeter()).Any())
                         {
                             InitialMoveCollection.AddNonSuggested(move);
-                            return; 
+                            return;
                         }
-                        if ((_minorStartPositions&move.From.AsBitBoard()).IsZero())
+
+                        if ((_minorStartPositions & move.From.AsBitBoard()).IsZero())
                         {
                             InitialMoveCollection.AddNonSuggested(move);
                             return;
                         }
                     }
+
                     break;
                 case Piece.WhiteRook:
-                    if (move.From == Squares.A1 && MoveHistoryService.CanDoWhiteBigCastle()|| move.From == Squares.H1 && MoveHistoryService.CanDoWhiteSmallCastle())
+                    if (move.From == Squares.A1 && MoveHistoryService.CanDoWhiteBigCastle() ||
+                        move.From == Squares.H1 && MoveHistoryService.CanDoWhiteSmallCastle())
                     {
                         if (phase == Phase.Opening)
                         {
@@ -82,15 +80,19 @@ namespace Engine.Sorting.Sorters.Initial
                         {
                             InitialMoveCollection.AddNonSuggested(move);
                         }
+
                         return;
                     }
+
                     break;
                 case Piece.WhiteQueen:
                 case Piece.BlackQueen:
                     if (phase == Phase.Opening)
                     {
-                        InitialMoveCollection.AddNonSuggested(move);return;
+                        InitialMoveCollection.AddNonSuggested(move);
+                        return;
                     }
+
                     break;
                 case Piece.WhiteKing:
                     if (!MoveHistoryService.GetLastMove().IsCheck)
@@ -100,20 +102,23 @@ namespace Engine.Sorting.Sorters.Initial
                         {
                             if (canCastle)
                             {
-                                InitialMoveCollection.AddBad(move); 
+                                InitialMoveCollection.AddBad(move);
                             }
                             else
                             {
                                 InitialMoveCollection.AddNonSuggested(move);
                             }
+
                             return;
                         }
-                        if(phase == Phase.Middle && canCastle)
+
+                        if (phase == Phase.Middle && canCastle)
                         {
                             InitialMoveCollection.AddNonSuggested(move);
                             return;
                         }
                     }
+
                     break;
                 case Piece.BlackPawn:
                     if ((move.To.AsBitBoard() & Board.GetRank(1)).Any())
@@ -121,25 +126,24 @@ namespace Engine.Sorting.Sorters.Initial
                         InitialMoveCollection.AddSuggested(move);
                         return;
                     }
-                    else if ((move.To.AsBitBoard() & Board.GetWhitePieceBits()).Any())
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
+
                     break;
                 case Piece.BlackRook:
-                    if (move.From == Squares.A8 && MoveHistoryService.CanDoBlackBigCastle()|| move.From == Squares.H8 && MoveHistoryService.CanDoBlackSmallCastle())
+                    if (move.From == Squares.A8 && MoveHistoryService.CanDoBlackBigCastle() ||
+                        move.From == Squares.H8 && MoveHistoryService.CanDoBlackSmallCastle())
                     {
                         if (phase == Phase.Opening)
                         {
-                            InitialMoveCollection.AddBad(move); 
+                            InitialMoveCollection.AddBad(move);
                         }
                         else
                         {
                             InitialMoveCollection.AddNonSuggested(move);
                         }
+
                         return;
                     }
+
                     break;
                 case Piece.BlackKing:
                     if (!MoveHistoryService.GetLastMove().IsCheck)
@@ -155,14 +159,17 @@ namespace Engine.Sorting.Sorters.Initial
                             {
                                 InitialMoveCollection.AddNonSuggested(move);
                             }
+
                             return;
                         }
+
                         if (phase == Phase.Middle && canCastle)
                         {
                             InitialMoveCollection.AddNonSuggested(move);
                             return;
                         }
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -173,7 +180,7 @@ namespace Engine.Sorting.Sorters.Initial
             {
                 if (move.Piece.IsWhite())
                 {
-                    if (WhiteQueenUnderAttack(move)||WhiteRookUnderAttack(move)||IsBadWhiteSee(move))
+                    if (WhiteQueenUnderAttack(move) || WhiteRookUnderAttack(move) || IsBadWhiteSee(move))
                     {
                         return;
                     }
@@ -182,21 +189,24 @@ namespace Engine.Sorting.Sorters.Initial
                         (MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
                          Board.GetBlackBits()).Any())
                     {
-                        InitialMoveCollection.AddSuggested(move); return;
+                        InitialMoveCollection.AddSuggested(move);
+                        return;
                     }
 
                     if (move.Piece == Piece.WhiteKnight &&
                         (MoveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), move.To.AsByte()) &
                          Board.GetBlackBits()).Any())
                     {
-                        InitialMoveCollection.AddSuggested(move);return;
+                        InitialMoveCollection.AddSuggested(move);
+                        return;
                     }
 
                     if (move.Piece == Piece.WhiteBishop &&
                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
                          Board.GetBlackBits()).Any())
                     {
-                        InitialMoveCollection.AddSuggested(move); return;
+                        InitialMoveCollection.AddSuggested(move);
+                        return;
                     }
 
                     if (IsCheckToBlack(move))
@@ -210,7 +220,7 @@ namespace Engine.Sorting.Sorters.Initial
                 }
                 else
                 {
-                    if (BlackQueenUnderAttack(move)||BlackRookUnderAttack(move)||IsBadBlackSee(move))
+                    if (BlackQueenUnderAttack(move) || BlackRookUnderAttack(move) || IsBadBlackSee(move))
                     {
                         return;
                     }
@@ -219,21 +229,24 @@ namespace Engine.Sorting.Sorters.Initial
                         (MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
                          Board.GetWhiteBits()).Any())
                     {
-                        InitialMoveCollection.AddSuggested(move); return;
+                        InitialMoveCollection.AddSuggested(move);
+                        return;
                     }
 
                     if (move.Piece == Piece.BlackKnight &&
                         (MoveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), move.To.AsByte()) &
                          Board.GetWhiteBits()).Any())
                     {
-                        InitialMoveCollection.AddSuggested(move); return;
+                        InitialMoveCollection.AddSuggested(move);
+                        return;
                     }
 
                     if (move.Piece == Piece.BlackBishop &&
                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
                          Board.GetWhiteBits()).Any())
                     {
-                        InitialMoveCollection.AddSuggested(move); return;
+                        InitialMoveCollection.AddSuggested(move);
+                        return;
                     }
 
                     if (IsCheckToWhite(move))
@@ -403,14 +416,12 @@ namespace Engine.Sorting.Sorters.Initial
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void ProcessPromotion(MoveBase move)
         {
-            //var value = Position.GetValue();
-
             Position.Make(move);
             try
             {
                 if (move.Piece.IsWhite())
                 {
-                    MoveProvider.GetWhiteAttacksTo(move.To.AsByte(),AttackList);
+                    MoveProvider.GetWhiteAttacksTo(move.To.AsByte(), AttackList);
                     StaticExchange(move, Piece.WhitePawn);
                 }
                 else
@@ -418,19 +429,6 @@ namespace Engine.Sorting.Sorters.Initial
                     MoveProvider.GetBlackAttacksTo(move.To.AsByte(), AttackList);
                     StaticExchange(move, Piece.BlackPawn);
                 }
-                //var promotionValue = -Evaluate(-10000, 10000);
-                //if (promotionValue > value)
-                //{
-                //    InitialMoveCollection.AddWinCapture(move);
-                //}
-                //else if(value > promotionValue)
-                //{
-                //    InitialMoveCollection.AddLooseCapture(move);
-                //}
-                //else
-                //{
-                //    InitialMoveCollection.AddTrade(move);
-                //}
             }
             finally
             {
@@ -488,50 +486,18 @@ namespace Engine.Sorting.Sorters.Initial
 
                     if (piece == Piece.BlackQueen || piece == Piece.WhiteQueen)
                     {
-                        InitialMoveCollection.AddBad(move); 
+                        InitialMoveCollection.AddBad(move);
                     }
                     else
                     {
                         InitialMoveCollection.AddNonSuggested(move);
                     }
+
                     return true;
                 }
             }
 
             return false;
-        }
-
-        protected int Evaluate(int alpha, int beta)
-        {
-            int standPat = Position.GetValue();
-            if (standPat >= beta)
-            {
-                return beta;
-            }
-
-            if (alpha < standPat)
-                alpha = standPat;
-
-            var moves = Position.GetAllAttacks(this);
-            for (var i = 0; i < moves.Length; i++)
-            {
-                var move = moves[i];
-                Position.Make(move);
-
-                int score = -Evaluate(-beta, -alpha);
-
-                Position.UnMake();
-
-                if (score >= beta)
-                {
-                    return beta;
-                }
-
-                if (score > alpha)
-                    alpha = score;
-            }
-
-            return alpha;
         }
 
         #endregion
