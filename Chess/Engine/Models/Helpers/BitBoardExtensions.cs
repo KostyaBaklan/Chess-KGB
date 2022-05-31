@@ -13,16 +13,10 @@ namespace Engine.Models.Helpers
         private const ulong _magic = 0x07EDD5E59A4E28C2;
 
         private static readonly byte[] _magicTable;
-        private static readonly DynamicArray<byte>[] _positions;
 
         static BitBoardExtensions()
         {
             _magicTable = new byte[64];
-            _positions = new DynamicArray<byte>[12];
-            for (var x = 0; x < _positions.Length; x++)
-            {
-                _positions[x] = new DynamicArray<byte>();
-            }
 
             ulong bit = 1;
             byte i = 0;
@@ -106,36 +100,6 @@ namespace Engine.Models.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Square[] GetCoordinates(this BitBoard b, int index, int size)
-        {
-            byte i = 0;
-            Square[] squares = new Square[size];
-            while (b.Any())
-            {
-                byte position = BitScanForward(b);
-                squares[i++] = new Square(position);
-                b = b.Remove(position);
-            }
-
-            return squares;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DynamicArray<byte> Coordinates(this BitBoard b, byte index)
-        {
-            var coordinates = _positions[index];
-            coordinates.Clear();
-            while (b.Any())
-            {
-                byte position = BitScanForward(b);
-                coordinates.Add(position);
-                b = b.Remove(position);
-            }
-
-            return coordinates;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsGreaterRank(this int bit, int coordinate)
         {
             return bit / 8 > coordinate / 8;
@@ -145,24 +109,6 @@ namespace Engine.Models.Helpers
         public static bool IsLessRank(this byte bit, byte coordinate)
         {
             return bit / 8 < coordinate / 8;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsGreaterRank(this BitBoard bit, int coordinate)
-        {
-            return bit.BitScanForward() / 8 > coordinate / 8;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsLessRank(this BitBoard bit, int coordinate)
-        {
-            return bit.BitScanForward() / 8 < coordinate / 8;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsGreaterFile(this BitBoard bit, int coordinate)
-        {
-            return bit.BitScanForward() % 8 > coordinate % 8;
         }
 
         public static string ToBitString(this BitBoard b)

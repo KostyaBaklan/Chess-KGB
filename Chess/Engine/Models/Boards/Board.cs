@@ -274,7 +274,6 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public short GetValue()
         {
-            //SetPositions();
             return (short) (GetWhiteValue() - GetBlackValue());
         }
 

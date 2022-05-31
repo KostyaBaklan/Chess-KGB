@@ -45,10 +45,12 @@ namespace EvaluationEditor
             containerRegistry.RegisterInstance(tableConfigurationProvider);
 
             containerRegistry.RegisterSingleton(typeof(IMoveProvider), typeof(MoveProvider));
+            containerRegistry.RegisterSingleton(typeof(IMoveSorterProvider), typeof(MoveSorterProvider));
             containerRegistry.RegisterSingleton(typeof(IMoveFormatter), typeof(MoveFormatter));
             containerRegistry.RegisterSingleton(typeof(IMoveHistoryService), typeof(MoveHistoryService));
             containerRegistry.RegisterSingleton(typeof(IEvaluationService), typeof(EvaluationService));
             containerRegistry.RegisterSingleton(typeof(ICheckService), typeof(CheckService));
+            containerRegistry.RegisterSingleton(typeof(IKillerMoveCollectionFactory), typeof(KillerMoveCollectionFactory));
             containerRegistry.RegisterSingleton(typeof(IAttackEvaluationService), typeof(AttackEvaluationService));
             containerRegistry.RegisterSingleton(typeof(IOpeningService), typeof(OpeningService));
 
