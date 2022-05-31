@@ -73,6 +73,7 @@
     <Compile Include="DataStructures\Moves\Collections\Initial\InitialKillerMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\Initial\InitialMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\Initial\InitialSuggestedMoveCollection.cs" />
+    <Compile Include="DataStructures\PositionCollection.cs" />
     <Compile Include="DataStructures\PositionsList.cs" />
     <Compile Include="Interfaces\Config\PvsConfiguration.cs" />
     <Compile Include="Interfaces\IAttackEvaluationService.cs" />

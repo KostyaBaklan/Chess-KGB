@@ -125,7 +125,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWhiteKnightAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.WhiteKnight.AsByte());
+            var positions = board.GetPiecePositions(Piece.WhiteKnight.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetWhiteKnightAttackPattern(moveProvider, positions[i]);
@@ -141,7 +141,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWhiteBishopAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.WhiteBishop.AsByte());
+            var positions = board.GetPiecePositions(Piece.WhiteBishop.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetWhiteBishopAttackPattern(positions[i], board.GetOccupied());
@@ -157,7 +157,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWhiteQueenAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.WhiteQueen.AsByte());
+            var positions = board.GetPiecePositions(Piece.WhiteQueen.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetWhiteQueenAttackPattern(positions[i], board.GetOccupied());
@@ -173,7 +173,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWhiteRookAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.WhiteRook.AsByte());
+            var positions = board.GetPiecePositions(Piece.WhiteRook.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetWhiteRookAttackPattern(positions[i], board.GetOccupied());
@@ -189,7 +189,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWhitePawnAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.WhitePawn.AsByte());
+            var positions = board.GetPiecePositions(Piece.WhitePawn.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetWhitePawnAttackPattern(moveProvider, positions[i]);
@@ -205,7 +205,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWhiteKingAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.WhiteKing.AsByte());
+            var positions = board.GetPiecePositions(Piece.WhiteKing.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetWhiteKingAttackPattern(moveProvider, positions[i]);
@@ -221,7 +221,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBlackKnightAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.BlackKnight.AsByte());
+            var positions = board.GetPiecePositions(Piece.BlackKnight.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetBlackKnightAttackPattern(moveProvider, positions[i]);
@@ -237,7 +237,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBlackBishopAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.BlackBishop.AsByte());
+            var positions = board.GetPiecePositions(Piece.BlackBishop.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetBlackBishopAttackPattern(positions[i], board.GetOccupied());
@@ -253,7 +253,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBlackQueenAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.BlackQueen.AsByte());
+            var positions = board.GetPiecePositions(Piece.BlackQueen.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetBlackQueenAttackPattern(positions[i], board.GetOccupied());
@@ -269,7 +269,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBlackRookAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.BlackRook.AsByte());
+            var positions = board.GetPiecePositions(Piece.BlackRook.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetBlackRookAttackPattern(positions[i], board.GetOccupied());
@@ -285,7 +285,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBlackPawnAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.BlackPawn.AsByte());
+            var positions = board.GetPiecePositions(Piece.BlackPawn.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetBlackPawnAttackPattern(moveProvider, positions[i]);
@@ -301,7 +301,7 @@ namespace Engine.Models.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBlackKingAttackTo(this IMoveProvider moveProvider, IBoard board, BitBoard to)
         {
-            var positions = board.GetPositions(Piece.BlackKing.AsByte());
+            var positions = board.GetPiecePositions(Piece.BlackKing.AsByte());
             for (var i = 0; i < positions.Count; i++)
             {
                 BitBoard pattern = GetBlackKingAttackPattern(moveProvider, positions[i]);

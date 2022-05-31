@@ -11,9 +11,8 @@ namespace Engine.DataStructures.Moves
     {
         private readonly AttackBase[] _items;
 
-        public AttackList()
+        public AttackList():this(128)
         {
-            _items = new AttackBase[128];
         }
 
         public AttackBase this[int i] => _items[i];
@@ -21,6 +20,11 @@ namespace Engine.DataStructures.Moves
         #region Implementation of IReadOnlyCollection<out IMove>
 
         public int Count;
+
+        public AttackList(int capacity)
+        {
+            _items = new AttackBase[capacity];
+        }
 
         #endregion
 

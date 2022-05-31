@@ -10,7 +10,7 @@ namespace Engine.DataStructures
 
         public DynamicArray() : this(32) { }
 
-        private DynamicArray(int capacity)
+        public DynamicArray(int capacity)
         {
             Count = 0;
             _items = new T[capacity];

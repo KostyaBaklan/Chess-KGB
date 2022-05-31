@@ -9,12 +9,12 @@ namespace Tests
         {
             Boot.SetUp();
 
-            PerformanceTest.Test(args);
+            //PerformanceTest.Test(args);
 
            //PerformanceTest.Test(new[] { "lmr_bs_hc", "7", "6", false.ToString() });
            //PerformanceTest.Test(new[] { "lmrd_bs_hc", "7", "6", false.ToString() });
            //PerformanceTest.Test(new[] { "lmr_es_hc", "7", "6", false.ToString() });
-           //PerformanceTest.Test(new[] { "lmrd_es_hc", "7", "6", false.ToString() });
+           PerformanceTest.Test(new[] { "lmrd_es_hc", "8", "6", false.ToString() });
            //PerformanceTest.Test(new[] { "lmr_as_hc", "7", "6", false.ToString() });
            //PerformanceTest.Test(new[] { "lmrd_as_hc", "7", "6", false.ToString() });
 
