@@ -19,6 +19,7 @@ namespace Engine.Services
 
         private readonly IEvaluationService _evaluationService;
         private readonly IMoveProvider _moveProvider;
+        private IBoard _board;
 
         public AttackEvaluationService(IEvaluationService evaluationService, IMoveProvider moveProvider)
         {
@@ -30,10 +31,10 @@ namespace Engine.Services
         #region Implementation of IAttackEvaluationService
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Initialize(BitBoard[] boards, BitBoard occ, Phase phase)
+        public void Initialize(BitBoard[] boards)
         {
-            _phase = phase;
-            _occupied = occ;
+            _phase = _board.GetPhase();
+            _occupied = _board.GetOccupied();
 
             _boards = new BitBoard[boards.Length];
             Array.Copy(boards, _boards, _boards.Length);
@@ -114,6 +115,11 @@ namespace Engine.Services
             }
 
             return v;
+        }
+
+        public void SetBoard(IBoard board)
+        {
+            _board = board;
         }
 
         #endregion
@@ -262,63 +268,63 @@ namespace Engine.Services
         {
             BitBoard attackers = new BitBoard(0);
 
-            _boards[Piece.BlackPawn.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            var positionCollection = _board.GetPiecePositions(Piece.BlackPawn.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _moveProvider.GetBlackPawnAttackPattern(_positions[p]);
+                var pattern = _moveProvider.GetBlackPawnAttackPattern(positionCollection[p]);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.BlackKnight.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.BlackKnight.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _moveProvider.GetBlackKnightAttackPattern(_positions[p]);
+                var pattern = _moveProvider.GetBlackKnightAttackPattern(positionCollection[p]);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.BlackBishop.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.BlackBishop.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _positions[p].GetBlackBishopAttackPattern(_occupied);
+                var pattern = positionCollection[p].GetBlackBishopAttackPattern(_occupied);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.BlackRook.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.BlackRook.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _positions[p].GetBlackRookAttackPattern(_occupied);
+                var pattern = positionCollection[p].GetBlackRookAttackPattern(_occupied);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.BlackQueen.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.BlackQueen.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _positions[p].GetBlackQueenAttackPattern(_occupied);
+                var pattern = positionCollection[p].GetBlackQueenAttackPattern(_occupied);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.BlackKing.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.BlackKing.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _moveProvider.GetBlackKingAttackPattern(_positions[p]);
+                var pattern = _moveProvider.GetBlackKingAttackPattern(positionCollection[p]);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
@@ -330,63 +336,63 @@ namespace Engine.Services
         {
             BitBoard attackers = new BitBoard(0);
 
-            _boards[Piece.WhitePawn.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            var positionCollection = _board.GetPiecePositions(Piece.WhitePawn.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _moveProvider.GetWhitePawnAttackPattern(_positions[p]);
+                var pattern = _moveProvider.GetWhitePawnAttackPattern(positionCollection[p]);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.WhiteKnight.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.WhiteKnight.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _moveProvider.GetWhiteKnightAttackPattern(_positions[p]);
+                var pattern = _moveProvider.GetWhiteKnightAttackPattern(positionCollection[p]);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.WhiteBishop.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.WhiteBishop.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _positions[p].GetWhiteBishopAttackPattern(_occupied);
+                var pattern = positionCollection[p].GetWhiteBishopAttackPattern(_occupied);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.WhiteRook.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.WhiteRook.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _positions[p].GetWhiteRookAttackPattern(_occupied);
+                var pattern = positionCollection[p].GetWhiteRookAttackPattern(_occupied);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.WhiteQueen.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.WhiteQueen.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _positions[p].GetWhiteQueenAttackPattern(_occupied);
+                var pattern = positionCollection[p].GetWhiteQueenAttackPattern(_occupied);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 
-            _boards[Piece.WhiteKing.AsByte()].GetPositions(_positions);
-            for (var p = 0; p < _positions.Count; p++)
+            positionCollection = _board.GetPiecePositions(Piece.WhiteKing.AsByte());
+            for (var p = 0; p < positionCollection.Count; p++)
             {
-                var pattern = _moveProvider.GetWhiteKingAttackPattern(_positions[p]);
+                var pattern = _moveProvider.GetWhiteKingAttackPattern(positionCollection[p]);
                 if (pattern.IsSet(_to))
                 {
-                    attackers = attackers.Add(_positions[p]);
+                    attackers = attackers.Add(positionCollection[p]);
                 }
             }
 

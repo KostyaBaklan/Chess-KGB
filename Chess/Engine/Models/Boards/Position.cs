@@ -297,7 +297,7 @@ namespace Engine.Models.Boards
             for (var i = 0; i < squares.Length; i++)
             {
                 var p = pieces[i];
-                var from = _board.GetPiecePositions(p);
+                var from = _board.GetPiecePositions(p).ToSquares();
                 squares[p % squares.Length] = from;
             }
             return squares;
@@ -317,10 +317,6 @@ namespace Engine.Models.Boards
             move.Make(_board, _figureHistory);
 
             move.IsCheck = _turn != Turn.White ? _moveProvider.AnyBlackCheck() : _moveProvider.AnyWhiteCheck();
-
-            //var set = _board.GetBoardSet();
-
-            //_moveHistoryService.Add(set);
 
             _phase = _board.UpdatePhase();
 

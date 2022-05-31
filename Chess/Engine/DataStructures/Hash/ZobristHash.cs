@@ -40,11 +40,9 @@ namespace Engine.DataStructures.Hash
             for (byte index = 0; index < map.Length; index++)
             {
                 var set = map[index];
-                var coordinates = set.Coordinates(index);
-                for (var i = 0; i < coordinates.Count; i++)
+                foreach (var b in set.BitScan())
                 {
-                    var coordinate = coordinates[i];
-                    Key = Key ^ _table[coordinate][index];
+                    Key = Key ^ _table[b][index];
                 }
             }
         }

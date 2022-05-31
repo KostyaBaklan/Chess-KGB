@@ -1622,7 +1622,7 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsUnderAttack(byte piece, byte to)
         {
-            var positions = _board.GetPositions(piece);
+            var positions = _board.GetPiecePositions(piece);
             for (var p = 0; p < positions.Count; p++)
             {
                 var moveWrappers = _attacksTo[piece][positions[p]][to];
@@ -1664,7 +1664,7 @@ namespace Engine.Services
 
         private void GetAttacksTo(byte piece, byte to, AttackList attackList)
         {
-            var positions = _board.GetPositions(piece);
+            var positions = _board.GetPiecePositions(piece);
             for (var p = 0; p < positions.Count; p++)
             {
                 var moveWrappers = _attacksTo[piece][positions[p]][to];

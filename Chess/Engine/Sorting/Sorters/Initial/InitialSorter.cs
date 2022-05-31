@@ -267,13 +267,10 @@ namespace Engine.Sorting.Sorters.Initial
 
         protected bool WhiteRookUnderAttack(MoveBase move)
         {
-            var pieceBits = Board.GetPieceBits(Piece.WhiteRook);
-            if (!pieceBits.Any()) return false;
-
-            pieceBits.GetPositions(PositionsList);
-            for (int i = 0; i < PositionsList.Count; i++)
+            var positionCollection = Board.GetPiecePositions(Piece.WhiteRook.AsByte());
+            for (int i = 0; i < positionCollection.Count; i++)
             {
-                byte rookPosition = PositionsList[i];
+                byte rookPosition = positionCollection[i];
                 if (MoveProvider.GetBlackPawnAttackTo(Board, rookPosition).Any() ||
                     MoveProvider.GetBlackKnightAttackTo(Board, rookPosition).Any() ||
                     MoveProvider.GetBlackBishopAttackTo(Board, rookPosition).Any())
@@ -288,13 +285,10 @@ namespace Engine.Sorting.Sorters.Initial
 
         protected bool BlackRookUnderAttack(MoveBase move)
         {
-            var pieceBits = Board.GetPieceBits(Piece.BlackRook);
-            if (!pieceBits.Any()) return false;
-
-            pieceBits.GetPositions(PositionsList);
-            for (int i = 0; i < PositionsList.Count; i++)
+            var positionCollection = Board.GetPiecePositions(Piece.BlackRook.AsByte());
+            for (int i = 0; i < positionCollection.Count; i++)
             {
-                byte rookPosition = PositionsList[i];
+                byte rookPosition = positionCollection[i];
                 if (MoveProvider.GetWhitePawnAttackTo(Board, rookPosition).Any() ||
                     MoveProvider.GetWhiteKnightAttackTo(Board, rookPosition).Any() ||
                     MoveProvider.GetWhiteBishopAttackTo(Board, rookPosition).Any())
@@ -309,13 +303,10 @@ namespace Engine.Sorting.Sorters.Initial
 
         protected bool BlackQueenUnderAttack(MoveBase move)
         {
-            var pieceBits = Board.GetPieceBits(Piece.BlackQueen);
-            if (!pieceBits.Any()) return false;
-
-            pieceBits.GetPositions(PositionsList);
-            for (int i = 0; i < PositionsList.Count; i++)
+            var positionCollection = Board.GetPiecePositions(Piece.BlackQueen.AsByte());
+            for (int i = 0; i < positionCollection.Count; i++)
             {
-                byte queenPosition = PositionsList[i];
+                byte queenPosition = positionCollection[i];
                 if (MoveProvider.GetWhitePawnAttackTo(Board, queenPosition).Any() ||
                     MoveProvider.GetWhiteKnightAttackTo(Board, queenPosition).Any() ||
                     MoveProvider.GetWhiteBishopAttackTo(Board, queenPosition).Any() ||
@@ -331,13 +322,10 @@ namespace Engine.Sorting.Sorters.Initial
 
         protected bool WhiteQueenUnderAttack(MoveBase move)
         {
-            var pieceBits = Board.GetPieceBits(Piece.WhiteQueen);
-            if (!pieceBits.Any()) return false;
-
-            pieceBits.GetPositions(PositionsList);
-            for (int i = 0; i < PositionsList.Count; i++)
+            var positionCollection = Board.GetPiecePositions(Piece.WhiteQueen.AsByte());
+            for (int i = 0; i < positionCollection.Count; i++)
             {
-                byte queenPosition = PositionsList[i];
+                byte queenPosition = positionCollection[i];
                 if (MoveProvider.GetBlackPawnAttackTo(Board, queenPosition).Any() ||
                     MoveProvider.GetBlackKnightAttackTo(Board, queenPosition).Any() ||
                     MoveProvider.GetBlackBishopAttackTo(Board, queenPosition).Any() ||

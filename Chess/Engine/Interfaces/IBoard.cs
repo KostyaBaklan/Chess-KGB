@@ -20,7 +20,6 @@ namespace Engine.Interfaces
         int GetStaticValue();
         int GetKingSafetyValue();
         Piece GetPiece(Square cell);
-        //Piece GetPiece(int cell);
         bool GetPiece(Square cell, out Piece? piece);
         void SetOver(byte to, bool b);
         bool IsOver(byte square);
@@ -37,15 +36,13 @@ namespace Engine.Interfaces
         void Move(Piece piece, Square from,Square to);
         byte GetWhiteKingPosition();
         byte GetBlackKingPosition();
-        DynamicArray<byte> GetPositions(byte index);
         ulong GetKey();
-        Square[] GetPiecePositions(byte piece);
+        PositionCollection GetPiecePositions(byte index);
         BitBoard GetOccupied();
         BitBoard GetPieceBits(Piece piece);
         BitBoard GetPerimeter();
         Phase UpdatePhase();
         int StaticExchange(AttackBase attack);
-        //Piece[] GetBoardSet();
         int GetBlackMaxValue();
         int GetWhiteMaxValue();
         bool CanWhitePromote();
@@ -59,5 +56,6 @@ namespace Engine.Interfaces
         BitBoard GetBlackPieceForBishopBits();
         BitBoard GetBlackBits();
         BitBoard GetWhiteBits();
+        Phase GetPhase();
     }
 }
