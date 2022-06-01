@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -49,6 +50,21 @@ namespace Engine.Models.Boards
         private BitBoard[][] _whiteKingOpenFile;
         private BitBoard[][] _blackKingOpenFile;
 
+        private BitBoard[] _whiteMinorDefense;
+        private BitBoard[] _blackMinorDefense;
+
+        private BitBoard[] _whiteBlockedPawns;
+        private BitBoard[] _whiteDoublePawns;
+        private BitBoard[] _whitePassedPawns;
+        private BitBoard[] _whiteIsolatedPawns;
+        private List<KeyValuePair<BitBoard, BitBoard>>[] _whiteBackwardPawns;
+
+        private BitBoard[] _blackBlockedPawns;
+        private BitBoard[] _blackDoublePawns;
+        private BitBoard[] _blackPassedPawns;
+        private BitBoard[] _blackIsolatedPawns;
+        private List<KeyValuePair<BitBoard, BitBoard>>[] _blackBackwardPawns;
+
         private readonly bool[] _overBoard;
         private readonly Piece[] _pieces;
         private readonly BitBoard _whiteQueenOpening;
@@ -96,6 +112,149 @@ namespace Engine.Models.Boards
                                  Squares.D7.AsBitBoard() | Squares.E7.AsBitBoard() | Squares.C7.AsBitBoard();
 
             SetKingSafety();
+
+            SetPawnProperties();
+        }
+
+        private void SetPawnProperties()
+        {
+            _whiteBlockedPawns = new BitBoard[64];
+            _whiteDoublePawns = new BitBoard[64];
+            _whitePassedPawns = new BitBoard[64];
+            _whiteIsolatedPawns = new BitBoard[64];
+            _whiteBackwardPawns = new List<KeyValuePair<BitBoard, BitBoard>>[64];
+
+            _blackBlockedPawns = new BitBoard[64];
+            _blackDoublePawns = new BitBoard[64];
+            _blackPassedPawns = new BitBoard[64];
+            _blackIsolatedPawns = new BitBoard[64];
+            _blackBackwardPawns = new List<KeyValuePair<BitBoard, BitBoard>>[64];
+
+            _whiteMinorDefense = new BitBoard[64];
+            _blackMinorDefense = new BitBoard[64];
+
+            for (byte i = 16; i < 64; i++)
+            {
+                _whiteMinorDefense[i] = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), i);
+            }
+            for (byte i = 0; i < 48; i++)
+            {
+                _blackMinorDefense[i] = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), i);
+            }
+
+            BitBoard ones = new BitBoard();
+            ones = ~ones;
+
+            for (int i = 8; i < 56; i++)
+            {
+                var f = i % 8;
+                var r = i / 8;
+
+                _whiteBlockedPawns[i] = (i + 8).AsBitBoard();
+                _blackBlockedPawns[i] = (i - 8).AsBitBoard();
+
+                _whiteDoublePawns[i] = _files[f] ^ i.AsBitBoard();
+                _blackDoublePawns[i] = _files[f] ^ i.AsBitBoard();
+
+                if (f == 0)
+                {
+                    _whitePassedPawns[i] = (ones << i) & (_files[0] | _files[1]) & ~_ranks[r];
+                    _blackPassedPawns[i] = ~(ones << i) & (_files[0] | _files[1]) & ~_ranks[r];
+
+                    _whiteIsolatedPawns[i] = _files[1];
+                    _blackIsolatedPawns[i] = _files[1];
+                }
+                else if (f == 7)
+                {
+                    _whitePassedPawns[i] = (ones << i) & (_files[6] | _files[7]) & ~_ranks[r];
+                    _blackPassedPawns[i] = ~(ones << i) & (_files[6] | _files[7]) & ~_ranks[r];
+
+                    _whiteIsolatedPawns[i] = _files[7];
+                    _blackIsolatedPawns[i] = _files[7];
+                }
+                else
+                {
+                    _whitePassedPawns[i] = (ones << i) & (_files[f - 1] | _files[f] | _files[f + 1]) & ~_ranks[r];
+                    _blackPassedPawns[i] = ~(ones << i) & (_files[f - 1] | _files[f] | _files[f + 1]) & ~_ranks[r];
+
+                    _whiteIsolatedPawns[i] = _files[f - 1] | _files[f + 1];
+                    _blackIsolatedPawns[i] = _files[f - 1] | _files[f + 1];
+                }
+            }
+
+            for (int i = 0; i < 64; i++)
+            {
+                _whiteBackwardPawns[i] = new List<KeyValuePair<BitBoard, BitBoard>>();
+                _blackBackwardPawns[i] = new List<KeyValuePair<BitBoard, BitBoard>>();
+            }
+
+            for (byte i = 8; i < 16; i++)
+            {
+                byte w = (byte)(i + 8);
+                var bb = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), w);
+                var wb = _blackPassedPawns[w];
+                for (int j = i; j >= 0; j -= 8)
+                {
+                    wb ^= j.AsBitBoard();
+                }
+
+                _whiteBackwardPawns[i].Add(new KeyValuePair<BitBoard, BitBoard>(wb, bb));
+
+                w = (byte)(i + 16);
+                bb = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), w);
+                wb = _blackPassedPawns[w];
+                for (int j = i; j >= 0; j -= 8)
+                {
+                    wb ^= j.AsBitBoard();
+                }
+                _whiteBackwardPawns[i].Add(new KeyValuePair<BitBoard, BitBoard>(wb, bb));
+            }
+            for (byte i = 16; i < 48; i++)
+            {
+                byte w = (byte)(i + 8);
+                var bb = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), w);
+                var wb = _blackPassedPawns[w];
+                for (int j = i; j >= 0; j -= 8)
+                {
+                    wb ^= j.AsBitBoard();
+                }
+
+                _whiteBackwardPawns[i].Add(new KeyValuePair<BitBoard, BitBoard>(wb, bb));
+            }
+            for (byte i = 48; i < 56; i++)
+            {
+                byte w = (byte)(i - 8);
+                var bb = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), w);
+                var wb = _whitePassedPawns[w];
+                for (int j = i; j < 56; j += 8)
+                {
+                    wb ^= j.AsBitBoard();
+                }
+
+                _blackBackwardPawns[i].Add(new KeyValuePair<BitBoard, BitBoard>(wb, bb));
+
+                w = (byte)(i - 16);
+                bb = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), w);
+                wb = _whitePassedPawns[w];
+                for (int j = i; j < 56; j += 8)
+                {
+                    wb ^= j.AsBitBoard();
+                }
+
+                _blackBackwardPawns[i].Add(new KeyValuePair<BitBoard, BitBoard>(wb, bb));
+            }
+            for (byte i = 16; i < 48; i++)
+            {
+                byte w = (byte)(i - 8);
+                var bb = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), w);
+                var wb = _whitePassedPawns[w];
+                for (int j = i; j < 56; j += 8)
+                {
+                    wb ^= j.AsBitBoard();
+                }
+
+                _blackBackwardPawns[i].Add(new KeyValuePair<BitBoard, BitBoard>(wb, bb));
+            }
         }
 
         private void SetKingSafety()
@@ -104,7 +263,7 @@ namespace Engine.Models.Boards
             for (byte i = 0; i < 16; i++)
             {
                 _whiteKingShield[i] = _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), i) |
-                                      _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), (byte) (i + 8));
+                                      _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), (byte)(i + 8));
             }
 
             for (byte i = 16; i < 64; i++)
@@ -114,10 +273,10 @@ namespace Engine.Models.Boards
 
             _blackKingShield = new BitBoard[64];
 
-            for (byte i = (byte) (_blackKingShield.Length - 1); i >= 48; i--)
+            for (byte i = (byte)(_blackKingShield.Length - 1); i >= 48; i--)
             {
                 _blackKingShield[i] = _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), i) |
-                                      _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), (byte) (i - 8));
+                                      _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), (byte)(i - 8));
             }
 
             for (byte i = 0; i < 48; i++)
@@ -142,14 +301,14 @@ namespace Engine.Models.Boards
             _whiteKingFaceShield = new BitBoard[64];
             for (byte i = 0; i < 32; i++)
             {
-                _whiteKingFaceShield[i] = _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), (byte) (i + 8)) &
+                _whiteKingFaceShield[i] = _moveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), (byte)(i + 8)) &
                                           _ranks[i / 8 + 2];
             }
 
             _blackKingFaceShield = new BitBoard[64];
             for (byte i = 32; i < 64; i++)
             {
-                _blackKingFaceShield[i] = _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), (byte) (i - 8)) &
+                _blackKingFaceShield[i] = _moveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), (byte)(i - 8)) &
                                           _ranks[i / 8 - 2];
             }
 
@@ -178,11 +337,11 @@ namespace Engine.Models.Boards
                 var rank = i % 8;
                 if (rank == 0)
                 {
-                    _blackKingOpenFile[i] = new[] { _files[0] ^ i.AsBitBoard(), _files[1]};
+                    _blackKingOpenFile[i] = new[] { _files[0] ^ i.AsBitBoard(), _files[1] };
                 }
                 else if (rank == 7)
                 {
-                    _blackKingOpenFile[i] = new[] { _files[7] ^ i.AsBitBoard(), _files[6]};
+                    _blackKingOpenFile[i] = new[] { _files[7] ^ i.AsBitBoard(), _files[6] };
                 }
                 else
                 {
@@ -274,7 +433,7 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public short GetValue()
         {
-            return (short) (GetWhiteValue() - GetBlackValue());
+            return (short)(GetWhiteValue() - GetBlackValue());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -460,7 +619,7 @@ namespace Engine.Models.Boards
 
             if (_phase != Phase.Opening) return value;
 
-            if ((_blackQueenOpening&_boards[Piece.BlackQueen.AsByte()]).IsZero())
+            if ((_blackQueenOpening & _boards[Piece.BlackQueen.AsByte()]).IsZero())
             {
                 value -= _evaluationService.GetEarlyQueenValue(_phase);
             }
@@ -565,8 +724,7 @@ namespace Engine.Models.Boards
 
             for (var i = 0; i < positions.Count; i++)
             {
-                if ((_moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), positions[i]) &
-                     _boards[Piece.BlackPawn.AsByte()]).Any())
+                if ((_blackMinorDefense[positions[i]] & _boards[Piece.BlackPawn.AsByte()]).Any())
                 {
                     value += _evaluationService.GetMinorDefendedByPawnValue(_phase);
                 }
@@ -600,8 +758,7 @@ namespace Engine.Models.Boards
 
             for (var i = 0; i < positions.Count; i++)
             {
-                if ((_moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), positions[i]) &
-                     _boards[Piece.BlackPawn.AsByte()]).Any())
+                if ((_blackMinorDefense[positions[i]] & _boards[Piece.BlackPawn.AsByte()]).Any())
                 {
                     value += _evaluationService.GetMinorDefendedByPawnValue(_phase);
                 }
@@ -625,44 +782,43 @@ namespace Engine.Models.Boards
         private int GetBlackPawnValue()
         {
             int value = 0;
-            var pawns = new int[8];
             var piece = Piece.BlackPawn.AsByte();
             var positions = _positionCollections[piece];
             for (var i = 0; i < positions.Count; i++)
             {
                 byte coordinate = positions[i];
                 value += _evaluationService.GetFullValue(piece, coordinate, _phase);
-                if (_whites.IsSet((coordinate - 8).AsBitBoard()))
+                if ((_blackBlockedPawns[coordinate] & _whites).Any())
                 {
                     value -= _evaluationService.GetBlockedPawnValue(_phase);
                 }
 
-                var file = coordinate % 8;
-                if (file == 0)
+                if ((_blackIsolatedPawns[coordinate] & _boards[piece]).IsZero())
                 {
-                    value = BlackBackwardPawn(_files[1], coordinate, value, file);
-                }
-                else if (file == 7)
-                {
-                    value = BlackBackwardPawn(_files[6], coordinate, value, file);
-                }
-                else
-                {
-                    value = BlackBackwardPawn(_files[file - 1] | _files[file + 1], coordinate, value, file);
+                    value -= _evaluationService.GetIsolatedPawnValue(_phase);
                 }
 
-                if ((_files[file] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
+                if ((_blackDoublePawns[coordinate] & _boards[piece]).Any())
                 {
-                    if (coordinate / 8 < 4)
+                    value -= _evaluationService.GetDoubledPawnValue(_phase);
+                }
+
+                if ((_blackPassedPawns[coordinate] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
+                {
+                    value += _evaluationService.GetPassedPawnValue(_phase);
+                }
+                for (var c = 0; c < _blackBackwardPawns[coordinate].Count; c++)
+                {
+                    if ((_blackBackwardPawns[coordinate][c].Key & _boards[Piece.BlackPawn.AsByte()]).IsZero() &&
+                        (_blackBackwardPawns[coordinate][c].Value & _boards[Piece.WhitePawn.AsByte()]).Any())
                     {
-                        value += _evaluationService.GetPassedPawnValue(_phase);
+                        value -= _evaluationService.GetBackwardPawnValue(_phase);
+                        break;
                     }
                 }
-
-                pawns[file]++;
             }
 
-            return GetPawnValue(value, pawns);
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -874,7 +1030,7 @@ namespace Engine.Models.Boards
                     value += _evaluationService.GetRookOnOpenFileValue(_phase);
                 }
 
-                else if ((_boards[Piece.WhitePawn.AsByte()] & file).IsZero()|| (_boards[Piece.BlackPawn.AsByte()] & file).IsZero())
+                else if ((_boards[Piece.WhitePawn.AsByte()] & file).IsZero() || (_boards[Piece.BlackPawn.AsByte()] & file).IsZero())
                 {
                     value += _evaluationService.GetRookOnHalfOpenFileValue(_phase);
                 }
@@ -954,8 +1110,7 @@ namespace Engine.Models.Boards
 
             for (var i = 0; i < positions.Count; i++)
             {
-                if ((_moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), positions[i]) &
-                     _boards[Piece.WhitePawn.AsByte()]).Any())
+                if ((_whiteMinorDefense[positions[i]] & _boards[Piece.WhitePawn.AsByte()]).Any())
                 {
                     value += _evaluationService.GetMinorDefendedByPawnValue(_phase);
                 }
@@ -988,8 +1143,7 @@ namespace Engine.Models.Boards
 
             for (var i = 0; i < positions.Count; i++)
             {
-                if ((_moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), positions[i]) &
-                     _boards[Piece.WhitePawn.AsByte()]).Any())
+                if ((_whiteMinorDefense[positions[i]] & _boards[Piece.WhitePawn.AsByte()]).Any())
                 {
                     value += _evaluationService.GetMinorDefendedByPawnValue(_phase);
                 }
@@ -1013,44 +1167,43 @@ namespace Engine.Models.Boards
         private int GetWhitePawnValue()
         {
             int value = 0;
-            var pawns = new int[8];
             var piece = Piece.WhitePawn.AsByte();
             var positions = _positionCollections[piece];
             for (var i = 0; i < positions.Count; i++)
             {
                 byte coordinate = positions[i];
                 value += _evaluationService.GetFullValue(piece, coordinate, _phase);
-                if (_blacks.IsSet((coordinate + 8).AsBitBoard()))
+                if ((_whiteBlockedPawns[coordinate] & _blacks).Any())
                 {
                     value -= _evaluationService.GetBlockedPawnValue(_phase);
                 }
 
-                var file = coordinate % 8;
-                if (file == 0)
+                if ((_whiteIsolatedPawns[coordinate] & _boards[piece]).IsZero())
                 {
-                    value = WhiteBackwardPawn(_files[1], coordinate, value, file);
-                }
-                else if (file == 7)
-                {
-                    value = WhiteBackwardPawn(_files[6], coordinate, value, file);
-                }
-                else
-                {
-                    value = WhiteBackwardPawn(_files[file - 1] | _files[file + 1], coordinate, value, file);
+                    value -= _evaluationService.GetIsolatedPawnValue(_phase);
                 }
 
-                if ((_files[file] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
+                if ((_whiteDoublePawns[coordinate] & _boards[piece]).Any())
                 {
-                    if (coordinate / 8 > 3)
+                    value -= _evaluationService.GetDoubledPawnValue(_phase);
+                }
+
+                if ((_whitePassedPawns[coordinate] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
+                {
+                    value += _evaluationService.GetPassedPawnValue(_phase);
+                }
+                for (var c = 0; c < _whiteBackwardPawns[coordinate].Count; c++)
+                {
+                    if ((_whiteBackwardPawns[coordinate][c].Key & _boards[Piece.WhitePawn.AsByte()]).IsZero() &&
+                        (_whiteBackwardPawns[coordinate][c].Value & _boards[Piece.BlackPawn.AsByte()]).Any())
                     {
-                        value += _evaluationService.GetPassedPawnValue(_phase);
+                        value -= _evaluationService.GetBackwardPawnValue(_phase);
+                        break;
                     }
                 }
-
-                pawns[file]++;
             }
 
-            return GetPawnValue(value, pawns);
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1062,7 +1215,7 @@ namespace Engine.Models.Boards
             byte lsb = b.BitScanReverse();
             if (!lsb.IsLessRank(coordinate)) return value;
 
-            byte weakPosition = (byte) (lsb / 8 * 8 + file);
+            byte weakPosition = (byte)(lsb / 8 * 8 + file);
             var attackPattern = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), weakPosition);
             var w = attackPattern & _boards[Piece.WhitePawn.AsByte()];
             if (w.Any())
@@ -1082,7 +1235,7 @@ namespace Engine.Models.Boards
             int lsb = w.BitScanForward();
             if (!lsb.IsGreaterRank(coordinate)) return value;
 
-            byte weakPosition = (byte) (lsb / 8 * 8 + file);
+            byte weakPosition = (byte)(lsb / 8 * 8 + file);
             var attackPattern = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), weakPosition);
             var b = attackPattern & _boards[Piece.BlackPawn.AsByte()];
             if (b.Any())
