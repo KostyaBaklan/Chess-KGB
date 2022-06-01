@@ -471,7 +471,8 @@ namespace Engine.Models.Boards
         private int GetBlackKingValue()
         {
             var kingPosition = _positionCollections[Piece.BlackKing.AsByte()][0];
-            return _evaluationService.GetValue(Piece.BlackKing.AsByte(), kingPosition, _phase) + BlackKingSafety(kingPosition);
+            var value = _evaluationService.GetValue(Piece.BlackKing.AsByte(), kingPosition, _phase);
+            return _phase != Phase.End ? value + BlackKingSafety(kingPosition) : value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -881,7 +882,8 @@ namespace Engine.Models.Boards
         private int GetWhiteKingValue()
         {
             var kingPosition = _positionCollections[Piece.WhiteKing.AsByte()][0];
-            return _evaluationService.GetValue(Piece.WhiteKing.AsByte(), kingPosition, _phase) + WhiteKingSafety(kingPosition);
+            var value = _evaluationService.GetValue(Piece.WhiteKing.AsByte(), kingPosition, _phase);
+            return _phase != Phase.End ? value + WhiteKingSafety(kingPosition) : value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
