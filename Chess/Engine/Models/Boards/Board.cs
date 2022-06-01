@@ -52,6 +52,8 @@ namespace Engine.Models.Boards
 
         private BitBoard[] _whiteMinorDefense;
         private BitBoard[] _blackMinorDefense;
+        private BitBoard[] _whiteFacing;
+        private BitBoard[] _blackFacing;
 
         private BitBoard[] _whiteBlockedPawns;
         private BitBoard[] _whiteDoublePawns;
@@ -132,6 +134,28 @@ namespace Engine.Models.Boards
 
             _whiteMinorDefense = new BitBoard[64];
             _blackMinorDefense = new BitBoard[64];
+
+            _whiteFacing = new BitBoard[64];
+            _blackFacing = new BitBoard[64];
+
+            for (byte i = 8; i < 48; i++)
+            {
+                BitBoard b = new BitBoard();
+                for (int j = i+8; j < 56; j+=8)
+                {
+                    b |= j.AsBitBoard();
+                }
+                _whiteFacing[i] = b;
+            }
+            for (byte i = 16; i < 56; i++)
+            {
+                BitBoard b = new BitBoard();
+                for (int j = i - 8; j >= 8; j -= 8)
+                {
+                    b |= j.AsBitBoard();
+                }
+                _blackFacing[i] = b;
+            }
 
             for (byte i = 16; i < 64; i++)
             {
@@ -801,19 +825,44 @@ namespace Engine.Models.Boards
                 if ((_blackDoublePawns[coordinate] & _boards[piece]).Any())
                 {
                     value -= _evaluationService.GetDoubledPawnValue(_phase);
-                }
 
-                if ((_blackPassedPawns[coordinate] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
-                {
-                    value += _evaluationService.GetPassedPawnValue(_phase);
-                }
-                for (var c = 0; c < _blackBackwardPawns[coordinate].Count; c++)
-                {
-                    if ((_blackBackwardPawns[coordinate][c].Key & _boards[Piece.BlackPawn.AsByte()]).IsZero() &&
-                        (_blackBackwardPawns[coordinate][c].Value & _boards[Piece.WhitePawn.AsByte()]).Any())
+                    if ((_blackPassedPawns[coordinate] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
                     {
-                        value -= _evaluationService.GetBackwardPawnValue(_phase);
-                        break;
+                        if ((_blackFacing[coordinate] & _boards[piece]).IsZero())
+                        {
+                            value += _evaluationService.GetPassedPawnValue(_phase); 
+                        }
+                    }
+                    else
+                    {
+                        for (var c = 0; c < _blackBackwardPawns[coordinate].Count; c++)
+                        {
+                            if ((_blackBackwardPawns[coordinate][c].Key & _boards[Piece.BlackPawn.AsByte()]).IsZero() &&
+                                (_blackBackwardPawns[coordinate][c].Value & _boards[Piece.WhitePawn.AsByte()]).Any())
+                            {
+                                value -= _evaluationService.GetBackwardPawnValue(_phase);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if ((_blackPassedPawns[coordinate] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
+                    {
+                        value += _evaluationService.GetPassedPawnValue(_phase);
+                    }
+                    else
+                    {
+                        for (var c = 0; c < _blackBackwardPawns[coordinate].Count; c++)
+                        {
+                            if ((_blackBackwardPawns[coordinate][c].Key & _boards[Piece.BlackPawn.AsByte()]).IsZero() &&
+                                (_blackBackwardPawns[coordinate][c].Value & _boards[Piece.WhitePawn.AsByte()]).Any())
+                            {
+                                value -= _evaluationService.GetBackwardPawnValue(_phase);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -1173,6 +1222,7 @@ namespace Engine.Models.Boards
             {
                 byte coordinate = positions[i];
                 value += _evaluationService.GetFullValue(piece, coordinate, _phase);
+
                 if ((_whiteBlockedPawns[coordinate] & _blacks).Any())
                 {
                     value -= _evaluationService.GetBlockedPawnValue(_phase);
@@ -1186,19 +1236,44 @@ namespace Engine.Models.Boards
                 if ((_whiteDoublePawns[coordinate] & _boards[piece]).Any())
                 {
                     value -= _evaluationService.GetDoubledPawnValue(_phase);
-                }
 
-                if ((_whitePassedPawns[coordinate] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
-                {
-                    value += _evaluationService.GetPassedPawnValue(_phase);
-                }
-                for (var c = 0; c < _whiteBackwardPawns[coordinate].Count; c++)
-                {
-                    if ((_whiteBackwardPawns[coordinate][c].Key & _boards[Piece.WhitePawn.AsByte()]).IsZero() &&
-                        (_whiteBackwardPawns[coordinate][c].Value & _boards[Piece.BlackPawn.AsByte()]).Any())
+                    if ((_whitePassedPawns[coordinate] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
                     {
-                        value -= _evaluationService.GetBackwardPawnValue(_phase);
-                        break;
+                        if ((_whiteFacing[coordinate] & _boards[piece]).IsZero())
+                        {
+                            value += _evaluationService.GetPassedPawnValue(_phase);
+                        }
+                    }
+                    else
+                    {
+                        for (var c = 0; c < _whiteBackwardPawns[coordinate].Count; c++)
+                        {
+                            if ((_whiteBackwardPawns[coordinate][c].Key & _boards[Piece.WhitePawn.AsByte()]).IsZero() &&
+                                (_whiteBackwardPawns[coordinate][c].Value & _boards[Piece.BlackPawn.AsByte()]).Any())
+                            {
+                                value -= _evaluationService.GetBackwardPawnValue(_phase);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if ((_whitePassedPawns[coordinate] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
+                    {
+                        value += _evaluationService.GetPassedPawnValue(_phase);
+                    }
+                    else
+                    {
+                        for (var c = 0; c < _whiteBackwardPawns[coordinate].Count; c++)
+                        {
+                            if ((_whiteBackwardPawns[coordinate][c].Key & _boards[Piece.WhitePawn.AsByte()]).IsZero() &&
+                                (_whiteBackwardPawns[coordinate][c].Value & _boards[Piece.BlackPawn.AsByte()]).Any())
+                            {
+                                value -= _evaluationService.GetBackwardPawnValue(_phase);
+                                break;
+                            }
+                        }
                     }
                 }
             }
