@@ -18,10 +18,10 @@
       "InitialDepth": 3
     },
     "AspirationConfiguration": {
-      "AspirationWindow": 250,
+      "AspirationWindow": 300,
       "AspirationDepth": 2,
       "AspirationMinDepth": 6,
-      "AspirationIterations": 2
+      "AspirationIterations": 1
     },
     "PvsConfiguration": {
       "NonPvIterations": 2,

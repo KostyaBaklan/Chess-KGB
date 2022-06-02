@@ -1592,6 +1592,20 @@ namespace Engine.Models.Boards
             return _phase;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsBlackPass(byte position)
+        {
+            return _phase != Phase.Opening &&
+                   (_blackPassedPawns[position] & _boards[Piece.WhitePawn.AsByte()]).IsZero();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsWhitePass(byte position)
+        {
+            return _phase != Phase.Opening &&
+                   (_blackPassedPawns[position] & _boards[Piece.BlackPawn.AsByte()]).IsZero();
+        }
+
         #endregion
 
         #region SEE
