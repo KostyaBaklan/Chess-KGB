@@ -57,5 +57,7 @@ namespace Engine.Interfaces
         BitBoard GetBlackBits();
         BitBoard GetWhiteBits();
         Phase GetPhase();
+        bool IsBlackPass(byte position);
+        bool IsWhitePass(byte position);
     }
 }
