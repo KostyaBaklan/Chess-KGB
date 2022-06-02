@@ -828,7 +828,7 @@ namespace Engine.Models.Boards
                     value -= _evaluationService.GetDoubledPawnValue(_phase);
                 }
 
-                if (coordinate < 32 && (_blackFacing[coordinate] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
+                if (coordinate < 32 && (_blackPassedPawns[coordinate] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
                 {
                     value += _evaluationService.GetPassedPawnValue(_phase);
                 }
@@ -1216,7 +1216,7 @@ namespace Engine.Models.Boards
                     value -= _evaluationService.GetDoubledPawnValue(_phase);
                 }
 
-                if (coordinate > 31 && (_whiteFacing[coordinate] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
+                if (coordinate > 31 && (_whitePassedPawns[coordinate] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
                 {
                     value += _evaluationService.GetPassedPawnValue(_phase);
                 }
