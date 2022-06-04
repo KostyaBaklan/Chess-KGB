@@ -29,7 +29,7 @@ namespace Engine.Sorting.Sorters.Initial
             Comparer = comparer;
             _minorStartPositions = Squares.B1.AsBitBoard() | Squares.C1.AsBitBoard() | Squares.F1.AsBitBoard() |
                                    Squares.G1.AsBitBoard() | Squares.B8.AsBitBoard() | Squares.C8.AsBitBoard() |
-                                   Squares.F8.AsBitBoard() | Squares.H8.AsBitBoard();
+                                   Squares.F8.AsBitBoard() | Squares.G8.AsBitBoard();
         }
 
         #region Overrides of MoveSorter
@@ -44,6 +44,12 @@ namespace Engine.Sorting.Sorters.Initial
                     if ((move.To.AsBitBoard() & Board.GetRank(6)).Any())
                     {
                         InitialMoveCollection.AddSuggested(move);
+                        return;
+                    }
+
+                    if (Board.IsWhitePass(move.To.AsByte()))
+                    {
+                        InitialMoveCollection.AddLooseCapture(move);
                         return;
                     }
 
@@ -127,6 +133,12 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
 
+                    if (Board.IsBlackPass(move.To.AsByte()))
+                    {
+                        InitialMoveCollection.AddLooseCapture(move);
+                        return;
+                    }
+
                     break;
                 case Piece.BlackRook:
                     if (move.From == Squares.A8 && MoveHistoryService.CanDoBlackBigCastle() ||
@@ -180,6 +192,14 @@ namespace Engine.Sorting.Sorters.Initial
             {
                 if (move.Piece.IsWhite())
                 {
+                    if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
+                    {
+                        if (Board.GetValue() > 0)
+                        {
+                            InitialMoveCollection.AddBad(move);
+                            return;
+                        }
+                    }
                     if (WhiteQueenUnderAttack(move) || WhiteRookUnderAttack(move) || IsBadWhiteSee(move))
                     {
                         return;
@@ -220,6 +240,14 @@ namespace Engine.Sorting.Sorters.Initial
                 }
                 else
                 {
+                    if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
+                    {
+                        if (Board.GetValue() < 0)
+                        {
+                            InitialMoveCollection.AddBad(move);
+                            return;
+                        }
+                    }
                     if (BlackQueenUnderAttack(move) || BlackRookUnderAttack(move) || IsBadBlackSee(move))
                     {
                         return;

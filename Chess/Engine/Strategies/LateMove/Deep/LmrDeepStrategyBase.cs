@@ -124,13 +124,16 @@ namespace Engine.Strategies.LateMove.Deep
                 return Evaluate(alpha, beta);
             }
 
+            if (Position.GetPhase() == Phase.End)
+            {
+                return EndGameStrategy.Search(alpha, beta, depth);
+            }
+
             MoveBase pv = null;
             var key = Position.GetKey();
             bool shouldUpdate = false;
             bool isInTable = false;
-
-            var isNotEndGame = Position.GetPhase() != Phase.End;
-            if (isNotEndGame && Table.TryGet(key, out var entry))
+            if (Table.TryGet(key, out var entry))
             {
                 isInTable = true;
                 var entryDepth = entry.Depth;
@@ -187,7 +190,7 @@ namespace Engine.Strategies.LateMove.Deep
                     break;
                 }
             }
-            else if (!isNotEndGame || depth == DepthLateReduction)
+            else if (depth == DepthLateReduction)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {

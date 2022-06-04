@@ -18,16 +18,16 @@
       "InitialDepth": 3
     },
     "AspirationConfiguration": {
-      "AspirationWindow": 250,
+      "AspirationWindow": 300,
       "AspirationDepth": 2,
       "AspirationMinDepth": 6,
-      "AspirationIterations": 2
+      "AspirationIterations": 1
     },
     "PvsConfiguration": {
       "NonPvIterations": 2,
       "PvsMinDepth": 6,
       "PvsDepthStep": 2,
-      "PvsDepthIterations":  3 
+      "PvsDepthIterations": 3
     },
     "NullConfiguration": {
       "NullWindow": 5,
@@ -59,7 +59,7 @@
         "MinorDefendedByPawnValue": 1,
         "BlockedPawnValue": 1,
         "PassedPawnValue": 0,
-        "DoubledPawnValue": 8,
+        "DoubledPawnValue": 4,
         "IsolatedPawnValue": 9,
         "BackwardPawnValue": 10,
         "RookOnOpenFileValue": 8,
@@ -68,7 +68,9 @@
         "RookConnectionValue": 2,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 1,
-        "RookBlockedByKingValue": 1
+        "RookBlockedByKingValue": 1,
+        "DoubleRookValue": 1,
+        "OpenPawnValue": 0
       },
       "Middle": {
         "NotAbleCastleValue": 10,
@@ -77,7 +79,7 @@
         "MinorDefendedByPawnValue": 1,
         "BlockedPawnValue": 4,
         "PassedPawnValue": 2,
-        "DoubledPawnValue": 10,
+        "DoubledPawnValue": 5,
         "IsolatedPawnValue": 12,
         "BackwardPawnValue": 8,
         "RookOnOpenFileValue": 10,
@@ -86,7 +88,9 @@
         "RookConnectionValue": 4,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 2,
-        "RookBlockedByKingValue": 2
+        "RookBlockedByKingValue": 2,
+        "DoubleRookValue": 5,
+        "OpenPawnValue": 1
       },
       "End": {
         "NotAbleCastleValue": 10,
@@ -95,7 +99,7 @@
         "MinorDefendedByPawnValue": 1,
         "BlockedPawnValue": 6,
         "PassedPawnValue": 16,
-        "DoubledPawnValue": 14,
+        "DoubledPawnValue": 7,
         "IsolatedPawnValue": 16,
         "BackwardPawnValue": 15,
         "RookOnOpenFileValue": 12,
@@ -104,7 +108,9 @@
         "RookConnectionValue": 2,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 1,
-        "RookBlockedByKingValue": 1
+        "RookBlockedByKingValue": 1,
+        "DoubleRookValue": 2,
+        "OpenPawnValue": 2
       },
       "KingSafety": {
         "KingShieldFaceValue": 10,
@@ -138,6 +144,6 @@
       "Rook": 1025,
       "Queen": 1850,
       "King": 6000
-    } 
+    }
   }
 }
