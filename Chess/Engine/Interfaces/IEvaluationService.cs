@@ -41,5 +41,7 @@ namespace Engine.Interfaces
         int GetKingZoneOpenFileValue();
         int GetKingShieldFaceValue();
         int GetKingShieldPreFaceValue();
+        int GetOpenPawnValue(Phase phase);
+        int GetDoubleRookValue(Phase phase);
     }
 }

@@ -194,7 +194,7 @@ namespace Engine.Sorting.Sorters.Initial
                 {
                     if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
                     {
-                        if (Board.GetValue() > 95)
+                        if (Board.GetValue() > 0)
                         {
                             InitialMoveCollection.AddBad(move);
                             return;
@@ -242,7 +242,7 @@ namespace Engine.Sorting.Sorters.Initial
                 {
                     if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
                     {
-                        if (Board.GetValue() < -95)
+                        if (Board.GetValue() < 0)
                         {
                             InitialMoveCollection.AddBad(move);
                             return;

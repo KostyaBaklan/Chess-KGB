@@ -34,10 +34,12 @@ namespace Engine.Services
         private readonly int[] _knightAttackedByPawnValue;
         private readonly int[] _bishopBlockedByPawnValue;
         private readonly int[] _rookBlockedByKingValue;
+        private readonly int[] _doubleRookValue;
+        private readonly int[] _openPawnValue;
 
-        private readonly int _KingShieldPreFaceValue;
-        private readonly int _KingShieldFaceValue;
-        private readonly int _KingZoneOpenFileValue;
+        private readonly int _kingShieldPreFaceValue;
+        private readonly int _kingShieldFaceValue;
+        private readonly int _kingZoneOpenFileValue;
         private readonly double _pieceAttackFactor;
         private readonly int[] _pieceAttackValue;
         private readonly double[] _pieceAttackWeight;
@@ -73,6 +75,8 @@ namespace Engine.Services
             _knightAttackedByPawnValue = new int[3];
             _bishopBlockedByPawnValue = new int[3];
             _rookBlockedByKingValue = new int[3];
+            _doubleRookValue = new int[3];
+            _openPawnValue = new int[3];
             for (byte i = 0; i < 3; i++)
             {
                 var evaluationStatic = evaluationProvider.Static.GetBoard(i);
@@ -92,6 +96,8 @@ namespace Engine.Services
                 _knightAttackedByPawnValue[i] = evaluationStatic.KnightAttackedByPawnValue * _unitValue;
                 _bishopBlockedByPawnValue[i] = evaluationStatic.BishopBlockedByPawnValue * _unitValue;
                 _rookBlockedByKingValue[i] = evaluationStatic.RookBlockedByKingValue * _unitValue;
+                _doubleRookValue[i] = evaluationStatic.BishopBlockedByPawnValue * _unitValue;
+                _openPawnValue[i] = evaluationStatic.RookBlockedByKingValue * _unitValue;
             }
 
             _values = new int[3][];
@@ -141,9 +147,9 @@ namespace Engine.Services
                 }
             }
 
-            _KingShieldFaceValue = evaluationProvider.Static.KingSafety.KingShieldFaceValue;
-            _KingShieldPreFaceValue = evaluationProvider.Static.KingSafety.KingShieldPreFaceValue;
-            _KingZoneOpenFileValue = evaluationProvider.Static.KingSafety.KingZoneOpenFileValue;
+            _kingShieldFaceValue = evaluationProvider.Static.KingSafety.KingShieldFaceValue;
+            _kingShieldPreFaceValue = evaluationProvider.Static.KingSafety.KingShieldPreFaceValue;
+            _kingZoneOpenFileValue = evaluationProvider.Static.KingSafety.KingZoneOpenFileValue;
 
             _pieceAttackFactor = evaluationProvider.Static.KingSafety.AttackValueFactor;
             _pieceAttackValue = evaluationProvider.Static.KingSafety.PieceAttackValue;
@@ -415,19 +421,31 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetKingZoneOpenFileValue()
         {
-            return _KingZoneOpenFileValue;
+            return _kingZoneOpenFileValue;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetKingShieldFaceValue()
         {
-            return _KingShieldFaceValue;
+            return _kingShieldFaceValue;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetKingShieldPreFaceValue()
         {
-            return _KingShieldPreFaceValue;
+            return _kingShieldPreFaceValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetOpenPawnValue(Phase phase)
+        {
+            return _openPawnValue[(byte)phase];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetDoubleRookValue(Phase phase)
+        {
+            return _openPawnValue[(byte)phase];
         }
 
         #endregion

@@ -68,7 +68,9 @@
         "RookConnectionValue": 2,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 1,
-        "RookBlockedByKingValue": 1
+        "RookBlockedByKingValue": 1,
+        "DoubleRookValue": 1,
+        "OpenPawnValue": 0
       },
       "Middle": {
         "NotAbleCastleValue": 10,
@@ -86,7 +88,9 @@
         "RookConnectionValue": 4,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 2,
-        "RookBlockedByKingValue": 2
+        "RookBlockedByKingValue": 2,
+        "DoubleRookValue": 5,
+        "OpenPawnValue": 1
       },
       "End": {
         "NotAbleCastleValue": 10,
@@ -104,7 +108,9 @@
         "RookConnectionValue": 2,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 1,
-        "RookBlockedByKingValue": 1
+        "RookBlockedByKingValue": 1,
+        "DoubleRookValue": 2,
+        "OpenPawnValue": 2
       },
       "KingSafety": {
         "KingShieldFaceValue": 10,

@@ -49,6 +49,7 @@ namespace Engine.Models.Boards
         private BitBoard[] _blackKingFace;
         private BitBoard[][] _whiteKingOpenFile;
         private BitBoard[][] _blackKingOpenFile;
+        private BitBoard[] _rookFiles;
 
         private BitBoard[] _whiteMinorDefense;
         private BitBoard[] _blackMinorDefense;
@@ -663,25 +664,29 @@ namespace Engine.Models.Boards
 
             for (var i = 0; i < positions.Count; i++)
             {
-                BitBoard file = GetFile(positions[i]);
-                if ((_empty ^ positions[i].AsBitBoard()).IsSet(file))
+                if ((_rookFiles[positions[i]] & (_boards[Piece.WhitePawn.AsByte()] | _boards[Piece.BlackPawn.AsByte()]))
+                    .IsZero())
                 {
                     value += _evaluationService.GetRookOnOpenFileValue(_phase);
                 }
-                else if ((_boards[Piece.WhitePawn.AsByte()] & file).IsZero() ||
-                         (_boards[Piece.BlackPawn.AsByte()] & file).IsZero())
+                else if ((_rookFiles[positions[i]] &  _boards[Piece.BlackPawn.AsByte()]).IsZero())
                 {
                     value += _evaluationService.GetRookOnHalfOpenFileValue(_phase);
                 }
 
-                if (_boards[Piece.WhiteQueen.AsByte()].Any() && file.IsSet(_boards[Piece.WhiteQueen.AsByte()]))
+                if (_boards[Piece.WhiteQueen.AsByte()].Any() && _rookFiles[positions[i]].IsSet(_boards[Piece.WhiteQueen.AsByte()]))
                 {
                     value += _evaluationService.GetRentgenValue(_phase);
                 }
 
-                if (file.IsSet(_boards[Piece.WhiteKing.AsByte()]))
+                if (_rookFiles[positions[i]].IsSet(_boards[Piece.WhiteKing.AsByte()]))
                 {
                     value += _evaluationService.GetRentgenValue(_phase);
+                }
+
+                if ((_rookFiles[positions[i]] & (_boards[Piece.BlackRook.AsByte()] | _boards[Piece.BlackQueen.AsByte()])).Any())
+                {
+                    value += _evaluationService.GetDoubleRookValue(_phase);
                 }
 
                 //if (_phase == Phase.End) continue;
@@ -828,9 +833,16 @@ namespace Engine.Models.Boards
                     value -= _evaluationService.GetDoubledPawnValue(_phase);
                 }
 
-                if (coordinate < 32 && (_blackPassedPawns[coordinate] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
+                if (coordinate < 32 && (_blackFacing[coordinate] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
                 {
-                    value += _evaluationService.GetPassedPawnValue(_phase);
+                    if ((_blackPassedPawns[coordinate] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
+                    {
+                        value += _evaluationService.GetPassedPawnValue(_phase);
+                    }
+                    else
+                    {
+                        value += _evaluationService.GetOpenPawnValue(_phase);
+                    }
                 }
 
                 for (var c = 0; c < _blackBackwardPawns[coordinate].Count; c++)
@@ -1051,26 +1063,31 @@ namespace Engine.Models.Boards
 
             for (var i = 0; i < positions.Count; i++)
             {
-                BitBoard file = GetFile(positions[i]);
-                if ((_empty ^ positions[i].AsBitBoard()).IsSet(file))
+                if ((_rookFiles[positions[i]] & (_boards[Piece.WhitePawn.AsByte()] | _boards[Piece.BlackPawn.AsByte()]))
+                    .IsZero())
                 {
                     value += _evaluationService.GetRookOnOpenFileValue(_phase);
                 }
-
-                else if ((_boards[Piece.WhitePawn.AsByte()] & file).IsZero() || (_boards[Piece.BlackPawn.AsByte()] & file).IsZero())
+                else if ((_rookFiles[positions[i]] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
                 {
                     value += _evaluationService.GetRookOnHalfOpenFileValue(_phase);
                 }
 
-                if (_boards[Piece.BlackQueen.AsByte()].Any() && file.IsSet(_boards[Piece.BlackQueen.AsByte()]))
+                if (_boards[Piece.BlackQueen.AsByte()].Any() && _rookFiles[positions[i]].IsSet(_boards[Piece.BlackQueen.AsByte()]))
                 {
                     value += _evaluationService.GetRentgenValue(_phase);
                 }
 
-                if (file.IsSet(_boards[Piece.BlackKing.AsByte()]))
+                if (_rookFiles[positions[i]].IsSet(_boards[Piece.BlackKing.AsByte()]))
                 {
                     value += _evaluationService.GetRentgenValue(_phase);
                 }
+
+                if ((_rookFiles[positions[i]]&(_boards[Piece.WhiteRook.AsByte()]| _boards[Piece.WhiteQueen.AsByte()])).Any())
+                {
+                    value += _evaluationService.GetDoubleRookValue(_phase);
+                }
+
                 //if (_phase == Phase.End) continue;
                 //if (rooks[i] == Squares.A1.AsByte())
                 //{
@@ -1216,10 +1233,18 @@ namespace Engine.Models.Boards
                     value -= _evaluationService.GetDoubledPawnValue(_phase);
                 }
 
-                if (coordinate > 31 && (_whitePassedPawns[coordinate] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
+                if (coordinate > 31 && (_whiteFacing[coordinate] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
                 {
-                    value += _evaluationService.GetPassedPawnValue(_phase);
+                    if ((_whitePassedPawns[coordinate] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
+                    {
+                        value += _evaluationService.GetPassedPawnValue(_phase);
+                    }
+                    else
+                    {
+                        value += _evaluationService.GetOpenPawnValue(_phase);
+                    }
                 }
+
                 for (var c = 0; c < _whiteBackwardPawns[coordinate].Count; c++)
                 {
                     if ((_whiteBackwardPawns[coordinate][c].Key & _boards[Piece.WhitePawn.AsByte()]).IsZero() &&
@@ -1973,6 +1998,12 @@ namespace Engine.Models.Boards
             {
                 _files[i] = file;
                 file = file << 1;
+            }
+
+            _rookFiles = new BitBoard[64];
+            for (var i = 0; i < _rookFiles.Length; i++)
+            {
+                _rookFiles[i] = _files[i % 8] ^ i.AsBitBoard();
             }
         }
 
