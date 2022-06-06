@@ -41,15 +41,9 @@ namespace Engine.Sorting.Sorters.Initial
             switch (move.Piece)
             {
                 case Piece.WhitePawn:
-                    if ((move.To.AsBitBoard() & Board.GetRank(6)).Any())
+                    if (phase != Phase.Opening && Board.IsWhitePass(move.To.AsByte()))
                     {
                         InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
-
-                    if (Board.IsWhitePass(move.To.AsByte()))
-                    {
-                        InitialMoveCollection.AddLooseCapture(move);
                         return;
                     }
 
@@ -127,15 +121,9 @@ namespace Engine.Sorting.Sorters.Initial
 
                     break;
                 case Piece.BlackPawn:
-                    if ((move.To.AsBitBoard() & Board.GetRank(1)).Any())
+                    if (phase !=Phase.Opening&& Board.IsBlackPass(move.To.AsByte()))
                     {
                         InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
-
-                    if (Board.IsBlackPass(move.To.AsByte()))
-                    {
-                        InitialMoveCollection.AddLooseCapture(move);
                         return;
                     }
 
