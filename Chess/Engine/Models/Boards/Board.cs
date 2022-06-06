@@ -1716,15 +1716,15 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBlackPass(byte position)
         {
-            return _phase != Phase.Opening &&
+            return _phase != Phase.Opening && position<32&&
                    (_blackPassedPawns[position] & _boards[Piece.WhitePawn.AsByte()]).IsZero();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsWhitePass(byte position)
         {
-            return _phase != Phase.Opening &&
-                   (_blackPassedPawns[position] & _boards[Piece.BlackPawn.AsByte()]).IsZero();
+            return _phase != Phase.Opening &&position > 31&&
+                   (_whitePassedPawns[position] & _boards[Piece.BlackPawn.AsByte()]).IsZero();
         }
 
         #endregion
