@@ -566,16 +566,16 @@ namespace Engine.Models.Boards
                     pieceAttacks += attacks;
                     valueOfAttacks += attacks * _evaluationService.GetBishopAttackValue();
                 }
-                else if (_boards[Piece.WhiteQueen.AsByte()].Any())
-                {
-                    bishopAttacks = positions[i].BishopAttacks(~_empty^ _boards[Piece.WhiteQueen.AsByte()]) & shield;
-                    if (bishopAttacks.Any())
-                    {
-                        var attacks = bishopAttacks.Count();
-                        pieceAttacks += attacks;
-                        valueOfAttacks += attacks * _evaluationService.GetBishopAttackValue();
-                    }
-                }
+                //else if (_boards[Piece.WhiteQueen.AsByte()].Any())
+                //{
+                //    bishopAttacks = positions[i].BishopAttacks(~_empty^ _boards[Piece.WhiteQueen.AsByte()]) & shield;
+                //    if (bishopAttacks.Any())
+                //    {
+                //        var attacks = bishopAttacks.Count();
+                //        pieceAttacks += attacks;
+                //        valueOfAttacks += attacks * _evaluationService.GetBishopAttackValue();
+                //    }
+                //}
             }
 
             if (pieceAttacks > 0)
@@ -594,21 +594,21 @@ namespace Engine.Models.Boards
                     pieceAttacks += attacks;
                     valueOfAttacks += attacks * _evaluationService.GetRookAttackValue();
                 }
-                else
-                {
-                    var rooks = (_boards[Piece.WhiteRook.AsByte()] ^ positions[i].AsBitBoard()) |
-                                _boards[Piece.WhiteQueen.AsByte()];
-                    if (rooks.Any())
-                    {
-                        rookAttacks = positions[i].RookAttacks(~_empty ^ rooks) & shield;
-                        if (rookAttacks.Any())
-                        {
-                            var attacks = rookAttacks.Count();
-                            pieceAttacks += attacks;
-                            valueOfAttacks += attacks * _evaluationService.GetRookAttackValue();
-                        }
-                    }
-                }
+                //else
+                //{
+                //    var rooks = (_boards[Piece.WhiteRook.AsByte()] ^ positions[i].AsBitBoard()) |
+                //                _boards[Piece.WhiteQueen.AsByte()];
+                //    if (rooks.Any())
+                //    {
+                //        rookAttacks = positions[i].RookAttacks(~_empty ^ rooks) & shield;
+                //        if (rookAttacks.Any())
+                //        {
+                //            var attacks = rookAttacks.Count();
+                //            pieceAttacks += attacks;
+                //            valueOfAttacks += attacks * _evaluationService.GetRookAttackValue();
+                //        }
+                //    }
+                //}
             }
 
             if (pieceAttacks > 0)
@@ -627,26 +627,26 @@ namespace Engine.Models.Boards
                     pieceAttacks += attacks;
                     valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
                 }
-                else if (_boards[Piece.WhiteBishop.AsByte()].Any())
-                {
-                    queenAttacks = positions[i].BishopAttacks(~_empty^ _boards[Piece.WhiteBishop.AsByte()]) & shield;
-                    if (queenAttacks.Any())
-                    {
-                        var attacks = queenAttacks.Count();
-                        pieceAttacks += attacks;
-                        valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
-                    }
-                }
-                else if (_boards[Piece.WhiteRook.AsByte()].Any())
-                {
-                    queenAttacks = positions[i].RookAttacks(~_empty^ _boards[Piece.WhiteRook.AsByte()]) & shield;
-                    if (queenAttacks.Any())
-                    {
-                        var attacks = queenAttacks.Count();
-                        pieceAttacks += attacks;
-                        valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
-                    }
-                }
+                //else if (_boards[Piece.WhiteBishop.AsByte()].Any())
+                //{
+                //    queenAttacks = positions[i].BishopAttacks(~_empty^ _boards[Piece.WhiteBishop.AsByte()]) & shield;
+                //    if (queenAttacks.Any())
+                //    {
+                //        var attacks = queenAttacks.Count();
+                //        pieceAttacks += attacks;
+                //        valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
+                //    }
+                //}
+                //else if (_boards[Piece.WhiteRook.AsByte()].Any())
+                //{
+                //    queenAttacks = positions[i].RookAttacks(~_empty^ _boards[Piece.WhiteRook.AsByte()]) & shield;
+                //    if (queenAttacks.Any())
+                //    {
+                //        var attacks = queenAttacks.Count();
+                //        pieceAttacks += attacks;
+                //        valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
+                //    }
+                //}
             }
 
             if (pieceAttacks > 0)
@@ -1012,16 +1012,16 @@ namespace Engine.Models.Boards
                     pieceAttacks += attacks;
                     valueOfAttacks += attacks * _evaluationService.GetBishopAttackValue();
                 }
-                else if(_boards[Piece.BlackQueen.AsByte()].Any())
-                {
-                    bishopAttacks = positions[i].BishopAttacks(~_empty^ _boards[Piece.BlackQueen.AsByte()]) & shield;
-                    if (bishopAttacks.Any())
-                    {
-                        var attacks = bishopAttacks.Count();
-                        pieceAttacks += attacks;
-                        valueOfAttacks += attacks * _evaluationService.GetBishopAttackValue();
-                    }
-                }
+                //else if(_boards[Piece.BlackQueen.AsByte()].Any())
+                //{
+                //    bishopAttacks = positions[i].BishopAttacks(~_empty^ _boards[Piece.BlackQueen.AsByte()]) & shield;
+                //    if (bishopAttacks.Any())
+                //    {
+                //        var attacks = bishopAttacks.Count();
+                //        pieceAttacks += attacks;
+                //        valueOfAttacks += attacks * _evaluationService.GetBishopAttackValue();
+                //    }
+                //}
             }
 
             if (pieceAttacks > 0)
@@ -1040,21 +1040,21 @@ namespace Engine.Models.Boards
                     pieceAttacks += attacks;
                     valueOfAttacks += attacks * _evaluationService.GetRookAttackValue();
                 }
-                else
-                {
-                    var rooks = (_boards[Piece.BlackRook.AsByte()] ^ positions[i].AsBitBoard()) |
-                                _boards[Piece.BlackQueen.AsByte()];
-                    if (rooks.Any())
-                    {
-                        rookAttacks = positions[i].RookAttacks(~_empty ^ rooks) & shield;
-                        if (rookAttacks.Any())
-                        {
-                            var attacks = rookAttacks.Count();
-                            pieceAttacks += attacks;
-                            valueOfAttacks += attacks * _evaluationService.GetRookAttackValue();
-                        }
-                    }
-                }
+                //else
+                //{
+                //    var rooks = (_boards[Piece.BlackRook.AsByte()] ^ positions[i].AsBitBoard()) |
+                //                _boards[Piece.BlackQueen.AsByte()];
+                //    if (rooks.Any())
+                //    {
+                //        rookAttacks = positions[i].RookAttacks(~_empty ^ rooks) & shield;
+                //        if (rookAttacks.Any())
+                //        {
+                //            var attacks = rookAttacks.Count();
+                //            pieceAttacks += attacks;
+                //            valueOfAttacks += attacks * _evaluationService.GetRookAttackValue();
+                //        }
+                //    }
+                //}
             }
 
             if (pieceAttacks > 0)
@@ -1073,26 +1073,26 @@ namespace Engine.Models.Boards
                     pieceAttacks += attacks;
                     valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
                 }
-                else if (_boards[Piece.BlackRook.AsByte()].Any())
-                {
-                    queenAttacks = positions[i].RookAttacks(~_empty^ _boards[Piece.BlackRook.AsByte()]) & shield;
-                    if (queenAttacks.Any())
-                    {
-                        var attacks = queenAttacks.Count();
-                        pieceAttacks += attacks;
-                        valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
-                    }
-                }
-                else if (_boards[Piece.BlackBishop.AsByte()].Any())
-                {
-                    queenAttacks = positions[i].BishopAttacks(~_empty ^ _boards[Piece.BlackBishop.AsByte()]) & shield;
-                    if (queenAttacks.Any())
-                    {
-                        var attacks = queenAttacks.Count();
-                        pieceAttacks += attacks;
-                        valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
-                    }
-                }
+                //else if (_boards[Piece.BlackRook.AsByte()].Any())
+                //{
+                //    queenAttacks = positions[i].RookAttacks(~_empty^ _boards[Piece.BlackRook.AsByte()]) & shield;
+                //    if (queenAttacks.Any())
+                //    {
+                //        var attacks = queenAttacks.Count();
+                //        pieceAttacks += attacks;
+                //        valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
+                //    }
+                //}
+                //else if (_boards[Piece.BlackBishop.AsByte()].Any())
+                //{
+                //    queenAttacks = positions[i].BishopAttacks(~_empty ^ _boards[Piece.BlackBishop.AsByte()]) & shield;
+                //    if (queenAttacks.Any())
+                //    {
+                //        var attacks = queenAttacks.Count();
+                //        pieceAttacks += attacks;
+                //        valueOfAttacks += attacks * _evaluationService.GetQueenAttackValue();
+                //    }
+                //}
             }
 
             if (pieceAttacks > 0)
