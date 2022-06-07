@@ -1417,6 +1417,7 @@ namespace Engine.Services
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetAttacks(Piece piece, byte @from, AttackList attackList)
         {
             attackList.Clear();
@@ -1438,6 +1439,7 @@ namespace Engine.Services
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool AnyLegalAttacksTo(Piece piece, Square @from, byte to)
         {
             var attacks = _attacksTo[piece.AsByte()][@from.AsByte()][to];
@@ -1526,7 +1528,7 @@ namespace Engine.Services
                    IsUnderAttack(Piece.BlackKnight.AsByte(), to) ||
                    IsUnderAttack(Piece.BlackQueen.AsByte(), to) ||
                    IsUnderAttack(Piece.BlackRook.AsByte(), to) ||
-                   IsUnderAttack(Piece.BlackPawn.AsByte(), to) ||
+                   (_board.GetBlackPawnAttacks() & to.AsBitBoard()).Any() ||
                    IsUnderAttack(Piece.BlackKing.AsByte(), to);
         }
 
@@ -1537,32 +1539,20 @@ namespace Engine.Services
                    IsUnderAttack(Piece.WhiteKnight.AsByte(), to) ||
                    IsUnderAttack(Piece.WhiteQueen.AsByte(), to) ||
                    IsUnderAttack(Piece.WhiteRook.AsByte(), to) ||
-                   IsUnderAttack(Piece.WhitePawn.AsByte(), to) ||
+                   (_board.GetWhitePawnAttacks() & to.AsBitBoard()).Any() ||
                    IsUnderAttack(Piece.WhiteKing.AsByte(), to);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsWhiteUnderAttack(Square square)
         {
-            var to = square.AsByte();
-            return IsUnderAttack(Piece.BlackBishop.AsByte(), to) ||
-                   IsUnderAttack(Piece.BlackKnight.AsByte(), to) ||
-                   IsUnderAttack(Piece.BlackQueen.AsByte(), to) ||
-                   IsUnderAttack(Piece.BlackRook.AsByte(), to) ||
-                   IsUnderAttack(Piece.BlackPawn.AsByte(), to) ||
-                   IsUnderAttack(Piece.BlackKing.AsByte(), to);
+            return IsWhiteUnderAttack(square.AsByte());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBlackUnderAttack(Square square)
         {
-            var to = square.AsByte();
-            return IsUnderAttack(Piece.WhiteBishop.AsByte(), to) ||
-                   IsUnderAttack(Piece.WhiteKnight.AsByte(), to) ||
-                   IsUnderAttack(Piece.WhiteQueen.AsByte(), to) ||
-                   IsUnderAttack(Piece.WhiteRook.AsByte(), to) ||
-                   IsUnderAttack(Piece.WhitePawn.AsByte(), to) ||
-                   IsUnderAttack(Piece.WhiteKing.AsByte(), to);
+            return IsBlackUnderAttack(square.AsByte());
         }
 
         public void SetBoard(IBoard b)
@@ -1640,6 +1630,7 @@ namespace Engine.Services
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetWhiteAttacksTo(byte to, AttackList attackList)
         {
             attackList.Clear();
@@ -1651,6 +1642,7 @@ namespace Engine.Services
             GetAttacksTo(Piece.WhiteKing.AsByte(), to, attackList);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetBlackAttacksTo(byte to, AttackList attackList)
         {
             attackList.Clear();
@@ -1662,6 +1654,7 @@ namespace Engine.Services
             GetAttacksTo(Piece.BlackKing.AsByte(), to, attackList);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void GetAttacksTo(byte piece, byte to, AttackList attackList)
         {
             var positions = _board.GetPiecePositions(piece);

@@ -47,6 +47,8 @@ namespace Engine.Interfaces
         int GetWhiteMaxValue();
         bool CanWhitePromote();
         bool CanBlackPromote();
+        BitBoard GetWhitePawnAttacks();
+        BitBoard GetBlackPawnAttacks();
         BitBoard GetRank(int rank);
         BitBoard GetWhitePieceBits();
         BitBoard GetBlackPieceBits();

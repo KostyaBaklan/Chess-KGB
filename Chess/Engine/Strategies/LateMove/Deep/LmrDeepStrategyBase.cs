@@ -1,4 +1,5 @@
-﻿using CommonServiceLocator;
+﻿using System;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
@@ -126,7 +127,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (Position.GetPhase() == Phase.End)
             {
-                return EndGameStrategy.Search(alpha, beta, depth);
+                return EndGameStrategy.Search(alpha, beta, Math.Min(depth + 1, MaxEndGameDepth-1));
             }
 
             MoveBase pv = null;

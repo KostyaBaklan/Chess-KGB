@@ -3,7 +3,7 @@
     "GameDepth": 384,
     "BlockTimeout": 1,
     "FutilityDepth": 2,
-    "SortDepth": 2,
+    "SortDepth": 3,
     "KillerCapacity": 2,
     "UseEvaluationCache": false,
     "UseFutility": true,
