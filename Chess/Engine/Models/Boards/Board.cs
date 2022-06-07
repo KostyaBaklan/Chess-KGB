@@ -72,6 +72,8 @@ namespace Engine.Models.Boards
         private readonly Piece[] _pieces;
         private readonly BitBoard _whiteQueenOpening;
         private readonly BitBoard _blackQueenOpening;
+        private BitBoard _notFileA;
+        private BitBoard _notFileH;
 
         private readonly PositionCollection[] _positionCollections;
 
@@ -504,14 +506,11 @@ namespace Engine.Models.Boards
             int valueOfAttacks = 0;
             var shield = _blackKingShield[kingPosition];
 
-            var positions = _positionCollections[Piece.WhitePawn.AsByte()];
             int pieceAttacks = 0;
-            for (var i = 0; i < positions.Count; i++)
+            var pawnAttacks = GetWhitePawnAttacks() & shield;
+            if (pawnAttacks.Any())
             {
-                var attackPattern = _moveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), positions[i]) & shield;
-                if (!attackPattern.Any()) continue;
-
-                var attacks = attackPattern.Count();
+                var attacks = pawnAttacks.Count();
                 pieceAttacks += attacks;
                 valueOfAttacks += attacks * _evaluationService.GetPawnAttackValue();
             }
@@ -521,7 +520,7 @@ namespace Engine.Models.Boards
                 attackingPiecesCount++;
             }
 
-            positions = _positionCollections[Piece.WhiteKnight.AsByte()];
+            var positions = _positionCollections[Piece.WhiteKnight.AsByte()];
             pieceAttacks = 0;
             for (var i = 0; i < positions.Count; i++)
             {
@@ -950,24 +949,20 @@ namespace Engine.Models.Boards
             int valueOfAttacks = 0;
             var shield = _whiteKingShield[kingPosition];
 
-            var positions = _positionCollections[Piece.BlackPawn.AsByte()];
             int pieceAttacks = 0;
-            for (var i = 0; i < positions.Count; i++)
+            var pawnAttacks = GetBlackPawnAttacks() & shield;
+            if (pawnAttacks.Any())
             {
-                var attackPattern = _moveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), positions[i]) & shield;
-                if (!attackPattern.Any()) continue;
-
-                var attacks = attackPattern.Count();
+                var attacks = pawnAttacks.Count();
                 pieceAttacks += attacks;
                 valueOfAttacks += attacks * _evaluationService.GetPawnAttackValue();
             }
-
             if (pieceAttacks > 0)
             {
                 attackingPiecesCount++;
             }
 
-            positions = _positionCollections[Piece.BlackKnight.AsByte()];
+            var positions = _positionCollections[Piece.BlackKnight.AsByte()];
             pieceAttacks = 0;
             for (var i = 0; i < positions.Count; i++)
             {
@@ -1556,6 +1551,20 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetWhitePawnAttacks()
+        {
+            return ((_boards[Piece.WhitePawn.AsByte()] & _notFileA) << 7) |
+                   ((_boards[Piece.WhitePawn.AsByte()] & _notFileH) << 9);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetBlackPawnAttacks()
+        {
+            return ((_boards[Piece.BlackPawn.AsByte()] & _notFileA) >> 9) |
+                   ((_boards[Piece.BlackPawn.AsByte()] & _notFileH) >> 7);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Phase UpdatePhase()
         {
             var ply = _moveHistory.GetPly();
@@ -1954,7 +1963,7 @@ namespace Engine.Models.Boards
                      _moveProvider.IsUnderAttack(Piece.BlackKnight.AsByte(), to) ||
                      _moveProvider.IsUnderAttack(Piece.BlackQueen.AsByte(), to) ||
                      _moveProvider.IsUnderAttack(Piece.BlackRook.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(Piece.BlackPawn.AsByte(), to));
+                     (GetBlackPawnAttacks() & to.AsBitBoard()).Any());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1964,7 +1973,7 @@ namespace Engine.Models.Boards
                      _moveProvider.IsUnderAttack(Piece.WhiteKnight.AsByte(), to) ||
                      _moveProvider.IsUnderAttack(Piece.WhiteQueen.AsByte(), to) ||
                      _moveProvider.IsUnderAttack(Piece.WhiteRook.AsByte(), to) ||
-                     _moveProvider.IsUnderAttack(Piece.WhitePawn.AsByte(), to));
+                     (GetWhitePawnAttacks() & to.AsBitBoard()).Any());
         }
 
         #endregion
@@ -2101,6 +2110,9 @@ namespace Engine.Models.Boards
             {
                 _rookFiles[i] = _files[i % 8] ^ i.AsBitBoard();
             }
+
+            _notFileA = ~_files[0];
+            _notFileH = ~_files[7];
         }
 
         private void SetCastles()
