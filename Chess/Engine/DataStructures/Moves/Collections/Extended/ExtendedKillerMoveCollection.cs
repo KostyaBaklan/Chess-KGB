@@ -23,7 +23,7 @@ namespace Engine.DataStructures.Moves.Collections.Extended
 
             MoveBase[] moves = new MoveBase[Count];
 
-            if (suggestedCount > 0)
+            if (killersCount > 0)
             {
                 if (hashMovesCount > 0)
                 {
@@ -70,6 +70,11 @@ namespace Engine.DataStructures.Moves.Collections.Extended
             }
             else
             {
+                if (_suggested.Count > 0)
+                {
+                    _nonCaptures.Add(_suggested);
+                    _suggested.Clear();
+                }
                 var capturesCount = _nonCaptures.Count;
                 if (capturesCount > 0)
                 {

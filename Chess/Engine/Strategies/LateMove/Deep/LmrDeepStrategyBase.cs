@@ -22,7 +22,6 @@ namespace Engine.Strategies.LateMove.Deep
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
         {
-
             Result result = new Result();
 
             MoveBase pv = pvMove;
