@@ -1,5 +1,6 @@
 ﻿using System;
 using CommonServiceLocator;
+using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
@@ -18,14 +19,10 @@ namespace Engine.Strategies.Aspiration
         {
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
             var configuration = configurationProvider.AlgorithmConfiguration.AspirationConfiguration;
-            AspirationWindow = configuration
-                .AspirationWindow;
-            AspirationDepth = configuration
-                .AspirationDepth;
-            AspirationMinDepth = configuration
-                .AspirationMinDepth;
-            AspirationIterations = configuration
-                .AspirationIterations;
+            AspirationDepth = configuration.AspirationDepth;
+            AspirationMinDepth = configuration.AspirationMinDepth;
+            AspirationWindow = configuration.AspirationWindow[depth];
+            AspirationIterations = configuration.AspirationIterations[depth];
         }
 
 
@@ -41,8 +38,15 @@ namespace Engine.Strategies.Aspiration
             var depth = Depth;
             var t = depth - AspirationDepth * AspirationIterations;
 
-            var result = InternalStrategy.GetResult(-SearchValue, SearchValue, t);
-            for (int d = t + AspirationDepth; d <= depth; d += AspirationDepth)
+            var value = Position.GetValue();
+            IResult result = new Result
+            {
+                GameResult = GameResult.Continue,
+                Move = null,
+                Value = value
+            };
+
+            for (int d = t; d <= depth; d += AspirationDepth)
             {
                 var alpha = result.Value - AspirationWindow;
                 var beta = result.Value + AspirationWindow;
