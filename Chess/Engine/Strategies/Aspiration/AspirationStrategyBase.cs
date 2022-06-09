@@ -21,13 +21,8 @@ namespace Engine.Strategies.Aspiration
             var configuration = configurationProvider.AlgorithmConfiguration.AspirationConfiguration;
             AspirationDepth = configuration.AspirationDepth;
             AspirationMinDepth = configuration.AspirationMinDepth;
-            AspirationWindow = configuration.AspirationWindow;
-            AspirationIterations = configuration.AspirationIterations;
-            if (depth > 10)
-            {
-                AspirationIterations++;
-                AspirationWindow += 50;
-            }
+            AspirationWindow = configuration.AspirationWindow[depth];
+            AspirationIterations = configuration.AspirationIterations[depth];
         }
 
 
