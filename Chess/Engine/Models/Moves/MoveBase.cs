@@ -33,6 +33,7 @@ namespace Engine.Models.Moves
         public bool IsAttack;
         public bool IsCastle;
         public bool IsPromotion;
+        public bool CanReduce;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public abstract bool IsLegal(IBoard board);

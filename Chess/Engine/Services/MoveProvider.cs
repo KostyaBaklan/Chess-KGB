@@ -118,6 +118,7 @@ namespace Engine.Services
             for (var i = 0; i < _all.Length; i++)
             {
                 _all[i].Key = (short) i;
+                _all[i].CanReduce = !_all[i].IsAttack && !_all[i].IsPromotion;
             }
 
             if (configurationProvider.GeneralConfiguration.UseHistory)

@@ -77,7 +77,7 @@ namespace Engine.Strategies.End
                         Position.Make(move);
 
                         int value;
-                        if (alpha > -SearchValue && i > LmrDepthThreshold && CanReduce(move))
+                        if (alpha > -SearchValue && i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                         {
                             value = -Search(-beta, -alpha, depth - DepthReduction);
                             if (value > alpha)
@@ -141,7 +141,7 @@ namespace Engine.Strategies.End
                     Position.Make(move);
 
                     int r;
-                    if (i > LmrDepthThreshold && CanReduce(move))
+                    if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                     {
                         r = -Search(-beta, -alpha, depth - DepthReduction);
                         if (r > alpha)
@@ -204,12 +204,6 @@ namespace Engine.Strategies.End
 
             bestMove.History += 1 << depth;
             return value;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CanReduce(MoveBase move)
-        {
-            return !move.IsAttack && !move.IsPromotion && !move.IsCheck;
         }
 
         #endregion

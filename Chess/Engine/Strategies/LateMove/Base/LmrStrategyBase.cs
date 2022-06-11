@@ -79,7 +79,7 @@ namespace Engine.Strategies.LateMove.Base
                         Position.Make(move);
 
                         int value;
-                        if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
+                        if (alpha > -SearchValue && IsLmr(i) && move.CanReduce && !move.IsCheck)
                         {
                             value = -Search(-beta, -alpha, depth - DepthReduction);
                             if (value > alpha)
@@ -168,7 +168,7 @@ namespace Engine.Strategies.LateMove.Base
                     Position.Make(move);
 
                     int r;
-                    if (IsLmr(i) && CanReduce(move))
+                    if (IsLmr(i) && move.CanReduce && !move.IsCheck)
                     {
                         r = -Search(-beta, -alpha, depth - DepthReduction);
                         if (r > alpha)
@@ -238,12 +238,6 @@ namespace Engine.Strategies.LateMove.Base
         protected bool IsLmr(int i)
         {
             return i > LmrDepthThreshold;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CanReduce(MoveBase move)
-        {
-            return !move.IsAttack && !move.IsPromotion && !move.IsCheck;
         }
     }
 }
