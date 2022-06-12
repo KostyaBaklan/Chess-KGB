@@ -238,17 +238,32 @@ namespace Engine.Strategies.LateMove.Deep
                     Position.Make(move);
 
                     int r;
-                    if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
+                    if (!move.CanReduce || move.IsCheck)
                     {
-                        r = -Search(-beta, -alpha, depth - (i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction));
-                        if (r > alpha)
-                        {
-                            r = -Search(-beta, -alpha, depth - 1);
-                        }
+                        r = -Search(-beta, -alpha, depth - 1);
                     }
                     else
                     {
-                        r = -Search(-beta, -alpha, depth - 1);
+                        if (i > LmrLateDepthThreshold)
+                        {
+                            r = -Search(-beta, -alpha, depth - DepthLateReduction);
+                            if (r > alpha)
+                            {
+                                r = -Search(-beta, -alpha, depth - 1);
+                            }
+                        }
+                        else if (i > LmrDepthThreshold)
+                        {
+                            r = -Search(-beta, -alpha, depth - DepthReduction);
+                            if (r > alpha)
+                            {
+                                r = -Search(-beta, -alpha, depth - 1);
+                            }
+                        }
+                        else
+                        {
+                            r = -Search(-beta, -alpha, depth - 1);
+                        }
                     }
 
                     if (r > value)
