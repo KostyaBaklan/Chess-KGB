@@ -79,7 +79,7 @@ namespace Engine.Strategies.LateMove.Base
                         Position.Make(move);
 
                         int value;
-                        if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
+                        if (alpha > -SearchValue && i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                         {
                             value = -Search(-beta, -alpha, depth - DepthReduction);
                             if (value > alpha)
@@ -168,7 +168,7 @@ namespace Engine.Strategies.LateMove.Base
                     Position.Make(move);
 
                     int r;
-                    if (IsLmr(i) && CanReduce(move))
+                    if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                     {
                         r = -Search(-beta, -alpha, depth - DepthReduction);
                         if (r > alpha)
@@ -232,18 +232,6 @@ namespace Engine.Strategies.LateMove.Base
             if (isInTable && !shouldUpdate) return value;
 
             return StoreValue((byte) depth, (short) value, bestMove.Key);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsLmr(int i)
-        {
-            return i > LmrDepthThreshold;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CanReduce(MoveBase move)
-        {
-            return !move.IsAttack && !move.IsPromotion && !move.IsCheck;
         }
     }
 }

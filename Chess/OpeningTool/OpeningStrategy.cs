@@ -86,7 +86,7 @@ namespace OpeningTool
                         Position.Make(move);
 
                         int value;
-                        if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
+                        if (alpha > -SearchValue && i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                         {
                             value = -Search(-beta, -alpha, depth - DepthReduction);
                             if (value > alpha)

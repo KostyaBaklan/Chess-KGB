@@ -75,7 +75,7 @@ namespace Engine.Strategies.LateMove.Deep
                         Position.Make(move);
 
                         int value;
-                        if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
+                        if (alpha > -SearchValue && i > LmrDepthThreshold && move.CanReduce&& !move.IsCheck)
                         {
                             var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
@@ -198,7 +198,7 @@ namespace Engine.Strategies.LateMove.Deep
                     Position.Make(move);
 
                     int r;
-                    if (IsLmr(i) && CanReduce(move))
+                    if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                     {
                         r = -Search(-beta, -alpha, depth - DepthReduction);
                         if (r > alpha)
@@ -238,18 +238,32 @@ namespace Engine.Strategies.LateMove.Deep
                     Position.Make(move);
 
                     int r;
-                    if (IsLmr(i) && CanReduce(move))
+                    if (!move.CanReduce || move.IsCheck)
                     {
-                        var reduction = i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
-                        r = -Search(-beta, -alpha, depth - reduction);
-                        if (r > alpha)
-                        {
-                            r = -Search(-beta, -alpha, depth - 1);
-                        }
+                        r = -Search(-beta, -alpha, depth - 1);
                     }
                     else
                     {
-                        r = -Search(-beta, -alpha, depth - 1);
+                        if (i > LmrLateDepthThreshold)
+                        {
+                            r = -Search(-beta, -alpha, depth - DepthLateReduction);
+                            if (r > alpha)
+                            {
+                                r = -Search(-beta, -alpha, depth - 1);
+                            }
+                        }
+                        else if (i > LmrDepthThreshold)
+                        {
+                            r = -Search(-beta, -alpha, depth - DepthReduction);
+                            if (r > alpha)
+                            {
+                                r = -Search(-beta, -alpha, depth - 1);
+                            }
+                        }
+                        else
+                        {
+                            r = -Search(-beta, -alpha, depth - 1);
+                        }
                     }
 
                     if (r > value)
