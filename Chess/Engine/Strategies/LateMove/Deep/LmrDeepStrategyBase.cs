@@ -41,8 +41,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (moves.Length > 1)
             {
-                var isCheck = MoveHistory.GetLastMove().IsCheck;
-                if (isCheck)
+                if (MoveHistory.IsLastMoveWasCheck())
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
@@ -162,7 +161,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (depth < DepthLateReduction || MoveHistory.GetLastMove().IsCheck)
+            if (depth < DepthLateReduction || MoveHistory.IsLastMoveWasCheck())
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
@@ -238,32 +237,25 @@ namespace Engine.Strategies.LateMove.Deep
                     Position.Make(move);
 
                     int r;
-                    if (!move.CanReduce || move.IsCheck)
-                    {
-                        r = -Search(-beta, -alpha, depth - 1);
-                    }
-                    else
+                    if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                     {
                         if (i > LmrLateDepthThreshold)
                         {
                             r = -Search(-beta, -alpha, depth - DepthLateReduction);
-                            if (r > alpha)
-                            {
-                                r = -Search(-beta, -alpha, depth - 1);
-                            }
-                        }
-                        else if (i > LmrDepthThreshold)
-                        {
-                            r = -Search(-beta, -alpha, depth - DepthReduction);
-                            if (r > alpha)
-                            {
-                                r = -Search(-beta, -alpha, depth - 1);
-                            }
                         }
                         else
                         {
+                            r = -Search(-beta, -alpha, depth - DepthReduction);
+                        }
+
+                        if (r > alpha)
+                        {
                             r = -Search(-beta, -alpha, depth - 1);
                         }
+                    }
+                    else
+                    {
+                        r = -Search(-beta, -alpha, depth - 1);
                     }
 
                     if (r > value)

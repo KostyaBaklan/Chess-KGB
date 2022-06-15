@@ -43,7 +43,7 @@ namespace OpeningTool
 
             if (moves.Length > 1)
             {
-                var isCheck = MoveHistory.GetLastMove().IsCheck;
+                var isCheck = MoveHistory.IsLastMoveWasCheck();
                 if (isCheck)
                 {
                     for (var i = 0; i < moves.Length; i++)
@@ -136,7 +136,7 @@ namespace OpeningTool
             result = new OpeningResult();
             if (moves.Length == 0)
             {
-                result.GameResult = MoveHistory.GetLastMove().IsCheck ? GameResult.Mate : GameResult.Pat;
+                result.GameResult = MoveHistory.IsLastMoveWasCheck() ? GameResult.Mate : GameResult.Pat;
                 return true;
             }
 
