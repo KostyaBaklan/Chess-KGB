@@ -42,8 +42,7 @@ namespace Engine.Strategies.End
 
             if (moves.Length > 1)
             {
-                var isCheck = MoveHistory.GetLastMove().IsCheck;
-                if (isCheck)
+                if (MoveHistory.IsLastMoveWasCheck())
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
@@ -133,7 +132,7 @@ namespace Engine.Strategies.End
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (!MoveHistory.GetLastMove().IsCheck && depth > DepthReduction + 1)
+            if (!MoveHistory.IsLastMoveWasCheck() && depth > DepthReduction + 1)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {

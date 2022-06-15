@@ -25,7 +25,7 @@ namespace Engine.Sorting.Sorters
             var phase = Position.GetPhase();
             if (move.Piece.IsWhite())
             {
-                if (move.Piece == Piece.WhiteKing && !MoveHistoryService.GetLastMove().IsCheck)
+                if (move.Piece == Piece.WhiteKing && !MoveHistoryService.IsLastMoveWasCheck())
                 {
                     if (phase != Phase.End)
                     {
@@ -107,7 +107,7 @@ namespace Engine.Sorting.Sorters
             }
             else
             {
-                if (move.Piece == Piece.BlackKing && !MoveHistoryService.GetLastMove().IsCheck)
+                if (move.Piece == Piece.BlackKing && !MoveHistoryService.IsLastMoveWasCheck())
                 {
                     if (phase != Phase.End)
                     {

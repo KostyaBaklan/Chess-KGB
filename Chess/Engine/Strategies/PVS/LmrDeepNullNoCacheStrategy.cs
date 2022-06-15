@@ -58,7 +58,7 @@ namespace Engine.Strategies.PVS
 
             if (moves.Length > 1)
             {
-                var isCheck = MoveHistory.GetLastMove().IsCheck;
+                var isCheck = MoveHistory.IsLastMoveWasCheck();
                 if (isCheck)
                 {
                     for (var i = 0; i < moves.Length; i++)
@@ -156,7 +156,7 @@ namespace Engine.Strategies.PVS
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            var isWasCheck = MoveHistory.GetLastMove().IsCheck;
+            var isWasCheck = MoveHistory.IsLastMoveWasCheck();
             bool isNotEndGame = Position.GetPhase()!=Phase.End;
             if (CanUseNull && !isWasCheck && isNotEndGame && depth > NullDepthReduction + NullDepthOffset &&
                 IsValidWindow(alpha, beta))

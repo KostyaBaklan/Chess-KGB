@@ -150,7 +150,7 @@ namespace Engine.Strategies.Base
             result = new Result();
             if (moves.Length == 0)
             {
-                result.GameResult = MoveHistory.GetLastMove().IsCheck ? GameResult.Mate : GameResult.Pat;
+                result.GameResult = MoveHistory.IsLastMoveWasCheck() ? GameResult.Mate : GameResult.Pat;
                 return true;
             }
 
@@ -171,7 +171,7 @@ namespace Engine.Strategies.Base
             value = 0;
             if (moves.Length == 0)
             {
-                value = MoveHistory.GetLastMove().IsCheck
+                value = MoveHistory.IsLastMoveWasCheck()
                     ? -EvaluationService.GetMateValue()
                     : Position.GetValue();
                 return true;
@@ -190,7 +190,7 @@ namespace Engine.Strategies.Base
             if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
                 return Position.GetAllMoves(Sorters[Depth], pv);
 
-            if (MoveHistory.GetLastMove().IsCheck) return Position.GetAllMoves(Sorters[Depth], pv);
+            if (MoveHistory.IsLastMoveWasCheck()) return Position.GetAllMoves(Sorters[Depth], pv);
 
             var positionValue = Position.GetValue();
 
@@ -207,7 +207,7 @@ namespace Engine.Strategies.Base
             if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
                 return Position.GetAllMoves(Sorters[depth], pv);
 
-            if (MoveHistory.GetLastMove().IsCheck) return Position.GetAllMoves(Sorters[depth], pv);
+            if (MoveHistory.IsLastMoveWasCheck()) return Position.GetAllMoves(Sorters[depth], pv);
 
             var positionValue = Position.GetValue();
 

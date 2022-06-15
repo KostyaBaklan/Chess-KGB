@@ -20,5 +20,7 @@ namespace Engine.Interfaces
         bool IsThreefoldRepetition(ulong board);
         void Add(ulong board);
         void Remove(ulong board);
+        bool IsLastMoveWasCheck();
+        bool IsLastMoveWasPassed();
     }
 }

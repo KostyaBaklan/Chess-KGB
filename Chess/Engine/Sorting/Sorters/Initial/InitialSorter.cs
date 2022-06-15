@@ -41,7 +41,7 @@ namespace Engine.Sorting.Sorters.Initial
             switch (move.Piece)
             {
                 case Piece.WhitePawn:
-                    if (phase != Phase.Opening && Board.IsWhitePass(move.To.AsByte()))
+                    if (Board.IsWhitePass(move.To.AsByte()))
                     {
                         InitialMoveCollection.AddSuggested(move);
                         return;
@@ -86,8 +86,14 @@ namespace Engine.Sorting.Sorters.Initial
 
                     break;
                 case Piece.WhiteQueen:
+                    if (phase == Phase.Opening && move.To == Squares.D1)
+                    {
+                        InitialMoveCollection.AddNonSuggested(move);
+                        return;
+                    }
+                    break;
                 case Piece.BlackQueen:
-                    if (phase == Phase.Opening)
+                    if (phase == Phase.Opening && move.To == Squares.D8)
                     {
                         InitialMoveCollection.AddNonSuggested(move);
                         return;
@@ -95,7 +101,7 @@ namespace Engine.Sorting.Sorters.Initial
 
                     break;
                 case Piece.WhiteKing:
-                    if (!MoveHistoryService.GetLastMove().IsCheck)
+                    if (!MoveHistoryService.IsLastMoveWasCheck())
                     {
                         bool canCastle = MoveHistoryService.CanDoWhiteCastle();
                         if (phase == Phase.Opening)
@@ -121,7 +127,7 @@ namespace Engine.Sorting.Sorters.Initial
 
                     break;
                 case Piece.BlackPawn:
-                    if (phase !=Phase.Opening&& Board.IsBlackPass(move.To.AsByte()))
+                    if (Board.IsBlackPass(move.To.AsByte()))
                     {
                         InitialMoveCollection.AddSuggested(move);
                         return;
@@ -146,7 +152,7 @@ namespace Engine.Sorting.Sorters.Initial
 
                     break;
                 case Piece.BlackKing:
-                    if (!MoveHistoryService.GetLastMove().IsCheck)
+                    if (!MoveHistoryService.IsLastMoveWasCheck())
                     {
                         bool canCastle = MoveHistoryService.CanDoBlackCastle();
                         if (phase == Phase.Opening)
@@ -171,8 +177,6 @@ namespace Engine.Sorting.Sorters.Initial
                     }
 
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
 
             Position.Make(move);
@@ -193,12 +197,14 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
 
-                    if (move.Piece == Piece.WhitePawn &&
-                        (MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
-                         Board.GetBlackBits()).Any())
+                    if (move.Piece == Piece.WhitePawn)
                     {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
+                        if ((MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
+                            Board.GetBlackBits()).Any()||move.IsPassed)
+                        {
+                            InitialMoveCollection.AddSuggested(move);
+                            return; 
+                        }
                     }
 
                     if (move.Piece == Piece.WhiteKnight &&
@@ -241,12 +247,14 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
 
-                    if (move.Piece == Piece.BlackPawn &&
-                        (MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
-                         Board.GetWhiteBits()).Any())
+                    if (move.Piece == Piece.BlackPawn )
                     {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
+                        if ((MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
+                             Board.GetWhiteBits()).Any()||move.IsPassed)
+                        {
+                            InitialMoveCollection.AddSuggested(move);
+                            return; 
+                        }
                     }
 
                     if (move.Piece == Piece.BlackKnight &&

@@ -46,7 +46,7 @@ namespace Engine.Strategies.LateMove.Base
 
             if (moves.Length > 1)
             {
-                if (MoveHistory.GetLastMove().IsCheck)
+                if (MoveHistory.IsLastMoveWasCheck())
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
@@ -160,7 +160,7 @@ namespace Engine.Strategies.LateMove.Base
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (depth > DepthReduction + 1 && !MoveHistory.GetLastMove().IsCheck)
+            if (depth > DepthReduction + 1 && !MoveHistory.IsLastMoveWasCheck())
             {
                 for (var i = 0; i < moves.Length; i++)
                 {

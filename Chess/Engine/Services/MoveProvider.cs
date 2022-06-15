@@ -117,8 +117,24 @@ namespace Engine.Services
             _all = all.ToArray();
             for (var i = 0; i < _all.Length; i++)
             {
-                _all[i].Key = (short) i;
-                _all[i].CanReduce = !_all[i].IsAttack && !_all[i].IsPromotion;
+                var move = _all[i];
+                move.Key = (short) i;
+                if (move.Piece == Piece.WhitePawn && move.From.AsByte() > 31)
+                {
+                    move.IsPassed = true;
+                    move.CanReduce = false;
+                }
+                else if (move.Piece == Piece.BlackPawn && move.From.AsByte() < 32)
+                {
+
+                    move.IsPassed = true;
+                    move.CanReduce = false;
+                }
+                else
+                {
+                    move.IsPassed = false;
+                    move.CanReduce = !move.IsAttack && !move.IsPromotion;
+                }
             }
 
             if (configurationProvider.GeneralConfiguration.UseHistory)

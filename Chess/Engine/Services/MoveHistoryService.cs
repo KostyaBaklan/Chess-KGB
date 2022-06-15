@@ -229,6 +229,18 @@ namespace Engine.Services
             _boardHistory.Pop();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsLastMoveWasCheck()
+        {
+            return _history.Peek().IsCheck;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsLastMoveWasPassed()
+        {
+            return _history.Peek().IsPassed;
+        }
+
         #endregion
 
         #region Overrides of Object

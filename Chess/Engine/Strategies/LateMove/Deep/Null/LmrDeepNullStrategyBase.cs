@@ -48,7 +48,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
             if (moves.Length > 1)
             {
-                var isCheck = MoveHistory.GetLastMove().IsCheck;
+                var isCheck = MoveHistory.IsLastMoveWasCheck();
                 if (isCheck)
                 {
                     for (var i = 0; i < moves.Length; i++)
@@ -171,7 +171,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            var isWasCheck = MoveHistory.GetLastMove().IsCheck;
+            var isWasCheck = MoveHistory.IsLastMoveWasCheck();
             if (CanUseNull && !isWasCheck && Position.GetPhase()!=Phase.End && depth > NullDepthReduction + NullDepthOffset &&
                 IsValidWindow(alpha, beta))
             {
