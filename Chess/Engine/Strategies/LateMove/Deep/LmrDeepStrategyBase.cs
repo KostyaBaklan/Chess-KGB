@@ -41,7 +41,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (moves.Length > 1)
             {
-                if (MoveHistory.IsLastMoveWasCheck())
+                if (MoveHistory.IsLastMoveNotReducable())
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
@@ -125,7 +125,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (Position.GetPhase() == Phase.End)
             {
-                return EndGameStrategy.Search(alpha, beta, Math.Min(depth + 1, MaxEndGameDepth-1));
+                return EndGameStrategy.Search(alpha, beta, Math.Min(depth + 1, MaxEndGameDepth));
             }
 
             MoveBase pv = null;
@@ -161,7 +161,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (depth < DepthLateReduction || MoveHistory.IsLastMoveWasCheck())
+            if (depth < DepthLateReduction || MoveHistory.IsLastMoveNotReducable())
             {
                 for (var i = 0; i < moves.Length; i++)
                 {

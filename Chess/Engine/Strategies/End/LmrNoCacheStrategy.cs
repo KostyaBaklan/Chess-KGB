@@ -13,6 +13,7 @@ namespace Engine.Strategies.End
     {
         protected int DepthReduction;
         protected int LmrDepthThreshold;
+        protected int LmrDepthLimitForReduce;
 
         public LmrNoCacheStrategy(short depth, IPosition position) : base(depth, position)
         {
@@ -21,6 +22,8 @@ namespace Engine.Strategies.End
                 .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthThreshold;
             DepthReduction = configurationProvider
                 .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthReduction;
+
+            LmrDepthLimitForReduce = DepthReduction + 2;
 
             InitializeSorters(depth, position, MoveSorterProvider.GetExtended(position, new HistoryComparer()));
         }
@@ -42,7 +45,7 @@ namespace Engine.Strategies.End
 
             if (moves.Length > 1)
             {
-                if (MoveHistory.IsLastMoveWasCheck())
+                if (MoveHistory.IsLastMoveNotReducable())
                 {
                     for (var i = 0; i < moves.Length; i++)
                     {
@@ -132,26 +135,14 @@ namespace Engine.Strategies.End
 
             if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
 
-            if (!MoveHistory.IsLastMoveWasCheck() && depth > DepthReduction + 1)
+            if (MoveHistory.IsLastMoveNotReducable() || LmrDepthLimitForReduce > depth)
             {
                 for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
                     Position.Make(move);
 
-                    int r;
-                    if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
-                    {
-                        r = -Search(-beta, -alpha, depth - DepthReduction);
-                        if (r > alpha)
-                        {
-                            r = -Search(-beta, -alpha, depth - 1);
-                        }
-                    }
-                    else
-                    {
-                        r = -Search(-beta, -alpha, depth - 1);
-                    }
+                    var r = -Search(-beta, -alpha, depth - 1);
 
                     if (r > value)
                     {
@@ -179,7 +170,19 @@ namespace Engine.Strategies.End
                     var move = moves[i];
                     Position.Make(move);
 
-                    var r = -Search(-beta, -alpha, depth - 1);
+                    int r;
+                    if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
+                    {
+                        r = -Search(-beta, -alpha, depth - DepthReduction);
+                        if (r > alpha)
+                        {
+                            r = -Search(-beta, -alpha, depth - 1);
+                        }
+                    }
+                    else
+                    {
+                        r = -Search(-beta, -alpha, depth - 1);
+                    }
 
                     if (r > value)
                     {
