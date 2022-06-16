@@ -121,13 +121,13 @@ namespace Engine.Services
                 move.Key = (short) i;
                 if (move.Piece == Piece.WhitePawn && move.From.AsByte() > 31)
                 {
-                    move.IsPassed = true;
+                    move.IsPassed = move.From.AsByte() > 39;
                     move.CanReduce = false;
                 }
                 else if (move.Piece == Piece.BlackPawn && move.From.AsByte() < 32)
                 {
 
-                    move.IsPassed = true;
+                    move.IsPassed = move.From.AsByte() < 24;
                     move.CanReduce = false;
                 }
                 else

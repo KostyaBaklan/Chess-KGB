@@ -241,6 +241,13 @@ namespace Engine.Services
             return _history.Peek().IsPassed;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsLastMoveNotReducable()
+        {
+            var peek = _history.Peek();
+            return peek.IsCheck||peek.IsPassed;
+        }
+
         #endregion
 
         #region Overrides of Object
