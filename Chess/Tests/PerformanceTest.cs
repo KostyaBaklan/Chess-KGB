@@ -10,6 +10,7 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Strategies.Aspiration.Adaptive;
 using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Aspiration.Null;
 using Engine.Strategies.Base;
@@ -64,7 +65,10 @@ namespace Tests
 
                     {"lmra_es_hc", (d, p) => new LmrAspirationExtendedStrategy(d, p)},
                     {"lmrda_es_hc", (d, p) => new LmrAspirationDeepExtendedStrategy(d, p)},
-                    {"lmrdan_es_hc", (d, p) => new LmrAspirationDeepNullExtendedStrategy(d, p)}
+                    {"lmrdan_es_hc", (d, p) => new LmrAspirationDeepNullExtendedStrategy(d, p)},
+
+                    {"lmrad_es_hc", (d, p) => new LmrAdaptiveAspirationStrategy(d, p)},
+                    {"lmrads_es_hc", (d, p) => new LmrSoftAdaptiveAspirationStrategy(d, p)}
                 };
             //Dictionary<string, StrategyBase> strategies = new Dictionary<string, StrategyBase>
             //{
