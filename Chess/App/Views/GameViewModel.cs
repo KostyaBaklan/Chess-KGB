@@ -17,6 +17,7 @@ using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Moves;
+using Engine.Strategies.Aspiration.Adaptive;
 using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Base;
 using Kgb.ChessApp.Models;
@@ -213,7 +214,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrAspirationDeepExtendedStrategy(level, _position);
+            _strategy = new LmrAdaptiveAspirationStrategy(level, _position);
             _level = level;
             Title = $"Strategy={_strategy}, Level={level}";
 

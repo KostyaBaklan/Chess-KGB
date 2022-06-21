@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
 using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Hash;
@@ -124,6 +124,11 @@ namespace Engine.Strategies.LateMove.Base
             if (depth == 0)
             {
                 return Evaluate(alpha, beta);
+            }
+
+            if (Position.GetPhase() == Phase.End)
+            {
+                return EndGameStrategy.Search(alpha, beta, Math.Min(depth + 1, MaxEndGameDepth));
             }
 
             MoveBase pv = null;
