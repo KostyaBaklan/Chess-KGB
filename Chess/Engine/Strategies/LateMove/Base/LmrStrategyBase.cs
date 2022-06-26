@@ -42,7 +42,7 @@ namespace Engine.Strategies.LateMove.Base
 
             var moves = Position.GetAllMoves(Sorters[Depth], pv);
 
-            if (CheckMoves(moves, out var res)) return res;
+            if (CheckMoves(moves.Length, out var res)) return res;
 
             if (moves.Length > 1)
             {
@@ -163,7 +163,7 @@ namespace Engine.Strategies.LateMove.Base
 
             if (moves == null) return alpha;
 
-            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
+            if (CheckPosition(moves.Length, out var defaultValue)) return defaultValue;
 
             if (depth > DepthReduction + 1 && !MoveHistory.IsLastMoveWasCheck())
             {

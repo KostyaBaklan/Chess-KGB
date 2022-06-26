@@ -224,6 +224,7 @@
     <Compile Include="Strategies\Aspiration\Adaptive\AdaptiveAspirationStrategyBase.cs" />
     <Compile Include="Strategies\Aspiration\Adaptive\LmrAdaptiveAspirationStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Adaptive\LmrSoftAdaptiveAspirationStrategy.cs" />
+    <Compile Include="Strategies\Aspiration\AspirationModel.cs" />
     <Compile Include="Strategies\Aspiration\AspirationStrategyBase.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationAdvancedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepAdvancedStrategy.cs" />

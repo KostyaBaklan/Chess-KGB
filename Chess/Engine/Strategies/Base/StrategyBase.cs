@@ -145,10 +145,10 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CheckMoves(MoveBase[] moves, out Result result)
+        protected bool CheckMoves(int count, out Result result)
         {
             result = new Result();
-            if (moves.Length == 0)
+            if (count == 0)
             {
                 result.GameResult = MoveHistory.IsLastMoveWasCheck() ? GameResult.Mate : GameResult.Pat;
                 return true;
@@ -166,10 +166,10 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CheckMoves(int alpha, int beta, MoveBase[] moves, out int value)
+        protected bool CheckPosition(int count, out int value)
         {
             value = 0;
-            if (moves.Length == 0)
+            if (count == 0)
             {
                 value = MoveHistory.IsLastMoveWasCheck()
                     ? -EvaluationService.GetMateValue()

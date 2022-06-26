@@ -41,7 +41,7 @@ namespace Engine.Strategies.End
 
             var moves = Position.GetAllMoves(Sorters[Depth]);
 
-            if (CheckMoves(moves, out var res)) return res;
+            if (CheckMoves(moves.Length, out var res)) return res;
 
             if (moves.Length > 1)
             {
@@ -133,7 +133,7 @@ namespace Engine.Strategies.End
             var moves = GenerateMoves(alpha, beta, depth);
             if (moves == null) return alpha;
 
-            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
+            if (CheckPosition(moves.Length, out var defaultValue)) return defaultValue;
 
             if (MoveHistory.IsLastMoveNotReducable() || LmrDepthLimitForReduce > depth)
             {

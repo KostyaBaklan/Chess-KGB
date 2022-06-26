@@ -54,7 +54,7 @@ namespace Engine.Strategies.PVS
 
             var moves = Position.GetAllMoves(Sorters[Depth]);
 
-            if (CheckMoves(moves, out var res)) return res;
+            if (CheckMoves(moves.Length, out var res)) return res;
 
             if (moves.Length > 1)
             {
@@ -154,7 +154,7 @@ namespace Engine.Strategies.PVS
             var moves = GenerateMoves(alpha, beta, depth);
             if (moves == null) return alpha;
 
-            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
+            if (CheckPosition(moves.Length, out var defaultValue)) return defaultValue;
 
             var isWasCheck = MoveHistory.IsLastMoveWasCheck();
             bool isNotEndGame = Position.GetPhase()!=Phase.End;
@@ -256,7 +256,7 @@ namespace Engine.Strategies.PVS
             var moves = GenerateMoves(alpha, beta, depth);
             if (moves == null) return alpha;
 
-            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
+            if (CheckPosition(moves.Length, out var defaultValue)) return defaultValue;
 
             for (var i = 0; i < moves.Length; i++)
             {
