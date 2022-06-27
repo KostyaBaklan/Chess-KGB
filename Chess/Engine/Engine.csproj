@@ -182,7 +182,6 @@
     <Compile Include="Sorting\Comparers\IMoveComparer.cs" />
     <Compile Include="Sorting\Sorters\AdvancedSorter.cs" />
     <Compile Include="Sorting\Comparers\AttackComparer.cs" />
-    <Compile Include="Sorting\Sorters\AttackSorter.cs" />
     <Compile Include="Sorting\Sorters\Basic\BasicSorter.cs" />
     <Compile Include="Sorting\Sorters\Basic\BasicSorterPlus.cs" />
     <Compile Include="Sorting\Sorters\ComplexSorter.cs" />

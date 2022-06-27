@@ -21,7 +21,7 @@ namespace Engine.Strategies.Base
         protected int FutilityDepth;
         protected bool UseFutility;
         protected int MaxEndGameDepth;
-        protected int SortDepth;
+        protected int[] SortDepth;
         protected int[][] Margins;
 
         protected IPosition Position;
@@ -80,10 +80,9 @@ namespace Engine.Strategies.Base
 
             var comparer = new HistoryComparer();
             var initialSorter = MoveSorterProvider.GetInitial(position, comparer);
-            //Sorters[0] = new AttackSorter(position.GetBoard());
             Sorters[0] = MoveSorterProvider.GetBasic(position, comparer);
 
-            var d = depth - SortDepth;
+            var d = depth - SortDepth[depth];
             for (int i = 1; i < d; i++)
             {
                 Sorters[i] = mainSorter;

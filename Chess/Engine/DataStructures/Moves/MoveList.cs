@@ -79,9 +79,9 @@ namespace Engine.DataStructures.Moves
         public void Sort(IMoveComparer comparer)
         {
             var count = Count;
-            if (count <= 1) return;
+            if (count < 3) return;
 
-            var capturesCount = count < 6 ? count / 2 : Math.Min(count / 3, 10);
+            var capturesCount = Math.Min(count / 3, 9);
 
             for (var i = 0; i < capturesCount; i++)
             {

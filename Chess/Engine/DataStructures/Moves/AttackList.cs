@@ -68,14 +68,6 @@ namespace Engine.DataStructures.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Swap(int i, int j)
-        {
-            var temp = _items[i];
-            _items[i] = _items[j];
-            _items[j] = temp;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Sort(IMoveComparer comparer)
         {
             var count = Count;
@@ -138,11 +130,6 @@ namespace Engine.DataStructures.Moves
         public override string ToString()
         {
             return $"Count={Count}";
-        }
-
-        public void FullSort(IComparer<AttackBase> comparer)
-        {
-            Array.Sort(_items, 0, Count, comparer);
         }
     }
 }
