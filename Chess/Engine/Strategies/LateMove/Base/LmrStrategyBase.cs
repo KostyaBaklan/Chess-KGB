@@ -42,13 +42,14 @@ namespace Engine.Strategies.LateMove.Base
 
             var moves = Position.GetAllMoves(Sorters[Depth], pv);
 
-            if (CheckMoves(moves, out var res)) return res;
+            var count = moves.Length;
+            if (CheckMoves(count, out var res)) return res;
 
-            if (moves.Length > 1)
+            if (count > 1)
             {
                 if (MoveHistory.IsLastMoveWasCheck())
                 {
-                    for (var i = 0; i < moves.Length; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         var move = moves[i];
                         Position.Make(move);
@@ -73,7 +74,7 @@ namespace Engine.Strategies.LateMove.Base
                 }
                 else
                 {
-                    for (var i = 0; i < moves.Length; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         var move = moves[i];
                         Position.Make(move);
@@ -163,11 +164,12 @@ namespace Engine.Strategies.LateMove.Base
 
             if (moves == null) return alpha;
 
-            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
+            var count = moves.Length;
+            if (CheckPosition(count, out var defaultValue)) return defaultValue;
 
             if (depth > DepthReduction + 1 && !MoveHistory.IsLastMoveWasCheck())
             {
-                for (var i = 0; i < moves.Length; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var move = moves[i];
                     Position.Make(move);
@@ -206,7 +208,7 @@ namespace Engine.Strategies.LateMove.Base
             }
             else
             {
-                for (var i = 0; i < moves.Length; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var move = moves[i];
                     Position.Make(move);

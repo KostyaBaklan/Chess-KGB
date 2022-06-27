@@ -47,7 +47,7 @@ namespace Engine.Strategies.AlphaBeta.Null
 
             var moves = Position.GetAllMoves(Sorters[depth], pv);
 
-            if (CheckMoves(moves, out var res)) return res;
+            if (CheckMoves(moves.Length, out var res)) return res;
 
             if (moves.Length > 1)
             {
@@ -143,7 +143,7 @@ namespace Engine.Strategies.AlphaBeta.Null
             var moves = GenerateMoves(alpha, beta, depth, pv);
             if (moves == null) return alpha;
 
-            if (CheckMoves(alpha, beta, moves, out var defaultValue)) return defaultValue;
+            if (CheckPosition(moves.Length, out var defaultValue)) return defaultValue;
 
             var lastMove = MoveHistory.GetLastMove();
             if (CanUseNull && !lastMove.IsCheck && isNotEndGame && IsValidWindow(alpha, beta))

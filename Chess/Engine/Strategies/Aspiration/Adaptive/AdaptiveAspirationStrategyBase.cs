@@ -8,18 +8,10 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
-using Engine.Strategies.AlphaBeta;
 using Engine.Strategies.Base;
 
 namespace Engine.Strategies.Aspiration.Adaptive
 {
-    public class AspirationModel
-    {
-        public int Window { get; set; }
-        public int Depth { get; set; }
-        public AlphaBetaStrategy Strategy { get; set; }
-    }
-
     public abstract class AdaptiveAspirationStrategyBase : StrategyBase
     {
         protected int AspirationDepth;
