@@ -76,12 +76,14 @@ namespace Engine.DataStructures.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Sort(IMoveComparer comparer)
+        public void Sort()
         {
             var count = Count;
             if (count < 3) return;
 
-            var capturesCount = Math.Min(count / 3, 9);
+            var comparer = Sorting.Sort.HistoryComparer;
+
+            var capturesCount = Sorting.Sort.SortMinimum[count];
 
             for (var i = 0; i < capturesCount; i++)
             {
@@ -103,9 +105,9 @@ namespace Engine.DataStructures.Moves
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void FullSort(IMoveComparer comparer)
+        public void FullSort()
         {
-            Array.Sort(_items,0,Count,comparer);
+            Array.Sort(_items,0,Count, Sorting.Sort.HistoryComparer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

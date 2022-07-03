@@ -59,7 +59,7 @@ namespace Engine.Sorting.Sorters
                 moveList.Add(move);
             }
 
-            moveList.Sort(Comparer);
+            moveList.FullSort();
 
             var m = new MoveBase[moveList.Count];
             moveList.CopyTo(m, 0);

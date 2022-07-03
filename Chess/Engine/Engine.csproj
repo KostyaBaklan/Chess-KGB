@@ -180,6 +180,7 @@
     <Compile Include="Sorting\Comparers\HistoryDifferenceComparer.cs" />
     <Compile Include="Sorting\Comparers\HistoryDifferenceExtendedComparer.cs" />
     <Compile Include="Sorting\Comparers\IMoveComparer.cs" />
+    <Compile Include="Sorting\Sort.cs" />
     <Compile Include="Sorting\Sorters\AdvancedSorter.cs" />
     <Compile Include="Sorting\Comparers\AttackComparer.cs" />
     <Compile Include="Sorting\Sorters\Basic\BasicSorter.cs" />
