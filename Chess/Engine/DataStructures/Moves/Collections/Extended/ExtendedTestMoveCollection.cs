@@ -63,7 +63,7 @@ namespace Engine.DataStructures.Moves.Collections.Extended
 
                 if (_nonCaptures.Count > 0)
                 {
-                    _nonCaptures.Sort(Sorting.Sort.DifferenceComparer);
+                    _nonCaptures.FullSort(Sorting.Sort.DifferenceComparer);
                     _nonCaptures.CopyTo(moves, nonCapturesCount);
                     _nonCaptures.Clear();
                 }
@@ -78,7 +78,7 @@ namespace Engine.DataStructures.Moves.Collections.Extended
                 var capturesCount = _nonCaptures.Count;
                 if (capturesCount > 0)
                 {
-                    _nonCaptures.Sort(Sorting.Sort.DifferenceComparer);
+                    _nonCaptures.FullSort(Sorting.Sort.DifferenceComparer);
                     _nonCaptures.CopyTo(moves, 0);
                     _nonCaptures.Clear();
                 }
