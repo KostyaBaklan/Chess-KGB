@@ -3,12 +3,14 @@
     "GameDepth": 384,
     "BlockTimeout": 1,
     "FutilityDepth": 2,
-    "SortDepth": [ 0, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 ],
+    "SortDepth": [ 0, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+    "SortHardDepth": [ 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 ],
     "KillerCapacity": 2,
     "UseEvaluationCache": false,
     "UseFutility": true,
     "UseHistory": true,
-    "UseAging": false
+    "UseAging": false,
+    "UseSortHard": false
   },
   "AlgorithmConfiguration": {
     "DepthOffset": 2,

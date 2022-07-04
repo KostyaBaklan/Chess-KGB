@@ -122,5 +122,39 @@ namespace Engine.DataStructures.Moves
         {
             return $"Count={Count}";
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void FullSort(IMoveComparer differenceComparer)
+        {
+            Array.Sort(_items, 0, Count, differenceComparer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Sort(IMoveComparer comparer)
+        {
+            var count = Count;
+            if (count < 3) return;
+
+            var capturesCount = Sorting.Sort.SortMinimum[count];
+
+            for (var i = 0; i < capturesCount; i++)
+            {
+                int index = i;
+                var min = _items[i];
+                for (int j = i + 1; j < count; j++)
+                {
+                    if (comparer.Compare(min, _items[j]) < 0) continue;
+
+                    min = _items[j];
+                    index = j;
+                }
+
+                if (index == i) continue;
+
+                var temp = _items[index];
+                _items[index] = _items[i];
+                _items[i] = temp;
+            }
+        }
     }
 }

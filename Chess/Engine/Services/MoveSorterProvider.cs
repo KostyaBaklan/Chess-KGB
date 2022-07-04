@@ -26,6 +26,11 @@ namespace Engine.Services
             return new ExtendedKillerSorter(position, comparer);
         }
 
+        public MoveSorter GetHardExtended(IPosition position, IMoveComparer comparer)
+        {
+            return new ExtendedHardSorter(position, comparer);
+        }
+
         public MoveSorter GetAdvanced(IPosition position, IMoveComparer comparer)
         {
             return new AdvancedSorter(position, comparer);
