@@ -3,14 +3,11 @@
     "GameDepth": 384,
     "BlockTimeout": 1,
     "FutilityDepth": 2,
-    "SortDepth": [ 0, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
-    "SortHardDepth": [ 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 ],
     "KillerCapacity": 2,
     "UseEvaluationCache": false,
     "UseFutility": true,
     "UseHistory": true,
-    "UseAging": false,
-    "UseSortHard": false
+    "UseAging": false
   },
   "AlgorithmConfiguration": {
     "DepthOffset": 2,
@@ -46,6 +43,11 @@
       "LmrDepthReduction": 2,
       "LmrDepthThreshold": 3,
       "LmrLateDepthThreshold": [ 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 10, 10, 9, 9, 9, 9, 9, 9 ]
+    },
+    "SortingConfiguration": {
+      "SortDepth": [ 0, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+      "SortHardDepth": [ 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 ],
+      "UseSortHard": false
     }
   },
   "Evaluation": {

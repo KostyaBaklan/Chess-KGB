@@ -15,6 +15,7 @@ namespace Engine.Models.Config
         public MultiCutConfiguration MultiCutConfiguration { get; set; }
         public LateMoveConfiguration LateMoveConfiguration { get; set; }
         public PvsConfiguration PvsConfiguration { get; set; }
+        public SortingConfiguration SortingConfiguration { get; set; }
 
         #endregion
     }

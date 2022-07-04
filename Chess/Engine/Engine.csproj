@@ -79,6 +79,7 @@
     <Compile Include="DataStructures\PositionCollection.cs" />
     <Compile Include="DataStructures\PositionsList.cs" />
     <Compile Include="Interfaces\Config\PvsConfiguration.cs" />
+    <Compile Include="Interfaces\Config\SortingConfiguration.cs" />
     <Compile Include="Interfaces\IAttackEvaluationService.cs" />
     <Compile Include="Interfaces\IMoveSorterProvider.cs" />
     <Compile Include="Interfaces\IOpeningService.cs" />

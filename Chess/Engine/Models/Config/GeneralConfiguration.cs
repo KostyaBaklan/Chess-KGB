@@ -14,9 +14,6 @@ namespace Engine.Models.Config
         public bool UseHistory { get; set; }
         public int KillerCapacity { get; set; }
         public bool UseAging { get; set; }
-        public bool UseSortHard { get; set; }
-        public int[] SortDepth { get; set; }
-        public int[] SortHardDepth { get; set; }
 
         #endregion
     }

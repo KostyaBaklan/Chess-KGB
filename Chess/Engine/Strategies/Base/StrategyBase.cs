@@ -44,24 +44,19 @@ namespace Engine.Strategies.Base
         protected StrategyBase(short depth, IPosition position)
         {
             var configurationProvider = ServiceLocator.Current.GetInstance<IConfigurationProvider>();
-            MaxEndGameDepth = configurationProvider
-                .AlgorithmConfiguration.MaxEndGameDepth;
-            SortDepth = configurationProvider
-                .GeneralConfiguration.SortDepth;
-            SortHardDepth = configurationProvider
-                .GeneralConfiguration.SortHardDepth;
-            SearchValue = configurationProvider
-                .Evaluation.Static.Mate;
-            ThreefoldRepetitionValue = configurationProvider
-                .Evaluation.Static.ThreefoldRepetitionValue;
-            UseFutility = configurationProvider
-                .GeneralConfiguration.UseFutility;
-            FutilityDepth = configurationProvider
-                .GeneralConfiguration.FutilityDepth;
-            UseAging = configurationProvider
-                .GeneralConfiguration.UseAging;
-            UseSortHard = configurationProvider
-                .GeneralConfiguration.UseSortHard;
+            var algorithmConfiguration = configurationProvider.AlgorithmConfiguration;
+            var sortingConfiguration = algorithmConfiguration.SortingConfiguration;
+            var generalConfiguration = configurationProvider.GeneralConfiguration;
+
+            MaxEndGameDepth = algorithmConfiguration.MaxEndGameDepth;
+            SortDepth = sortingConfiguration.SortDepth;
+            SortHardDepth = sortingConfiguration.SortHardDepth;
+            SearchValue = configurationProvider.Evaluation.Static.Mate;
+            ThreefoldRepetitionValue = configurationProvider .Evaluation.Static.ThreefoldRepetitionValue;
+            UseFutility = generalConfiguration.UseFutility;
+            FutilityDepth = generalConfiguration.FutilityDepth;
+            UseAging = generalConfiguration.UseAging;
+            UseSortHard = sortingConfiguration.UseSortHard;
             Depth = depth;
             Position = position;
             EvaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();

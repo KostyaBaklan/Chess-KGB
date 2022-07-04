@@ -10,8 +10,5 @@
         bool UseHistory { get; }
         int KillerCapacity { get; }
         bool UseAging { get; }
-        bool UseSortHard { get; }
-        int[] SortDepth { get; }
-        int[] SortHardDepth { get; }
     }
 }
