@@ -8,11 +8,18 @@ namespace Engine.Sorting
     public static class Sort
     {
         public static readonly int[] SortMinimum;
-        public static readonly IComparer<MoveBase> HistoryComparer;
+        public static readonly IComparer<MoveBase> Comparer;
+        public static readonly IMoveComparer DifferenceComparer;
+        public static readonly IMoveComparer HistoryComparer;
 
         static Sort()
         {
-            HistoryComparer = new HistoryComparer();
+            var historyComparer = new HistoryComparer();
+            Comparer = historyComparer;
+            HistoryComparer = historyComparer;
+
+            DifferenceComparer = new DifferenceComparer();
+
             SortMinimum = new int[128];
             for (var i = 0; i < SortMinimum.Length; i++)
             {
@@ -29,7 +36,7 @@ namespace Engine.Sorting
             //}
             //for (int i = 10; i < 24; i++)
             //{
-            //    SortMinimum[i] = Math.Max(i / 3 + 1,5);
+            //    SortMinimum[i] = Math.Max(i / 3 + 1, 5);
             //}
             //for (int i = 24; i < 30; i++)
             //{
