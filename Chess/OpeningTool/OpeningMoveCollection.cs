@@ -94,7 +94,7 @@ namespace OpeningTool
 
             if (_nonCaptures.Count > 0)
             {
-                _nonCaptures.FullSort(Comparer);
+                _nonCaptures.FullSort();
                 _nonCaptures.CopyTo(moves, nonCapturesCount);
                 _nonCaptures.Clear();
             }

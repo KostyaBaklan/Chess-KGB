@@ -52,7 +52,7 @@ namespace Engine.DataStructures.Moves.Collections.Initial
 
                 if (_suggested.Count > 0)
                 {
-                    _suggested.FullSort(Comparer);
+                    _suggested.FullSort();
                     _suggested.CopyTo(moves, killersCount);
                     _suggested.Clear();
                 }
@@ -65,14 +65,14 @@ namespace Engine.DataStructures.Moves.Collections.Initial
 
                 if (_nonCaptures.Count > 0)
                 {
-                    _nonCaptures.FullSort(Comparer);
+                    _nonCaptures.FullSort();
                     _nonCaptures.CopyTo(moves, looseCapturesCount);
                     _nonCaptures.Clear();
                 }
 
                 if (_notSuggested.Count > 0)
                 {
-                    _notSuggested.FullSort(Comparer);
+                    _notSuggested.FullSort();
                     _notSuggested.CopyTo(moves, nonCapturesCount);
                     _notSuggested.Clear();
                 }
@@ -93,7 +93,7 @@ namespace Engine.DataStructures.Moves.Collections.Initial
                 var capturesCount = _nonCaptures.Count;
                 if (capturesCount > 0)
                 {
-                    _nonCaptures.FullSort(Comparer);
+                    _nonCaptures.FullSort();
                     _nonCaptures.CopyTo(moves, 0);
                     _nonCaptures.Clear();
                 }
@@ -105,7 +105,7 @@ namespace Engine.DataStructures.Moves.Collections.Initial
 
                 if (_notSuggested.Count > 0)
                 {
-                    _notSuggested.FullSort(Comparer);
+                    _notSuggested.FullSort();
                     _notSuggested.CopyTo(moves, nonCapturesCount);
                     _notSuggested.Clear();
                 }

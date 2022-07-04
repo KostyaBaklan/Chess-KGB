@@ -20,8 +20,10 @@ namespace Engine.Strategies.Base
         protected int ThreefoldRepetitionValue;
         protected int FutilityDepth;
         protected bool UseFutility;
+        protected bool UseSortHard;
         protected int MaxEndGameDepth;
         protected int[] SortDepth;
+        protected int[] SortHardDepth;
         protected int[][] Margins;
 
         protected IPosition Position;
@@ -46,6 +48,8 @@ namespace Engine.Strategies.Base
                 .AlgorithmConfiguration.MaxEndGameDepth;
             SortDepth = configurationProvider
                 .GeneralConfiguration.SortDepth;
+            SortHardDepth = configurationProvider
+                .GeneralConfiguration.SortHardDepth;
             SearchValue = configurationProvider
                 .Evaluation.Static.Mate;
             ThreefoldRepetitionValue = configurationProvider
@@ -56,6 +60,8 @@ namespace Engine.Strategies.Base
                 .GeneralConfiguration.FutilityDepth;
             UseAging = configurationProvider
                 .GeneralConfiguration.UseAging;
+            UseSortHard = configurationProvider
+                .GeneralConfiguration.UseSortHard;
             Depth = depth;
             Position = position;
             EvaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
@@ -74,19 +80,36 @@ namespace Engine.Strategies.Base
 
         public abstract int Search(int alpha, int beta, int depth);
 
-        protected void InitializeSorters(short depth, IPosition position, MoveSorter mainSorter)
+        protected virtual void InitializeSorters(short depth, IPosition position, MoveSorter mainSorter)
         {
             Sorters = new IMoveSorter[depth + 2];
 
-            var comparer = new HistoryComparer();
-            var initialSorter = MoveSorterProvider.GetInitial(position, comparer);
-            Sorters[0] = MoveSorterProvider.GetBasic(position, comparer);
+            var initialSorter = MoveSorterProvider.GetInitial(position, Sorting.Sort.HistoryComparer);
+            Sorters[0] = MoveSorterProvider.GetBasic(position, Sorting.Sort.HistoryComparer);
 
             var d = depth - SortDepth[depth];
-            for (int i = 1; i < d; i++)
+
+            if (UseSortHard)
             {
-                Sorters[i] = mainSorter;
+                var hardExtended = MoveSorterProvider.GetHardExtended(position, Sorting.Sort.HistoryComparer);
+                var hard = d-SortHardDepth[depth];
+                for (int i = 1; i < d; i++)
+                {
+                    Sorters[i] = mainSorter;
+                }
+                for (var i = hard; i < d; i++)
+                {
+                    Sorters[i] = hardExtended;
+                }
             }
+            else
+            {
+                for (int i = 1; i < d; i++)
+                {
+                    Sorters[i] = mainSorter;
+                }
+            }
+
 
             for (var i = d; i < Sorters.Length; i++)
             {
