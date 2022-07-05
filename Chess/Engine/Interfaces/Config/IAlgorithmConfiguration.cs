@@ -11,5 +11,6 @@
         MultiCutConfiguration MultiCutConfiguration { get; }
         LateMoveConfiguration LateMoveConfiguration { get; }
         PvsConfiguration PvsConfiguration { get; }
+        SortingConfiguration SortingConfiguration { get; }
     }
 }

@@ -31,7 +31,7 @@ namespace Engine.Sorting.Sorters.Extended
                             {
                                 ExtendedMoveCollection.AddKillerMove(move);
                             }
-                            else if (move.IsCastle|| move.IsPromotion)
+                            else if (move.IsCastle || move.IsPromotion)
                             {
                                 ExtendedMoveCollection.AddSuggested(move);
                             }
@@ -112,7 +112,7 @@ namespace Engine.Sorting.Sorters.Extended
                             {
                                 ExtendedMoveCollection.AddKillerMove(move);
                             }
-                            else if (move.IsCastle|| move.IsPromotion)
+                            else if (move.IsCastle || move.IsPromotion)
                             {
                                 ExtendedMoveCollection.AddSuggested(move);
                             }
@@ -321,7 +321,7 @@ namespace Engine.Sorting.Sorters.Extended
                                 {
                                     ExtendedMoveCollection.AddKillerMove(move);
                                 }
-                                else if (move.IsCastle|| move.IsPromotion)
+                                else if (move.IsCastle || move.IsPromotion)
                                 {
                                     ExtendedMoveCollection.AddSuggested(move);
                                 }

@@ -62,7 +62,7 @@ namespace Engine.DataStructures.Moves.Collections.Extended
 
                 if (_nonCaptures.Count > 0)
                 {
-                    _nonCaptures.Sort(Comparer);
+                    _nonCaptures.Sort();
                     _nonCaptures.CopyTo(moves, nonCapturesCount);
                     _nonCaptures.Clear();
                 }
@@ -72,7 +72,7 @@ namespace Engine.DataStructures.Moves.Collections.Extended
                 var capturesCount = _nonCaptures.Count;
                 if (capturesCount > 0)
                 {
-                    _nonCaptures.Sort(Comparer);
+                    _nonCaptures.Sort();
                     _nonCaptures.CopyTo(moves, 0);
                     _nonCaptures.Clear();
                 }

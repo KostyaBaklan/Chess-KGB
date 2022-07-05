@@ -9,5 +9,7 @@ namespace Engine.Interfaces
         MoveSorter GetInitial(IPosition position, IMoveComparer comparer);
         MoveSorter GetExtended(IPosition position, IMoveComparer comparer);
         MoveSorter GetAdvanced(IPosition position, IMoveComparer comparer);
+        MoveSorter GetHardExtended(IPosition position, IMoveComparer comparer);
+        MoveSorter GetDifferenceExtended(IPosition position, IMoveComparer comparer);
     }
 }
