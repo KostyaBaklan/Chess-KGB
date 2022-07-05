@@ -31,6 +31,11 @@ namespace Engine.Services
             return new ExtendedHardSorter(position, comparer);
         }
 
+        public MoveSorter GetDifferenceExtended(IPosition position, IMoveComparer comparer)
+        {
+            return new ExtendedDifferenceSorter(position,comparer);
+        }
+
         public MoveSorter GetAdvanced(IPosition position, IMoveComparer comparer)
         {
             return new AdvancedSorter(position, comparer);

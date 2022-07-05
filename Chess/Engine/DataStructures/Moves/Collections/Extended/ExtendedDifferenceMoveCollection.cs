@@ -4,9 +4,9 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves.Collections.Extended
 {
-    public class ExtendedTestMoveCollection : ExtendedMoveCollection
+    public class ExtendedDifferenceMoveCollection : ExtendedMoveCollection
     {
-        public ExtendedTestMoveCollection(IMoveComparer comparer) : base(comparer)
+        public ExtendedDifferenceMoveCollection(IMoveComparer comparer) : base(comparer)
         {
         }
 
@@ -63,7 +63,7 @@ namespace Engine.DataStructures.Moves.Collections.Extended
 
                 if (_nonCaptures.Count > 0)
                 {
-                    _nonCaptures.FullSort(Sorting.Sort.DifferenceComparer);
+                    _nonCaptures.DifferenceSort();
                     _nonCaptures.CopyTo(moves, nonCapturesCount);
                     _nonCaptures.Clear();
                 }
@@ -78,7 +78,7 @@ namespace Engine.DataStructures.Moves.Collections.Extended
                 var capturesCount = _nonCaptures.Count;
                 if (capturesCount > 0)
                 {
-                    _nonCaptures.FullSort(Sorting.Sort.DifferenceComparer);
+                    _nonCaptures.DifferenceSort();
                     _nonCaptures.CopyTo(moves, 0);
                     _nonCaptures.Clear();
                 }

@@ -67,6 +67,7 @@
     <Compile Include="DataStructures\Moves\AttackList.cs" />
     <Compile Include="DataStructures\Moves\AttackWrapper.cs" />
     <Compile Include="DataStructures\Killers\DoKillerMoves.cs" />
+    <Compile Include="DataStructures\Moves\Collections\Extended\ExtendedDifferenceMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\Extended\ExtendedHardMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\Extended\ExtendedKillerMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\Extended\ExtendedMoveCollection.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="Sorting\Sorters\Basic\BasicSorter.cs" />
     <Compile Include="Sorting\Sorters\Basic\BasicSorterPlus.cs" />
     <Compile Include="Sorting\Sorters\ComplexSorter.cs" />
+    <Compile Include="Sorting\Sorters\Extended\ExtendedDifferenceSorter.cs" />
     <Compile Include="Sorting\Sorters\Extended\ExtendedHardSorter.cs" />
     <Compile Include="Sorting\Sorters\Extended\ExtendedKillerSorter.cs" />
     <Compile Include="Sorting\Sorters\Extended\ExtendedSorter.cs" />
