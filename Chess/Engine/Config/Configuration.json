@@ -3,9 +3,11 @@
     "GameDepth": 384,
     "BlockTimeout": 1,
     "FutilityDepth": 2,
+    "RazoringDepth": 3,
     "KillerCapacity": 2,
     "UseEvaluationCache": false,
     "UseFutility": true,
+    "UseRazoring": true,
     "UseHistory": true,
     "UseAging": false
   },

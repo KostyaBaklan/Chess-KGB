@@ -130,6 +130,8 @@ namespace Engine.Strategies.LateMove.Deep
                 return EndGameStrategy.Search(alpha, beta, Math.Min(depth + 1, MaxEndGameDepth));
             }
 
+            depth = AdjustDepth(alpha, depth);
+
             MoveBase pv = null;
             var key = Position.GetKey();
             bool shouldUpdate = false;

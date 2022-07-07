@@ -18,7 +18,6 @@ using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Strategies.Aspiration.Adaptive;
-using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Base;
 using Kgb.ChessApp.Models;
 using MathNet.Numerics.Statistics;

@@ -10,7 +10,9 @@ namespace Engine.Models.Config
         public int GameDepth { get; set; }
         public double BlockTimeout { get; set; }
         public bool UseFutility { get; set; }
+        public bool UseRazoring { get; set; }
         public int FutilityDepth { get; set; }
+        public int RazoringDepth { get; set; }
         public bool UseHistory { get; set; }
         public int KillerCapacity { get; set; }
         public bool UseAging { get; set; }

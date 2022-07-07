@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using CommonServiceLocator;
+﻿using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
 using Engine.Interfaces.Config;
@@ -126,6 +125,8 @@ namespace Engine.Strategies.End
             {
                 return Evaluate(alpha, beta);
             }
+
+            depth = AdjustDepth(alpha, depth);
 
             int value = int.MinValue;
             MoveBase bestMove = null;
