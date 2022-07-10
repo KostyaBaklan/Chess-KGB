@@ -6,7 +6,6 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
-using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 using Engine.Strategies.End;
 
@@ -26,7 +25,7 @@ namespace Engine.Strategies.Base
         protected int[] SortDepth;
         protected int[] SortHardDepth;
         protected int[] SortDifferenceDepth;
-        protected int[][] Margins;
+        protected int[][] FutilityMargins;
 
         protected IPosition Position;
         protected IMoveSorter[] Sorters;
@@ -55,7 +54,7 @@ namespace Engine.Strategies.Base
             SortHardDepth = sortingConfiguration.SortHardDepth;
             SortDifferenceDepth = sortingConfiguration.SortDifferenceDepth;
             SearchValue = configurationProvider.Evaluation.Static.Mate;
-            ThreefoldRepetitionValue = configurationProvider .Evaluation.Static.ThreefoldRepetitionValue;
+            ThreefoldRepetitionValue = configurationProvider.Evaluation.Static.ThreefoldRepetitionValue;
             UseFutility = generalConfiguration.UseFutility;
             FutilityDepth = generalConfiguration.FutilityDepth;
             UseAging = generalConfiguration.UseAging;
@@ -68,7 +67,7 @@ namespace Engine.Strategies.Base
             MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
             MoveSorterProvider = ServiceLocator.Current.GetInstance<IMoveSorterProvider>();
 
-            InitializeFutilityMargins();
+            InitializeMargins();
         }
 
         public virtual int Size => 0;
@@ -91,20 +90,22 @@ namespace Engine.Strategies.Base
             if (UseSortHard)
             {
                 var hardExtended = MoveSorterProvider.GetHardExtended(position, Sorting.Sort.HistoryComparer);
-                var hard = d-SortHardDepth[depth];
+                var hard = d - SortHardDepth[depth];
                 for (int i = 1; i < hard; i++)
                 {
                     Sorters[i] = mainSorter;
                 }
+
                 for (var i = hard; i < d; i++)
                 {
                     Sorters[i] = hardExtended;
                 }
             }
-            else if(UseSortDifference)
+            else if (UseSortDifference)
             {
-                var differenceExtended = MoveSorterProvider.GetDifferenceExtended(position, Sorting.Sort.HistoryComparer);
-                var x = 1+ SortDifferenceDepth[depth];
+                var differenceExtended =
+                    MoveSorterProvider.GetDifferenceExtended(position, Sorting.Sort.HistoryComparer);
+                var x = 1 + SortDifferenceDepth[depth];
                 for (int i = 1; i < x; i++)
                 {
                     Sorters[i] = differenceExtended;
@@ -220,63 +221,60 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected MoveBase[] GeneratePvMoves(int alpha, int beta, int depth, MoveBase pv = null)
+        protected bool IsFutility(int alpha, int depth)
         {
-            if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
-                return Position.GetAllMoves(Sorters[Depth], pv);
+            if (!UseFutility || depth > FutilityDepth)
+                return false;
 
-            if (MoveHistory.IsLastMoveWasCheck()) return Position.GetAllMoves(Sorters[Depth], pv);
+            if (MoveHistory.IsLastMoveWasCheck()) return false;
 
             var positionValue = Position.GetValue();
 
-            var i = Margins[(byte)Position.GetPhase()][depth - 1];
-            if (positionValue + i > alpha) return Position.GetAllMoves(Sorters[Depth], pv);
-
-            var moves = Position.GetAllAttacks(Sorters[depth]);
-            return moves.Length == 0 ? null : moves;
+            var i = FutilityMargins[(byte)Position.GetPhase()][depth - 1];
+            return positionValue + i <= alpha;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected MoveBase[] GenerateMoves(int alpha, int beta, int depth, MoveBase pv = null)
         {
-            if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
+            if (!UseFutility || depth > FutilityDepth)
                 return Position.GetAllMoves(Sorters[depth], pv);
 
             if (MoveHistory.IsLastMoveWasCheck()) return Position.GetAllMoves(Sorters[depth], pv);
 
             var positionValue = Position.GetValue();
 
-            var i = Margins[(byte)Position.GetPhase()][depth - 1];
+            var i = FutilityMargins[(byte) Position.GetPhase()][depth - 1];
             if (positionValue + i > alpha) return Position.GetAllMoves(Sorters[depth], pv);
 
             var moves = Position.GetAllAttacks(Sorters[depth]);
             return moves.Length == 0 ? null : moves;
         }
 
-        private void InitializeFutilityMargins()
+        private void InitializeMargins()
         {
-            Margins = new int[3][];
+            FutilityMargins = new int[3][];
 
             var value1 = EvaluationService.GetValue(2, Phase.Opening);
             var value2 = EvaluationService.GetValue(3, Phase.Opening);
             var offset = EvaluationService.GetValue(0, Phase.Opening) / 2;
             var gap1 = value1 + offset;
-            var gap2 = value2 + offset + offset;
-            Margins[0] = new[] { gap1, gap2 };
+            var gap2 = value2 + offset + offset / 2;
+            FutilityMargins[0] = new[] {gap1, gap2};
 
             value1 = EvaluationService.GetValue(2, Phase.Middle);
             value2 = EvaluationService.GetValue(3, Phase.Middle);
             offset = EvaluationService.GetValue(0, Phase.Middle) / 2;
             gap1 = value1 + offset;
-            gap2 = value2 + offset + offset;
-            Margins[1] = new[] { gap1, gap2 };
+            gap2 = value2 + offset + offset / 2;
+            FutilityMargins[1] = new[] {gap1, gap2};
 
             value1 = EvaluationService.GetValue(2, Phase.End);
             value2 = EvaluationService.GetValue(3, Phase.End);
             offset = EvaluationService.GetValue(0, Phase.End) / 2;
             gap1 = value1 + offset;
-            gap2 = value2 + offset + offset;
-            Margins[2] = new[] { gap1, gap2 };
+            gap2 = value2 + offset + offset / 2;
+            FutilityMargins[2] = new[] {gap1, gap2};
         }
     }
 }

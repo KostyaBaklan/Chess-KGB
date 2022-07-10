@@ -117,7 +117,6 @@ namespace Engine.Strategies.LateMove.Deep
             return result;
         }
 
-
         public override int Search(int alpha, int beta, int depth)
         {
             if (depth <= 0)
@@ -155,14 +154,15 @@ namespace Engine.Strategies.LateMove.Deep
                 pv = GetPv(entry.PvMove);
             }
 
-            int value = int.MinValue;
-            MoveBase bestMove = null;
-
-            var moves = GenerateMoves(alpha, beta, depth, pv);
-            if (moves == null) return alpha;
+            var moves = IsFutility(alpha, depth)
+                ? Position.GetAllAttacks(Sorters[depth])
+                : Position.GetAllMoves(Sorters[depth], pv);
 
             var count = moves.Length;
             if (CheckPosition(count, out var defaultValue)) return defaultValue;
+
+            int value = int.MinValue;
+            MoveBase bestMove = null;
 
             if (depth < DepthLateReduction || MoveHistory.IsLastMoveNotReducable())
             {
