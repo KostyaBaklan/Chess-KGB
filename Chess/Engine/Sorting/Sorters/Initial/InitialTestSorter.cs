@@ -1,8 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using Engine.DataStructures.Moves;
-using Engine.DataStructures.Moves.Collections.Initial;
+﻿using Engine.DataStructures.Moves.Collections.Initial;
 using Engine.Interfaces;
-using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters.Initial
