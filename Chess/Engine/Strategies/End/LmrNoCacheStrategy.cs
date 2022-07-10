@@ -126,19 +126,19 @@ namespace Engine.Strategies.End
                 return Evaluate(alpha, beta);
             }
 
-            depth = AdjustDepth(alpha, depth);
-
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GenerateMoves(alpha, beta, depth);
-            if (moves == null) return alpha;
+            var moves = IsFutility(alpha, depth)
+                ? Position.GetAllAttacks(Sorters[depth])
+                : Position.GetAllMoves(Sorters[depth]);
 
-            if (CheckPosition(moves.Length, out var defaultValue)) return defaultValue;
+            var count = moves.Length;
+            if (CheckPosition(count, out var defaultValue)) return defaultValue;
 
             if (MoveHistory.IsLastMoveNotReducable() || LmrDepthLimitForReduce > depth)
             {
-                for (var i = 0; i < moves.Length; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var move = moves[i];
                     Position.Make(move);
@@ -166,7 +166,7 @@ namespace Engine.Strategies.End
             }
             else
             {
-                for (var i = 0; i < moves.Length; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var move = moves[i];
                     Position.Make(move);

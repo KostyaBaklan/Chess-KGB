@@ -130,8 +130,6 @@ namespace Engine.Strategies.LateMove.Deep
                 return EndGameStrategy.Search(alpha, beta, Math.Min(depth + 1, MaxEndGameDepth));
             }
 
-            depth = AdjustDepth(alpha, depth);
-
             MoveBase pv = null;
             var key = Position.GetKey();
             bool shouldUpdate = false;
@@ -160,8 +158,9 @@ namespace Engine.Strategies.LateMove.Deep
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GenerateMoves(alpha, beta, depth, pv);
-            if (moves == null) return alpha;
+            var moves = IsFutility(alpha, depth)
+                ? Position.GetAllAttacks(Sorters[depth])
+                : Position.GetAllMoves(Sorters[depth], pv);
 
             var count = moves.Length;
             if (CheckPosition(count, out var defaultValue)) return defaultValue;
