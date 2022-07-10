@@ -226,23 +226,6 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected MoveBase[] GeneratePvMoves(int alpha, int beta, int depth, MoveBase pv = null)
-        {
-            if (!UseFutility || depth > FutilityDepth || alpha <= -SearchValue || beta >= SearchValue)
-                return Position.GetAllMoves(Sorters[Depth], pv);
-
-            if (MoveHistory.IsLastMoveWasCheck()) return Position.GetAllMoves(Sorters[Depth], pv);
-
-            var positionValue = Position.GetValue();
-
-            var i = FutilityMargins[(byte) Position.GetPhase()][depth - 1];
-            if (positionValue + i > alpha) return Position.GetAllMoves(Sorters[Depth], pv);
-
-            var moves = Position.GetAllAttacks(Sorters[depth]);
-            return moves.Length == 0 ? null : moves;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected MoveBase[] GenerateMoves(int alpha, int beta, int depth, MoveBase pv = null)
         {
             if (!UseFutility || depth > FutilityDepth)
@@ -281,30 +264,30 @@ namespace Engine.Strategies.Base
 
             var value1 = EvaluationService.GetValue(2, Phase.Opening);
             var value2 = EvaluationService.GetValue(3, Phase.Opening);
-            var offset = EvaluationService.GetValue(0, Phase.Opening) / 4;
-            var gap1 = value1 + offset;
-            var gap2 = value2 + offset + offset;
+            var offset = EvaluationService.GetValue(0, Phase.Opening) / 2;
+            var gap1 = value1;
+            var gap2 = value2 + offset;
             FutilityMargins[0] = new[] {gap1, gap2};
 
             value1 = EvaluationService.GetValue(2, Phase.Middle);
             value2 = EvaluationService.GetValue(3, Phase.Middle);
-            offset = EvaluationService.GetValue(0, Phase.Middle) / 4;
-            gap1 = value1 + offset;
-            gap2 = value2 + offset + offset;
+            offset = EvaluationService.GetValue(0, Phase.Middle) / 2;
+            gap1 = value1;
+            gap2 = value2 + offset;
             FutilityMargins[1] = new[] {gap1, gap2};
 
             value1 = EvaluationService.GetValue(2, Phase.End);
             value2 = EvaluationService.GetValue(3, Phase.End);
-            offset = EvaluationService.GetValue(0, Phase.End) / 4;
-            gap1 = value1 + offset;
-            gap2 = value2 + offset + offset;
+            offset = EvaluationService.GetValue(0, Phase.End) / 2;
+            gap1 = value1;
+            gap2 = value2 + offset;
             FutilityMargins[2] = new[] {gap1, gap2};
 
             RazoringMargins = new[]
             {
-                EvaluationService.GetValue(4, Phase.Opening) - EvaluationService.GetValue(0, Phase.Opening)/2,
-                EvaluationService.GetValue(4, Phase.Middle) - EvaluationService.GetValue(0, Phase.Middle)/2,
-                EvaluationService.GetValue(4, Phase.End) - EvaluationService.GetValue(0, Phase.End)/2
+                EvaluationService.GetValue(4, Phase.Opening) - EvaluationService.GetValue(0, Phase.Opening) / 2,
+                EvaluationService.GetValue(4, Phase.Middle) - EvaluationService.GetValue(0, Phase.Middle) / 2,
+                EvaluationService.GetValue(4, Phase.End) - EvaluationService.GetValue(0, Phase.End) / 2
             };
         }
     }
