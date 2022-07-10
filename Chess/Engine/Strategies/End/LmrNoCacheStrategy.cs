@@ -126,15 +126,15 @@ namespace Engine.Strategies.End
                 return Evaluate(alpha, beta);
             }
 
-            int value = int.MinValue;
-            MoveBase bestMove = null;
-
             var moves = IsFutility(alpha, depth)
                 ? Position.GetAllAttacks(Sorters[depth])
                 : Position.GetAllMoves(Sorters[depth]);
 
             var count = moves.Length;
             if (CheckPosition(count, out var defaultValue)) return defaultValue;
+
+            int value = int.MinValue;
+            MoveBase bestMove = null;
 
             if (MoveHistory.IsLastMoveNotReducable() || LmrDepthLimitForReduce > depth)
             {

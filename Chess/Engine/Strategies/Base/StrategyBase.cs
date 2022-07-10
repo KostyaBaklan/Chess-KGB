@@ -19,8 +19,6 @@ namespace Engine.Strategies.Base
         protected int ThreefoldRepetitionValue;
         protected int FutilityDepth;
         protected bool UseFutility;
-        protected bool UseRazoring;
-        protected int RazoringDepth;
         protected bool UseSortHard;
         protected bool UseSortDifference;
         protected int MaxEndGameDepth;
@@ -28,7 +26,6 @@ namespace Engine.Strategies.Base
         protected int[] SortHardDepth;
         protected int[] SortDifferenceDepth;
         protected int[][] FutilityMargins;
-        protected int[] RazoringMargins;
 
         protected IPosition Position;
         protected IMoveSorter[] Sorters;
@@ -60,8 +57,6 @@ namespace Engine.Strategies.Base
             ThreefoldRepetitionValue = configurationProvider.Evaluation.Static.ThreefoldRepetitionValue;
             UseFutility = generalConfiguration.UseFutility;
             FutilityDepth = generalConfiguration.FutilityDepth;
-            UseRazoring = generalConfiguration.UseRazoring;
-            RazoringDepth = generalConfiguration.RazoringDepth;
             UseAging = generalConfiguration.UseAging;
             UseSortHard = sortingConfiguration.UseSortHard;
             UseSortDifference = sortingConfiguration.UseSortDifference;
@@ -240,17 +235,6 @@ namespace Engine.Strategies.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsRazoring(int alpha, int depth)
-        {
-            if (!UseRazoring || depth != RazoringDepth || MoveHistory.IsLastMoveWasCheck()) return false;
-
-            var positionValue = Position.GetValue();
-
-            var i = RazoringMargins[(byte)Position.GetPhase()];
-            return positionValue + i <= alpha;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected MoveBase[] GenerateMoves(int alpha, int beta, int depth, MoveBase pv = null)
         {
             if (!UseFutility || depth > FutilityDepth)
@@ -267,60 +251,30 @@ namespace Engine.Strategies.Base
             return moves.Length == 0 ? null : moves;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected int AdjustDepth(int alpha, int depth)
-        {
-            if (!UseRazoring || depth != RazoringDepth || MoveHistory.IsLastMoveWasCheck()) return depth;
-
-            var positionValue = Position.GetValue();
-
-            var i = RazoringMargins[(byte) Position.GetPhase()];
-            if (positionValue + i <= alpha)
-            {
-                return depth - 1;
-            }
-
-            return depth;
-        }
-
         private void InitializeMargins()
         {
             FutilityMargins = new int[3][];
 
             var value1 = EvaluationService.GetValue(2, Phase.Opening);
             var value2 = EvaluationService.GetValue(3, Phase.Opening);
-            var offset = EvaluationService.GetValue(0, Phase.Opening) / 4;
+            var offset = EvaluationService.GetValue(0, Phase.Opening) / 2;
             var gap1 = value1 + offset;
-            var gap2 = value2 + offset + offset;
+            var gap2 = value2 + offset + offset / 2;
             FutilityMargins[0] = new[] {gap1, gap2};
 
             value1 = EvaluationService.GetValue(2, Phase.Middle);
             value2 = EvaluationService.GetValue(3, Phase.Middle);
-            offset = EvaluationService.GetValue(0, Phase.Middle) / 4;
+            offset = EvaluationService.GetValue(0, Phase.Middle) / 2;
             gap1 = value1 + offset;
-            gap2 = value2 + offset + offset;
+            gap2 = value2 + offset + offset / 2;
             FutilityMargins[1] = new[] {gap1, gap2};
 
             value1 = EvaluationService.GetValue(2, Phase.End);
             value2 = EvaluationService.GetValue(3, Phase.End);
-            offset = EvaluationService.GetValue(0, Phase.End) / 4;
+            offset = EvaluationService.GetValue(0, Phase.End) / 2;
             gap1 = value1 + offset;
-            gap2 = value2 + offset + offset;
+            gap2 = value2 + offset + offset / 2;
             FutilityMargins[2] = new[] {gap1, gap2};
-
-            RazoringMargins = new[]
-            {
-                EvaluationService.GetValue(4, Phase.Opening),
-                EvaluationService.GetValue(4, Phase.Middle),
-                EvaluationService.GetValue(4, Phase.End)
-            };
-
-            //RazoringMargins = new[]
-            //{
-            //    EvaluationService.GetValue(4, Phase.Opening) - EvaluationService.GetValue(0, Phase.Opening) / 2,
-            //    EvaluationService.GetValue(4, Phase.Middle) - EvaluationService.GetValue(0, Phase.Middle) / 2,
-            //    EvaluationService.GetValue(4, Phase.End) - EvaluationService.GetValue(0, Phase.End) / 2
-            //};
         }
     }
 }
