@@ -53,6 +53,7 @@ namespace EvaluationEditor
             containerRegistry.RegisterSingleton(typeof(IKillerMoveCollectionFactory), typeof(KillerMoveCollectionFactory));
             containerRegistry.RegisterSingleton(typeof(IAttackEvaluationService), typeof(AttackEvaluationService));
             containerRegistry.RegisterSingleton(typeof(IOpeningService), typeof(OpeningService));
+            containerRegistry.RegisterSingleton(typeof(IProbCutModelProvider), typeof(ProbCutModelProvider));
 
             containerRegistry.RegisterSingleton(typeof(EditorViewModel));
         }

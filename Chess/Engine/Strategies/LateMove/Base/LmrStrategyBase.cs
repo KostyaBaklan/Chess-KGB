@@ -157,12 +157,12 @@ namespace Engine.Strategies.LateMove.Base
                 pv = GetPv(entry.PvMove);
             }
 
+            var moves = IsFutility(alpha, depth)
+                ? Position.GetAllAttacks(Sorters[depth])
+                : Position.GetAllMoves(Sorters[depth], pv);
+
             int value = int.MinValue;
             MoveBase bestMove = null;
-
-            var moves = GenerateMoves(alpha, beta, depth, pv);
-
-            if (moves == null) return alpha;
 
             var count = moves.Length;
             if (CheckPosition(count, out var defaultValue)) return defaultValue;
