@@ -1,6 +1,6 @@
 ﻿using Engine.Strategies.AlphaBeta;
 
-namespace Engine.Strategies.Aspiration
+namespace Engine.Strategies.Models
 {
     public class AspirationModel
     {

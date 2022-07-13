@@ -52,6 +52,7 @@ namespace Common
             container.RegisterSingleton(typeof(IKillerMoveCollectionFactory), typeof(KillerMoveCollectionFactory));
             container.RegisterSingleton(typeof(IAttackEvaluationService), typeof(AttackEvaluationService));
             container.RegisterSingleton(typeof(IOpeningService), typeof(OpeningService));
+            container.RegisterSingleton(typeof(IProbCutModelProvider), typeof(ProbCutModelProvider));
         }
     }
 }

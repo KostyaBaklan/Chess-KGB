@@ -19,6 +19,7 @@ using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Strategies.Aspiration.Adaptive;
 using Engine.Strategies.Base;
+using Engine.Strategies.ProbCut;
 using Kgb.ChessApp.Models;
 using MathNet.Numerics.Statistics;
 using Prism.Commands;

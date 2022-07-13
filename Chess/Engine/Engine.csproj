@@ -84,6 +84,7 @@
     <Compile Include="Interfaces\IAttackEvaluationService.cs" />
     <Compile Include="Interfaces\IMoveSorterProvider.cs" />
     <Compile Include="Interfaces\IOpeningService.cs" />
+    <Compile Include="Interfaces\IProbCutModelProvider.cs" />
     <Compile Include="Models\Boards\AttackerBoard.cs" />
     <Compile Include="Models\Config\KingSafetyEvaluation.cs" />
     <Compile Include="Models\Moves\AttackBase.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="Services\MoveProvider.cs" />
     <Compile Include="Services\MoveSorterProvider.cs" />
     <Compile Include="Services\OpeningService.cs" />
+    <Compile Include="Services\ProbCutModelProvider.cs" />
     <Compile Include="Sorting\Comparers\AttackSeeComparer.cs" />
     <Compile Include="Sorting\Comparers\DifferenceComparer.cs" />
     <Compile Include="Sorting\Comparers\DifferenceHistoryComparer.cs" />
@@ -233,7 +235,8 @@
     <Compile Include="Strategies\Aspiration\Adaptive\AdaptiveAspirationStrategyBase.cs" />
     <Compile Include="Strategies\Aspiration\Adaptive\LmrAdaptiveAspirationStrategy.cs" />
     <Compile Include="Strategies\Aspiration\Adaptive\LmrSoftAdaptiveAspirationStrategy.cs" />
-    <Compile Include="Strategies\Aspiration\AspirationModel.cs" />
+    <Compile Include="Strategies\Aspiration\Adaptive\PcAdaptiveAspirationStrategy.cs" />
+    <Compile Include="Strategies\Models\AspirationModel.cs" />
     <Compile Include="Strategies\Aspiration\AspirationStrategyBase.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationAdvancedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepAdvancedStrategy.cs" />
@@ -272,12 +275,16 @@
     <Compile Include="Strategies\LateMove\Deep\Null\LmrDeepNullAdvancedStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\Null\LmrDeepNullBasicStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\Null\LmrDeepNullExtendedStrategy.cs" />
+    <Compile Include="Strategies\Models\ProbCutModel.cs" />
     <Compile Include="Strategies\MTD\MtdHistoryStrategy.cs" />
     <Compile Include="Strategies\MTD\MtdStrategyBase.cs" />
     <Compile Include="Strategies\MultiCut\MultiCutExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\MultiCut\MultiCutStrategyBase.cs" />
     <Compile Include="Strategies\NullMove\NmrExtendedHistoryStrategy.cs" />
     <Compile Include="Strategies\NullMove\NmrStrategyBase.cs" />
+    <Compile Include="Strategies\ProbCut\ProbCutLmrDeepStrategy.cs" />
+    <Compile Include="Strategies\ProbCut\ProbCutLmrStrategy.cs" />
+    <Compile Include="Strategies\ProbCut\ProbCutStrategy.cs" />
     <Compile Include="Strategies\PVS\LmrDeepNullNoCacheStrategy.cs" />
     <Compile Include="Strategies\PVS\PvsExtendedStrategy.cs" />
     <Compile Include="Strategies\PVS\PvsStrategyBase.cs" />
