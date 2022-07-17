@@ -44,14 +44,16 @@ namespace Engine.Strategies.ProbCut
                 double a = probCutModel.A;
                 var d = probCutModel.Depth;
 
-                int betaBound = (int)(Math.Round(percentile * sigma + beta - b) / a);
+                var round = Math.Round((percentile * sigma + beta - b) / a);
+                int betaBound = (int)round;
                 var x = Search(betaBound - 1, betaBound, d);
                 if (x >= betaBound)
                 {
                     return beta;
                 }
 
-                //int alphaBound = (int) (Math.Round(-percentile * sigma + alpha - b) / a);
+                //var r = Math.Round((-percentile * sigma + alpha - b) / a);
+                //int alphaBound = (int)r;
                 //var z = base.Search(alphaBound, alphaBound + 1, d);
                 //if (z <= alphaBound)
                 //{

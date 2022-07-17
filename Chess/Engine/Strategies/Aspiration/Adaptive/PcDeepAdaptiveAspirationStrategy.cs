@@ -4,9 +4,9 @@ using Engine.Strategies.ProbCut;
 
 namespace Engine.Strategies.Aspiration.Adaptive
 {
-    public class PcAdaptiveAspirationStrategy : AdaptiveAspirationStrategyBase
+    public class PcDeepAdaptiveAspirationStrategy : AdaptiveAspirationStrategyBase
     {
-        public PcAdaptiveAspirationStrategy(short depth, IPosition position) : base(depth, position)
+        public PcDeepAdaptiveAspirationStrategy(short depth, IPosition position) : base(depth, position)
         {
         }
 
@@ -16,7 +16,7 @@ namespace Engine.Strategies.Aspiration.Adaptive
         {
             foreach (var aspirationModel in Models)
             {
-                aspirationModel.Strategy = new ProbCutLmrStrategy((short)aspirationModel.Depth, Position, table);
+                aspirationModel.Strategy = new ProbCutLmrDeepStrategy((short)aspirationModel.Depth, Position, table);
             }
         }
 
