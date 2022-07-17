@@ -11,11 +11,44 @@ namespace Engine.Services
         public ProbCutModel[] CreateModels(short depth)
         {
             var models = new ProbCutModel[depth + 1];
-            var depthLimit = Math.Max(5, depth / 2 + 1);
-            for (int i = depthLimit; i <= depth; i++)
+            int depthLimit;
+            if (depth%2 == 0)
             {
-                int d = i % 2 == 0 ? i / 2 : i / 2 + 1;
-                models[i] = new ProbCutModel(true, 1.5, 0.542, 1.036, -0.009, d);
+                depthLimit = Math.Max(4, depth / 2);
+                for (int i = depthLimit; i <= depth; i++)
+                {
+                    int d;
+                    if (i % 2 == 0)
+                    {
+                        d = i / 2;
+                        models[i] = new ProbCutModel(true, 1.5, 0.542, 1.036, -0.009, d);
+                    }
+                    else
+                    {
+                        d = i / 2 + 1;
+                        models[i] = new ProbCutModel(false, 1.5, 0.542, 1.036, -0.009, d);
+                    }
+
+                } 
+            }
+            else
+            {
+                depthLimit = Math.Max(4, depth / 2);
+                for (int i = depthLimit; i <= depth; i++)
+                {
+                    int d;
+                    if (i % 2 == 1)
+                    {
+                        d = i / 2;
+                        models[i] = new ProbCutModel(true, 1.5, 0.542, 1.036, -0.009, d);
+                    }
+                    else
+                    {
+                        d = i / 2 + 1;
+                        models[i] = new ProbCutModel(false, 1.5, 0.542, 1.036, -0.009, d);
+                    }
+
+                }
             }
 
             for (int i = 0; i < depthLimit; i++)

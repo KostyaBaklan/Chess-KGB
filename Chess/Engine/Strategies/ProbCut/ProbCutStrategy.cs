@@ -24,7 +24,7 @@ namespace Engine.Strategies.ProbCut
         public override int Search(int alpha, int beta, int depth)
         {
             var probCutModel = _models[depth];
-            if (probCutModel.CanReduce && Math.Abs(alpha - beta) > 1)
+            if (probCutModel.CanReduce &&beta < SearchValue && Math.Abs(alpha - beta) > 1)
             {
                 double percentile = probCutModel.Percentile;
                 double sigma = probCutModel.Sigma;
@@ -32,14 +32,16 @@ namespace Engine.Strategies.ProbCut
                 double a = probCutModel.A;
                 var d = probCutModel.Depth;
 
-                int betaBound = (int) (Math.Round(percentile * sigma + beta - b) / a);
+                var round = Math.Round((percentile * sigma + beta - b) / a);
+                int betaBound = (int)round;
                 var x = base.Search(betaBound - 1, betaBound, d);
                 if (x >= betaBound)
                 {
                     return beta;
                 }
 
-                //int alphaBound = (int) (Math.Round(-percentile * sigma + alpha - b) / a);
+                //var r = Math.Round((-percentile * sigma + alpha - b) / a);
+                //int alphaBound = (int)r;
                 //var z = base.Search(alphaBound, alphaBound + 1, d);
                 //if (z <= alphaBound)
                 //{

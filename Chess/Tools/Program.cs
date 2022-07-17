@@ -82,25 +82,37 @@ namespace Tools
     {
         static void Main(string[] args)
         {
-            Boot.SetUp();
+            //Boot.SetUp();
 
             //CreateHistory();
 
-            var text = File.ReadAllText("History.json");
-            var moveHistory = JsonConvert.DeserializeObject<MoveHistory>(text);
+            //var text = File.ReadAllText("History.json");
+            //var moveHistory = JsonConvert.DeserializeObject<MoveHistory>(text);
 
-            Console.WriteLine(moveHistory.White.Count);
-            Console.WriteLine(moveHistory.Black.Count);
+            //Console.WriteLine(moveHistory.White.Count);
+            //Console.WriteLine(moveHistory.Black.Count);
 
-            Dictionary<short,int> history = new Dictionary<short, int>();
+            //Dictionary<short,int> history = new Dictionary<short, int>();
 
-            foreach (var moveHistoryItem in moveHistory.White.Concat(moveHistory.Black))
+            //foreach (var moveHistoryItem in moveHistory.White.Concat(moveHistory.Black))
+            //{
+            //    history[moveHistoryItem.Key] = moveHistoryItem.History;
+            //}
+
+            //var s = JsonConvert.SerializeObject(history,Formatting.Indented);
+            //File.WriteAllText(@"Config/History.json",s);
+
+            using (var writer = new StreamWriter("Bounds.csv"))
             {
-                history[moveHistoryItem.Key] = moveHistoryItem.History;
+                for (int i = -2500; i <= 2500; i += 5)
+                {
+                    var round = Math.Round((1.5 * 0.542 + i - (-0.009)) / 1.036);
+                    var v = (int)round;
+                    writer.WriteLine($"{i},{v}");
+                } 
             }
 
-            var s = JsonConvert.SerializeObject(history,Formatting.Indented);
-            File.WriteAllText(@"Config/History.json",s);
+
 
             Console.WriteLine("Yalla !!!");
             Console.ReadLine();
