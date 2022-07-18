@@ -64,11 +64,17 @@ namespace Tests
                     {"lmrdn_es_hc", (d, p) => new LmrDeepNullExtendedStrategy(d, p)},
                     {"lmrdn_as_hc", (d, p) => new LmrDeepNullAdvancedStrategy(d, p)},
 
+                    {"lmranr_es_hc", (d, p) => new LmrAnrStrategy(d, p)},
+                    {"lmrenr_es_hc", (d, p) => new LmrEnrStrategy(d, p)},
+
                     {"lmra_es_hc", (d, p) => new LmrAspirationExtendedStrategy(d, p)},
                     {"lmrda_es_hc", (d, p) => new LmrAspirationDeepExtendedStrategy(d, p)},
                     {"lmrdan_es_hc", (d, p) => new LmrAspirationDeepNullExtendedStrategy(d, p)},
 
                     {"lmrad_es_hc", (d, p) => new LmrAdaptiveAspirationStrategy(d, p)},
+                    {"lmradn_es_hc", (d, p) => new LmrNullAdaptiveAspirationStrategy(d, p)},
+                    {"lmradan_es_hc", (d, p) => new AnrAdaptiveAspirationStrategy(d, p)},
+                    {"lmraden_es_hc", (d, p) => new EnrAdaptiveAspirationStrategy(d, p)},
                     {"lmrads_es_hc", (d, p) => new LmrSoftAdaptiveAspirationStrategy(d, p)},
 
                     {"pc_es_hc", (d, p) => new ProbCutStrategy(d, p)},

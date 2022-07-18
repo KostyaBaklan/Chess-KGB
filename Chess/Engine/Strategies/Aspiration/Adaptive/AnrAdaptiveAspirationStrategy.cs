@@ -1,13 +1,12 @@
 ﻿using Engine.DataStructures.Hash;
 using Engine.Interfaces;
-using Engine.Strategies.LateMove.Base.Null;
-using Engine.Strategies.LateMove.Deep;
+using Engine.Strategies.LateMove.Deep.Null;
 
 namespace Engine.Strategies.Aspiration.Adaptive
 {
-    public class LmrAdaptiveAspirationStrategy: AdaptiveAspirationStrategyBase
+    public class AnrAdaptiveAspirationStrategy : AdaptiveAspirationStrategyBase
     {
-        public LmrAdaptiveAspirationStrategy(short depth, IPosition position) : base(depth, position)
+        public AnrAdaptiveAspirationStrategy(short depth, IPosition position) : base(depth, position)
         {
         }
 
@@ -17,7 +16,7 @@ namespace Engine.Strategies.Aspiration.Adaptive
         {
             foreach (var aspirationModel in Models)
             {
-                aspirationModel.Strategy = new LmrDeepExtendedStrategy((short) aspirationModel.Depth,Position,table);
+                aspirationModel.Strategy = new LmrAnrStrategy((short)aspirationModel.Depth, Position, table);
             }
         }
 
