@@ -4,10 +4,9 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.Strategies.LateMove.Deep.Null
 {
-    public class LmrDeepNullExtendedStrategy : LmrDeepNullStrategyBase
+    public sealed class LmrEnrStrategy : LmrEnrStrategyBase
     {
-        public LmrDeepNullExtendedStrategy(short depth, IPosition position, TranspositionTable table = null) 
-            : base(depth, position,table)
+        public LmrEnrStrategy(short depth, IPosition position, TranspositionTable table = null) : base(depth, position, table)
         {
             InitializeSorters(depth, position, MoveSorterProvider.GetExtended(position, new HistoryComparer()));
         }

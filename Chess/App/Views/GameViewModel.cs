@@ -19,6 +19,7 @@ using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Strategies.Aspiration.Adaptive;
 using Engine.Strategies.Base;
+using Engine.Strategies.LateMove.Deep.Null;
 using Engine.Strategies.ProbCut;
 using Kgb.ChessApp.Models;
 using MathNet.Numerics.Statistics;
@@ -214,7 +215,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrAdaptiveAspirationStrategy(level, _position);
+            _strategy = new EnrAdaptiveAspirationStrategy(level, _position);
             _level = level;
             Title = $"Strategy={_strategy}, Level={level}";
 
