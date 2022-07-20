@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Common;
 using CommonServiceLocator;
@@ -92,7 +93,8 @@ namespace Tests
             _model.Calculate();
 
             var content = JsonConvert.SerializeObject(_model, Formatting.Indented);
-            File.WriteAllText(file,content);
+            File.WriteAllText(file,content, Encoding.BigEndianUnicode);
+            File.AppendAllText(file, $"\n\n{position}", Encoding.BigEndianUnicode);
 
             //position.GetBoard().PrintCache(Path.Combine("Log", $"See_Cache_{strategy}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log"));
         }
