@@ -485,6 +485,7 @@ namespace Engine.Sorting.Sorters.Initial
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void StaticExchange(MoveBase move, Piece captured)
         {
             if (AttackList.Count == 0)
