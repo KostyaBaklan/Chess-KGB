@@ -4,9 +4,9 @@ using Engine.Sorting.Comparers;
 
 namespace Engine.DataStructures.Moves.Collections.Extended
 {
-    public class ExtendedKillerMoveCollection : ExtendedMoveCollection
+    public class ExtendedTradeMoveCollection : ExtendedMoveCollection
     {
-        public ExtendedKillerMoveCollection(IMoveComparer comparer) : base(comparer)
+        public ExtendedTradeMoveCollection(IMoveComparer comparer) : base(comparer)
         {
         }
 
@@ -15,15 +15,15 @@ namespace Engine.DataStructures.Moves.Collections.Extended
         {
             var hashMovesCount = HashMoves.Count;
             var winCapturesCount = hashMovesCount + WinCaptures.Count;
-            int killersCount = winCapturesCount + _killers.Count;
-            var tradesCount = killersCount + Trades.Count;
-            var suggestedCount = tradesCount + _suggested.Count;
+            var tradesCount = winCapturesCount + Trades.Count;
+            int killersCount = tradesCount + _killers.Count;
+            var suggestedCount = killersCount + _suggested.Count;
             var nonCapturesCount = suggestedCount + LooseCaptures.Count;
             Count = nonCapturesCount + _nonCaptures.Count;
 
             MoveBase[] moves = new MoveBase[Count];
 
-            if (tradesCount > 0)
+            if (killersCount > 0)
             {
                 if (hashMovesCount > 0)
                 {
@@ -37,21 +37,21 @@ namespace Engine.DataStructures.Moves.Collections.Extended
                     WinCaptures.Clear();
                 }
 
-                if (_killers.Count > 0)
-                {
-                    _killers.CopyTo(moves, winCapturesCount);
-                    _killers.Clear();
-                }
-
                 if (Trades.Count > 0)
                 {
-                    Trades.CopyTo(moves, killersCount);
+                    Trades.CopyTo(moves, winCapturesCount);
                     Trades.Clear();
+                }
+
+                if (_killers.Count > 0)
+                {
+                    _killers.CopyTo(moves, tradesCount);
+                    _killers.Clear();
                 }
 
                 if (_suggested.Count > 0)
                 {
-                    _suggested.CopyTo(moves, tradesCount);
+                    _suggested.CopyTo(moves, killersCount);
                     _suggested.Clear();
                 }
 

@@ -209,7 +209,7 @@ namespace Engine.Strategies.PVS
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move.Key);
+                    if(!move.IsAttack)Sorters[depth].Add(move.Key);
                     break;
                 }
             }
@@ -237,7 +237,7 @@ namespace Engine.Strategies.PVS
 
                     if (alpha < beta) continue;
 
-                    Sorters[depth].Add(move.Key);
+                    if(!move.IsAttack)Sorters[depth].Add(move.Key);
                     break;
                 }
             }

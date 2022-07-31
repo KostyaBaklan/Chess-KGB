@@ -23,7 +23,7 @@ namespace Engine.Services
 
         public MoveSorter GetExtended(IPosition position, IMoveComparer comparer)
         {
-            return new ExtendedKillerSorter(position, comparer);
+            return new ExtendedTradeSorter(position, comparer);
         }
 
         public MoveSorter GetHardExtended(IPosition position, IMoveComparer comparer)
