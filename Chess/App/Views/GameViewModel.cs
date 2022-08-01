@@ -270,30 +270,7 @@ namespace Kgb.ChessApp.Views
 
         private void SaveHistoryCommandExecute()
         {
-            IEnumerable<MoveBase> history = _position.GetHistory();
-            List<string> moves = new List<string>();
-            bool isWhite = true;
-            StringBuilder builder = new StringBuilder();
-            foreach (var move in history)
-            {
-                if (isWhite)
-                {
-                    builder = new StringBuilder();
-                    builder.Append($"W={_moveFormatter.Format(move)} ");
-                }
-                else
-                {
-                    builder.Append($"B={_moveFormatter.Format(move)} ");
-                    moves.Add(builder.ToString());
-                }
-                isWhite = !isWhite;
-            }
-            var path = "History";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            File.WriteAllLines($@"{path}\\{DateTime.Now:yyyy_MM_dd_hh_mm_ss}.txt", moves);
+            _position.SaveHistory();
         }
 
         private void UndoCommandExecute()
