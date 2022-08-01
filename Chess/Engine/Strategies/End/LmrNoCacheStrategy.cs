@@ -11,7 +11,9 @@ namespace Engine.Strategies.End
     public class LmrNoCacheStrategy : StrategyBase
     {
         protected int DepthReduction;
+        protected int DepthLateReduction;
         protected int LmrDepthThreshold;
+        protected int[] LmrLateDepthThreshold;
         protected int LmrDepthLimitForReduce;
 
         public LmrNoCacheStrategy(short depth, IPosition position) : base(depth, position)
@@ -21,8 +23,11 @@ namespace Engine.Strategies.End
                 .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthThreshold;
             DepthReduction = configurationProvider
                 .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthReduction;
+            LmrLateDepthThreshold = configurationProvider
+                .AlgorithmConfiguration.LateMoveConfiguration.LmrLateDepthThreshold;
 
             LmrDepthLimitForReduce = DepthReduction + 2;
+            DepthLateReduction = DepthReduction + 1;
 
             InitializeSorters(depth, position, MoveSorterProvider.GetExtended(position, new HistoryComparer()));
         }
@@ -38,15 +43,16 @@ namespace Engine.Strategies.End
         {
             Result result = new Result();
 
-            var moves = Position.GetAllMoves(Sorters[Depth]);
+            var moves = Position.GetAllMoves(Sorters[Depth], pvMove);
 
-            if (CheckMoves(moves.Length, out var res)) return res;
+            var count = moves.Length;
+            if (CheckMoves(count, out var res)) return res;
 
-            if (moves.Length > 1)
+            if (count > 1)
             {
                 if (MoveHistory.IsLastMoveNotReducable())
                 {
-                    for (var i = 0; i < moves.Length; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         var move = moves[i];
                         Position.Make(move);
@@ -54,7 +60,6 @@ namespace Engine.Strategies.End
                         var value = -Search(-beta, -alpha, depth - 1);
 
                         Position.UnMake();
-
                         if (value > result.Value)
                         {
                             result.Value = value;
@@ -72,15 +77,17 @@ namespace Engine.Strategies.End
                 }
                 else
                 {
-                    for (var i = 0; i < moves.Length; i++)
+                    var l = LmrLateDepthThreshold[depth];
+                    for (var i = 0; i < count; i++)
                     {
                         var move = moves[i];
                         Position.Make(move);
 
                         int value;
-                        if (alpha > -SearchValue && i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
+                        if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                         {
-                            value = -Search(-beta, -alpha, depth - DepthReduction);
+                            var reduction = i > l ? DepthLateReduction : DepthReduction;
+                            value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
                                 value = -Search(-beta, -alpha, depth - 1);
@@ -92,7 +99,6 @@ namespace Engine.Strategies.End
                         }
 
                         Position.UnMake();
-
                         if (value > result.Value)
                         {
                             result.Value = value;
@@ -136,7 +142,7 @@ namespace Engine.Strategies.End
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            if (MoveHistory.IsLastMoveNotReducable() || LmrDepthLimitForReduce > depth)
+            if (depth < LmrDepthLimitForReduce || MoveHistory.IsLastMoveNotReducable())
             {
                 for (var i = 0; i < count; i++)
                 {
@@ -160,11 +166,11 @@ namespace Engine.Strategies.End
 
                     if (alpha < beta) continue;
 
-                    if(!move.IsAttack)Sorters[depth].Add(move.Key);
+                    if (!move.IsAttack) Sorters[depth].Add(move.Key);
                     break;
                 }
             }
-            else
+            else if (depth == LmrDepthLimitForReduce)
             {
                 for (var i = 0; i < count; i++)
                 {
@@ -200,12 +206,62 @@ namespace Engine.Strategies.End
 
                     if (alpha < beta) continue;
 
-                    if(!move.IsAttack)Sorters[depth].Add(move.Key);
+                    if (!move.IsAttack) Sorters[depth].Add(move.Key);
+                    break;
+                }
+            }
+            else
+            {
+                var l = LmrLateDepthThreshold[depth];
+                for (var i = 0; i < count; i++)
+                {
+                    var move = moves[i];
+                    Position.Make(move);
+
+                    int r;
+                    if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
+                    {
+                        if (i > l)
+                        {
+                            r = -Search(-beta, -alpha, depth - DepthLateReduction);
+                        }
+                        else
+                        {
+                            r = -Search(-beta, -alpha, depth - DepthReduction);
+                        }
+
+                        if (r > alpha)
+                        {
+                            r = -Search(-beta, -alpha, depth - 1);
+                        }
+                    }
+                    else
+                    {
+                        r = -Search(-beta, -alpha, depth - 1);
+                    }
+
+                    if (r > value)
+                    {
+                        value = r;
+                        bestMove = move;
+                    }
+
+                    Position.UnMake();
+
+                    if (value > alpha)
+                    {
+                        alpha = value;
+                    }
+
+                    if (alpha < beta) continue;
+
+                    if (!move.IsAttack) Sorters[depth].Add(move.Key);
                     break;
                 }
             }
 
             bestMove.History += 1 << depth;
+
             return value;
         }
 
