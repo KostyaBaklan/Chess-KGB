@@ -206,7 +206,7 @@ namespace Engine.Sorting.Sorters.Initial
                         }
                     }
 
-                    if (move.Piece == Piece.WhiteKnight &&
+                    else if (move.Piece == Piece.WhiteKnight &&
                         (MoveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), move.To.AsByte()) &
                          Board.GetBlackBits()).Any())
                     {
@@ -214,7 +214,7 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
 
-                    if (move.Piece == Piece.WhiteBishop &&
+                    else if (move.Piece == Piece.WhiteBishop &&
                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
                          Board.GetBlackBits()).Any())
                     {
@@ -256,7 +256,7 @@ namespace Engine.Sorting.Sorters.Initial
                         }
                     }
 
-                    if (move.Piece == Piece.BlackKnight &&
+                    else if (move.Piece == Piece.BlackKnight &&
                         (MoveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), move.To.AsByte()) &
                          Board.GetWhiteBits()).Any())
                     {
@@ -264,7 +264,7 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
 
-                    if (move.Piece == Piece.BlackBishop &&
+                    else if (move.Piece == Piece.BlackBishop &&
                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
                          Board.GetWhiteBits()).Any())
                     {
@@ -485,6 +485,7 @@ namespace Engine.Sorting.Sorters.Initial
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void StaticExchange(MoveBase move, Piece captured)
         {
             if (AttackList.Count == 0)

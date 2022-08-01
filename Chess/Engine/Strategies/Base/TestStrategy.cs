@@ -142,7 +142,7 @@ namespace Engine.Strategies.Base
                 }
 
                 if (alpha < beta) continue;
-                Sorters[depth].Add(move.Key);
+                if(!move.IsAttack)Sorters[depth].Add(move.Key);
                 break;
             }
 
