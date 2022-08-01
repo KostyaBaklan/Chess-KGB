@@ -32,5 +32,6 @@ namespace Engine.Interfaces
         Phase GetPhase();
         bool CanWhitePromote();
         bool CanBlackPromote();
+        void SaveHistory();
     }
 }

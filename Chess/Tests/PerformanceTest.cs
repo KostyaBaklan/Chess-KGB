@@ -11,6 +11,7 @@ using Engine.Interfaces;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
+using Engine.Models.Moves;
 using Engine.Strategies.Aspiration.Adaptive;
 using Engine.Strategies.Aspiration.LateMove;
 using Engine.Strategies.Aspiration.Null;
@@ -38,6 +39,7 @@ namespace Tests
             var depth = short.Parse(args[1]);
 
             var iterations = int.Parse(args[2]);
+            var game = args[3];
             //bool shouldPrintPosition = args.Length<=4 || bool.Parse(args[4]);
 
             _model.Depth = depth;
@@ -45,6 +47,47 @@ namespace Tests
             var evaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
             evaluationService.Initialize(depth);
             IPosition position = new Position();
+
+            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
+
+            Dictionary<string, List<MoveBase>> movesDictionary = new Dictionary<string, List<MoveBase>>
+            {
+                {
+                    "king", new List<MoveBase>
+                    {
+                        moveProvider.GetMoves(Piece.WhitePawn, Squares.E2).FirstOrDefault(m => m.To == Squares.E4),
+                        moveProvider.GetMoves(Piece.BlackPawn, Squares.E7).FirstOrDefault(m => m.To == Squares.E5)
+                    }
+                },
+                {
+                    "queen", new List<MoveBase>
+                    {
+                        moveProvider.GetMoves(Piece.WhitePawn, Squares.D2).FirstOrDefault(m => m.To == Squares.D4),
+                        moveProvider.GetMoves(Piece.BlackKnight, Squares.G8).FirstOrDefault(m => m.To == Squares.F6)
+                    }
+                },
+                {
+                    "sicilian", new List<MoveBase>
+                    {
+                        moveProvider.GetMoves(Piece.WhitePawn, Squares.E2).FirstOrDefault(m => m.To == Squares.E4),
+                        moveProvider.GetMoves(Piece.BlackPawn, Squares.C7).FirstOrDefault(m => m.To == Squares.C5)
+                    }
+                },
+                {
+                    "english", new List<MoveBase>
+                    {
+                        moveProvider.GetMoves(Piece.WhitePawn, Squares.C2).FirstOrDefault(m => m.To == Squares.C4),
+                        moveProvider.GetMoves(Piece.BlackPawn, Squares.E7).FirstOrDefault(m => m.To == Squares.E5)
+                    }
+                }
+            };
+
+            var moves = movesDictionary[game];
+
+            foreach (var moveBase in moves)
+            {
+                position.Make(moveBase);
+            }
 
             Dictionary<string, Func<short, IPosition, StrategyBase>> strategyFactories =
                 new Dictionary<string, Func<short, IPosition, StrategyBase>>
@@ -86,7 +129,7 @@ namespace Tests
             StrategyBase strategy = strategyFactories[args[0]](depth, position);
             _model.Strategy = strategy.ToString();
 
-            var file = Path.Combine("Log", $"{strategy}_D{depth}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log");
+            var file = Path.Combine("Log", $"{strategy}_D{depth}_{game}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log");
 
             Play(iterations, strategy, position);
 
@@ -104,29 +147,8 @@ namespace Tests
             var formatter = ServiceLocator.Current.GetInstance<IMoveFormatter>();
             var check = ServiceLocator.Current.GetInstance<ICheckService>();
             var evaluation = ServiceLocator.Current.GetInstance<IEvaluationService>();
-            var moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
             var st = new TestStrategy(position);
-
-            position.Make(moveProvider.GetMoves(Piece.WhitePawn, Squares.C2).FirstOrDefault(m => m.To == Squares.C4));
-            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.E7).FirstOrDefault(m => m.To == Squares.E6));
-            position.Make(moveProvider.GetMoves(Piece.WhitePawn, Squares.D2).FirstOrDefault(m => m.To == Squares.D4));
-            position.Make(moveProvider.GetMoves(Piece.BlackKnight, Squares.G8).FirstOrDefault(m => m.To == Squares.F6));
-            position.Make(moveProvider.GetMoves(Piece.WhiteKnight, Squares.B1).FirstOrDefault(m => m.To == Squares.C3));
-            position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.D7).FirstOrDefault(m => m.To == Squares.D5));
-            position.Make(moveProvider.GetMoves(Piece.WhiteKnight, Squares.G1).FirstOrDefault(m => m.To == Squares.F3));
-            position.Make(moveProvider.GetMoves(Piece.BlackBishop, Squares.F8).FirstOrDefault(m => m.To == Squares.B4));
-
-            //position.Make(moveProvider.GetMoves(Piece.WhitePawn, Squares.E2).FirstOrDefault(m => m.To == Squares.E4));
-            //position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.E7).FirstOrDefault(m => m.To == Squares.E5));
-            //position.Make(moveProvider.GetMoves(Piece.WhiteKnight, Squares.G1).FirstOrDefault(m => m.To == Squares.F3));
-            //position.Make(moveProvider.GetMoves(Piece.BlackKnight, Squares.B8).FirstOrDefault(m => m.To == Squares.C6));
-            //position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.F1).FirstOrDefault(m => m.To == Squares.B5));
-            //position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.A7).FirstOrDefault(m => m.To == Squares.A6));
-            //position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.B5).FirstOrDefault(m => m.To == Squares.A4));
-            //position.Make(moveProvider.GetMoves(Piece.BlackPawn, Squares.B7).FirstOrDefault(m => m.To == Squares.B5));
-            //position.Make(moveProvider.GetMoves(Piece.WhiteBishop, Squares.A4).FirstOrDefault(m => m.To == Squares.B3));
-            //position.Make(moveProvider.GetMoves(Piece.BlackBishop, Squares.F8).FirstOrDefault(m => m.To == Squares.C5));
 
             TimeSpan total = TimeSpan.Zero;
 

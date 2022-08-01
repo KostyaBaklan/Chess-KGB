@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -290,6 +292,35 @@ namespace Engine.Models.Boards
             return _board.CanBlackPromote();
         }
 
+        public void SaveHistory()
+        {
+            var moveFormatter = ServiceLocator.Current.GetInstance<IMoveFormatter>();
+            IEnumerable<MoveBase> history = GetHistory();
+            List<string> moves = new List<string>();
+            bool isWhite = true;
+            StringBuilder builder = new StringBuilder();
+            foreach (var move in history)
+            {
+                if (isWhite)
+                {
+                    builder = new StringBuilder();
+                    builder.Append($"W={moveFormatter.Format(move)} ");
+                }
+                else
+                {
+                    builder.Append($"B={moveFormatter.Format(move)} ");
+                    moves.Add(builder.ToString());
+                }
+                isWhite = !isWhite;
+            }
+            var path = "History";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            File.WriteAllLines($@"{path}\\{DateTime.Now:yyyy_MM_dd_hh_mm_ss}.txt", moves);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Square[][] GetSquares(byte[] pieces)
         {
@@ -306,11 +337,7 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Make(MoveBase move)
         {
-            MoveBase previousMove = _moveHistoryService.GetLastMove();
-            if (previousMove != null && previousMove.Type == MoveType.Over && move.Type != MoveType.EatOver)
-            {
-                _board.SetOver(previousMove.To.AsByte(), false);
-            }
+            MakeOver(move);
 
             _moveHistoryService.Add(move);
 
@@ -331,11 +358,7 @@ namespace Engine.Models.Boards
             _moveHistoryService.Remove(_board.GetKey());
             MoveBase move = _moveHistoryService.Remove();
 
-            MoveBase previousMove = _moveHistoryService.GetLastMove();
-            if (previousMove != null && previousMove.Type == MoveType.Over)
-            {
-                _board.SetOver(previousMove.To.AsByte(), true);
-            }
+            UnMakeOver();
 
             move.UnMake(_board, _figureHistory);
 
@@ -344,6 +367,26 @@ namespace Engine.Models.Boards
             _phase = _board.UpdatePhase();
 
             SwapTurn();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void UnMakeOver()
+        {
+            MoveBase previousMove = _moveHistoryService.GetLastMove();
+            if (previousMove != null && previousMove.Type == MoveType.Over)
+            {
+                _board.SetOver(previousMove.To.AsByte(), true);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void MakeOver(MoveBase move)
+        {
+            MoveBase previousMove = _moveHistoryService.GetLastMove();
+            if (previousMove != null && previousMove.Type == MoveType.Over && move.Type != MoveType.EatOver)
+            {
+                _board.SetOver(previousMove.To.AsByte(), false);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -367,15 +410,13 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool IsLigal(MoveBase move)
         {
-            move.Make(_board, _figureHistory);
-
-            SwapTurn();
+            //MakeOver(move);
+            Do(move);
 
             bool isLegal = !IsNotLegal(move);
 
-            move.UnMake(_board, _figureHistory);
-
-            SwapTurn();
+            //UnMakeOver();
+            UnDo(move);
 
             return isLegal;
         }
