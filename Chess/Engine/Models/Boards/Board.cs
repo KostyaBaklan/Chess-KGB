@@ -68,7 +68,6 @@ namespace Engine.Models.Boards
         private BitBoard[] _blackIsolatedPawns;
         private List<KeyValuePair<BitBoard, BitBoard>>[] _blackBackwardPawns;
 
-        private readonly bool[] _overBoard;
         private readonly Piece[] _pieces;
         private readonly BitBoard _whiteQueenOpening;
         private readonly BitBoard _blackQueenOpening;
@@ -85,7 +84,6 @@ namespace Engine.Models.Boards
         public Board()
         {
             _pieces = new Piece[64];
-            _overBoard = new bool[64];
 
             _positionCollections = new PositionCollection[12];
             for (var i = 0; i < _positionCollections.Length; i++)
@@ -1469,17 +1467,6 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetOver(byte to, bool b)
-        {
-            _overBoard[to] = b;
-        }
-
-        public bool IsOver(byte square)
-        {
-            return _overBoard[square];
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(Piece piece, Square square)
         {
             _hash.Update(square.AsByte(), piece.AsByte());
@@ -1734,6 +1721,18 @@ namespace Engine.Models.Boards
         {
             return _phase != Phase.Opening &&position > 31&&
                    (_whitePassedPawns[position] & _boards[Piece.BlackPawn.AsByte()]).IsZero();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsWhiteOver(BitBoard opponentPawns)
+        {
+            return (_boards[Piece.WhitePawn.AsByte()] & opponentPawns).Any();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsBlackOver(BitBoard opponentPawns)
+        {
+            return (_boards[Piece.BlackPawn.AsByte()] & opponentPawns).Any();
         }
 
         #endregion

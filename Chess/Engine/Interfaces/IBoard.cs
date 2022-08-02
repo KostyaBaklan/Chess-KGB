@@ -21,8 +21,6 @@ namespace Engine.Interfaces
         int GetKingSafetyValue();
         Piece GetPiece(Square cell);
         bool GetPiece(Square cell, out Piece? piece);
-        void SetOver(byte to, bool b);
-        bool IsOver(byte square);
         void DoWhiteSmallCastle();
         void DoBlackSmallCastle();
         void DoBlackBigCastle();
@@ -61,5 +59,7 @@ namespace Engine.Interfaces
         Phase GetPhase();
         bool IsBlackPass(byte position);
         bool IsWhitePass(byte position);
+        bool IsWhiteOver(BitBoard opponentPawns);
+        bool IsBlackOver(BitBoard opponentPawns);
     }
 }

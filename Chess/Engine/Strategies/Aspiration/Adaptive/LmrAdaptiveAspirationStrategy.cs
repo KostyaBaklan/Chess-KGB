@@ -1,6 +1,5 @@
 ﻿using Engine.DataStructures.Hash;
 using Engine.Interfaces;
-using Engine.Strategies.LateMove.Base.Null;
 using Engine.Strategies.LateMove.Deep;
 
 namespace Engine.Strategies.Aspiration.Adaptive

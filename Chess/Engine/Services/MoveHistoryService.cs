@@ -242,10 +242,17 @@ namespace Engine.Services
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsLastMoveNotReducable()
+        public bool IsLastMoveNotReducible()
         {
             var peek = _history.Peek();
             return peek.IsCheck||peek.IsPassed;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsLast(short key)
+        {
+            var peek = _history.Peek();
+            return  peek != null && peek.Key == key;
         }
 
         #endregion

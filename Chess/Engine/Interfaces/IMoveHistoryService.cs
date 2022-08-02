@@ -22,6 +22,7 @@ namespace Engine.Interfaces
         void Remove(ulong board);
         bool IsLastMoveWasCheck();
         bool IsLastMoveWasPassed();
-        bool IsLastMoveNotReducable();
+        bool IsLastMoveNotReducible();
+        bool IsLast(short key);
     }
 }

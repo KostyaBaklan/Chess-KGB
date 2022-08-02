@@ -1,49 +1,14 @@
 ﻿using System.Runtime.CompilerServices;
 using Engine.DataStructures;
 using Engine.Interfaces;
+using Engine.Models.Boards;
 using Engine.Models.Enums;
-using Engine.Models.Helpers;
 
 namespace Engine.Models.Moves
 {
-    public class PawnOverMove : MoveBase
+    public abstract  class PawnOverMove : MoveBase
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool IsLegal(IBoard board)
-        {
-            Type = MoveType.MovePawn;
-            if (!board.IsEmpty(EmptyBoard)) return false;
-
-            if (Piece == Piece.WhitePawn)
-            {
-                var x = To - 1;
-                if (x > 23 && board.IsBlackPawn(x.AsBitBoard()))
-                {
-                    Type = MoveType.Over;
-                }
-
-                x = To + 1;
-                if (x < 32 && board.IsBlackPawn(x.AsBitBoard()))
-                {
-                    Type = MoveType.Over;
-                }
-            }
-            else
-            {
-                var x = To - 1;
-                if (x > 31 && board.IsWhitePawn(x.AsBitBoard()))
-                {
-                    Type = MoveType.Over;
-                }
-
-                x = To + 1;
-                if (x < 40 && board.IsWhitePawn(x.AsBitBoard()))
-                {
-                    Type = MoveType.Over;
-                }
-            }
-            return true;
-        }
+        public BitBoard OpponentPawns;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsReversable()
@@ -52,23 +17,40 @@ namespace Engine.Models.Moves
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
-        {
-            if (Type == MoveType.Over)
-            {
-                board.SetOver(To.AsByte(),true );
-            }
-            board.Move(Piece, From, To);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void UnMake(IBoard board, ArrayStack<Piece> figureHistory)
         {
-            if (Type == MoveType.Over)
-            {
-                board.SetOver(To.AsByte(), false);
-            }
+            //if (Type == MoveType.Over)
+            //{
+            //    board.SetOver(To.AsByte(), false);
+            //}
+            IsEnPassant = false;
             board.Move(Piece, To, From);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsLegal(IBoard board)
+        {
+            return board.IsEmpty(EmptyBoard);
+        }
+    }
+
+    public class PawnOverWhiteMove: PawnOverMove
+    {
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
+        {
+            IsEnPassant = board.IsBlackOver(OpponentPawns);
+            board.Move(Piece, From, To);
+        }
+    }
+    public class PawnOverBlackMove : PawnOverMove
+    {
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
+        {
+            IsEnPassant = board.IsWhiteOver(OpponentPawns);
+            board.Move(Piece, From, To);
         }
     }
 }

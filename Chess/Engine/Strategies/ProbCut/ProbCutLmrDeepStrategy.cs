@@ -159,7 +159,7 @@ namespace Engine.Strategies.ProbCut
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            if (depth < DepthLateReduction || MoveHistory.IsLastMoveNotReducable() || Math.Abs(alpha - beta) <= 1)
+            if (depth < DepthLateReduction || MoveHistory.IsLastMoveNotReducible() || Math.Abs(alpha - beta) <= 1)
             {
                 for (var i = 0; i < count; i++)
                 {
