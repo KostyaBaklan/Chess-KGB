@@ -152,6 +152,30 @@ namespace Engine.Services
 
             SetMoves();
             SetAttacks();
+
+            var overAttacks = _all.OfType<PawnOverAttack>().ToList();
+            var whiteOvers = _all.OfType<PawnOverWhiteMove>()
+                .ToDictionary(k => k.To.AsInt());
+            var blackOvers = _all.OfType<PawnOverBlackMove>()
+                .ToDictionary(k => k.To.AsInt());
+            foreach (var pawnOverAttack in overAttacks)
+            {
+                var to = pawnOverAttack.To.AsInt();
+                if (pawnOverAttack.Piece == Piece.WhitePawn)
+                {
+                    var enPassantSquare = to - 8;
+                    pawnOverAttack.EnPassant = blackOvers[enPassantSquare];
+                }
+                else if (pawnOverAttack.Piece == Piece.BlackPawn)
+                {
+                    var enPassantSquare = to + 8;
+                    pawnOverAttack.EnPassant = whiteOvers[enPassantSquare];
+                }
+                else
+                {
+                    throw new Exception("Suka");
+                }
+            }
         }
 
         private void SetAttacks()
@@ -795,26 +819,24 @@ namespace Engine.Services
             {
                 if (i < 31)
                 {
+                    var b =  (i + 1);
                     var a1 = new PawnOverAttack
                     {
                         From = new Square(i),
                         To = new Square(i - 7),
-                        Piece = figure,
-                        Victim = Piece.WhitePawn,
-                        VictimSquare = (byte) (i + 1)
+                        Piece = figure
                     };
                     moves[i].Add(new List<Attack> { a1});
                 }
 
                 if (i > 24)
                 {
+                    var b = (i - 1);
                     var a2 = new PawnOverAttack
                     {
                         From = new Square(i),
                         To = new Square(i - 9),
-                        Piece = figure,
-                        Victim = Piece.WhitePawn,
-                        VictimSquare = (byte) (i - 1)
+                        Piece = figure
                     };
                     moves[i].Add(new List<Attack> { a2});
                 }
@@ -898,30 +920,30 @@ namespace Engine.Services
                 moves[i].Add(listRight);
             }
 
+            
+
             for (int i = 32; i < 40; i++)
             {
                 if (i > 32)
                 {
+                    var b = i - 1;
                     var a1 = new PawnOverAttack
                     {
                         From = new Square(i),
                         To = new Square(i + 7),
-                        Piece = figure,
-                        Victim = Piece.BlackPawn,
-                        VictimSquare = (byte) (i - 1)
+                        Piece = figure
                     };
                     moves[i].Add(new List<Attack> { a1});
                 }
 
                 if (i < 39)
                 {
+                    var b = i + 1;
                     var a2 = new PawnOverAttack
                     {
                         From = new Square(i),
                         To = new Square(i + 9),
-                        Piece = figure,
-                        Victim = Piece.BlackPawn,
-                        VictimSquare = (byte) (i + 1)
+                        Piece = figure
                     };
                     moves[i].Add(new List<Attack> { a2});
                 }
@@ -934,9 +956,25 @@ namespace Engine.Services
             var moves = _movesTemp[(int)figure];
             for (int i = 48; i < 56; i++)
             {
-                var move = new PawnOverMove
-                    { From = new Square(i), To = new Square(i - 16), Piece = figure, Type = MoveType.MovePawn };
-                move.Set(i - 8, i - 16);
+                var to = i - 16;
+                var move = new PawnOverBlackMove()
+                    { From = new Square(i), To = new Square(to), Piece = figure, Type = MoveType.MovePawn };
+
+                if (i == 48)
+                {
+                    move.OpponentPawns|= move.OpponentPawns.Add(to+1);
+                }
+                else if (i == 55)
+                {
+                    move.OpponentPawns |= move.OpponentPawns.Add(to-1);
+                }
+                else
+                {
+                    move.OpponentPawns |= move.OpponentPawns.Add(to-1);
+                    move.OpponentPawns |= move.OpponentPawns.Add(to+1);
+                }
+
+                move.Set(i - 8, to);
                 moves[i].Add(new List<MoveBase> { move});
             }
 
@@ -983,9 +1021,24 @@ namespace Engine.Services
             var moves = _movesTemp[(int)figure];
             for (int i = 8; i < 16; i++)
             {
-                var move = new PawnOverMove
-                { From = new Square(i), To = new Square(i + 16), Piece = figure, Type = MoveType.MovePawn };
-                move.Set(i + 8, i + 16);
+                var to = i + 16;
+                var move = new PawnOverWhiteMove
+                { From = new Square(i), To = new Square(to), Piece = figure, Type = MoveType.MovePawn };
+                if (i == 8)
+                {
+                    move.OpponentPawns |= move.OpponentPawns.Add(to+1);
+                }
+                else if (i == 15)
+                {
+                    move.OpponentPawns |= move.OpponentPawns.Add(to-1);
+                }
+                else
+                {
+                    move.OpponentPawns |= move.OpponentPawns.Add(to - 1);
+                    move.OpponentPawns |= move.OpponentPawns.Add(to + 1);
+                }
+
+                move.Set(i + 8, to);
                 moves[i].Add(new List<MoveBase> { move});
             }
 

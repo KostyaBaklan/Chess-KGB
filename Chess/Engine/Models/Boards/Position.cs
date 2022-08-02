@@ -337,8 +337,6 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Make(MoveBase move)
         {
-            MakeOver(move);
-
             _moveHistoryService.Add(move);
 
             move.Make(_board, _figureHistory);
@@ -358,8 +356,6 @@ namespace Engine.Models.Boards
             _moveHistoryService.Remove(_board.GetKey());
             MoveBase move = _moveHistoryService.Remove();
 
-            UnMakeOver();
-
             move.UnMake(_board, _figureHistory);
 
             move.IsCheck = false;
@@ -367,26 +363,6 @@ namespace Engine.Models.Boards
             _phase = _board.UpdatePhase();
 
             SwapTurn();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void UnMakeOver()
-        {
-            MoveBase previousMove = _moveHistoryService.GetLastMove();
-            if (previousMove != null && previousMove.Type == MoveType.Over)
-            {
-                _board.SetOver(previousMove.To.AsByte(), true);
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void MakeOver(MoveBase move)
-        {
-            MoveBase previousMove = _moveHistoryService.GetLastMove();
-            if (previousMove != null && previousMove.Type == MoveType.Over && move.Type != MoveType.EatOver)
-            {
-                _board.SetOver(previousMove.To.AsByte(), false);
-            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -410,12 +386,10 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool IsLigal(MoveBase move)
         {
-            //MakeOver(move);
             Do(move);
 
             bool isLegal = !IsNotLegal(move);
 
-            //UnMakeOver();
             UnDo(move);
 
             return isLegal;

@@ -17,6 +17,7 @@ namespace Engine.Models.Moves
             IsAttack = false;
             IsPromotion = false;
             IsCastle = false;
+            IsEnPassant = false;
         }
 
         #region Implementation of IMove
@@ -34,6 +35,7 @@ namespace Engine.Models.Moves
         public bool IsCastle;
         public bool IsPromotion;
         public bool IsPassed;
+        public bool IsEnPassant;
         public bool CanReduce;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

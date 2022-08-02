@@ -42,7 +42,7 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (count > 1)
             {
-                if (MoveHistory.IsLastMoveNotReducable())
+                if (MoveHistory.IsLastMoveNotReducible())
                 {
                     for (var i = 0; i < count; i++)
                     {
@@ -164,7 +164,7 @@ namespace Engine.Strategies.LateMove.Deep
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            if (depth < DepthLateReduction || MoveHistory.IsLastMoveNotReducable())
+            if (depth < DepthLateReduction || MoveHistory.IsLastMoveNotReducible())
             {
                 for (var i = 0; i < count; i++)
                 {

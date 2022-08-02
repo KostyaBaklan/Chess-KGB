@@ -50,7 +50,7 @@ namespace Engine.Strategies.End
 
             if (count > 1)
             {
-                if (MoveHistory.IsLastMoveNotReducable())
+                if (MoveHistory.IsLastMoveNotReducible())
                 {
                     for (var i = 0; i < count; i++)
                     {
@@ -142,7 +142,7 @@ namespace Engine.Strategies.End
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            if (depth < LmrDepthLimitForReduce || MoveHistory.IsLastMoveNotReducable())
+            if (depth < LmrDepthLimitForReduce || MoveHistory.IsLastMoveNotReducible())
             {
                 for (var i = 0; i < count; i++)
                 {

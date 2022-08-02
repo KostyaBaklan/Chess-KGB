@@ -1,28 +1,26 @@
 ﻿using System.Runtime.CompilerServices;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.Interfaces;
-using Engine.Models.Boards;
 using Engine.Models.Enums;
-using Engine.Models.Helpers;
 
 namespace Engine.Models.Moves
 {
     public class PawnOverAttack : Attack
     {
+        protected IMoveHistoryService history;
+        public MoveBase EnPassant;
+
         public PawnOverAttack()
         {
             Type = MoveType.EatOver;
+            history = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
         }
-
-        public Piece Victim;
-        public byte VictimSquare;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsLegal(IBoard board)
         {
-            return board.IsOver(VictimSquare) && (Piece == Piece.WhitePawn
-                       ? board.IsBlackPawn(VictimSquare.AsBitBoard())
-                       : board.IsWhitePawn(VictimSquare.AsBitBoard()));
+            return history.IsLast(EnPassant.Key) && EnPassant.IsEnPassant;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -34,17 +32,15 @@ namespace Engine.Models.Moves
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
         {
-            board.SetOver(VictimSquare, false);
-            board.Remove(Victim, new Square(VictimSquare));
+            board.Remove(EnPassant.Piece, EnPassant.To);
             board.Move(Piece, From, To);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void UnMake(IBoard board, ArrayStack<Piece> figureHistory)
         {
-            board.SetOver(VictimSquare, true);
             board.Move(Piece, To, From);
-            board.Add(Victim, new Square(VictimSquare));
+            board.Add(EnPassant.Piece, EnPassant.To);
         }
     }
 }

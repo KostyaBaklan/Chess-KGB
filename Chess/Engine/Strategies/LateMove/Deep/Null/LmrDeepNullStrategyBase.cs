@@ -195,7 +195,7 @@ namespace Engine.Strategies.LateMove.Deep.Null
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            if (depth < DepthLateReduction || MoveHistory.IsLastMoveNotReducable())
+            if (depth < DepthLateReduction || MoveHistory.IsLastMoveNotReducible())
             {
                 for (var i = 0; i < count; i++)
                 {
