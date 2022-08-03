@@ -43,6 +43,7 @@ namespace Tests
             //bool shouldPrintPosition = args.Length<=4 || bool.Parse(args[4]);
 
             _model.Depth = depth;
+            _model.Game = game;
 
             var evaluationService = ServiceLocator.Current.GetInstance<IEvaluationService>();
             evaluationService.Initialize(depth);
@@ -134,10 +135,10 @@ namespace Tests
             Play(iterations, strategy, position);
 
             _model.Calculate();
+            _model.Position = position.ToString();
 
             var content = JsonConvert.SerializeObject(_model, Formatting.Indented);
             File.WriteAllText(file,content, Encoding.BigEndianUnicode);
-            File.AppendAllText(file, $"\n\n{position}", Encoding.BigEndianUnicode);
 
             //position.GetBoard().PrintCache(Path.Combine("Log", $"See_Cache_{strategy}_{DateTime.Now:hh_mm_ss_dd_MM_yyyy}.log"));
         }

@@ -9,13 +9,13 @@ namespace TestViewer.Views
 {
     public class TestItemViewModel : BindableBase
     {
-        public TestItemViewModel(int depth, List<TestModel> ti)
+        public TestItemViewModel(TestTabItem tab, List<TestModel> ti)
         {
-            Depth = depth;
+            Tab = tab;
             TestItems = new List<TestModel>(ti);
         }
 
-        public int Depth { get; }
+        public TestTabItem Tab { get; }
 
         public ICollection<TestModel> TestItems { get; }
 

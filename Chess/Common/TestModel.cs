@@ -14,6 +14,7 @@ namespace Common
         }
 
         public string Strategy { get; set; }
+        public string Game { get; set; }
         public int Depth { get; set; }
         public TimeSpan Total { get; set; }
         public TimeSpan Min { get; set; }
@@ -52,6 +53,7 @@ namespace Common
         }
 
         public List<MoveModel> Moves { get; set; }
+        public string Position { get; set; }
 
         public void Calculate()
         {
