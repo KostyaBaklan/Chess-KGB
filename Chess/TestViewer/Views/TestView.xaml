@@ -54,7 +54,7 @@
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <Border>
-                        <TextBlock Text="{Binding Depth, Mode=OneWay}"/>
+                        <TextBlock Text="{Binding Tab.Name, Mode=OneWay}"/>
                     </Border>
                 </DataTemplate>
             </TabControl.ItemTemplate>
