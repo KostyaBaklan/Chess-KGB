@@ -1,7 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Engine.DataStructures.Moves;
 using Engine.DataStructures.Moves.Collections.Initial;
 using Engine.Interfaces;
+using Engine.Models.Enums;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
@@ -21,25 +23,13 @@ namespace Engine.Sorting.Sorters.Initial
         {
             OrderAttacks(InitialMoveCollection, attacks);
 
-            for (var index = 0; index < moves.Count; index++)
+            if (Position.GetTurn() == Turn.White)
             {
-                var move = moves[index];
-                if (move.IsPromotion)
-                {
-                    ProcessPromotion(move);
-                }
-                else if (CurrentKillers.Contains(move.Key))
-                {
-                    InitialMoveCollection.AddKillerMove(move);
-                }
-                else if (move.IsCastle)
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                }
-                else
-                {
-                    ProcessMove(move);
-                }
+                ProcessWhiteMoves(moves);
+            }
+            else
+            {
+                ProcessBlackMoves(moves);
             }
 
             return InitialMoveCollection.Build();
@@ -53,6 +43,39 @@ namespace Engine.Sorting.Sorters.Initial
             {
                 OrderAttacks(InitialMoveCollection, attacks, attack);
 
+                if (Position.GetTurn() == Turn.White)
+                {
+                    ProcessWhiteMoves(moves);
+                }
+                else
+                {
+                    ProcessBlackMoves(moves);
+                }
+            }
+            else
+            {
+                OrderAttacks(InitialMoveCollection, attacks);
+
+                if (Position.GetTurn() == Turn.White)
+                {
+                    ProcessWhiteMoves(moves, pvNode.Key);
+                }
+                else
+                {
+                    ProcessBlackMoves(moves, pvNode.Key);
+                }
+            }
+
+            return InitialMoveCollection.Build();
+        }
+
+        #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessWhiteMoves(MoveList moves)
+        {
+            if (Position.GetPhase() == Phase.Opening)
+            {
                 for (var index = 0; index < moves.Count; index++)
                 {
                     var move = moves[index];
@@ -70,18 +93,141 @@ namespace Engine.Sorting.Sorters.Initial
                     }
                     else
                     {
-                        ProcessMove(move);
+                        ProcessWhiteOpeningMove(move);
+                    }
+                }
+            }
+            else if (Position.GetPhase() == Phase.Middle)
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.IsPromotion)
+                    {
+                        ProcessPromotion(move);
+                    }
+                    else if (CurrentKillers.Contains(move.Key))
+                    {
+                        InitialMoveCollection.AddKillerMove(move);
+                    }
+                    else if (move.IsCastle)
+                    {
+                        InitialMoveCollection.AddSuggested(move);
+                    }
+                    else
+                    {
+                        ProcessWhiteMiddleMove(move);
                     }
                 }
             }
             else
             {
-                OrderAttacks(InitialMoveCollection, attacks);
-
                 for (var index = 0; index < moves.Count; index++)
                 {
                     var move = moves[index];
-                    if (move.Key == pvNode.Key)
+                    if (move.IsPromotion)
+                    {
+                        ProcessPromotion(move);
+                    }
+                    else if (CurrentKillers.Contains(move.Key))
+                    {
+                        InitialMoveCollection.AddKillerMove(move);
+                    }
+                    else if (move.IsCastle)
+                    {
+                        InitialMoveCollection.AddSuggested(move);
+                    }
+                    else
+                    {
+                        ProcessWhiteEndMove(move);
+                    }
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessBlackMoves(MoveList moves)
+        {
+            if (Position.GetPhase() == Phase.Opening)
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.IsPromotion)
+                    {
+                        ProcessPromotion(move);
+                    }
+                    else if (CurrentKillers.Contains(move.Key))
+                    {
+                        InitialMoveCollection.AddKillerMove(move);
+                    }
+                    else if (move.IsCastle)
+                    {
+                        InitialMoveCollection.AddSuggested(move);
+                    }
+                    else
+                    {
+                        ProcessBlackOpeningMove(move);
+                    }
+                }
+            }
+            else if (Position.GetPhase() == Phase.Middle)
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.IsPromotion)
+                    {
+                        ProcessPromotion(move);
+                    }
+                    else if (CurrentKillers.Contains(move.Key))
+                    {
+                        InitialMoveCollection.AddKillerMove(move);
+                    }
+                    else if (move.IsCastle)
+                    {
+                        InitialMoveCollection.AddSuggested(move);
+                    }
+                    else
+                    {
+                        ProcessBlackMiddleMove(move);
+                    }
+                }
+            }
+            else
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.IsPromotion)
+                    {
+                        ProcessPromotion(move);
+                    }
+                    else if (CurrentKillers.Contains(move.Key))
+                    {
+                        InitialMoveCollection.AddKillerMove(move);
+                    }
+                    else if (move.IsCastle)
+                    {
+                        InitialMoveCollection.AddSuggested(move);
+                    }
+                    else
+                    {
+                        ProcessBlackEndMove(move);
+                    }
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessWhiteMoves(MoveList moves, short pvNodeKey)
+        {
+            if (Position.GetPhase() == Phase.Opening)
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.Key == pvNodeKey)
                     {
                         InitialMoveCollection.AddHashMove(move);
                     }
@@ -101,15 +247,166 @@ namespace Engine.Sorting.Sorters.Initial
                         }
                         else
                         {
-                            ProcessMove(move);
+                            ProcessWhiteOpeningMove(move);
                         }
                     }
                 }
             }
-
-            return InitialMoveCollection.Build();
+            else if (Position.GetPhase() == Phase.Middle)
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.Key == pvNodeKey)
+                    {
+                        InitialMoveCollection.AddHashMove(move);
+                    }
+                    else
+                    {
+                        if (move.IsPromotion)
+                        {
+                            ProcessPromotion(move);
+                        }
+                        else if (CurrentKillers.Contains(move.Key))
+                        {
+                            InitialMoveCollection.AddKillerMove(move);
+                        }
+                        else if (move.IsCastle)
+                        {
+                            InitialMoveCollection.AddSuggested(move);
+                        }
+                        else
+                        {
+                            ProcessWhiteMiddleMove(move);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.Key == pvNodeKey)
+                    {
+                        InitialMoveCollection.AddHashMove(move);
+                    }
+                    else
+                    {
+                        if (move.IsPromotion)
+                        {
+                            ProcessPromotion(move);
+                        }
+                        else if (CurrentKillers.Contains(move.Key))
+                        {
+                            InitialMoveCollection.AddKillerMove(move);
+                        }
+                        else if (move.IsCastle)
+                        {
+                            InitialMoveCollection.AddSuggested(move);
+                        }
+                        else
+                        {
+                            ProcessWhiteEndMove(move);
+                        }
+                    }
+                }
+            }
         }
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessBlackMoves(MoveList moves, short pvNodeKey)
+        {
+            if (Position.GetPhase() == Phase.Opening)
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.Key == pvNodeKey)
+                    {
+                        InitialMoveCollection.AddHashMove(move);
+                    }
+                    else
+                    {
+                        if (move.IsPromotion)
+                        {
+                            ProcessPromotion(move);
+                        }
+                        else if (CurrentKillers.Contains(move.Key))
+                        {
+                            InitialMoveCollection.AddKillerMove(move);
+                        }
+                        else if (move.IsCastle)
+                        {
+                            InitialMoveCollection.AddSuggested(move);
+                        }
+                        else
+                        {
+                            ProcessBlackOpeningMove(move);
+                        }
+                    }
+                }
+            }
+            else if (Position.GetPhase() == Phase.Middle)
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.Key == pvNodeKey)
+                    {
+                        InitialMoveCollection.AddHashMove(move);
+                    }
+                    else
+                    {
+                        if (move.IsPromotion)
+                        {
+                            ProcessPromotion(move);
+                        }
+                        else if (CurrentKillers.Contains(move.Key))
+                        {
+                            InitialMoveCollection.AddKillerMove(move);
+                        }
+                        else if (move.IsCastle)
+                        {
+                            InitialMoveCollection.AddSuggested(move);
+                        }
+                        else
+                        {
+                            ProcessBlackMiddleMove(move);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (var index = 0; index < moves.Count; index++)
+                {
+                    var move = moves[index];
+                    if (move.Key == pvNodeKey)
+                    {
+                        InitialMoveCollection.AddHashMove(move);
+                    }
+                    else
+                    {
+                        if (move.IsPromotion)
+                        {
+                            ProcessPromotion(move);
+                        }
+                        else if (CurrentKillers.Contains(move.Key))
+                        {
+                            InitialMoveCollection.AddKillerMove(move);
+                        }
+                        else if (move.IsCastle)
+                        {
+                            InitialMoveCollection.AddSuggested(move);
+                        }
+                        else
+                        {
+                            ProcessBlackEndMove(move);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
