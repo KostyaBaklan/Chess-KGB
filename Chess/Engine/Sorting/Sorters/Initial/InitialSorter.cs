@@ -14,6 +14,7 @@ namespace Engine.Sorting.Sorters.Initial
 {
     public abstract class InitialSorter : MoveSorter
     {
+        private BitBoard _minorStartRanks;
         private readonly BitBoard _minorStartPositions;
         protected readonly PositionsList PositionsList;
         protected readonly AttackList AttackList;
@@ -29,6 +30,7 @@ namespace Engine.Sorting.Sorters.Initial
             _minorStartPositions = Squares.B1.AsBitBoard() | Squares.C1.AsBitBoard() | Squares.F1.AsBitBoard() |
                                    Squares.G1.AsBitBoard() | Squares.B8.AsBitBoard() | Squares.C8.AsBitBoard() |
                                    Squares.F8.AsBitBoard() | Squares.G8.AsBitBoard();
+           _minorStartRanks = Board.GetRank(0)|Board.GetRank(7);
         }
 
         #region Overrides of MoveSorter
@@ -499,6 +501,15 @@ namespace Engine.Sorting.Sorters.Initial
                     }
 
                     break;
+                case Piece.WhiteKnight:
+                case Piece.WhiteBishop:
+                    if ((move.To.AsBitBoard() & _minorStartRanks).Any())
+                    {
+                        InitialMoveCollection.AddNonSuggested(move);
+                        return;
+                    }
+
+                    break;
                 case Piece.WhiteRook:
                     if (move.From == Squares.A1 && MoveHistoryService.CanDoWhiteBigCastle() ||
                         move.From == Squares.H1 && MoveHistoryService.CanDoWhiteSmallCastle())
@@ -584,6 +595,15 @@ namespace Engine.Sorting.Sorters.Initial
                     if (Board.IsBlackPass(move.To.AsByte()))
                     {
                         InitialMoveCollection.AddSuggested(move);
+                        return;
+                    }
+
+                    break;
+                case Piece.BlackKnight:
+                case Piece.BlackBishop:
+                    if ((move.To.AsBitBoard() & _minorStartRanks).Any())
+                    {
+                        InitialMoveCollection.AddNonSuggested(move);
                         return;
                     }
 
