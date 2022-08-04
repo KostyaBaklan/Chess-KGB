@@ -310,13 +310,9 @@ namespace Engine.Sorting.Sorters.Initial
                     }
 
                     break;
-                case Piece.WhiteQueen:
-                    if (move.To == Squares.D1)
-                    {
-                        InitialMoveCollection.AddNonSuggested(move);
-                        return;
-                    }
-                    break;
+                //case Piece.WhiteQueen:
+                //    InitialMoveCollection.AddNonSuggested(move);
+                //    return;
                 case Piece.WhiteKing:
                     if (!MoveHistoryService.IsLastMoveWasCheck())
                     {
@@ -343,40 +339,9 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (move.Piece == Piece.WhitePawn)
-                {
-                    if ((MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
-                         Board.GetBlackBits()).Any())
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
-                }
+                if (IsWhiteOpeningAttack(move)) return;
 
-                else if (move.Piece == Piece.WhiteKnight &&
-                         (MoveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), move.To.AsByte()) &
-                          Board.GetBlackBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                else if (move.Piece == Piece.WhiteBishop &&
-                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
-                          Board.GetBlackBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                if (move.IsCheck)
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                }
-                else
-                {
-                    InitialMoveCollection.AddNonCapture(move);
-                }
+                IsCheck(move);
             }
             finally
             {
@@ -404,14 +369,9 @@ namespace Engine.Sorting.Sorters.Initial
                     }
 
                     break;
-                case Piece.BlackQueen:
-                    if (move.To == Squares.D8)
-                    {
-                        InitialMoveCollection.AddNonSuggested(move);
-                        return;
-                    }
-
-                    break;
+                //case Piece.BlackQueen:
+                //    InitialMoveCollection.AddNonSuggested(move);
+                //    return;
                 case Piece.BlackRook:
                     if (move.From == Squares.A8 && MoveHistoryService.CanDoBlackBigCastle() ||
                         move.From == Squares.H8 && MoveHistoryService.CanDoBlackSmallCastle())
@@ -447,40 +407,9 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (move.Piece == Piece.BlackPawn)
-                {
-                    if ((MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
-                         Board.GetWhiteBits()).Any())
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
-                }
+                if (IsBlackOpeningAttack(move)) return;
 
-                else if (move.Piece == Piece.BlackKnight &&
-                         (MoveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), move.To.AsByte()) &
-                          Board.GetWhiteBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                else if (move.Piece == Piece.BlackBishop &&
-                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
-                          Board.GetWhiteBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                if (move.IsCheck)
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                }
-                else
-                {
-                    InitialMoveCollection.AddNonCapture(move);
-                }
+                IsCheck(move);
             }
             finally
             {
@@ -545,40 +474,9 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (move.Piece == Piece.WhitePawn)
-                {
-                    if ((MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
-                         Board.GetBlackBits()).Any() || move.IsPassed)
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
-                }
+                if (IsWhiteAttack(move)) return;
 
-                else if (move.Piece == Piece.WhiteKnight &&
-                         (MoveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), move.To.AsByte()) &
-                          Board.GetBlackBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                else if (move.Piece == Piece.WhiteBishop &&
-                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
-                          Board.GetBlackBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                if (move.IsCheck)
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                }
-                else
-                {
-                    InitialMoveCollection.AddNonCapture(move);
-                }
+                IsCheck(move);
             }
             finally
             {
@@ -630,7 +528,7 @@ namespace Engine.Sorting.Sorters.Initial
             try
             {
 
-                if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
+                if (MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
                 {
                     if (Board.GetValue() < 0)
                     {
@@ -643,40 +541,9 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (move.Piece == Piece.BlackPawn)
-                {
-                    if ((MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
-                         Board.GetWhiteBits()).Any() || move.IsPassed)
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
-                }
+                if (IsBlackAttack(move)) return;
 
-                else if (move.Piece == Piece.BlackKnight &&
-                         (MoveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), move.To.AsByte()) &
-                          Board.GetWhiteBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                else if (move.Piece == Piece.BlackBishop &&
-                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
-                          Board.GetWhiteBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                if (move.IsCheck)
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                }
-                else
-                {
-                    InitialMoveCollection.AddNonCapture(move);
-                }
+                IsCheck(move);
             }
             finally
             {
@@ -696,7 +563,7 @@ namespace Engine.Sorting.Sorters.Initial
             Position.Make(move);
             try
             {
-                if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
+                if (MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
                 {
                     if (Board.GetValue() > 0)
                     {
@@ -709,40 +576,9 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (move.Piece == Piece.WhitePawn)
-                {
-                    if ((MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
-                         Board.GetBlackBits()).Any() || move.IsPassed)
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
-                }
+                if (IsWhiteEndAttack(move)) return;
 
-                else if (move.Piece == Piece.WhiteKnight &&
-                         (MoveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), move.To.AsByte()) &
-                          Board.GetBlackBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                else if (move.Piece == Piece.WhiteBishop &&
-                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
-                          Board.GetBlackBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                if (move.IsCheck)
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                }
-                else
-                {
-                    InitialMoveCollection.AddNonCapture(move);
-                }
+                IsCheck(move);
             }
             finally
             {
@@ -775,44 +611,26 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (move.Piece == Piece.BlackPawn)
-                {
-                    if ((MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
-                         Board.GetWhiteBits()).Any() || move.IsPassed)
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                        return;
-                    }
-                }
+                if (IsBlackEndAttack(move)) return;
 
-                else if (move.Piece == Piece.BlackKnight &&
-                         (MoveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), move.To.AsByte()) &
-                          Board.GetWhiteBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                else if (move.Piece == Piece.BlackBishop &&
-                         (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
-                          Board.GetWhiteBits()).Any())
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                    return;
-                }
-
-                if (move.IsCheck)
-                {
-                    InitialMoveCollection.AddSuggested(move);
-                }
-                else
-                {
-                    InitialMoveCollection.AddNonCapture(move);
-                }
+                IsCheck(move);
             }
             finally
             {
                 Position.UnMake();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void IsCheck(MoveBase move)
+        {
+            if (move.IsCheck)
+            {
+                InitialMoveCollection.AddSuggested(move);
+            }
+            else
+            {
+                InitialMoveCollection.AddNonCapture(move);
             }
         }
 
@@ -923,6 +741,244 @@ namespace Engine.Sorting.Sorters.Initial
                     InitialMoveCollection.AddBad(move);
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsWhiteOpeningAttack(MoveBase move)
+        {
+            if (move.Piece == Piece.WhitePawn)
+            {
+                if ((MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
+                     Board.GetBlackBitsForPawn()).Any())
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return true;
+                }
+            }
+
+            else if (move.Piece == Piece.WhiteKnight &&
+                     (MoveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), move.To.AsByte()) &
+                      Board.GetBlackBitsForKnight()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if (move.Piece == Piece.WhiteBishop &&
+                     (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
+                      Board.GetBlackBitsForBishop()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsBlackOpeningAttack(MoveBase move)
+        {
+            if (move.Piece == Piece.BlackPawn)
+            {
+                if ((MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
+                     Board.GetWhiteBitsForPawn()).Any())
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return true;
+                }
+            }
+
+            else if (move.Piece == Piece.BlackKnight &&
+                     (MoveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), move.To.AsByte()) &
+                      Board.GetWhiteBitsForKnight()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if (move.Piece == Piece.BlackBishop &&
+                     (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
+                      Board.GetWhiteBitsForBishop()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsWhiteAttack(MoveBase move)
+        {
+            if (move.Piece == Piece.WhitePawn)
+            {
+                if ((MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
+                     Board.GetBlackBitsForPawn()).Any() || move.IsPassed)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return true;
+                }
+            }
+
+            else if (move.Piece == Piece.WhiteKnight &&
+                     (MoveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), move.To.AsByte()) &
+                      Board.GetBlackBitsForKnight()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if (move.Piece == Piece.WhiteBishop &&
+                     (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
+                      Board.GetBlackBitsForBishop()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+            else if (move.Piece == Piece.WhiteRook &&
+                     (move.To.AsByte().RookAttacks(Board.GetOccupied()) &
+                      Board.GetPieceBits(Piece.BlackQueen)).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsBlackAttack(MoveBase move)
+        {
+            if (move.Piece == Piece.BlackPawn)
+            {
+                if ((MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
+                     Board.GetWhiteBitsForPawn()).Any() || move.IsPassed)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return true;
+                }
+            }
+
+            else if (move.Piece == Piece.BlackKnight &&
+                     (MoveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), move.To.AsByte()) &
+                      Board.GetWhiteBitsForKnight()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if (move.Piece == Piece.BlackBishop &&
+                     (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
+                      Board.GetWhiteBitsForBishop()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+            else if (move.Piece == Piece.BlackRook &&
+                     (move.To.AsByte().RookAttacks(Board.GetOccupied()) &
+                      Board.GetPieceBits(Piece.WhiteQueen)).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsWhiteEndAttack(MoveBase move)
+        {
+            if (move.Piece == Piece.WhitePawn)
+            {
+                if ((MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
+                     Board.GetBlackBits()).Any())
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return true;
+                }
+            }
+
+            else if (move.Piece == Piece.WhiteKing &&
+                     (MoveProvider.GetAttackPattern(Piece.WhiteKing.AsByte(), move.To.AsByte()) &
+                      Board.GetBlackBits()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if (move.Piece == Piece.WhiteKnight &&
+                     (MoveProvider.GetAttackPattern(Piece.WhiteKnight.AsByte(), move.To.AsByte()) &
+                      Board.GetBlackBits()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if ((move.Piece == Piece.WhiteBishop ||move.Piece == Piece.WhiteQueen)&&
+                     (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
+                      Board.GetBlackBits()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if ((move.Piece == Piece.WhiteRook || move.Piece == Piece.WhiteQueen) &&
+                     (move.To.AsByte().RookAttacks(Board.GetOccupied()) &
+                      Board.GetBlackBits()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsBlackEndAttack(MoveBase move)
+        {
+            if (move.Piece == Piece.BlackPawn)
+            {
+                if ((MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
+                     Board.GetWhiteBits()).Any())
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return true;
+                }
+            }
+
+            else if (move.Piece == Piece.BlackKing &&
+                     (MoveProvider.GetAttackPattern(Piece.BlackKing.AsByte(), move.To.AsByte()) &
+                      Board.GetWhiteBits()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if (move.Piece == Piece.BlackKnight &&
+                     (MoveProvider.GetAttackPattern(Piece.BlackKnight.AsByte(), move.To.AsByte()) &
+                      Board.GetWhiteBits()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if ((move.Piece == Piece.BlackBishop||move.Piece == Piece.BlackQueen) &&
+                     (move.To.AsByte().BishopAttacks(Board.GetOccupied()) &
+                      Board.GetWhiteBits()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
+            }
+
+            else if ((move.Piece == Piece.BlackRook || move.Piece == Piece.BlackQueen) &&
+                     (move.To.AsByte().RookAttacks(Board.GetOccupied()) &
+                      Board.GetWhiteBits()).Any())
+            {
+                InitialMoveCollection.AddSuggested(move);
+                return true;
             }
 
             return false;
