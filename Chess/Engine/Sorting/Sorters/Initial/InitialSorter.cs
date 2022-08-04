@@ -199,10 +199,10 @@ namespace Engine.Sorting.Sorters.Initial
                     if (move.Piece == Piece.WhitePawn)
                     {
                         if ((MoveProvider.GetAttackPattern(Piece.WhitePawn.AsByte(), move.To.AsByte()) &
-                            Board.GetBlackBits()).Any()||move.IsPassed)
+                            Board.GetBlackBits()).Any() || move.IsPassed)
                         {
                             InitialMoveCollection.AddSuggested(move);
-                            return; 
+                            return;
                         }
                     }
 
@@ -221,15 +221,6 @@ namespace Engine.Sorting.Sorters.Initial
                         InitialMoveCollection.AddSuggested(move);
                         return;
                     }
-
-                    if (IsCheckToBlack(move))
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                    }
-                    else
-                    {
-                        InitialMoveCollection.AddNonCapture(move);
-                    }
                 }
                 else
                 {
@@ -246,13 +237,13 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
 
-                    if (move.Piece == Piece.BlackPawn )
+                    if (move.Piece == Piece.BlackPawn)
                     {
                         if ((MoveProvider.GetAttackPattern(Piece.BlackPawn.AsByte(), move.To.AsByte()) &
-                             Board.GetWhiteBits()).Any()||move.IsPassed)
+                             Board.GetWhiteBits()).Any() || move.IsPassed)
                         {
                             InitialMoveCollection.AddSuggested(move);
-                            return; 
+                            return;
                         }
                     }
 
@@ -271,15 +262,15 @@ namespace Engine.Sorting.Sorters.Initial
                         InitialMoveCollection.AddSuggested(move);
                         return;
                     }
+                }
 
-                    if (IsCheckToWhite(move))
-                    {
-                        InitialMoveCollection.AddSuggested(move);
-                    }
-                    else
-                    {
-                        InitialMoveCollection.AddNonCapture(move);
-                    }
+                if (move.IsCheck)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                }
+                else
+                {
+                    InitialMoveCollection.AddNonCapture(move);
                 }
             }
             finally
