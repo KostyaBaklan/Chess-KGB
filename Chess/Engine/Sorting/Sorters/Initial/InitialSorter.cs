@@ -367,7 +367,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsCheckToBlack(move))
+                if (move.IsCheck)
                 {
                     InitialMoveCollection.AddSuggested(move);
                 }
@@ -471,7 +471,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsCheckToWhite(move))
+                if (move.IsCheck)
                 {
                     InitialMoveCollection.AddSuggested(move);
                 }
@@ -560,7 +560,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsCheckToBlack(move))
+                if (move.IsCheck)
                 {
                     InitialMoveCollection.AddSuggested(move);
                 }
@@ -649,7 +649,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsCheckToWhite(move))
+                if (move.IsCheck)
                 {
                     InitialMoveCollection.AddSuggested(move);
                 }
@@ -715,7 +715,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsCheckToBlack(move))
+                if (move.IsCheck)
                 {
                     InitialMoveCollection.AddSuggested(move);
                 }
@@ -781,7 +781,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsCheckToWhite(move))
+                if (move.IsCheck)
                 {
                     InitialMoveCollection.AddSuggested(move);
                 }
