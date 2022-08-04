@@ -1692,6 +1692,42 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetWhiteBitsForPawn()
+        {
+            return _whites ^ _boards[Piece.WhitePawn.AsByte()];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetBlackBitsForPawn()
+        {
+            return _blacks ^ _boards[Piece.BlackPawn.AsByte()];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetBlackBitsForKnight()
+        {
+            return _boards[Piece.BlackBishop.AsByte()] | _boards[Piece.BlackRook.AsByte()] | _boards[Piece.BlackQueen.AsByte()];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetWhiteBitsForKnight()
+        {
+            return _boards[Piece.WhiteBishop.AsByte()] | _boards[Piece.WhiteRook.AsByte()] | _boards[Piece.WhiteQueen.AsByte()];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetWhiteBitsForBishop()
+        {
+            return _boards[Piece.WhiteQueen.AsByte()] | _boards[Piece.WhiteRook.AsByte()];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BitBoard GetBlackBitsForBishop()
+        {
+            return _boards[Piece.BlackQueen.AsByte()] | _boards[Piece.BlackRook.AsByte()];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BitBoard GetBlackBits()
         {
             return _blacks;
