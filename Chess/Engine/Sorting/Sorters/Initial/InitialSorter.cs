@@ -310,9 +310,13 @@ namespace Engine.Sorting.Sorters.Initial
                     }
 
                     break;
-                //case Piece.WhiteQueen:
-                //    InitialMoveCollection.AddNonSuggested(move);
-                //    return;
+                case Piece.WhiteQueen:
+                    if(MoveHistoryService.GetPly() < 7 || move.To == Squares.D1)
+                    {
+                        InitialMoveCollection.AddNonSuggested(move);
+                        return;
+                    }
+                    break;
                 case Piece.WhiteKing:
                     if (!MoveHistoryService.IsLastMoveWasCheck())
                     {
@@ -369,9 +373,13 @@ namespace Engine.Sorting.Sorters.Initial
                     }
 
                     break;
-                //case Piece.BlackQueen:
-                //    InitialMoveCollection.AddNonSuggested(move);
-                //    return;
+                case Piece.BlackQueen:
+                    if (MoveHistoryService.GetPly() < 8 || move.To == Squares.D8)
+                    {
+                        InitialMoveCollection.AddNonSuggested(move);
+                        return;
+                    }
+                    break;
                 case Piece.BlackRook:
                     if (move.From == Squares.A8 && MoveHistoryService.CanDoBlackBigCastle() ||
                         move.From == Squares.H8 && MoveHistoryService.CanDoBlackSmallCastle())
