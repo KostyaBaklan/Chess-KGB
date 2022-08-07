@@ -48,11 +48,6 @@ namespace Engine.Services
             return new ExtendedDifferenceSorter(position,comparer);
         }
 
-        public MoveSorter GetAdvanced(IPosition position, IMoveComparer comparer)
-        {
-            return new AdvancedSorter(position, comparer);
-        }
-
         #endregion
     }
 }

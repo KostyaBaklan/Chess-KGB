@@ -95,19 +95,15 @@ namespace Tests
                 {
                     {"lmr_bs_hc", (d, p) => new LmrBasicHistoryStrategy(d, p)},
                     {"lmr_es_hc", (d, p) => new LmrExtendedHistoryStrategy(d, p)},
-                    {"lmr_as_hc", (d, p) => new LmrAdvancedHistoryStrategy(d, p)},
 
                     {"lmrd_bs_hc", (d, p) => new LmrDeepBasicStrategy(d, p)},
                     {"lmrd_es_hc", (d, p) => new LmrDeepExtendedStrategy(d, p)},
-                    {"lmrd_as_hc", (d, p) => new LmrDeepAdvancedStrategy(d, p)},
 
                     {"lmrn_bs_hc", (d, p) => new LmrNullBasicStrategy(d, p)},
                     {"lmrn_es_hc", (d, p) => new LmrNullExtendedStrategy(d, p)},
-                    {"lmrn_as_hc", (d, p) => new LmrNullAdvancedStrategy(d, p)},
 
                     {"lmrdn_bs_hc", (d, p) => new LmrDeepNullBasicStrategy(d, p)},
                     {"lmrdn_es_hc", (d, p) => new LmrDeepNullExtendedStrategy(d, p)},
-                    {"lmrdn_as_hc", (d, p) => new LmrDeepNullAdvancedStrategy(d, p)},
 
                     {"lmranr_es_hc", (d, p) => new LmrAnrStrategy(d, p)},
                     {"lmrenr_es_hc", (d, p) => new LmrEnrStrategy(d, p)},
