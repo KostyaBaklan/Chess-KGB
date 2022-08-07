@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Engine.DataStructures.Moves;
 using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
@@ -25,6 +26,8 @@ namespace Engine.Interfaces
         IEnumerable<AttackBase> GetAllAttacks(Square cell, Piece piece);
         IEnumerable<MoveBase> GetAllMoves(Square cell, Piece piece);
         MoveBase[] GetAllAttacks(IMoveSorter sorter);
+        AttackList GetWhiteAttacks();
+        AttackList GetBlackAttacks();
         MoveBase[] GetAllMoves(IMoveSorter sorter, MoveBase pvMove = null);
         int GetPieceValue(Square square);
         IBoard GetBoard();
