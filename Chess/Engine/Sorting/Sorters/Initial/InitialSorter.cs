@@ -14,7 +14,7 @@ namespace Engine.Sorting.Sorters.Initial
 {
     public abstract class InitialSorter : MoveSorter
     {
-        private BitBoard _minorStartRanks;
+        private readonly BitBoard _minorStartRanks;
         private readonly BitBoard _minorStartPositions;
         protected readonly PositionsList PositionsList;
         protected readonly AttackList AttackList;
@@ -338,12 +338,15 @@ namespace Engine.Sorting.Sorters.Initial
             Position.Make(move);
             try
             {
-                if (WhiteUnderAttack(move) || IsBadWhiteSee(move))
+                if (IsBadAttackToWhite(move))
                 {
                     return;
                 }
 
-                if (IsWhiteOpeningAttack(move)) return;
+                if (IsGoodAttackForWhite(move))
+                {
+                    return;
+                }
 
                 IsCheck(move);
             }
@@ -410,12 +413,15 @@ namespace Engine.Sorting.Sorters.Initial
             Position.Make(move);
             try
             {
-                if (BlackUnderAttack(move) || IsBadBlackSee(move))
+                if (IsBadAttackToBlack(move))
                 {
                     return;
                 }
 
-                if (IsBlackOpeningAttack(move)) return;
+                if (IsGoodAttackForBlack(move))
+                {
+                    return;
+                }
 
                 IsCheck(move);
             }
@@ -477,12 +483,21 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
                 }
-                if (WhiteUnderAttack(move) || IsBadWhiteSee(move))
+                if (IsBadAttackToWhite(move))
                 {
                     return;
                 }
 
-                if (IsWhiteAttack(move)) return;
+                if (move.IsPassed)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return;
+                }
+
+                if (IsGoodAttackForWhite(move))
+                {
+                    return;
+                }
 
                 IsCheck(move);
             }
@@ -535,8 +550,7 @@ namespace Engine.Sorting.Sorters.Initial
             Position.Make(move);
             try
             {
-
-                if (MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
+                if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
                 {
                     if (Board.GetValue() < 0)
                     {
@@ -544,12 +558,22 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
                 }
-                if (BlackUnderAttack(move) || IsBadBlackSee(move))
+
+                if (IsBadAttackToBlack(move))
                 {
                     return;
                 }
 
-                if (IsBlackAttack(move)) return;
+                if (move.IsPassed)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return;
+                }
+
+                if (IsGoodAttackForBlack(move))
+                {
+                    return;
+                }
 
                 IsCheck(move);
             }
@@ -579,12 +603,22 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
                 }
-                if (WhiteUnderAttack(move) || IsBadWhiteSee(move))
+
+                if (IsBadAttackToWhite(move))
                 {
                     return;
                 }
 
-                if (IsWhiteEndAttack(move)) return;
+                if (move.IsPassed)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return;
+                }
+
+                if (IsGoodAttackForWhite(move))
+                {
+                    return;
+                }
 
                 IsCheck(move);
             }
@@ -606,7 +640,7 @@ namespace Engine.Sorting.Sorters.Initial
             Position.Make(move);
             try
             {
-                if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
+                if (MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
                 {
                     if (Board.GetValue() < 0)
                     {
@@ -614,12 +648,22 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
                 }
-                if (BlackUnderAttack(move) || IsBadBlackSee(move))
+
+                if (IsBadAttackToBlack(move))
                 {
                     return;
                 }
 
-                if (IsBlackEndAttack(move)) return;
+                if (move.IsPassed)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return;
+                }
+
+                if (IsGoodAttackForBlack(move))
+                {
+                    return;
+                }
 
                 IsCheck(move);
             }
@@ -627,6 +671,74 @@ namespace Engine.Sorting.Sorters.Initial
             {
                 Position.UnMake();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsGoodAttackForBlack(MoveBase move)
+        {
+            AttackList attacks = Position.GetBlackAttacks();
+            return attacks.Count > 0 && IsWinCapture(move, attacks);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsBadAttackToBlack(MoveBase move)
+        {
+            AttackList attacks = Position.GetWhiteAttacks();
+            return attacks.Count > 0 && IsOpponentWinCapture(move, attacks);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsGoodAttackForWhite(MoveBase move)
+        {
+            AttackList attacks = Position.GetWhiteAttacks();
+            return attacks.Count > 0 && IsWinCapture(move, attacks);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsBadAttackToWhite(MoveBase move)
+        {
+            AttackList attacks = Position.GetBlackAttacks();
+            return attacks.Count > 0 && IsOpponentWinCapture(move, attacks);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsWinCapture(MoveBase move, AttackList attacks)
+        {
+            for (int i = 0; i < attacks.Count; i++)
+            {
+                var attack = attacks[i];
+                attack.Captured = Board.GetPiece(attack.To);
+
+                int attackValue = Board.StaticExchange(attack);
+                if (attackValue > 0)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsOpponentWinCapture(MoveBase move, AttackList attacks)
+        {
+            for (int i = 0; i < attacks.Count; i++)
+            {
+                var attack = attacks[i];
+                attack.Captured = Board.GetPiece(attack.To);
+
+                int attackValue = Board.StaticExchange(attack);
+                if (attackValue > 0)
+                {
+                    InitialMoveCollection.AddNonSuggested(move);
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
