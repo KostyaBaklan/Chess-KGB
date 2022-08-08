@@ -277,6 +277,7 @@ namespace Kgb.ChessApp.Views
 
         private void UndoCommandExecute()
         {
+            if (_disableSelection) return;
             if (!MoveItems.Any()) return;
 
             Zero();
