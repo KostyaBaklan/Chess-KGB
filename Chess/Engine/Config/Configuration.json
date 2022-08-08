@@ -75,7 +75,7 @@
         "RookConnectionValue": 2,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 1,
-        "RookBlockedByKingValue": 1,
+        "RookBlockedByKingValue": 2,
         "DoubleRookValue": 1,
         "OpenPawnValue": 0
       },
@@ -95,7 +95,7 @@
         "RookConnectionValue": 4,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 2,
-        "RookBlockedByKingValue": 2,
+        "RookBlockedByKingValue": 5,
         "DoubleRookValue": 5,
         "OpenPawnValue": 1
       },
