@@ -96,13 +96,18 @@ namespace Engine.Sorting.Sorters.Initial
                 {
                     return;
                 }
+                if (move.IsCheck)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return;
+                }
 
                 if (IsGoodAttackForWhite(move))
                 {
                     return;
                 }
 
-                IsCheck(move);
+                InitialMoveCollection.AddNonCapture(move);
             }
             finally
             {
@@ -171,13 +176,18 @@ namespace Engine.Sorting.Sorters.Initial
                 {
                     return;
                 }
+                if (move.IsCheck)
+                {
+                    InitialMoveCollection.AddSuggested(move);
+                    return;
+                }
 
                 if (IsGoodAttackForBlack(move))
                 {
                     return;
                 }
 
-                IsCheck(move);
+                InitialMoveCollection.AddNonCapture(move);
             }
             finally
             {
@@ -241,8 +251,7 @@ namespace Engine.Sorting.Sorters.Initial
                 {
                     return;
                 }
-
-                if (move.IsPassed)
+                if (move.IsCheck|| move.IsPassed)
                 {
                     InitialMoveCollection.AddSuggested(move);
                     return;
@@ -253,7 +262,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                IsCheck(move);
+                InitialMoveCollection.AddNonCapture(move);
             }
             finally
             {
@@ -318,7 +327,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (move.IsPassed)
+                if (move.IsCheck || move.IsPassed)
                 {
                     InitialMoveCollection.AddSuggested(move);
                     return;
@@ -329,7 +338,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                IsCheck(move);
+                InitialMoveCollection.AddNonCapture(move);
             }
             finally
             {
@@ -362,8 +371,7 @@ namespace Engine.Sorting.Sorters.Initial
                 {
                     return;
                 }
-
-                if (move.IsPassed)
+                if (move.IsCheck || move.IsPassed)
                 {
                     InitialMoveCollection.AddSuggested(move);
                     return;
@@ -374,7 +382,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                IsCheck(move);
+                InitialMoveCollection.AddNonCapture(move);
             }
             finally
             {
@@ -407,8 +415,7 @@ namespace Engine.Sorting.Sorters.Initial
                 {
                     return;
                 }
-
-                if (move.IsPassed)
+                if (move.IsCheck || move.IsPassed)
                 {
                     InitialMoveCollection.AddSuggested(move);
                     return;
@@ -419,7 +426,7 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                IsCheck(move);
+                InitialMoveCollection.AddNonCapture(move);
             }
             finally
             {
