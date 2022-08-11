@@ -110,7 +110,15 @@ namespace Engine.Strategies.LateMove.Deep
             }
             else
             {
-                result.Move = moves[0];
+                try
+                {
+                    Position.Make(moves[0]);
+                    return GetResult(alpha, beta, depth - 2, pv);
+                }
+                finally
+                {
+                    Position.UnMake();
+                }
             }
 
             result.Move.History++;
