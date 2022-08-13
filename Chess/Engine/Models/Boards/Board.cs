@@ -826,34 +826,33 @@ namespace Engine.Models.Boards
             if (positions.Count == 0) return 0;
             var value = GetStaticValue(Piece.BlackRook.AsByte());
 
+            if (_phase == Phase.Opening) return value;
+
             for (var i = 0; i < positions.Count; i++)
             {
-                if (_phase!=Phase.Opening)
+                if ((_rookFiles[positions[i]] & (_boards[Piece.WhitePawn.AsByte()] | _boards[Piece.BlackPawn.AsByte()]))
+                    .IsZero())
                 {
-                    if ((_rookFiles[positions[i]] & (_boards[Piece.WhitePawn.AsByte()] | _boards[Piece.BlackPawn.AsByte()]))
-                                .IsZero())
-                    {
-                        value += _evaluationService.GetRookOnOpenFileValue(_phase);
-                    }
-                    else if ((_rookFiles[positions[i]] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
-                    {
-                        value += _evaluationService.GetRookOnHalfOpenFileValue(_phase);
-                    }
+                    value += _evaluationService.GetRookOnOpenFileValue(_phase);
+                }
+                else if ((_rookFiles[positions[i]] & _boards[Piece.BlackPawn.AsByte()]).IsZero())
+                {
+                    value += _evaluationService.GetRookOnHalfOpenFileValue(_phase);
+                }
 
-                    if (_boards[Piece.WhiteQueen.AsByte()].Any() && _rookFiles[positions[i]].IsSet(_boards[Piece.WhiteQueen.AsByte()]))
-                    {
-                        value += _evaluationService.GetRentgenValue(_phase);
-                    }
+                if (_boards[Piece.WhiteQueen.AsByte()].Any() && _rookFiles[positions[i]].IsSet(_boards[Piece.WhiteQueen.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
 
-                    if (_rookFiles[positions[i]].IsSet(_boards[Piece.WhiteKing.AsByte()]))
-                    {
-                        value += _evaluationService.GetRentgenValue(_phase);
-                    }
+                if (_rookFiles[positions[i]].IsSet(_boards[Piece.WhiteKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
 
-                    if ((_rookFiles[positions[i]] & (_boards[Piece.BlackRook.AsByte()] | _boards[Piece.BlackQueen.AsByte()])).Any())
-                    {
-                        value += _evaluationService.GetDoubleRookValue(_phase);
-                    } 
+                if ((_rookFiles[positions[i]] & (_boards[Piece.BlackRook.AsByte()] | _boards[Piece.BlackQueen.AsByte()])).Any())
+                {
+                    value += _evaluationService.GetDoubleRookValue(_phase);
                 }
 
                 if (_phase == Phase.End) continue;
@@ -1238,34 +1237,33 @@ namespace Engine.Models.Boards
             if (positions.Count == 0) return 0;
             var value = GetStaticValue(piece);
 
+            if (_phase == Phase.Opening) return value;
+
             for (var i = 0; i < positions.Count; i++)
             {
-                if (_phase!=Phase.Opening)
+                if ((_rookFiles[positions[i]] & (_boards[Piece.WhitePawn.AsByte()] | _boards[Piece.BlackPawn.AsByte()]))
+                    .IsZero())
                 {
-                    if ((_rookFiles[positions[i]] & (_boards[Piece.WhitePawn.AsByte()] | _boards[Piece.BlackPawn.AsByte()]))
-                                .IsZero())
-                    {
-                        value += _evaluationService.GetRookOnOpenFileValue(_phase);
-                    }
-                    else if ((_rookFiles[positions[i]] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
-                    {
-                        value += _evaluationService.GetRookOnHalfOpenFileValue(_phase);
-                    }
+                    value += _evaluationService.GetRookOnOpenFileValue(_phase);
+                }
+                else if ((_rookFiles[positions[i]] & _boards[Piece.WhitePawn.AsByte()]).IsZero())
+                {
+                    value += _evaluationService.GetRookOnHalfOpenFileValue(_phase);
+                }
 
-                    if (_boards[Piece.BlackQueen.AsByte()].Any() && _rookFiles[positions[i]].IsSet(_boards[Piece.BlackQueen.AsByte()]))
-                    {
-                        value += _evaluationService.GetRentgenValue(_phase);
-                    }
+                if (_boards[Piece.BlackQueen.AsByte()].Any() && _rookFiles[positions[i]].IsSet(_boards[Piece.BlackQueen.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
 
-                    if (_rookFiles[positions[i]].IsSet(_boards[Piece.BlackKing.AsByte()]))
-                    {
-                        value += _evaluationService.GetRentgenValue(_phase);
-                    }
+                if (_rookFiles[positions[i]].IsSet(_boards[Piece.BlackKing.AsByte()]))
+                {
+                    value += _evaluationService.GetRentgenValue(_phase);
+                }
 
-                    if ((_rookFiles[positions[i]] & (_boards[Piece.WhiteRook.AsByte()] | _boards[Piece.WhiteQueen.AsByte()])).Any())
-                    {
-                        value += _evaluationService.GetDoubleRookValue(_phase);
-                    } 
+                if ((_rookFiles[positions[i]] & (_boards[Piece.WhiteRook.AsByte()] | _boards[Piece.WhiteQueen.AsByte()])).Any())
+                {
+                    value += _evaluationService.GetDoubleRookValue(_phase);
                 }
 
                 if (_phase == Phase.End) continue;
@@ -1322,6 +1320,7 @@ namespace Engine.Models.Boards
 
                 value -= countOfBlockingPawns * _evaluationService.GetBishopBlockedByPawnValue(_phase);
             }
+
             return value;
         }
 
@@ -1807,14 +1806,14 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBlackPass(byte position)
         {
-            return _phase != Phase.Opening && position<32&&
+            return position < 32 &&
                    (_blackPassedPawns[position] & _boards[Piece.WhitePawn.AsByte()]).IsZero();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsWhitePass(byte position)
         {
-            return _phase != Phase.Opening &&position > 31&&
+            return position > 31 &&
                    (_whitePassedPawns[position] & _boards[Piece.BlackPawn.AsByte()]).IsZero();
         }
 
