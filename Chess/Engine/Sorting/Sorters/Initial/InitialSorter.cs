@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Moves;
 using Engine.DataStructures.Moves.Collections.Initial;
@@ -17,15 +16,11 @@ namespace Engine.Sorting.Sorters.Initial
         private readonly BitBoard _minorStartRanks;
         private readonly BitBoard _minorStartPositions;
         protected readonly PositionsList PositionsList;
-        protected readonly AttackList AttackList;
         protected InitialMoveCollection InitialMoveCollection;
-
-        protected readonly IMoveProvider MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
         protected InitialSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
         {
             PositionsList = new PositionsList();
-            AttackList = new AttackList();
             Comparer = comparer;
             _minorStartPositions = Squares.B1.AsBitBoard() | Squares.C1.AsBitBoard() | Squares.F1.AsBitBoard() |
                                    Squares.G1.AsBitBoard() | Squares.B8.AsBitBoard() | Squares.C8.AsBitBoard() |
@@ -495,65 +490,6 @@ namespace Engine.Sorting.Sorters.Initial
             else
             {
                 InitialMoveCollection.AddNonCapture(move);
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void ProcessPromotion(MoveBase move)
-        {
-            Position.Make(move);
-            try
-            {
-                if (move.Piece.IsWhite())
-                {
-                    MoveProvider.GetWhiteAttacksTo(move.To.AsByte(), AttackList);
-                    StaticExchange(move, Piece.WhitePawn);
-                }
-                else
-                {
-                    MoveProvider.GetBlackAttacksTo(move.To.AsByte(), AttackList);
-                    StaticExchange(move, Piece.BlackPawn);
-                }
-            }
-            finally
-            {
-                Position.UnMake();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void StaticExchange(MoveBase move, Piece captured)
-        {
-            if (AttackList.Count == 0)
-            {
-                InitialMoveCollection.AddWinCapture(move);
-            }
-            else
-            {
-                int max = short.MinValue;
-                for (int i = 0; i < AttackList.Count; i++)
-                {
-                    var attack = AttackList[i];
-                    attack.Captured = captured;
-                    var see = Board.StaticExchange(attack);
-                    if (see > max)
-                    {
-                        max = see;
-                    }
-                }
-
-                if (max < 0)
-                {
-                    InitialMoveCollection.AddWinCapture(move);
-                }
-                else if (max > 0)
-                {
-                    InitialMoveCollection.AddLooseCapture(move);
-                }
-                else
-                {
-                    InitialMoveCollection.AddTrade(move);
-                }
             }
         }
 
