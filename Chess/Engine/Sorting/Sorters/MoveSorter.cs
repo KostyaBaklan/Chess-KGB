@@ -80,13 +80,13 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual void OrderAttacks(AttackCollection collection, AttackList sortedAttacks, AttackBase pv)
+        protected virtual void OrderAttacks(AttackCollection collection, AttackList sortedAttacks, short pv)
         {
             AttackList.Clear();
             for (int i = 0; i < sortedAttacks.Count; i++)
             {
                 var attack = sortedAttacks[i];
-                if (attack.Key == pv.Key)
+                if (attack.Key == pv)
                 {
                     collection.AddHashMove(attack);
                     continue;

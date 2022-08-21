@@ -28,7 +28,7 @@ namespace OpeningTool
         {
             if (pvNode is AttackBase attack)
             {
-                OrderAttacks(ExtendedMoveCollection, attacks, attack);
+                OrderAttacks(ExtendedMoveCollection, attacks, attack.Key);
 
                 ProcessMoves(moves);
             }
@@ -36,7 +36,7 @@ namespace OpeningTool
             {
                 OrderAttacks(ExtendedMoveCollection, attacks);
 
-                ProcessMoves(moves, pvNode);
+                ProcessMoves(moves, pvNode.Key);
             }
 
             return ExtendedMoveCollection.Build();
@@ -210,7 +210,7 @@ namespace OpeningTool
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ProcessMoves(MoveList moves, MoveBase pvNode)
+        private void ProcessMoves(MoveList moves, short pvNode)
         {
             if (Position.GetTurn() == Turn.White)
             {
@@ -221,7 +221,7 @@ namespace OpeningTool
                         for (var index = 0; index < moves.Count; index++)
                         {
                             var move = moves[index];
-                            if (move.Key == pvNode.Key)
+                            if (move.Key == pvNode)
                             {
                                 ExtendedMoveCollection.AddHashMove(move);
                             }
@@ -247,7 +247,7 @@ namespace OpeningTool
                         for (var index = 0; index < moves.Count; index++)
                         {
                             var move = moves[index];
-                            if (move.Key == pvNode.Key)
+                            if (move.Key == pvNode)
                             {
                                 ExtendedMoveCollection.AddHashMove(move);
                             }
@@ -276,7 +276,7 @@ namespace OpeningTool
                         for (var index = 0; index < moves.Count; index++)
                         {
                             var move = moves[index];
-                            if (move.Key == pvNode.Key)
+                            if (move.Key == pvNode)
                             {
                                 ExtendedMoveCollection.AddHashMove(move);
                             }
@@ -302,7 +302,7 @@ namespace OpeningTool
                         for (var index = 0; index < moves.Count; index++)
                         {
                             var move = moves[index];
-                            if (move.Key == pvNode.Key)
+                            if (move.Key == pvNode)
                             {
                                 ExtendedMoveCollection.AddHashMove(move);
                             }
@@ -330,7 +330,7 @@ namespace OpeningTool
                         for (var index = 0; index < moves.Count; index++)
                         {
                             var move = moves[index];
-                            if (move.Key == pvNode.Key)
+                            if (move.Key == pvNode)
                             {
                                 ExtendedMoveCollection.AddHashMove(move);
                             }
@@ -356,7 +356,7 @@ namespace OpeningTool
                         for (var index = 0; index < moves.Count; index++)
                         {
                             var move = moves[index];
-                            if (move.Key == pvNode.Key)
+                            if (move.Key == pvNode)
                             {
                                 ExtendedMoveCollection.AddHashMove(move);
                             }
@@ -385,7 +385,7 @@ namespace OpeningTool
                         for (var index = 0; index < moves.Count; index++)
                         {
                             var move = moves[index];
-                            if (move.Key == pvNode.Key)
+                            if (move.Key == pvNode)
                             {
                                 ExtendedMoveCollection.AddHashMove(move);
                             }
@@ -411,7 +411,7 @@ namespace OpeningTool
                         for (var index = 0; index < moves.Count; index++)
                         {
                             var move = moves[index];
-                            if (move.Key == pvNode.Key)
+                            if (move.Key == pvNode)
                             {
                                 ExtendedMoveCollection.AddHashMove(move);
                             }
