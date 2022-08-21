@@ -31,7 +31,11 @@ namespace Engine.Sorting.Sorters.Extended
                             {
                                 ExtendedMoveCollection.AddKillerMove(move);
                             }
-                            else if (move.IsCastle || move.IsPromotion)
+                            else if (move.IsPromotion)
+                            {
+                                ProcessPromotion(move,ExtendedMoveCollection);
+                            }
+                            else if (move.IsCastle)
                             {
                                 ExtendedMoveCollection.AddSuggested(move);
                             }
@@ -74,7 +78,7 @@ namespace Engine.Sorting.Sorters.Extended
                             }
                             else if (move.IsPromotion)
                             {
-                                ExtendedMoveCollection.AddSuggested(move);
+                                ProcessPromotion(move, ExtendedMoveCollection);
                             }
                             else
                             {
@@ -112,7 +116,11 @@ namespace Engine.Sorting.Sorters.Extended
                             {
                                 ExtendedMoveCollection.AddKillerMove(move);
                             }
-                            else if (move.IsCastle || move.IsPromotion)
+                            else if (move.IsPromotion)
+                            {
+                                ProcessPromotion(move, ExtendedMoveCollection);
+                            }
+                            else if (move.IsCastle)
                             {
                                 ExtendedMoveCollection.AddSuggested(move);
                             }
@@ -155,7 +163,7 @@ namespace Engine.Sorting.Sorters.Extended
                             }
                             else if (move.IsPromotion)
                             {
-                                ExtendedMoveCollection.AddSuggested(move);
+                                ProcessPromotion(move, ExtendedMoveCollection);
                             }
                             else
                             {
@@ -200,13 +208,13 @@ namespace Engine.Sorting.Sorters.Extended
                             }
                             else
                             {
-                                if (move.IsPromotion)
-                                {
-                                    ExtendedMoveCollection.AddTrade(move);
-                                }
-                                else if (CurrentKillers.Contains(move.Key))
+                                if (CurrentKillers.Contains(move.Key))
                                 {
                                     ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else if (move.IsPromotion)
+                                {
+                                    ProcessPromotion(move, ExtendedMoveCollection);
                                 }
                                 else if (move.IsCastle)
                                 {
@@ -259,13 +267,13 @@ namespace Engine.Sorting.Sorters.Extended
                             }
                             else
                             {
-                                if (move.IsPromotion)
-                                {
-                                    ExtendedMoveCollection.AddTrade(move);
-                                }
-                                else if (CurrentKillers.Contains(move.Key))
+                                if (CurrentKillers.Contains(move.Key))
                                 {
                                     ExtendedMoveCollection.AddKillerMove(move);
+                                }
+                                else if (move.IsPromotion)
+                                {
+                                    ProcessPromotion(move, ExtendedMoveCollection);
                                 }
                                 else if (move.IsCastle)
                                 {
@@ -321,7 +329,11 @@ namespace Engine.Sorting.Sorters.Extended
                                 {
                                     ExtendedMoveCollection.AddKillerMove(move);
                                 }
-                                else if (move.IsCastle || move.IsPromotion)
+                                else if (move.IsPromotion)
+                                {
+                                    ProcessPromotion(move, ExtendedMoveCollection);
+                                }
+                                else if (move.IsCastle)
                                 {
                                     ExtendedMoveCollection.AddSuggested(move);
                                 }
@@ -378,7 +390,7 @@ namespace Engine.Sorting.Sorters.Extended
                                 }
                                 else if (move.IsPromotion)
                                 {
-                                    ExtendedMoveCollection.AddSuggested(move);
+                                    ProcessPromotion(move, ExtendedMoveCollection);
                                 }
                                 else
                                 {

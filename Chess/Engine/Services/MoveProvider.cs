@@ -1704,24 +1704,22 @@ namespace Engine.Services
         public void GetWhiteAttacksTo(byte to, AttackList attackList)
         {
             attackList.Clear();
-            GetAttacksTo(Piece.WhitePawn.AsByte(), to, attackList);
-            GetAttacksTo(Piece.WhiteKnight.AsByte(), to, attackList);
-            GetAttacksTo(Piece.WhiteQueen.AsByte(), to, attackList);
-            GetAttacksTo(Piece.WhiteBishop.AsByte(), to, attackList);
-            GetAttacksTo(Piece.WhiteRook.AsByte(), to, attackList);
-            GetAttacksTo(Piece.WhiteKing.AsByte(), to, attackList);
+            for (byte piece = 1; piece < 6; piece++)
+            {
+                GetAttacksTo(piece, to, attackList);
+                if (attackList.Count > 0) break;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetBlackAttacksTo(byte to, AttackList attackList)
         {
             attackList.Clear();
-            GetAttacksTo(Piece.BlackPawn.AsByte(), to, attackList);
-            GetAttacksTo(Piece.BlackKnight.AsByte(), to, attackList);
-            GetAttacksTo(Piece.BlackQueen.AsByte(), to, attackList);
-            GetAttacksTo(Piece.BlackBishop.AsByte(), to, attackList);
-            GetAttacksTo(Piece.BlackRook.AsByte(), to, attackList);
-            GetAttacksTo(Piece.BlackKing.AsByte(), to, attackList);
+            for (byte piece = 7; piece < 12; piece++)
+            {
+                GetAttacksTo(piece, to, attackList);
+                if (attackList.Count > 0) break;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
