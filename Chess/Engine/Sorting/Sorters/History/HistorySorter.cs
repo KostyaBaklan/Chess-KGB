@@ -31,7 +31,7 @@ namespace Engine.Sorting.Sorters.History
         {
             if (pvNode is AttackBase attack)
             {
-                OrderAttacks(HistoryMoveCollection, attacks, attack);
+                OrderAttacks(HistoryMoveCollection, attacks, attack.Key);
 
                 ProcessMoves(moves);
             }
@@ -39,7 +39,7 @@ namespace Engine.Sorting.Sorters.History
             {
                 OrderAttacks(HistoryMoveCollection, attacks);
 
-                ProcessMoves(moves, pvNode);
+                ProcessMoves(moves, pvNode.Key);
             }
 
             return HistoryMoveCollection.Build();
@@ -49,6 +49,6 @@ namespace Engine.Sorting.Sorters.History
         protected abstract void ProcessMoves(MoveList moves);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected abstract void ProcessMoves(MoveList moves, MoveBase pvNode);
+        protected abstract void ProcessMoves(MoveList moves, short pvNode);
     }
 }

@@ -95,7 +95,7 @@ namespace Engine.Sorting.Sorters.History
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void ProcessMoves(MoveList moves, MoveBase pvNode)
+        protected override void ProcessMoves(MoveList moves, short pvNode)
         {
             if (Position.GetTurn() == Turn.White)
             {
@@ -104,7 +104,7 @@ namespace Engine.Sorting.Sorters.History
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (move.Key == pvNode.Key)
+                        if (move.Key == pvNode)
                         {
                             HistoryMoveCollection.AddHashMove(move);
                         }
@@ -130,7 +130,7 @@ namespace Engine.Sorting.Sorters.History
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (move.Key == pvNode.Key)
+                        if (move.Key == pvNode)
                         {
                             HistoryMoveCollection.AddHashMove(move);
                         }
@@ -155,7 +155,7 @@ namespace Engine.Sorting.Sorters.History
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (move.Key == pvNode.Key)
+                        if (move.Key == pvNode)
                         {
                             HistoryMoveCollection.AddHashMove(move);
                         }
@@ -181,7 +181,7 @@ namespace Engine.Sorting.Sorters.History
                     for (var index = 0; index < moves.Count; index++)
                     {
                         var move = moves[index];
-                        if (move.Key == pvNode.Key)
+                        if (move.Key == pvNode)
                         {
                             HistoryMoveCollection.AddHashMove(move);
                         }

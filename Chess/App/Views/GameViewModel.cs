@@ -217,7 +217,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrAdaptiveAspirationStrategy(level, _position);
+            _strategy = new LmrAdaptiveAspirationHistoryStrategy(level, _position);
             _level = level;
             Title = $"Strategy={_strategy}, Level={level}";
 

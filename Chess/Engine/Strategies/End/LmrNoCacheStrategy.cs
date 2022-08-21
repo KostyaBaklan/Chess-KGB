@@ -8,11 +8,11 @@ using Engine.Strategies.Base;
 
 namespace Engine.Strategies.End
 {
-    public class LmrNoCacheStrategy : StrategyBase
+    public sealed class LmrNoCacheStrategy : StrategyBase
     {
-        protected int DepthReduction;
-        protected int LmrDepthThreshold;
-        protected int LmrDepthLimitForReduce;
+        private int DepthReduction;
+        private int LmrDepthThreshold;
+        private int LmrDepthLimitForReduce;
 
         public LmrNoCacheStrategy(short depth, IPosition position) : base(depth, position)
         {
@@ -24,7 +24,7 @@ namespace Engine.Strategies.End
 
             LmrDepthLimitForReduce = DepthReduction + 2;
 
-            InitializeSorters(depth, position, MoveSorterProvider.GetExtended(position, new HistoryComparer()));
+            InitializeSorters(depth, position, MoveSorterProvider.GetHistory(position, new HistoryComparer()));
         }
 
         #region Overrides of StrategyBase
