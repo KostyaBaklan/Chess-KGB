@@ -46,10 +46,6 @@
     },
     "SortingConfiguration": {
       "SortDepth": [ 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
-      "SortHardDepth": [ 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 ],
-      "SortDifferenceDepth": [ 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 ],
-      "UseSortHard": false,
-      "UseSortDifference": false,
       "SortType": 3 
     }
   },
