@@ -26,26 +26,12 @@ namespace Engine.Services
 
         public MoveSorter GetInitial(IPosition position, IMoveComparer comparer)
         {
-            if (_sortType == SortType.KK || _sortType == SortType.KT)
-                return new InitialKillerSorter(position, comparer);
             return new InitialTradeSorter(position, comparer);
         }
 
         public MoveSorter GetExtended(IPosition position, IMoveComparer comparer)
         {
-            if (_sortType == SortType.KK || _sortType == SortType.TK)
-                return new ExtendedKillerSorter(position, comparer);
             return new ExtendedTradeSorter(position, comparer);
-        }
-
-        public MoveSorter GetHardExtended(IPosition position, IMoveComparer comparer)
-        {
-            return new ExtendedHardSorter(position, comparer);
-        }
-
-        public MoveSorter GetDifferenceExtended(IPosition position, IMoveComparer comparer)
-        {
-            return new ExtendedDifferenceSorter(position,comparer);
         }
 
         #endregion
