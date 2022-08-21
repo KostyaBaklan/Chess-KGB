@@ -31,7 +31,7 @@ namespace Engine.Sorting.Sorters.Extended
         {
             if (pvNode is AttackBase attack)
             {
-                OrderAttacks(ExtendedMoveCollection, attacks, attack);
+                OrderAttacks(ExtendedMoveCollection, attacks, attack.Key);
 
                 ProcessMoves(moves);
             }
@@ -39,7 +39,7 @@ namespace Engine.Sorting.Sorters.Extended
             {
                 OrderAttacks(ExtendedMoveCollection, attacks);
 
-                ProcessMoves(moves, pvNode);
+                ProcessMoves(moves, pvNode.Key);
             }
 
             return ExtendedMoveCollection.Build();
@@ -49,6 +49,6 @@ namespace Engine.Sorting.Sorters.Extended
         protected abstract void ProcessMoves(MoveList moves);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected abstract void ProcessMoves(MoveList moves, MoveBase pvNode);
+        protected abstract void ProcessMoves(MoveList moves, short pvNode);
     }
 }

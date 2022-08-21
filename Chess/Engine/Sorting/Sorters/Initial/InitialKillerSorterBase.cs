@@ -38,7 +38,7 @@ namespace Engine.Sorting.Sorters.Initial
         {
             if (pvNode is AttackBase attack)
             {
-                OrderAttacks(InitialMoveCollection, attacks, attack);
+                OrderAttacks(InitialMoveCollection, attacks, attack.Key);
 
                 if (Position.GetTurn() == Turn.White)
                 {
