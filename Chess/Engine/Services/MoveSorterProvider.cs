@@ -4,6 +4,7 @@ using Engine.Sorting.Comparers;
 using Engine.Sorting.Sorters;
 using Engine.Sorting.Sorters.Basic;
 using Engine.Sorting.Sorters.Extended;
+using Engine.Sorting.Sorters.History;
 using Engine.Sorting.Sorters.Initial;
 
 namespace Engine.Services
@@ -32,6 +33,11 @@ namespace Engine.Services
         public MoveSorter GetExtended(IPosition position, IMoveComparer comparer)
         {
             return new ExtendedTradeSorter(position, comparer);
+        }
+
+        public MoveSorter GetHistory(IPosition position, IMoveComparer comparer)
+        {
+            return new HistoryTradeMaxSorter(position,comparer);
         }
 
         #endregion

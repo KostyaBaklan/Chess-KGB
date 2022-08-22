@@ -3,7 +3,6 @@ using Engine.DataStructures.Moves;
 using Engine.DataStructures.Moves.Collections.Extended;
 using Engine.Interfaces;
 using Engine.Models.Enums;
-using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
 namespace Engine.Sorting.Sorters.Extended
