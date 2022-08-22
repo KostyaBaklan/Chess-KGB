@@ -197,5 +197,26 @@ namespace Engine.DataStructures.Moves
             _items[index] = _items[i];
             _items[i] = temp;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ExtractMaximum(int count, MoveList list)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                int index = i;
+                var max = _items[i];
+                for (int j = i + 1; j < Count; j++)
+                {
+                    if (_items[j].History > max.History)
+                    {
+                        max = _items[j];
+                        index = j;
+                    }
+                }
+
+                list.Add(max);
+                _items[index] = _items[--Count];
+            }
+        }
     }
 }

@@ -71,6 +71,7 @@
     <Compile Include="DataStructures\Moves\Collections\Extended\ExtendedTestMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\Extended\ExtendedTradeMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\History\HistoryMoveCollection.cs" />
+    <Compile Include="DataStructures\Moves\Collections\History\HistoryTradeMaxMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\History\HistoryTradeMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\Initial\InitialMoveCollection.cs" />
     <Compile Include="DataStructures\Moves\Collections\Initial\InitialTestMoveCollection.cs" />
@@ -195,7 +196,9 @@
     <Compile Include="Sorting\Sorters\Extended\ExtendedTestSorter.cs" />
     <Compile Include="Sorting\Sorters\Extended\ExtendedTradeSorter.cs" />
     <Compile Include="Sorting\Sorters\History\HistorySorter.cs" />
+    <Compile Include="Sorting\Sorters\History\HistoryTradeMaxSorter.cs" />
     <Compile Include="Sorting\Sorters\History\HistoryTradeSorter.cs" />
+    <Compile Include="Sorting\Sorters\History\HistoryTradeSorterBase.cs" />
     <Compile Include="Sorting\Sorters\IMoveSorter.cs" />
     <Compile Include="Sorting\Comparers\HistoryComparer.cs" />
     <Compile Include="Sorting\Sorters\Initial\InitialKillerSorterBase.cs" />

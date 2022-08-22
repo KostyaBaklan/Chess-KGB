@@ -37,7 +37,7 @@ namespace Engine.Services
 
         public MoveSorter GetHistory(IPosition position, IMoveComparer comparer)
         {
-            return new HistoryTradeSorter(position,comparer);
+            return new HistoryTradeMaxSorter(position,comparer);
         }
 
         #endregion

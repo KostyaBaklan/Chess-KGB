@@ -4,5 +4,6 @@
     {
         public int[] SortDepth { get; set; }
         public SortType SortType { get; set; }
+        public int ExtractMaximum { get; set; }
     }
 }
