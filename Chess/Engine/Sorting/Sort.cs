@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CommonServiceLocator;
+using Engine.Interfaces.Config;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
@@ -14,6 +16,9 @@ namespace Engine.Sorting
 
         static Sort()
         {
+            var itemsToSort = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .AlgorithmConfiguration.SortingConfiguration
+                .ItemsToSort;
             var historyComparer = new HistoryComparer();
             Comparer = historyComparer;
             HistoryComparer = historyComparer;
@@ -23,7 +28,7 @@ namespace Engine.Sorting
             SortMinimum = new int[128];
             for (var i = 0; i < SortMinimum.Length; i++)
             {
-                var min = Math.Min(i / 3, 10);
+                var min = Math.Min(i / 3, itemsToSort);
                 if (min == 0)
                 {
                     min = 1;
