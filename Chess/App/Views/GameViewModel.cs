@@ -32,6 +32,7 @@ namespace Kgb.ChessApp.Views
     public class GameViewModel : BindableBase, INavigationAware
     {
         private short _level;
+        private bool _disableSelection;
         private Turn _machine;
         private readonly double _blockTimeout;
         private Turn _turn = Turn.White;
@@ -48,6 +49,7 @@ namespace Kgb.ChessApp.Views
 
         public GameViewModel(IMoveFormatter moveFormatter)
         {
+            _disableSelection = false;
             _times = new Stack<TimeSpan>();
             _blockTimeout = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
                 .GeneralConfiguration.BlockTimeout;
@@ -68,7 +70,7 @@ namespace Kgb.ChessApp.Views
                     cellType = y == 1 ? CellType.Black : CellType.White;
                 }
                 var square = new Square(i);
-                CellViewModel cell = new CellViewModel{Cell = square, CellType =cellType};
+                CellViewModel cell = new CellViewModel { Cell = square, CellType = cellType };
                 _cellsMap[square.AsString()] = cell;
             }
 
@@ -208,14 +210,14 @@ namespace Kgb.ChessApp.Views
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var numbers = new[] {1, 2, 3, 4, 5, 6, 7, 8};
-            var labels = new[] { "A","B" ,"C","D","E","F","G","H"};
+            var numbers = new[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+            var labels = new[] { "A", "B", "C", "D", "E", "F", "G", "H" };
             List<CellViewModel> models = new List<CellViewModel>(64);
             var color = navigationContext.Parameters.GetValue<string>("Color");
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrAdaptiveAspirationStrategy(level, _position);
+            _strategy = new LmrAdaptiveAspirationHistoryStrategy(level, _position);
             _level = level;
             Title = $"Strategy={_strategy}, Level={level}";
 
@@ -275,6 +277,7 @@ namespace Kgb.ChessApp.Views
 
         private void UndoCommandExecute()
         {
+            if (_disableSelection) return;
             if (!MoveItems.Any()) return;
 
             Zero();
@@ -304,6 +307,7 @@ namespace Kgb.ChessApp.Views
 
         private bool SelectionCommandCanExecute(CellViewModel arg)
         {
+            if (_disableSelection) return false;
             if (arg.State == State.MoveTo || arg.State == State.MoveFrom) return true;
 
             return arg.Figure != null && (_turn == Turn.White ? arg.Figure.Value.IsWhite() : arg.Figure.Value.IsBlack());
@@ -316,7 +320,7 @@ namespace Kgb.ChessApp.Views
                 case State.Idle:
                     Zero();
 
-                    IEnumerable<MoveBase> possibleMoves = GetAllMoves(cellViewModel.Cell,cellViewModel.Figure.Value);
+                    IEnumerable<MoveBase> possibleMoves = GetAllMoves(cellViewModel.Cell, cellViewModel.Figure.Value);
                     _moves = possibleMoves.ToList();
                     if (_moves.Any())
                     {
@@ -367,6 +371,8 @@ namespace Kgb.ChessApp.Views
         {
             if (!_useMachine) return;
 
+            _disableSelection = true;
+
             _machine = _position.GetTurn();
 
             Task.Delay(10)
@@ -387,45 +393,47 @@ namespace Kgb.ChessApp.Views
                     return new Tuple<IResult, TimeSpan>(q, timer.Elapsed);
                 })
                 .ContinueWith(t =>
+                {
+                    Tuple<IResult, TimeSpan> tResult = null;
+                    try
                     {
-                        Tuple<IResult, TimeSpan> tResult = null;
-                        try
-                        {
-                            tResult = t.Result;
-                        }
-                        catch (Exception exception)
-                        {
-                            MessageBox.Show($"Error = {exception} !");
-                        }
-                        if (tResult != null)
-                        {
-                            _times.Push(tResult.Item2);
-                            UpdateTime();
+                        tResult = t.Result;
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show($"Error = {exception} !");
+                    }
+                    if (tResult != null)
+                    {
+                        _times.Push(tResult.Item2);
+                        UpdateTime();
 
-                            MessageBox.Show($"Elapsed = {tResult.Item2} !");
-                            switch (t.Result.Item1.GameResult)
-                            {
-                                case GameResult.Continue:
-                                    MakeMove(tResult.Item1.Move, tResult.Item2);
-                                    break;
-                                case GameResult.Pat:
-                                    MessageBox.Show("Pat !!!");
-                                    break;
-                                case GameResult.ThreefoldRepetition:
-                                    MessageBox.Show("Threefold Repetition !!!");
-                                    break;
-                                case GameResult.Mate:
-                                    MessageBox.Show("Mate !!!");
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                        }
-                        else
+                        MessageBox.Show($"Elapsed = {tResult.Item2} !");
+                        switch (t.Result.Item1.GameResult)
                         {
-                            MessageBox.Show($"No Moves");
+                            case GameResult.Continue:
+                                MakeMove(tResult.Item1.Move, tResult.Item2);
+                                break;
+                            case GameResult.Pat:
+                                MessageBox.Show("Pat !!!");
+                                break;
+                            case GameResult.ThreefoldRepetition:
+                                MessageBox.Show("Threefold Repetition !!!");
+                                break;
+                            case GameResult.Mate:
+                                MessageBox.Show("Mate !!!");
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
-                    },
+                    }
+                    else
+                    {
+                        MessageBox.Show($"No Moves");
+                    }
+
+                    _disableSelection = false;
+                },
                     CancellationToken.None, TaskContinuationOptions.LongRunning,
                     TaskScheduler.FromCurrentSynchronizationContext());
         }
@@ -442,7 +450,7 @@ namespace Kgb.ChessApp.Views
                 var standardDeviation = enumerable.StandardDeviation();
                 if (!double.IsNaN(standardDeviation))
                 {
-                    Std = TimeSpan.FromMilliseconds(standardDeviation);  
+                    Std = TimeSpan.FromMilliseconds(standardDeviation);
                 }
             }
             else
@@ -491,7 +499,7 @@ namespace Kgb.ChessApp.Views
                     lastModel.Black = $" {_moveFormatter.Format(move)} ";
                     lastModel.BlackValue = $" S={-_position.GetStaticValue()} V={-_position.GetValue()} K={-_position.GetKingSafetyValue()}";
                     var process = Process.GetCurrentProcess();
-                    lastModel.Memory = $" {process.WorkingSet64 / 1024/1024} MB";
+                    lastModel.Memory = $" {process.WorkingSet64 / 1024 / 1024} MB";
                     lastModel.Evaluation = _evaluationService.Size;
                     lastModel.Table = _strategy.Size;
                 }
@@ -513,7 +521,7 @@ namespace Kgb.ChessApp.Views
         {
             foreach (var cell in _cells)
             {
-                _position.GetPiece(cell.Cell,out var piece);
+                _position.GetPiece(cell.Cell, out var piece);
                 _cellsMap[cell.Cell.AsString()].Figure = piece;
             }
         }

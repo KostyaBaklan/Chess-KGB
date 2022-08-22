@@ -46,11 +46,9 @@
     },
     "SortingConfiguration": {
       "SortDepth": [ 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
-      "SortHardDepth": [ 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 ],
-      "SortDifferenceDepth": [ 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 ],
-      "UseSortHard": false,
-      "UseSortDifference": false,
-      "SortType": 3 
+      "SortType": 3,
+      "ExtractMaximum": 4,
+      "ItemsToSort": 9
     }
   },
   "Evaluation": {
@@ -75,7 +73,7 @@
         "RookConnectionValue": 2,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 1,
-        "RookBlockedByKingValue": 1,
+        "RookBlockedByKingValue": 3,
         "DoubleRookValue": 1,
         "OpenPawnValue": 0
       },
@@ -95,7 +93,7 @@
         "RookConnectionValue": 4,
         "KnightAttackedByPawnValue": 1,
         "BishopBlockedByPawnValue": 2,
-        "RookBlockedByKingValue": 2,
+        "RookBlockedByKingValue": 8,
         "DoubleRookValue": 5,
         "OpenPawnValue": 1
       },

@@ -1,28 +1,28 @@
 ﻿using System.Runtime.CompilerServices;
 using Engine.DataStructures.Moves;
-using Engine.DataStructures.Moves.Collections.Extended;
+using Engine.DataStructures.Moves.Collections.History;
 using Engine.Interfaces;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
-namespace Engine.Sorting.Sorters.Extended
+namespace Engine.Sorting.Sorters.History
 {
-    public abstract class ExtendedSorter : MoveSorter
+    public abstract class HistorySorter : MoveSorter
     {
-        protected ExtendedMoveCollection ExtendedMoveCollection;
+        protected HistoryMoveCollection HistoryMoveCollection;
 
-        protected ExtendedSorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
+        protected HistorySorter(IPosition position, IMoveComparer comparer) : base(position, comparer)
         {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override MoveBase[] OrderInternal(AttackList attacks, MoveList moves)
         {
-           OrderAttacks(ExtendedMoveCollection, attacks);
+            OrderAttacks(HistoryMoveCollection, attacks);
 
             ProcessMoves(moves);
 
-            return ExtendedMoveCollection.Build();
+            return HistoryMoveCollection.Build();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -31,18 +31,18 @@ namespace Engine.Sorting.Sorters.Extended
         {
             if (pvNode is AttackBase attack)
             {
-                OrderAttacks(ExtendedMoveCollection, attacks, attack.Key);
+                OrderAttacks(HistoryMoveCollection, attacks, attack.Key);
 
                 ProcessMoves(moves);
             }
             else
             {
-                OrderAttacks(ExtendedMoveCollection, attacks);
+                OrderAttacks(HistoryMoveCollection, attacks);
 
                 ProcessMoves(moves, pvNode.Key);
             }
 
-            return ExtendedMoveCollection.Build();
+            return HistoryMoveCollection.Build();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

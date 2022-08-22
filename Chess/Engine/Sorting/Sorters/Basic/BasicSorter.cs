@@ -29,7 +29,7 @@ namespace Engine.Sorting.Sorters.Basic
         {
             if (pvNode is AttackBase attack)
             {
-                OrderAttacks(MoveCollection, attacks, attack);
+                OrderAttacks(MoveCollection, attacks, attack.Key);
 
                 ProcessMoves(moves);
             }

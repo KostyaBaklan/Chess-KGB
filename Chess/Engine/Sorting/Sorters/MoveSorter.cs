@@ -3,6 +3,8 @@ using CommonServiceLocator;
 using Engine.DataStructures.Moves;
 using Engine.DataStructures.Moves.Collections;
 using Engine.Interfaces;
+using Engine.Models.Enums;
+using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
@@ -11,7 +13,7 @@ namespace Engine.Sorting.Sorters
     public abstract class MoveSorter : IMoveSorter
     {
         protected readonly IKillerMoveCollection[] Moves;
-        protected readonly AttackList attackList;
+        protected readonly AttackList AttackList;
         protected readonly IMoveHistoryService MoveHistoryService;
         protected IMoveComparer Comparer;
         protected IKillerMoveCollection CurrentKillers;
@@ -20,10 +22,11 @@ namespace Engine.Sorting.Sorters
         protected AttackCollection AttackCollection;
         protected MoveCollection MoveCollection;
         protected readonly IBoard Board;
+        protected readonly IMoveProvider MoveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
 
         protected MoveSorter(IPosition position, IMoveComparer comparer)
         {
-            attackList = new AttackList();
+            AttackList = new AttackList();
             Board = position.GetBoard();
             Comparer = comparer;
             Moves = ServiceLocator.Current.GetInstance<IKillerMoveCollectionFactory>().CreateMoves();
@@ -77,13 +80,13 @@ namespace Engine.Sorting.Sorters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual void OrderAttacks(AttackCollection collection, AttackList sortedAttacks, AttackBase pv)
+        protected virtual void OrderAttacks(AttackCollection collection, AttackList sortedAttacks, short pv)
         {
-            attackList.Clear();
+            AttackList.Clear();
             for (int i = 0; i < sortedAttacks.Count; i++)
             {
                 var attack = sortedAttacks[i];
-                if (attack.Key == pv.Key)
+                if (attack.Key == pv)
                 {
                     collection.AddHashMove(attack);
                     continue;
@@ -95,7 +98,7 @@ namespace Engine.Sorting.Sorters
                 if (attackValue > 0)
                 {
                     attack.See = attackValue;
-                    attackList.Add(attack);
+                    AttackList.Add(attack);
                 }
                 else if (attackValue < 0)
                 {
@@ -107,19 +110,19 @@ namespace Engine.Sorting.Sorters
                 }
             }
 
-            if (attackList.Count <= 0) return;
-            if (attackList.Count > 1)
+            if (AttackList.Count <= 0) return;
+            if (AttackList.Count > 1)
             {
-                attackList.SortBySee();
+                AttackList.SortBySee();
             }
-            collection.AddWinCapture(attackList);
+            collection.AddWinCapture(AttackList);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void OrderAttacks(AttackCollection collection,
             AttackList sortedAttacks)
         {
-            attackList.Clear();
+            AttackList.Clear();
             for (int i = 0; i < sortedAttacks.Count; i++)
             {
                 var attack = sortedAttacks[i];
@@ -129,7 +132,7 @@ namespace Engine.Sorting.Sorters
                 if (attackValue > 0)
                 {
                     attack.See = attackValue;
-                    attackList.Add(attack);
+                    AttackList.Add(attack);
                 }
                 else if (attackValue < 0)
                 {
@@ -141,15 +144,110 @@ namespace Engine.Sorting.Sorters
                 }
             }
 
-            if (attackList.Count <= 0) return;
-            if (attackList.Count > 1)
+            if (AttackList.Count <= 0) return;
+            if (AttackList.Count > 1)
             {
-                attackList.SortBySee();
+                AttackList.SortBySee();
             }
-            collection.AddWinCapture(attackList);
+            collection.AddWinCapture(AttackList);
         }
 
         protected abstract MoveBase[] OrderInternal(AttackList attacks, MoveList moves);
         protected abstract MoveBase[] OrderInternal(AttackList attacks, MoveList moves,  MoveBase pvNode);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void ProcessPromotion(MoveBase move, AttackCollection collection)
+        {
+            Position.Make(move);
+            try
+            {
+                if (move.Piece.IsWhite())
+                {
+                    MoveProvider.GetBlackAttacksTo(move.To.AsByte(), AttackList);
+                    WhiteStaticExchange(move, collection);
+                }
+                else
+                {
+                    MoveProvider.GetWhiteAttacksTo(move.To.AsByte(), AttackList);
+                    BlackStaticExchange(move, collection);
+                }
+            }
+            finally
+            {
+                Position.UnMake();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void WhiteStaticExchange(MoveBase move, AttackCollection collection)
+        {
+            if (AttackList.Count == 0)
+            {
+                collection.AddWinCapture(move);
+            }
+            else
+            {
+                int max = short.MinValue;
+                for (int i = 0; i < AttackList.Count; i++)
+                {
+                    var attack = AttackList[i];
+                    attack.Captured = Piece.WhitePawn;
+                    var see = Board.StaticExchange(attack);
+                    if (see > max)
+                    {
+                        max = see;
+                    }
+                }
+
+                if (max < 0)
+                {
+                    collection.AddWinCapture(move);
+                }
+                else if (max > 0)
+                {
+                    collection.AddLooseCapture(move);
+                }
+                else
+                {
+                    collection.AddTrade(move);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void BlackStaticExchange(MoveBase move, AttackCollection collection)
+        {
+            if (AttackList.Count == 0)
+            {
+                collection.AddWinCapture(move);
+            }
+            else
+            {
+                int max = short.MinValue;
+                for (int i = 0; i < AttackList.Count; i++)
+                {
+                    var attack = AttackList[i];
+                    attack.Captured = Piece.BlackPawn;
+                    var see = Board.StaticExchange(attack);
+                    if (see > max)
+                    {
+                        max = see;
+                    }
+                }
+
+                if (max < 0)
+                {
+                    collection.AddWinCapture(move);
+                }
+                else if (max > 0)
+                {
+                    collection.AddLooseCapture(move);
+                }
+                else
+                {
+                    collection.AddTrade(move);
+                }
+            }
+        }
     }
 }

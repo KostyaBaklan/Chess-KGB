@@ -32,25 +32,4 @@ namespace Engine.Models.Moves
             return board.IsEmpty(EmptyBoard);
         }
     }
-
-    public class PawnOverWhiteMove: PawnOverMove
-    {
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
-        {
-            IsEnPassant = board.IsBlackOver(OpponentPawns);
-            board.Move(Piece, From, To);
-        }
-    }
-    public class PawnOverBlackMove : PawnOverMove
-    {
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Make(IBoard board, ArrayStack<Piece> figureHistory)
-        {
-            IsEnPassant = board.IsWhiteOver(OpponentPawns);
-            board.Move(Piece, From, To);
-        }
-    }
 }
