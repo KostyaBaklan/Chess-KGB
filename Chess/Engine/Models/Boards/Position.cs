@@ -23,6 +23,8 @@ namespace Engine.Models.Boards
 
         private readonly byte[][] _white;
         private readonly byte[][] _black;
+        private readonly byte[][] _whiteAttacks;
+        private readonly byte[][] _blackAttacks;
 
         private readonly AttackList _attacks;
         private readonly AttackList _attacksTemp;
@@ -33,13 +35,51 @@ namespace Engine.Models.Boards
         private readonly IBoard _board;
         private readonly IMoveProvider _moveProvider;
         private readonly IMoveHistoryService _moveHistoryService;
-        private readonly ICheckService _checkService;
 
         public Position()
         {
             _turn = Turn.White;
             _white = new byte[3][];
             _black = new byte[3][];
+            _whiteAttacks = new byte[3][];
+            _blackAttacks = new byte[3][];
+            _whiteAttacks[0] = new[]
+            {
+                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
+                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
+                Piece.WhiteKing.AsByte()
+            };
+            _whiteAttacks[1] = new[]
+            {
+                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
+                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
+                Piece.WhiteKing.AsByte()
+            };
+            _whiteAttacks[2] = new[]
+            {
+                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
+                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
+                Piece.WhiteKing.AsByte()
+            };
+            _blackAttacks[0] = new[]
+            {
+                Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
+                Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
+                Piece.BlackKing.AsByte()
+            };
+            _blackAttacks[1] = new[]
+            {
+                Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
+                Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
+                Piece.BlackKing.AsByte()
+            };
+            _blackAttacks[2] = new[]
+            {
+                Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
+                Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
+                Piece.BlackKing.AsByte()
+            };
+
             _white[0] = new[]
             {
                 Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
@@ -75,28 +115,6 @@ namespace Engine.Models.Boards
                     Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
                     Piece.BlackKing.AsByte()};
 
-            //_white[0] = new[]
-            //{
-            //    Piece.WhitePawn, Piece.WhiteKnight, Piece.WhiteBishop, Piece.WhiteRook, Piece.WhiteQueen,
-            //    Piece.WhiteKing
-            //};
-            //_white[1] = new[]
-            //{
-            //    Piece.WhiteKnight, Piece.WhiteBishop,Piece.WhitePawn,Piece.WhiteQueen, Piece.WhiteRook,
-            //    Piece.WhiteKing
-            //};
-            //_white[2] = new[]
-            //{
-            //    Piece.WhitePawn,
-            //    Piece.WhiteKing, Piece.WhiteRook, Piece.WhiteQueen, Piece.WhiteKnight, Piece.WhiteBishop
-            //};
-            //_black[0] = new[]
-            //    {Piece.BlackPawn, Piece.BlackKnight, Piece.BlackBishop, Piece.BlackRook, Piece.BlackQueen, Piece.BlackKing};
-            //_black[1] = new[]
-            //    {Piece.BlackKnight, Piece.BlackBishop,Piece.BlackPawn,Piece.BlackQueen,  Piece.BlackRook,  Piece.BlackKing};
-            //_black[2] = new[]
-            //    {Piece.BlackPawn, Piece.BlackKing, Piece.BlackRook, Piece.BlackQueen, Piece.BlackKnight, Piece.BlackBishop};
-
             _attacks = new AttackList();
             _attacksTemp = new AttackList();
             _moves = new MoveList();
@@ -106,7 +124,6 @@ namespace Engine.Models.Boards
             _figureHistory = new ArrayStack<Piece>();
             _moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
             _moveHistoryService = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
-            _checkService = ServiceLocator.Current.GetInstance<ICheckService>();
         }
         #region Implementation of IPosition
 
@@ -183,9 +200,23 @@ namespace Engine.Models.Boards
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MoveBase[] GetAllAttacks(IMoveSorter sorter)
         {
-            var pieces = _turn == Turn.White ? _white[(byte)_phase] : _black[(byte)_phase];
+            var pieces = _turn == Turn.White ? _whiteAttacks[(byte)_phase] : _blackAttacks[(byte)_phase];
             var squares = GetSquares(pieces);
             return sorter.Order(PossibleAttacks(squares, pieces));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AttackList GetWhiteAttacks()
+        {
+            var squares = GetSquares(_whiteAttacks[(byte)_phase]);
+            return PossibleSingleAttacks(squares, _whiteAttacks[(byte)_phase]);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AttackList GetBlackAttacks()
+        {
+            var squares = GetSquares(_blackAttacks[(byte)_phase]);
+            return PossibleSingleAttacks(squares, _blackAttacks[(byte)_phase]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -222,6 +253,37 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private AttackList PossibleSingleAttacks(Square[][] squares, byte[] pieces)
+        {
+            BitBoard to = new BitBoard();
+            _attacks.Clear();
+            for (var index = 0; index < pieces.Length; index++)
+            {
+                var p = pieces[index];
+
+                var square = squares[p % 6];
+                for (var f = 0; f < square.Length; f++)
+                {
+                    _moveProvider.GetAttacks(p, square[f], _attacksTemp);
+
+                    for (var i = 0; i < _attacksTemp.Count; i++)
+                    {
+                        var attack = _attacksTemp[i];
+                        if (to.IsSet(attack.To.AsBitBoard())) continue;
+
+                        if (IsLigal(attack))
+                        {
+                            _attacks.Add(attack);
+                        }
+                        to |= attack.To.AsBitBoard();
+                    }
+                }
+            }
+
+            return _attacks;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private AttackList PossibleAttacks(Square[][] squares, byte[] pieces)
         {
             _attacks.Clear();
@@ -233,6 +295,7 @@ namespace Engine.Models.Boards
                 for (var f = 0; f < square.Length; f++)
                 {
                     _moveProvider.GetAttacks(p, square[f],_attacksTemp);
+
                     for (var i = 0; i < _attacksTemp.Count; i++)
                     {
                         if (IsLigal(_attacksTemp[i]))

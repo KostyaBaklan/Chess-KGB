@@ -54,6 +54,12 @@ namespace Engine.Interfaces
         BitBoard GetWhitePieceForBishopBits();
         BitBoard GetBlackPieceForKnightBits();
         BitBoard GetBlackPieceForBishopBits();
+        BitBoard GetWhiteBitsForPawn();
+        BitBoard GetBlackBitsForPawn();
+        BitBoard GetBlackBitsForKnight();
+        BitBoard GetWhiteBitsForKnight();
+        BitBoard GetWhiteBitsForBishop();
+        BitBoard GetBlackBitsForBishop();
         BitBoard GetBlackBits();
         BitBoard GetWhiteBits();
         Phase GetPhase();
