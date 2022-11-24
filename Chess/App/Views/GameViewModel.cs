@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,10 +15,8 @@ using Engine.Models.Boards;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Moves;
-using Engine.Strategies.Aspiration.Adaptive;
 using Engine.Strategies.Base;
-using Engine.Strategies.LateMove.Deep.Null;
-using Engine.Strategies.ProbCut;
+using Engine.Strategies.LateMove.Deep;
 using Kgb.ChessApp.Models;
 using MathNet.Numerics.Statistics;
 using Prism.Commands;
@@ -217,7 +213,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrAdaptiveAspirationStrategy(level, _position);
+            _strategy = new LmrDeepExtendedStrategy(level, _position);
             _level = level;
             Title = $"Strategy={_strategy}, Level={level}";
 

@@ -85,21 +85,32 @@ namespace Engine.DataStructures.Moves.Collections.Initial
             }
             else
             {
-                if (_suggested.Count > 0)
+                int suggested = 0;
+                if (suggestedCount > 0)
                 {
-                    _nonCaptures.Add(_suggested);
-                    _suggested.Clear();
+                    if (suggestedCount < 3)
+                    {
+                        _nonCaptures.Add(_suggested);
+                    }
+                    else
+                    {
+                        suggested = suggestedCount;
+                        _suggested.FullSort();
+                        _suggested.CopyTo(moves, 0);
+                    }
+                    _suggested.Clear(); 
                 }
+
                 var capturesCount = _nonCaptures.Count;
                 if (capturesCount > 0)
                 {
                     _nonCaptures.FullSort();
-                    _nonCaptures.CopyTo(moves, 0);
+                    _nonCaptures.CopyTo(moves, suggested);
                     _nonCaptures.Clear();
                 }
                 if (LooseCaptures.Count > 0)
                 {
-                    LooseCaptures.CopyTo(moves, capturesCount);
+                    LooseCaptures.CopyTo(moves, capturesCount+suggested);
                     LooseCaptures.Clear();
                 }
 
