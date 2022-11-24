@@ -15,6 +15,9 @@ namespace Engine.Sorting.Sorters.Initial
     public abstract class InitialSorter : MoveSorter
     {
         private readonly BitBoard _minorStartRanks;
+        private readonly BitBoard _perimeter;
+        private readonly BitBoard _whitePawnRank;
+        private readonly BitBoard _blackPawnRank;
         private readonly BitBoard _minorStartPositions;
         protected readonly PositionsList PositionsList;
         protected readonly AttackList AttackList;
@@ -31,6 +34,9 @@ namespace Engine.Sorting.Sorters.Initial
                                    Squares.G1.AsBitBoard() | Squares.B8.AsBitBoard() | Squares.C8.AsBitBoard() |
                                    Squares.F8.AsBitBoard() | Squares.G8.AsBitBoard();
            _minorStartRanks = Board.GetRank(0)|Board.GetRank(7);
+            _whitePawnRank = Board.GetRank(2);
+            _blackPawnRank = Board.GetRank(5);
+            _perimeter = Board.GetPerimeter();
         }
 
         #region Overrides of MoveSorter
@@ -40,9 +46,16 @@ namespace Engine.Sorting.Sorters.Initial
         {
             switch (move.Piece)
             {
+                case Piece.WhitePawn:
+                    if ((move.From.AsBitBoard() & _whitePawnRank).Any())
+                    {
+                        InitialMoveCollection.AddNonSuggested(move);
+                        return;
+                    }
+                    break;
                 case Piece.WhiteKnight:
                 case Piece.WhiteBishop:
-                    if ((move.To.AsBitBoard() & Board.GetPerimeter()).Any())
+                    if ((move.To.AsBitBoard() & _perimeter).Any())
                     {
                         InitialMoveCollection.AddNonSuggested(move);
                         return;
@@ -92,8 +105,9 @@ namespace Engine.Sorting.Sorters.Initial
             Position.Make(move);
             try
             {
-                if (IsBadAttackToWhite(move))
+                if (IsBadAttackToWhite())
                 {
+                    InitialMoveCollection.AddNonSuggested(move);
                     return;
                 }
                 if (move.IsCheck)
@@ -102,10 +116,11 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsGoodAttackForWhite(move))
-                {
-                    return;
-                }
+                //if (IsGoodAttackForWhite())
+                //{
+                //    InitialMoveCollection.AddSuggested(move);
+                //    return;
+                //}
 
                 InitialMoveCollection.AddNonCapture(move);
             }
@@ -120,9 +135,16 @@ namespace Engine.Sorting.Sorters.Initial
         {
             switch (move.Piece)
             {
+                case Piece.BlackPawn:
+                    if ((move.From.AsBitBoard() & _blackPawnRank).Any())
+                    {
+                        InitialMoveCollection.AddNonSuggested(move);
+                        return;
+                    }
+                    break;
                 case Piece.BlackKnight:
                 case Piece.BlackBishop:
-                    if ((move.To.AsBitBoard() & Board.GetPerimeter()).Any())
+                    if ((move.To.AsBitBoard() & _perimeter).Any())
                     {
                         InitialMoveCollection.AddNonSuggested(move);
                         return;
@@ -172,8 +194,9 @@ namespace Engine.Sorting.Sorters.Initial
             Position.Make(move);
             try
             {
-                if (IsBadAttackToBlack(move))
+                if (IsBadAttackToBlack())
                 {
+                    InitialMoveCollection.AddNonSuggested(move);
                     return;
                 }
                 if (move.IsCheck)
@@ -182,10 +205,11 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsGoodAttackForBlack(move))
-                {
-                    return;
-                }
+                //if (IsGoodAttackForBlack())
+                //{
+                //    InitialMoveCollection.AddSuggested(move);
+                //    return;
+                //}
 
                 InitialMoveCollection.AddNonCapture(move);
             }
@@ -239,8 +263,9 @@ namespace Engine.Sorting.Sorters.Initial
                         return;
                     }
                 }
-                if (IsBadAttackToWhite(move))
+                if (IsBadAttackToWhite())
                 {
+                    InitialMoveCollection.AddNonSuggested(move);
                     return;
                 }
                 if (move.IsCheck)
@@ -249,10 +274,11 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsGoodAttackForWhite(move))
-                {
-                    return;
-                }
+                //if (IsGoodAttackForWhite())
+                //{
+                //    InitialMoveCollection.AddSuggested(move);
+                //    return;
+                //}
                 if (move.Piece == Piece.WhitePawn && Board.IsWhitePass(move.To.AsByte()))
                 {
                     InitialMoveCollection.AddSuggested(move);
@@ -311,8 +337,9 @@ namespace Engine.Sorting.Sorters.Initial
                     }
                 }
 
-                if (IsBadAttackToBlack(move))
+                if (IsBadAttackToBlack())
                 {
+                    InitialMoveCollection.AddNonSuggested(move);
                     return;
                 }
 
@@ -322,10 +349,11 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsGoodAttackForBlack(move))
-                {
-                    return;
-                }
+                //if (IsGoodAttackForBlack())
+                //{
+                //    InitialMoveCollection.AddSuggested(move);
+                //    return;
+                //}
                 if (move.Piece == Piece.BlackPawn && Board.IsBlackPass(move.To.AsByte()))
                 {
                     InitialMoveCollection.AddSuggested(move);
@@ -355,8 +383,9 @@ namespace Engine.Sorting.Sorters.Initial
                     }
                 }
 
-                if (IsBadAttackToWhite(move))
+                if (IsBadAttackToWhite())
                 {
+                    InitialMoveCollection.AddNonSuggested(move);
                     return;
                 }
 
@@ -366,10 +395,11 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsGoodAttackForWhite(move))
-                {
-                    return;
-                }
+                //if (IsGoodAttackForWhite())
+                //{
+                //    InitialMoveCollection.AddSuggested(move);
+                //    return;
+                //}
 
                 InitialMoveCollection.AddNonCapture(move);
             }
@@ -394,8 +424,9 @@ namespace Engine.Sorting.Sorters.Initial
                     }
                 }
 
-                if (IsBadAttackToBlack(move))
+                if (IsBadAttackToBlack())
                 {
+                    InitialMoveCollection.AddNonSuggested(move);
                     return;
                 }
                 if (move.IsCheck|| move.Piece == Piece.BlackPawn && Board.IsBlackPass(move.To.AsByte()))
@@ -404,10 +435,11 @@ namespace Engine.Sorting.Sorters.Initial
                     return;
                 }
 
-                if (IsGoodAttackForBlack(move))
-                {
-                    return;
-                }
+                //if (IsGoodAttackForBlack())
+                //{
+                //    InitialMoveCollection.AddSuggested(move);
+                //    return;
+                //}
 
                 InitialMoveCollection.AddNonCapture(move);
             }
@@ -418,35 +450,35 @@ namespace Engine.Sorting.Sorters.Initial
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsGoodAttackForBlack(MoveBase move)
+        private bool IsGoodAttackForBlack()
         {
             AttackList attacks = Position.GetBlackAttacks();
-            return attacks.Count > 0 && IsWinCapture(move, attacks);
+            return attacks.Count > 0 && IsWinCapture(attacks);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsBadAttackToBlack(MoveBase move)
+        private bool IsBadAttackToBlack()
         {
             AttackList attacks = Position.GetWhiteAttacks();
-            return attacks.Count > 0 && IsOpponentWinCapture(move, attacks);
+            return attacks.Count > 0 && IsOpponentWinCapture(attacks);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsGoodAttackForWhite(MoveBase move)
+        private bool IsGoodAttackForWhite()
         {
             AttackList attacks = Position.GetWhiteAttacks();
-            return attacks.Count > 0 && IsWinCapture(move, attacks);
+            return attacks.Count > 0 && IsWinCapture(attacks);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsBadAttackToWhite(MoveBase move)
+        private bool IsBadAttackToWhite()
         {
             AttackList attacks = Position.GetBlackAttacks();
-            return attacks.Count > 0 && IsOpponentWinCapture(move, attacks);
+            return attacks.Count > 0 && IsOpponentWinCapture(attacks);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsWinCapture(MoveBase move, AttackList attacks)
+        private bool IsWinCapture(AttackList attacks)
         {
             for (int i = 0; i < attacks.Count; i++)
             {
@@ -456,8 +488,6 @@ namespace Engine.Sorting.Sorters.Initial
                 int attackValue = Board.StaticExchange(attack);
                 if (attackValue > 0)
                 {
-                    InitialMoveCollection.AddSuggested(move);
-
                     return true;
                 }
             }
@@ -466,7 +496,7 @@ namespace Engine.Sorting.Sorters.Initial
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsOpponentWinCapture(MoveBase move, AttackList attacks)
+        private bool IsOpponentWinCapture(AttackList attacks)
         {
             for (int i = 0; i < attacks.Count; i++)
             {
@@ -476,8 +506,6 @@ namespace Engine.Sorting.Sorters.Initial
                 int attackValue = Board.StaticExchange(attack);
                 if (attackValue > 0)
                 {
-                    InitialMoveCollection.AddNonSuggested(move);
-
                     return true;
                 }
             }
