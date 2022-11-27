@@ -96,8 +96,8 @@ namespace Engine.Services
                 _knightAttackedByPawnValue[i] = evaluationStatic.KnightAttackedByPawnValue * _unitValue;
                 _bishopBlockedByPawnValue[i] = evaluationStatic.BishopBlockedByPawnValue * _unitValue;
                 _rookBlockedByKingValue[i] = evaluationStatic.RookBlockedByKingValue * _unitValue;
-                _doubleRookValue[i] = evaluationStatic.BishopBlockedByPawnValue * _unitValue;
-                _openPawnValue[i] = evaluationStatic.RookBlockedByKingValue * _unitValue;
+                _doubleRookValue[i] = evaluationStatic.DoubleRookValue * _unitValue;
+                _openPawnValue[i] = evaluationStatic.OpenPawnValue * _unitValue;
             }
 
             _values = new int[3][];
@@ -445,7 +445,7 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetDoubleRookValue(Phase phase)
         {
-            return _openPawnValue[(byte)phase];
+            return _doubleRookValue[(byte)phase];
         }
 
         #endregion

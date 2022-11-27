@@ -164,6 +164,14 @@ namespace Engine.Models.Boards
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetPawnValue()
+        {
+            if (_turn == Turn.White)
+                return _board.GetPawnValue();
+            return (short)-_board.GetPawnValue();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetOpponentMaxValue()
         {
             if (_turn == Turn.White)
