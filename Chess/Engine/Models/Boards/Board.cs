@@ -547,9 +547,16 @@ namespace Engine.Models.Boards
             return GetWhiteStaticValue() - GetBlackStaticValue();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetKingSafetyValue()
         {
             return WhiteKingSafety(_positionCollections[5][0]) - BlackKingSafety(_positionCollections[11][0]);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetPawnValue()
+        {
+            return GetWhitePawnValue() - GetBlackPawnValue();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

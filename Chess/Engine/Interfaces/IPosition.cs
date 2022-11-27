@@ -13,6 +13,7 @@ namespace Engine.Interfaces
         short GetValue();
         int GetStaticValue();
         int GetKingSafetyValue();
+        int GetPawnValue();
         int GetOpponentMaxValue();
         Turn GetTurn();
         bool GetPiece(Square cell, out Piece? piece);

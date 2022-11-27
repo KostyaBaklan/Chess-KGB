@@ -34,6 +34,7 @@ namespace Engine.Interfaces
         void Move(Piece piece, Square from,Square to);
         byte GetWhiteKingPosition();
         byte GetBlackKingPosition();
+        int GetPawnValue();
         ulong GetKey();
         PositionCollection GetPiecePositions(byte index);
         BitBoard GetOccupied();
