@@ -8,6 +8,8 @@ using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Moves;
 using Engine.Interfaces;
+using Engine.Interfaces.Config;
+using Engine.Models.Config;
 using Engine.Models.Enums;
 using Engine.Models.Helpers;
 using Engine.Models.Moves;
@@ -39,81 +41,13 @@ namespace Engine.Models.Boards
         public Position()
         {
             _turn = Turn.White;
-            _white = new byte[3][];
-            _black = new byte[3][];
-            _whiteAttacks = new byte[3][];
-            _blackAttacks = new byte[3][];
-            _whiteAttacks[0] = new[]
-            {
-                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
-                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
-                Piece.WhiteKing.AsByte()
-            };
-            _whiteAttacks[1] = new[]
-            {
-                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
-                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
-                Piece.WhiteKing.AsByte()
-            };
-            _whiteAttacks[2] = new[]
-            {
-                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
-                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
-                Piece.WhiteKing.AsByte()
-            };
-            _blackAttacks[0] = new[]
-            {
-                Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
-                Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
-                Piece.BlackKing.AsByte()
-            };
-            _blackAttacks[1] = new[]
-            {
-                Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
-                Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
-                Piece.BlackKing.AsByte()
-            };
-            _blackAttacks[2] = new[]
-            {
-                Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
-                Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
-                Piece.BlackKing.AsByte()
-            };
 
-            _white[0] = new[]
-            {
-                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
-                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
-                Piece.WhiteKing.AsByte()
-            };
-            _white[1] = new[]
-            {
-                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
-                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
-                Piece.WhiteKing.AsByte()
-            };
-            _white[2] = new[]
-            {
-                Piece.WhitePawn.AsByte(), Piece.WhiteKnight.AsByte(), Piece.WhiteBishop.AsByte(),
-                Piece.WhiteRook.AsByte(), Piece.WhiteQueen.AsByte(),
-                Piece.WhiteKing.AsByte()
-            };
-            _black[0] = new[]
-            {
-                Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
-                Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
-                Piece.BlackKing.AsByte()
-            };
-            _black[1] = new[]
-                {
-                    Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
-                    Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
-                    Piece.BlackKing.AsByte()};
-            _black[2] = new[]
-                {
-                    Piece.BlackPawn.AsByte(), Piece.BlackKnight.AsByte(), Piece.BlackBishop.AsByte(),
-                    Piece.BlackRook.AsByte(), Piece.BlackQueen.AsByte(),
-                    Piece.BlackKing.AsByte()};
+            IPieceOrderConfiguration pieceOrderConfiguration = ServiceLocator.Current.GetInstance<IConfigurationProvider>().PieceOrderConfiguration;
+
+            _white = pieceOrderConfiguration.Whites.Select(pair => pair.Value.Select(p => p.AsByte()).ToArray()).ToArray();
+            _black = pieceOrderConfiguration.Blacks.Select(pair => pair.Value.Select(p => p.AsByte()).ToArray()).ToArray();
+            _whiteAttacks = pieceOrderConfiguration.WhitesAttacks.Select(pair => pair.Value.Select(p => p.AsByte()).ToArray()).ToArray();
+            _blackAttacks = pieceOrderConfiguration.BlacksAttacks.Select(pair => pair.Value.Select(p => p.AsByte()).ToArray()).ToArray();
 
             _attacks = new AttackList();
             _attacksTemp = new AttackList();
@@ -125,6 +59,7 @@ namespace Engine.Models.Boards
             _moveProvider = ServiceLocator.Current.GetInstance<IMoveProvider>();
             _moveHistoryService = ServiceLocator.Current.GetInstance<IMoveHistoryService>();
         }
+
         #region Implementation of IPosition
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

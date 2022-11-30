@@ -89,7 +89,9 @@
     <Compile Include="Interfaces\IOpeningService.cs" />
     <Compile Include="Interfaces\IProbCutModelProvider.cs" />
     <Compile Include="Models\Boards\AttackerBoard.cs" />
+    <Compile Include="Models\Config\IPieceOrderConfiguration.cs" />
     <Compile Include="Models\Config\KingSafetyEvaluation.cs" />
+    <Compile Include="Models\Config\PieceOrderConfiguration.cs" />
     <Compile Include="Models\Moves\AttackBase.cs" />
     <Compile Include="Models\Moves\PawnOverBlackMove.cs" />
     <Compile Include="Models\Moves\PawnOverWhiteMove.cs" />

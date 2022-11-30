@@ -78,10 +78,108 @@ namespace Tools
         #endregion
     }
 
+    public class PieceOrderConfiguration
+    {
+        public Dictionary<Phase, Piece[]> Whites { get; set; }
+        public Dictionary<Phase, Piece[]> Blacks { get; set; }
+        public Dictionary<Phase, Piece[]> WhitesAttacks { get; set; }
+        public Dictionary<Phase, Piece[]> BlacksAttacks { get; set; }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
+            var _white = new Piece[3][];
+            var _black = new Piece[3][];
+            var _whiteAttacks = new Piece[3][];
+            var _blackAttacks = new Piece[3][];
+
+            _whiteAttacks[0] = new[]
+            {
+                Piece.WhitePawn, Piece.WhiteKnight, Piece.WhiteBishop,
+                Piece.WhiteRook, Piece.WhiteQueen,
+                Piece.WhiteKing
+            };
+            _whiteAttacks[1] = new[]
+            {
+                Piece.WhitePawn, Piece.WhiteKnight, Piece.WhiteBishop,
+                Piece.WhiteRook, Piece.WhiteQueen,
+                Piece.WhiteKing
+            };
+            _whiteAttacks[2] = new[]
+            {
+                Piece.WhitePawn, Piece.WhiteKnight, Piece.WhiteBishop,
+                Piece.WhiteRook, Piece.WhiteQueen,
+                Piece.WhiteKing
+            };
+            _blackAttacks[0] = new[]
+            {
+                Piece.BlackPawn, Piece.BlackKnight, Piece.BlackBishop,
+                Piece.BlackRook, Piece.BlackQueen,
+                Piece.BlackKing
+            };
+            _blackAttacks[1] = new[]
+            {
+                Piece.BlackPawn, Piece.BlackKnight, Piece.BlackBishop,
+                Piece.BlackRook, Piece.BlackQueen,
+                Piece.BlackKing
+            };
+            _blackAttacks[2] = new[]
+            {
+                Piece.BlackPawn, Piece.BlackKnight, Piece.BlackBishop,
+                Piece.BlackRook, Piece.BlackQueen,
+                Piece.BlackKing
+            };
+
+            _white[0] = new[]
+            {
+                Piece.WhitePawn, Piece.WhiteKnight, Piece.WhiteBishop,
+                Piece.WhiteRook, Piece.WhiteQueen,
+                Piece.WhiteKing
+            };
+            _white[1] = new[]
+            {
+                Piece.WhitePawn, Piece.WhiteKnight, Piece.WhiteBishop,
+                Piece.WhiteRook, Piece.WhiteQueen,
+                Piece.WhiteKing
+            };
+            _white[2] = new[]
+            {
+                Piece.WhitePawn, Piece.WhiteKnight, Piece.WhiteBishop,
+                Piece.WhiteRook, Piece.WhiteQueen,
+                Piece.WhiteKing
+            };
+            _black[0] = new[]
+            {
+                Piece.BlackPawn, Piece.BlackKnight, Piece.BlackBishop,
+                Piece.BlackRook, Piece.BlackQueen,
+                Piece.BlackKing
+            };
+            _black[1] = new[]
+                {
+                    Piece.BlackPawn, Piece.BlackKnight, Piece.BlackBishop,
+                    Piece.BlackRook, Piece.BlackQueen,
+                    Piece.BlackKing};
+            _black[2] = new[]
+                {
+                    Piece.BlackPawn, Piece.BlackKnight, Piece.BlackBishop,
+                    Piece.BlackRook, Piece.BlackQueen,
+                    Piece.BlackKing};
+
+            //PieceOrderConfiguration pieceOrderConfiguration = new PieceOrderConfiguration();
+
+            //pieceOrderConfiguration.Whites = _white.Select((v,i)=>new KeyValuePair<Phase, Piece[]>((Phase)i,v)).ToDictionary(k=>k.Key, v=>v.Value.Select(x=>x.ToString()).ToArray());
+            //pieceOrderConfiguration.Blacks = _black.Select((v, i) => new KeyValuePair<Phase, Piece[]>((Phase)i, v)).ToDictionary(k => k.Key, v => v.Value.Select(x => x.ToString()).ToArray());
+            //pieceOrderConfiguration.WhitesAttacks = _whiteAttacks.Select((v, i) => new KeyValuePair<Phase, Piece[]>((Phase)i, v)).ToDictionary(k => k.Key, v => v.Value.Select(x => x.ToString()).ToArray());
+            //pieceOrderConfiguration.BlacksAttacks = _blackAttacks.Select((v, i) => new KeyValuePair<Phase, Piece[]>((Phase)i, v)).ToDictionary(k => k.Key, v => v.Value.Select(x => x.ToString()).ToArray());
+
+            //var s = JsonConvert.SerializeObject(pieceOrderConfiguration, Formatting.Indented);
+            //File.WriteAllText(@"Config/PieceOrderConfiguration.json", s);
+
+            var json = File.ReadAllText(@"Config/PieceOrderConfiguration.json");
+            PieceOrderConfiguration poc = JsonConvert.DeserializeObject<PieceOrderConfiguration>(json);
+
             //Boot.SetUp();
 
             //CreateHistory();
@@ -102,15 +200,15 @@ namespace Tools
             //var s = JsonConvert.SerializeObject(history,Formatting.Indented);
             //File.WriteAllText(@"Config/History.json",s);
 
-            using (var writer = new StreamWriter("Bounds.csv"))
-            {
-                for (int i = -2500; i <= 2500; i += 5)
-                {
-                    var round = Math.Round((1.5 * 0.542 + i - (-0.009)) / 1.036);
-                    var v = (int)round;
-                    writer.WriteLine($"{i},{v}");
-                } 
-            }
+            //using (var writer = new StreamWriter("Bounds.csv"))
+            //{
+            //    for (int i = -2500; i <= 2500; i += 5)
+            //    {
+            //        var round = Math.Round((1.5 * 0.542 + i - (-0.009)) / 1.036);
+            //        var v = (int)round;
+            //        writer.WriteLine($"{i},{v}");
+            //    } 
+            //}
 
 
 
