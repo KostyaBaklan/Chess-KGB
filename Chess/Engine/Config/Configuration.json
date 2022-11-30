@@ -152,5 +152,111 @@
       "Queen": 1850,
       "King": 6000
     }
+  },
+  "PieceOrderConfiguration": {
+    "Whites": {
+      "Opening": [
+        "WhitePawn",
+        "WhiteKnight",
+        "WhiteBishop",
+        "WhiteRook",
+        "WhiteQueen",
+        "WhiteKing"
+      ],
+      "Middle": [
+        "WhitePawn",
+        "WhiteKnight",
+        "WhiteBishop",
+        "WhiteRook",
+        "WhiteQueen",
+        "WhiteKing"
+      ],
+      "End": [
+        "WhitePawn",
+        "WhiteKnight",
+        "WhiteBishop",
+        "WhiteRook",
+        "WhiteQueen",
+        "WhiteKing"
+      ]
+    },
+    "Blacks": {
+      "Opening": [
+        "BlackPawn",
+        "BlackKnight",
+        "BlackBishop",
+        "BlackRook",
+        "BlackQueen",
+        "BlackKing"
+      ],
+      "Middle": [
+        "BlackPawn",
+        "BlackKnight",
+        "BlackBishop",
+        "BlackRook",
+        "BlackQueen",
+        "BlackKing"
+      ],
+      "End": [
+        "BlackPawn",
+        "BlackKnight",
+        "BlackBishop",
+        "BlackRook",
+        "BlackQueen",
+        "BlackKing"
+      ]
+    },
+    "WhitesAttacks": {
+      "Opening": [
+        "WhitePawn",
+        "WhiteKnight",
+        "WhiteBishop",
+        "WhiteRook",
+        "WhiteQueen",
+        "WhiteKing"
+      ],
+      "Middle": [
+        "WhitePawn",
+        "WhiteKnight",
+        "WhiteBishop",
+        "WhiteRook",
+        "WhiteQueen",
+        "WhiteKing"
+      ],
+      "End": [
+        "WhitePawn",
+        "WhiteKnight",
+        "WhiteBishop",
+        "WhiteRook",
+        "WhiteQueen",
+        "WhiteKing"
+      ]
+    },
+    "BlacksAttacks": {
+      "Opening": [
+        "BlackPawn",
+        "BlackKnight",
+        "BlackBishop",
+        "BlackRook",
+        "BlackQueen",
+        "BlackKing"
+      ],
+      "Middle": [
+        "BlackPawn",
+        "BlackKnight",
+        "BlackBishop",
+        "BlackRook",
+        "BlackQueen",
+        "BlackKing"
+      ],
+      "End": [
+        "BlackPawn",
+        "BlackKnight",
+        "BlackBishop",
+        "BlackRook",
+        "BlackQueen",
+        "BlackKing"
+      ]
+    }
   }
 }

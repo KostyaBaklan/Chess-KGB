@@ -34,7 +34,7 @@ namespace Common
             var evaluation = configuration.Evaluation;
             IConfigurationProvider configurationProvider = new ConfigurationProvider(configuration.AlgorithmConfiguration,
                 new EvaluationProvider(evaluation.Static, evaluation.Opening, evaluation.Middle, evaluation.End),
-                configuration.GeneralConfiguration);
+                configuration.GeneralConfiguration, configuration.PieceOrderConfiguration);
             container.RegisterInstance(configurationProvider);
 
             IStaticValueProvider staticValueProvider = new StaticValueProvider(collection);
