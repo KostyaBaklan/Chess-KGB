@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CommonServiceLocator;
+using Engine.Interfaces.Config;
 using Engine.Models.Moves;
 using Engine.Sorting.Comparers;
 
@@ -14,6 +16,8 @@ namespace Engine.Sorting
 
         static Sort()
         {
+            var sortConfiguration = ServiceLocator.Current.GetInstance<IConfigurationProvider>()
+                .AlgorithmConfiguration.SortingConfiguration;
             var historyComparer = new HistoryComparer();
             Comparer = historyComparer;
             HistoryComparer = historyComparer;
@@ -21,35 +25,19 @@ namespace Engine.Sorting
             DifferenceComparer = new DifferenceComparer();
 
             SortMinimum = new int[128];
-            for (var i = 0; i < SortMinimum.Length; i++)
+            for (var i = 0; i < 41; i++)
             {
-                var min = Math.Min(i / 3, 9);
+                var min = Math.Min(i / 3, sortConfiguration.SortMinimum);
                 if (min == 0)
                 {
                     min = 1;
                 }
                 SortMinimum[i] = min;
             }
-            //for (int i = 2; i < 10; i++)
-            //{
-            //    SortMinimum[i] = i / 2;
-            //}
-            //for (int i = 10; i < 24; i++)
-            //{
-            //    SortMinimum[i] = Math.Max(i / 3 + 1, 5);
-            //}
-            //for (int i = 24; i < 30; i++)
-            //{
-            //    SortMinimum[i] = i / 3;
-            //}
-            //for (int i = 30; i < 40; i++)
-            //{
-            //    SortMinimum[i] = 9;
-            //}
-            //for (int i = 40; i < 128; i++)
-            //{
-            //    SortMinimum[i] = 10;
-            //}
+            for (var i = 0; i < SortMinimum.Length; i++)
+            {
+                SortMinimum[i] = sortConfiguration.SortMinimum + 1;
+            }
         }
     }
 }

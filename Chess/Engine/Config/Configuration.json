@@ -50,7 +50,8 @@
       "SortDifferenceDepth": [ 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 ],
       "UseSortHard": false,
       "UseSortDifference": false,
-      "SortType": 3 
+      "SortType": 3,
+      "SortMinimum": 9
     }
   },
   "Evaluation": {
