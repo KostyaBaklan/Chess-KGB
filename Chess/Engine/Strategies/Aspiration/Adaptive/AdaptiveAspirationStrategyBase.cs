@@ -23,7 +23,9 @@ namespace Engine.Strategies.Aspiration.Adaptive
 
         protected AdaptiveAspirationStrategyBase(short depth, IPosition position) : base(depth, position)
         {
-            var table = CreateTranspositionTable(depth);
+            var service = ServiceLocator.Current.GetInstance<ITranspositionTableService>();
+
+            var table = service.Create(depth);
             Table = table;
             Models = new List<AspirationModel>();
 
@@ -47,46 +49,6 @@ namespace Engine.Strategies.Aspiration.Adaptive
         }
 
         protected abstract void InitializeModels(TranspositionTable table);
-
-        private static TranspositionTable CreateTranspositionTable(short depth)
-        {
-            int capacity;
-            if (depth < 6)
-            {
-                capacity = 1131467;
-            }
-            else if (depth == 6)
-            {
-                capacity = 2263139;
-            }
-            else if (depth == 7)
-            {
-                capacity = 5002903;
-            }
-            else if (depth == 8)
-            {
-                capacity = 10023499;
-            }
-            else if (depth == 9)
-            {
-                capacity = 18337973;
-            }
-            else if (depth == 10)
-            {
-                capacity = 24495841;
-            }
-            else if (depth == 11)
-            {
-                capacity = 30794419;
-            }
-            else
-            {
-                capacity = 35727019;
-            }
-
-            var table = new TranspositionTable(capacity, depth);
-            return table;
-        }
 
 
         #region Overrides of StrategyBase

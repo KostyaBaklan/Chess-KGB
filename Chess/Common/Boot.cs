@@ -53,6 +53,7 @@ namespace Common
             container.RegisterSingleton(typeof(IAttackEvaluationService), typeof(AttackEvaluationService));
             container.RegisterSingleton(typeof(IOpeningService), typeof(OpeningService));
             container.RegisterSingleton(typeof(IProbCutModelProvider), typeof(ProbCutModelProvider));
+            container.RegisterSingleton(typeof(ITranspositionTableService), typeof(TranspositionTableService));
         }
     }
 }

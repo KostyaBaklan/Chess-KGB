@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Hash;
 using Engine.Interfaces;
@@ -20,41 +21,9 @@ namespace Engine.Strategies.AlphaBeta
         {
             if (table == null)
             {
-                int capacity;
-                if (depth < 6)
-                {
-                    capacity = 1131467;
-                }
-                else if (depth == 6)
-                {
-                    capacity = 2263139;
-                }
-                else if (depth == 7)
-                {
-                    capacity = 5002903;
-                }
-                else if (depth == 8)
-                {
-                    capacity = 10023499;
-                }
-                else if (depth == 9)
-                {
-                    capacity = 18337973;
-                }
-                else if (depth == 10)
-                {
-                    capacity = 24495841;
-                }
-                else if (depth == 11)
-                {
-                    capacity = 30794419;
-                }
-                else
-                {
-                    capacity = 35727019;
-                }
+                var service = ServiceLocator.Current.GetInstance<ITranspositionTableService>();
 
-                Table = new TranspositionTable(capacity, depth);
+                Table = service.Create(depth);
             }
             else
             {
