@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
@@ -47,6 +48,7 @@ namespace Engine.Services
         private readonly int[][] _values;
         private readonly int[][][] _staticValues;
         private readonly int[][][] _fullValues;
+        private readonly byte[,] _distances;
         private Dictionary<ulong, short> _table;
         private DynamicCollection<ulong>[] _depthTable;
         private readonly IMoveHistoryService _moveHistory;
@@ -147,6 +149,10 @@ namespace Engine.Services
                 }
             }
 
+            _distances = new byte[64,64];
+
+            CalculateDistances();
+
             _kingShieldFaceValue = evaluationProvider.Static.KingSafety.KingShieldFaceValue;
             _kingShieldPreFaceValue = evaluationProvider.Static.KingSafety.KingShieldPreFaceValue;
             _kingZoneOpenFileValue = evaluationProvider.Static.KingSafety.KingZoneOpenFileValue;
@@ -154,6 +160,30 @@ namespace Engine.Services
             _pieceAttackFactor = evaluationProvider.Static.KingSafety.AttackValueFactor;
             _pieceAttackValue = evaluationProvider.Static.KingSafety.PieceAttackValue;
             _pieceAttackWeight= evaluationProvider.Static.KingSafety.AttackWeight;
+        }
+
+        private void CalculateDistances()
+        {
+            int manhattanDistance(int sq1, int sq2)
+            {
+                int file1, file2, rank1, rank2;
+                int rankDistance, fileDistance;
+                file1 = sq1 & 7;
+                file2 = sq2 & 7;
+                rank1 = sq1 >> 3;
+                rank2 = sq2 >> 3;
+                rankDistance = Math.Abs(rank2 - rank1);
+                fileDistance = Math.Abs(file2 - file1);
+                return 5*(rankDistance + fileDistance);
+            }
+
+            for (int i = 0; i < _distances.GetLength(0); i++)
+            {
+                for(int j = 0; j < _distances.GetLength(1); j++)
+                {
+                    _distances[i, j] = (byte)manhattanDistance(i, j);
+                }
+            }
         }
 
         #region Implementation of ICacheService
@@ -446,6 +476,12 @@ namespace Engine.Services
         public int GetDoubleRookValue(Phase phase)
         {
             return _doubleRookValue[(byte)phase];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte Distance(byte from, byte to)
+        {
+            return _distances[from, to];
         }
 
         #endregion

@@ -601,7 +601,26 @@ namespace Engine.Models.Boards
         {
             var kingPosition = _positionCollections[Piece.BlackKing.AsByte()][0];
             var value = _evaluationService.GetValue(Piece.BlackKing.AsByte(), kingPosition, _phase);
-            return _phase != Phase.End ? value + BlackKingSafety(kingPosition) : value;
+
+            if(_phase == Phase.End)
+            {
+                return value - KingPawnTrofism(kingPosition);
+            }
+            return value + BlackKingSafety(kingPosition);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int KingPawnTrofism(byte kingPosition)
+        {
+            int value = 0;
+            var pawns = _boards[0] | _boards[6];
+
+            foreach (var to in pawns.BitScan())
+            {
+                value += _evaluationService.Distance(kingPosition, to);
+            }
+
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1012,7 +1031,12 @@ namespace Engine.Models.Boards
         {
             var kingPosition = _positionCollections[Piece.WhiteKing.AsByte()][0];
             var value = _evaluationService.GetValue(Piece.WhiteKing.AsByte(), kingPosition, _phase);
-            return _phase != Phase.End ? value + WhiteKingSafety(kingPosition) : value;
+
+            if (_phase == Phase.End)
+            {
+                return value - KingPawnTrofism(kingPosition);
+            }
+            return value + BlackKingSafety(kingPosition);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
