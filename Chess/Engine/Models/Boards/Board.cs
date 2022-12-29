@@ -1036,7 +1036,7 @@ namespace Engine.Models.Boards
             {
                 return value - KingPawnTrofism(kingPosition);
             }
-            return value + BlackKingSafety(kingPosition);
+            return value + WhiteKingSafety(kingPosition);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

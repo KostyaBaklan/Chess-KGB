@@ -25,11 +25,10 @@ namespace Engine.Strategies.LateMove.Deep
             Result result = new Result();
 
             MoveBase pv = pvMove;
-            var key = Position.GetKey();
             var isNotEndGame = Position.GetPhase() != Phase.End;
             if (pv == null)
             {
-                if (isNotEndGame && Table.TryGet(key, out var entry))
+                if (isNotEndGame && Table.TryGet(Position.GetKey(), out var entry))
                 {
                     pv = GetPv(entry.PvMove);
                 }
@@ -130,14 +129,12 @@ namespace Engine.Strategies.LateMove.Deep
             }
 
             MoveBase pv = null;
-            var key = Position.GetKey();
             bool shouldUpdate = false;
             bool isInTable = false;
-            if (Table.TryGet(key, out var entry))
+            if (Table.TryGet(Position.GetKey(), out var entry))
             {
                 isInTable = true;
-                var entryDepth = entry.Depth;
-                if (entryDepth >= depth)
+                if (entry.Depth >= depth)
                 {
                     if (entry.Value > alpha)
                     {

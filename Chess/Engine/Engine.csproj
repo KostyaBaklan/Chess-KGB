@@ -199,7 +199,6 @@
     <Compile Include="Sorting\Sort.cs" />
     <Compile Include="Sorting\Comparers\AttackComparer.cs" />
     <Compile Include="Sorting\Sorters\Basic\BasicSorter.cs" />
-    <Compile Include="Sorting\Sorters\Basic\BasicSorterPlus.cs" />
     <Compile Include="Sorting\Sorters\Extended\ExtendedDifferenceSorter.cs" />
     <Compile Include="Sorting\Sorters\Extended\ExtendedHardSorter.cs" />
     <Compile Include="Sorting\Sorters\Extended\ExtendedKillerSorter.cs" />
@@ -242,7 +241,6 @@
     <Compile Include="Strategies\LateMove\Deep\Null\LmrEnrStrategyBase.cs" />
     <Compile Include="Strategies\Models\AspirationModel.cs" />
     <Compile Include="Strategies\Aspiration\AspirationStrategyBase.cs" />
-    <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepBasicPlusStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepBasicStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepExtendedStrategy.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationExtendedStrategy.cs" />
@@ -264,7 +262,6 @@
     <Compile Include="Strategies\LateMove\Base\Null\LmrNullStrategyBase.cs" />
     <Compile Include="Strategies\LateMove\Base\Null\LmrNullBasicStrategy.cs" />
     <Compile Include="Strategies\LateMove\Base\Null\LmrNullExtendedStrategy.cs" />
-    <Compile Include="Strategies\LateMove\Deep\LmrDeepBasicPlusStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\LmrDeepBasicStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\LmrDeepExtendedStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\LmrDeepStrategyBase.cs" />
