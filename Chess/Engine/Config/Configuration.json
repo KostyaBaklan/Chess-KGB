@@ -44,7 +44,7 @@
       "LmrDepthThreshold": 3,
       "LmrSubSearchDepth": 4,
       "UseSubSearch": false,
-      "LmrLateDepthThreshold": [ 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 10, 10, 9, 9, 9, 9, 9, 9 ]
+      "LmrLateDepthThreshold": 11
     },
     "SortingConfiguration": {
       "SortDepth": [ 0, 1, 2, 2, 3, 3, 3, 3, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7 ],

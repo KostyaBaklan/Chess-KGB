@@ -13,7 +13,7 @@ namespace Engine.Strategies.LateMove.Deep
 {
     public abstract class LmrDeepStrategyBase : LmrStrategyBase
     {
-        protected int[] LmrLateDepthThreshold;
+        protected int LmrLateDepthThreshold;
 
         protected LmrDeepStrategyBase(short depth, IPosition position, TranspositionTable table = null) : base(depth, position, table)
         {
@@ -74,7 +74,6 @@ namespace Engine.Strategies.LateMove.Deep
                 }
                 else
                 {
-                    var l = LmrLateDepthThreshold[depth];
                     for (var i = 0; i < count; i++)
                     {
                         var move = moves[i];
@@ -83,7 +82,7 @@ namespace Engine.Strategies.LateMove.Deep
                         int value;
                         if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                         {
-                            var reduction = isNotEndGame && i > l ? DepthLateReduction : DepthReduction;
+                            var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthLateReduction : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
@@ -165,16 +164,18 @@ namespace Engine.Strategies.LateMove.Deep
             if (CheckPosition(count, out var defaultValue)) return defaultValue;
 
             int value = int.MinValue;
+            int r = int.MinValue;
+            MoveBase move;
             MoveBase bestMove = null;
 
             if (depth < DepthLateReduction || MoveHistory.IsLastMoveNotReducible())
             {
                 for (var i = 0; i < count; i++)
                 {
-                    var move = moves[i];
+                    move = moves[i];
                     Position.Make(move);
 
-                    var r = -Search(-beta, -alpha, depth - 1);
+                    r = -Search(-beta, -alpha, depth - 1);
 
                     if (r > value)
                     {
@@ -199,10 +200,9 @@ namespace Engine.Strategies.LateMove.Deep
             {
                 for (var i = 0; i < count; i++)
                 {
-                    var move = moves[i];
+                    move = moves[i];
                     Position.Make(move);
 
-                    int r;
                     if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                     {
                         r = -Search(-beta, -alpha, depth - DepthReduction);
@@ -237,16 +237,14 @@ namespace Engine.Strategies.LateMove.Deep
             }
             else
             {
-                var l = LmrLateDepthThreshold[depth];
                 for (var i = 0; i < count; i++)
                 {
-                    var move = moves[i];
+                    move = moves[i];
                     Position.Make(move);
 
-                    int r;
                     if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                     {
-                        if (i > l)
+                        if (i > LmrLateDepthThreshold)
                         {
                             r = -Search(-beta, -alpha, depth - DepthLateReduction);
                         }

@@ -17,7 +17,7 @@ namespace Engine.Strategies.PVS
         protected int NullWindow;
         protected int NullDepthReduction;
         protected int NullDepthOffset;
-        protected int[] LmrLateDepthThreshold;
+        protected int LmrLateDepthThreshold;
         protected int DepthReduction;
         protected int LmrDepthThreshold;
 
@@ -90,7 +90,6 @@ namespace Engine.Strategies.PVS
                 }
                 else
                 {
-                    var l = LmrLateDepthThreshold[depth];
                     for (var i = 0; i < moves.Length; i++)
                     {
                         IsNull = false;
@@ -101,7 +100,7 @@ namespace Engine.Strategies.PVS
                         int value;
                         if (alpha > -SearchValue && IsLmr(i) && CanReduce(move))
                         {
-                            var reduction = Position.GetPhase()!=Phase.End && i > l ? DepthReduction + 1 : DepthReduction;
+                            var reduction = Position.GetPhase()!=Phase.End && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
                             value = -Search(-beta, -alpha, depth - reduction);
                             if (value > alpha)
                             {
@@ -173,7 +172,6 @@ namespace Engine.Strategies.PVS
 
             if (!isWasCheck && depth > DepthReduction + 1)
             {
-                var l = LmrLateDepthThreshold[depth];
                 for (var i = 0; i < moves.Length; i++)
                 {
                     var move = moves[i];
@@ -182,7 +180,7 @@ namespace Engine.Strategies.PVS
                     int r;
                     if (IsLmr(i) && CanReduce(move))
                     {
-                        var reduction = isNotEndGame && i > l ? DepthReduction + 1 : DepthReduction;
+                        var reduction = isNotEndGame && i > LmrLateDepthThreshold ? DepthReduction + 1 : DepthReduction;
                         r = -Search(-beta, -alpha, depth - reduction);
                         if (r > alpha)
                         {

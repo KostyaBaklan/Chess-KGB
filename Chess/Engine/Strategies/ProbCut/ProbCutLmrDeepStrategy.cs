@@ -15,7 +15,7 @@ namespace Engine.Strategies.ProbCut
     public sealed class ProbCutLmrDeepStrategy : LmrStrategyBase
     {
         private readonly ProbCutModel[] _models;
-        private readonly int[] LmrLateDepthThreshold;
+        private readonly int LmrLateDepthThreshold;
 
         public ProbCutLmrDeepStrategy(short depth, IPosition position, TranspositionTable table = null)
             : base(depth, position, table)
@@ -229,7 +229,6 @@ namespace Engine.Strategies.ProbCut
             }
             else
             {
-                var l = LmrLateDepthThreshold[depth];
                 for (var i = 0; i < count; i++)
                 {
                     var move = moves[i];
@@ -238,7 +237,7 @@ namespace Engine.Strategies.ProbCut
                     int r;
                     if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                     {
-                        if (i > l)
+                        if (i > LmrLateDepthThreshold)
                         {
                             r = -Search(-beta, -alpha, depth - DepthLateReduction);
                         }

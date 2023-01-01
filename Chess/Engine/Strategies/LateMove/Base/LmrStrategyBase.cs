@@ -188,7 +188,9 @@ namespace Engine.Strategies.LateMove.Base
                 : Position.GetAllMoves(Sorters[depth], pv);
 
             int value = int.MinValue;
+            int r = int.MinValue;
             MoveBase bestMove = null;
+            MoveBase move;
 
             var count = moves.Length;
             if (CheckPosition(count, out var defaultValue)) return defaultValue;
@@ -197,10 +199,9 @@ namespace Engine.Strategies.LateMove.Base
             {
                 for (var i = 0; i < count; i++)
                 {
-                    var move = moves[i];
+                    move = moves[i];
                     Position.Make(move);
 
-                    int r;
                     if (i > LmrDepthThreshold && move.CanReduce && !move.IsCheck)
                     {
                         r = -Search(-beta, -alpha, depth - DepthReduction);
@@ -236,10 +237,10 @@ namespace Engine.Strategies.LateMove.Base
             {
                 for (var i = 0; i < count; i++)
                 {
-                    var move = moves[i];
+                    move = moves[i];
                     Position.Make(move);
 
-                    var r = -Search(-beta, -alpha, depth - 1);
+                    r = -Search(-beta, -alpha, depth - 1);
 
                     if (r > value)
                     {
@@ -274,9 +275,7 @@ namespace Engine.Strategies.LateMove.Base
             {
                 Position.Make(moves[i]);
 
-                var value = -SubSearchStrategy.Search(-beta, -alpha, depth - LmrSubSearchDepth);
-
-                valueMoves[i] = new ValueMove { Move = moves[i], Value = value };
+                valueMoves[i] = new ValueMove { Move = moves[i], Value = -SubSearchStrategy.Search(-beta, -alpha, depth - LmrSubSearchDepth) };
 
                 Position.UnMake();
             }
