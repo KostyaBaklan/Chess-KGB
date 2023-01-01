@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Hash;
@@ -7,14 +8,26 @@ using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
 using Engine.Strategies.AlphaBeta;
+using Engine.Strategies.Base;
 
 namespace Engine.Strategies.LateMove.Base
 {
     public abstract class LmrStrategyBase : AlphaBetaStrategy
     {
+        private StrategyBase _subSearchStrategy;
+
         protected int DepthReduction;
         protected int LmrDepthThreshold;
         protected int DepthLateReduction;
+        protected int LmrSubSearchDepth;
+        protected bool UseSubSearch;
+        protected StrategyBase SubSearchStrategy
+        {
+            get
+            {
+                return _subSearchStrategy ?? (_subSearchStrategy = CreateSubSearchStrategy());
+            }
+        }
 
         protected LmrStrategyBase(short depth, IPosition position, TranspositionTable table = null) : base(depth, position,table)
         {
@@ -24,6 +37,12 @@ namespace Engine.Strategies.LateMove.Base
             DepthReduction = configurationProvider
                     .AlgorithmConfiguration.LateMoveConfiguration.LmrDepthReduction;
             DepthLateReduction = DepthReduction + 1;
+            LmrSubSearchDepth = configurationProvider
+                    .AlgorithmConfiguration.LateMoveConfiguration.LmrSubSearchDepth;
+            LmrSubSearchDepth = configurationProvider
+                    .AlgorithmConfiguration.LateMoveConfiguration.LmrSubSearchDepth;
+            UseSubSearch = configurationProvider
+                    .AlgorithmConfiguration.LateMoveConfiguration.UseSubSearch;
         }
 
         public override IResult GetResult(int alpha, int beta, int depth, MoveBase pvMove = null)
@@ -46,6 +65,11 @@ namespace Engine.Strategies.LateMove.Base
 
             if (count > 1)
             {
+                if (UseSubSearch)
+                {
+                    moves = SubSearch(moves, alpha, beta, depth); 
+                }
+
                 if (MoveHistory.IsLastMoveWasCheck())
                 {
                     for (var i = 0; i < count; i++)
@@ -117,6 +141,11 @@ namespace Engine.Strategies.LateMove.Base
 
             result.Move.History++;
             return result;
+        }
+
+        protected virtual StrategyBase CreateSubSearchStrategy()
+        {
+            return new LmrExtendedHistoryStrategy((short)(Depth - LmrSubSearchDepth), Position);
         }
 
         public override int Search(int alpha, int beta, int depth)
@@ -236,6 +265,47 @@ namespace Engine.Strategies.LateMove.Base
             if (isInTable && !shouldUpdate) return value;
 
             return StoreValue((byte) depth, (short) value, bestMove.Key);
+        }
+
+        protected MoveBase[] SubSearch(MoveBase[] moves, int alpha, int beta, int depth)
+        {
+            ValueMove[] valueMoves = new ValueMove[moves.Length];
+            for (var i = 0; i < moves.Length; i++)
+            {
+                Position.Make(moves[i]);
+
+                var value = -SubSearchStrategy.Search(-beta, -alpha, depth - LmrSubSearchDepth);
+
+                valueMoves[i] = new ValueMove { Move = moves[i], Value = value };
+
+                Position.UnMake();
+            }
+
+            Array.Sort(valueMoves);
+
+            for (int i = 0; i < valueMoves.Length; i++)
+            {
+                moves[i] = valueMoves[i].Move;
+            }
+
+            return moves;
+        }
+
+        protected class ValueMove : IComparable<ValueMove>
+        {
+            public int Value;
+            public MoveBase Move;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public int CompareTo(ValueMove other)
+            {
+                return other.Value.CompareTo(Value);
+            }
+
+            public override string ToString()
+            {
+                return $"{Move}={Value}";
+            }
         }
     }
 }
