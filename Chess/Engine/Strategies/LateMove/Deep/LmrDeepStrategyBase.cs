@@ -6,6 +6,7 @@ using Engine.Interfaces;
 using Engine.Interfaces.Config;
 using Engine.Models.Enums;
 using Engine.Models.Moves;
+using Engine.Strategies.Base;
 using Engine.Strategies.LateMove.Base;
 
 namespace Engine.Strategies.LateMove.Deep
@@ -41,6 +42,11 @@ namespace Engine.Strategies.LateMove.Deep
 
             if (count > 1)
             {
+                if (UseSubSearch)
+                {
+                    moves = SubSearch(moves, alpha, beta, depth);
+                }
+
                 if (MoveHistory.IsLastMoveNotReducible())
                 {
                     for (var i = 0; i < count; i++)
@@ -284,6 +290,11 @@ namespace Engine.Strategies.LateMove.Deep
             if (isInTable && !shouldUpdate) return value;
 
             return StoreValue((byte)depth, (short)value, bestMove.Key);
+        }
+
+        protected override StrategyBase CreateSubSearchStrategy()
+        {
+            return new LmrDeepExtendedStrategy((short)(Depth - LmrSubSearchDepth), Position);
         }
     }
 }
