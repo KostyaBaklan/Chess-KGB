@@ -17,6 +17,7 @@ using Engine.Models.Helpers;
 using Engine.Models.Moves;
 using Engine.Strategies.Base;
 using Engine.Strategies.LateMove.Deep;
+using Engine.Strategies.LMR;
 using Kgb.ChessApp.Models;
 using MathNet.Numerics.Statistics;
 using Prism.Commands;
@@ -213,7 +214,7 @@ namespace Kgb.ChessApp.Views
 
             var level = navigationContext.Parameters.GetValue<short>("Level");
             _evaluationService.Initialize(level);
-            _strategy = new LmrDeepExtendedStrategy(level, _position);
+            _strategy = new LateMoveReductionDeepStrategy(level, _position);
             _level = level;
             Title = $"Strategy={_strategy}, Level={level}";
 

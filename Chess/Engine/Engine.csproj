@@ -239,6 +239,11 @@
     <Compile Include="Strategies\LateMove\Deep\Null\LmrAnrStrategyBase.cs" />
     <Compile Include="Strategies\LateMove\Deep\Null\LmrEnrStrategy.cs" />
     <Compile Include="Strategies\LateMove\Deep\Null\LmrEnrStrategyBase.cs" />
+    <Compile Include="Strategies\LMR\LateMoveReductionClassicStrategy.cs" />
+    <Compile Include="Strategies\LMR\LateMoveReductionDeepLinearStrategy.cs" />
+    <Compile Include="Strategies\LMR\LateMoveReductionDeepStrategy.cs" />
+    <Compile Include="Strategies\LMR\LateMoveReductionStrategyBase.cs" />
+    <Compile Include="Strategies\LMR\ValueMove.cs" />
     <Compile Include="Strategies\Models\AspirationModel.cs" />
     <Compile Include="Strategies\Aspiration\AspirationStrategyBase.cs" />
     <Compile Include="Strategies\Aspiration\LateMove\LmrAspirationDeepBasicStrategy.cs" />
