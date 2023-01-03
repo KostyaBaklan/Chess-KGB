@@ -186,17 +186,24 @@ namespace Engine.Strategies.Base
             result = new Result();
             if (count == 0)
             {
-                result.GameResult = MoveHistory.IsLastMoveWasCheck() ? GameResult.Mate : GameResult.Pat;
+                if (MoveHistory.IsLastMoveWasCheck())
+                {
+                    result.GameResult = GameResult.Mate;
+                    result.Value = EvaluationService.GetMateValue();
+                }
+                else
+                {
+                    result.GameResult = GameResult.Pat;
+                    result.Value = 0;
+                }
                 return true;
             }
 
             if (Position.GetPhase() == Phase.Opening) return false;
             if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
 
-            var value = Position.GetValue();
-            if (value > 0) return false;
-
             result.GameResult = GameResult.ThreefoldRepetition;
+            result.Value = 0;
             return true;
 
         }
@@ -207,45 +214,40 @@ namespace Engine.Strategies.Base
             value = 0;
             if (count == 0)
             {
-                value = MoveHistory.IsLastMoveWasCheck()
-                    ? -EvaluationService.GetMateValue()
-                    : Position.GetValue();
+                if (MoveHistory.IsLastMoveWasCheck())
+                {
+                    value = -EvaluationService.GetMateValue();
+                }
                 return true;
             }
 
             if (Position.GetPhase() == Phase.Opening) return false;
-            if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
 
-            value = Position.GetValue();
-            return true;
+            return MoveHistory.IsThreefoldRepetition(Position.GetKey());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool IsFutility(int alpha, int depth)
         {
-            if (!UseFutility || depth > FutilityDepth)
+            if (depth > FutilityDepth)
                 return false;
 
             if (MoveHistory.IsLastMoveWasCheck()) return false;
 
-            var positionValue = Position.GetValue();
-
             var i = FutilityMargins[(byte)Position.GetPhase()][depth - 1];
-            return positionValue + i <= alpha;
+            return Position.GetValue() + i <= alpha;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected MoveBase[] GenerateMoves(int alpha, int beta, int depth, MoveBase pv = null)
+        protected MoveBase[] GenerateMoves(int alpha, int depth, MoveBase pv = null)
         {
-            if (!UseFutility || depth > FutilityDepth)
+            if (depth > FutilityDepth)
                 return Position.GetAllMoves(Sorters[depth], pv);
 
             if (MoveHistory.IsLastMoveWasCheck()) return Position.GetAllMoves(Sorters[depth], pv);
 
-            var positionValue = Position.GetValue();
-
             var i = FutilityMargins[(byte) Position.GetPhase()][depth - 1];
-            if (positionValue + i > alpha) return Position.GetAllMoves(Sorters[depth], pv);
+            if (Position.GetValue() + i > alpha) return Position.GetAllMoves(Sorters[depth], pv);
 
             var moves = Position.GetAllAttacks(Sorters[depth]);
             return moves.Length == 0 ? null : moves;

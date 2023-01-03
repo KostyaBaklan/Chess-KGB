@@ -151,7 +151,7 @@ namespace Engine.Strategies.PVS
             int value = int.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GenerateMoves(alpha, beta, depth);
+            var moves = GenerateMoves(alpha, depth);
             if (moves == null) return alpha;
 
             if (CheckPosition(moves.Length, out var defaultValue)) return defaultValue;
@@ -253,7 +253,7 @@ namespace Engine.Strategies.PVS
 
             int value = int.MinValue;
 
-            var moves = GenerateMoves(alpha, beta, depth);
+            var moves = GenerateMoves(alpha, depth);
             if (moves == null) return alpha;
 
             if (CheckPosition(moves.Length, out var defaultValue)) return defaultValue;
