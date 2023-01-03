@@ -18,6 +18,8 @@ namespace Engine.Interfaces
         bool IsAdditionalDebutMove(MoveBase move);
         IEnumerable<MoveBase> GetHistory();
         bool IsThreefoldRepetition(ulong board);
+        bool IsFiftyMoves();
+        bool IsDraw(ulong key);
         void Add(ulong board);
         void Remove(ulong board);
         bool IsLastMoveWasCheck();

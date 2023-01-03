@@ -5,6 +5,7 @@
         Continue,
         Pat,
         ThreefoldRepetition,
+        FiftyMoves,
         Mate
     }
 }

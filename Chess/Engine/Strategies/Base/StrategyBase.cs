@@ -200,11 +200,22 @@ namespace Engine.Strategies.Base
             }
 
             if (Position.GetPhase() == Phase.Opening) return false;
-            if (!MoveHistory.IsThreefoldRepetition(Position.GetKey())) return false;
 
-            result.GameResult = GameResult.ThreefoldRepetition;
-            result.Value = 0;
-            return true;
+            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
+            {
+                result.GameResult = GameResult.ThreefoldRepetition;
+                result.Value = 0;
+                return true;
+            }
+
+            if (MoveHistory.IsFiftyMoves())
+            {
+                result.GameResult = GameResult.FiftyMoves;
+                result.Value = 0;
+                return true;
+            }
+
+            return false;
 
         }
 
@@ -223,7 +234,7 @@ namespace Engine.Strategies.Base
 
             if (Position.GetPhase() == Phase.Opening) return false;
 
-            return MoveHistory.IsThreefoldRepetition(Position.GetKey());
+            return MoveHistory.IsDraw(Position.GetKey());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

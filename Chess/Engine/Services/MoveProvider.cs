@@ -135,6 +135,8 @@ namespace Engine.Services
                     move.IsPassed = false;
                     move.CanReduce = !move.IsAttack && !move.IsPromotion;
                 }
+
+                move.IsIrreversible = move.IsAttack || move.IsCastle || move.IsPromotion || move.Piece == Piece.WhitePawn || move.Piece == Piece.BlackPawn;
             }
 
             if (configurationProvider.GeneralConfiguration.UseHistory)
