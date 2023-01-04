@@ -208,9 +208,18 @@ namespace Engine.Strategies.Base
                 return true;
             }
 
+            if (Position.GetPhase() == Phase.Middle) return false;
+
             if (MoveHistory.IsFiftyMoves())
             {
                 result.GameResult = GameResult.FiftyMoves;
+                result.Value = 0;
+                return true;
+            }
+
+            if (Position.IsDraw())
+            {
+                result.GameResult = GameResult.Draw;
                 result.Value = 0;
                 return true;
             }
@@ -241,7 +250,7 @@ namespace Engine.Strategies.Base
 
             if (Position.GetPhase() == Phase.Middle) return false;
 
-            return MoveHistory.IsFiftyMoves();
+            return MoveHistory.IsFiftyMoves()|| Position.IsDraw();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using CommonServiceLocator;
 using Engine.DataStructures;
 using Engine.DataStructures.Moves;
@@ -257,6 +258,8 @@ namespace Engine.Sorting.Sorters.Initial
             {
                 //if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
                 //{
+                //    var v = Board.GetValue();
+                //    var sv = Board.GetStaticValue();
                 //    if (Board.GetValue() > 0)
                 //    {
                 //        InitialMoveCollection.AddBad(move);
@@ -330,6 +333,8 @@ namespace Engine.Sorting.Sorters.Initial
             {
                 //if (MoveHistoryService.GetPly() > 30 && MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
                 //{
+                //    var v = Board.GetValue();
+                //    var sv = Board.GetStaticValue();
                 //    if (Board.GetValue() < 0)
                 //    {
                 //        InitialMoveCollection.AddBad(move);
@@ -374,8 +379,10 @@ namespace Engine.Sorting.Sorters.Initial
             Position.Make(move);
             try
             {
-                //if (MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
+                //if (IsDraw())
                 //{
+                //    var v = Board.GetValue();
+                //    var sv = Board.GetStaticValue();
                 //    if (Board.GetValue() > 0)
                 //    {
                 //        InitialMoveCollection.AddBad(move);
@@ -415,8 +422,10 @@ namespace Engine.Sorting.Sorters.Initial
             Position.Make(move);
             try
             {
-                //if (MoveHistoryService.IsThreefoldRepetition(Board.GetKey()))
+                //if (IsDraw())
                 //{
+                //    var v = Board.GetValue();
+                //    var sv = Board.GetStaticValue();
                 //    if (Board.GetValue() < 0)
                 //    {
                 //        InitialMoveCollection.AddBad(move);
@@ -447,6 +456,12 @@ namespace Engine.Sorting.Sorters.Initial
             {
                 Position.UnMake();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsDraw()
+        {
+            return MoveHistoryService.IsThreefoldRepetition(Board.GetKey()) || MoveHistoryService.IsFiftyMoves() || Board.IsDraw();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

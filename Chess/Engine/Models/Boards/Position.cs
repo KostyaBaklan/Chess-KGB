@@ -414,5 +414,11 @@ namespace Engine.Models.Boards
             builder.AppendLine(_board.ToString());
             return builder.ToString();
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsDraw()
+        {
+            return _board.IsDraw();
+        }
     }
 }

@@ -1860,6 +1860,22 @@ namespace Engine.Models.Boards
             return (_boards[Piece.BlackPawn.AsByte()] & opponentPawns).Any();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsDraw()
+        {
+            if ((_boards[Piece.WhitePawn.AsByte()] |
+                _boards[Piece.WhiteRook.AsByte()] |
+                _boards[Piece.WhiteQueen.AsByte()] |
+                _boards[Piece.BlackPawn.AsByte()] |
+                _boards[Piece.BlackRook.AsByte()] |
+                _boards[Piece.BlackQueen.AsByte()]).Any()) return false;
+
+            var whites = _positionCollections[Piece.WhiteKnight.AsByte()].Count + _positionCollections[Piece.WhiteBishop.AsByte()].Count;
+            var blacks = _positionCollections[Piece.BlackKnight.AsByte()].Count + _positionCollections[Piece.BlackBishop.AsByte()].Count;
+
+            return whites < 2 && blacks < 2;
+        }
+
         #endregion
 
         #region SEE
