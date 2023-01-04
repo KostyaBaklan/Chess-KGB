@@ -68,5 +68,6 @@ namespace Engine.Interfaces
         bool IsWhitePass(byte position);
         bool IsWhiteOver(BitBoard opponentPawns);
         bool IsBlackOver(BitBoard opponentPawns);
+        bool IsDraw();
     }
 }

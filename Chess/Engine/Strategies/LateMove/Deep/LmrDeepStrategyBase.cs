@@ -164,7 +164,7 @@ namespace Engine.Strategies.LateMove.Deep
             if (CheckPosition(count, out var defaultValue)) return defaultValue;
 
             int value = int.MinValue;
-            int r = int.MinValue;
+            int r;
             MoveBase move;
             MoveBase bestMove = null;
 

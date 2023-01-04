@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using CommonServiceLocator;
@@ -20,6 +21,7 @@ namespace Engine.Services
         private readonly bool[] _blackBigCastleHistory;
         private readonly ArrayStack<MoveBase> _history;
         private readonly ArrayStack<ulong> _boardHistory;
+        private readonly int[] _reversibleMovesHistory;
 
         public MoveHistoryService()
         {
@@ -30,7 +32,8 @@ namespace Engine.Services
             _blackSmallCastleHistory = new bool[historyDepth];
             _blackBigCastleHistory = new bool[historyDepth];
             _history = new ArrayStack<MoveBase>(historyDepth);
-            _boardHistory = new ArrayStack<ulong>(historyDepth);
+            _boardHistory = new ArrayStack<ulong>(historyDepth); 
+            _reversibleMovesHistory = new int[historyDepth];
         }
 
         #region Implementation of IMoveHistoryService
@@ -53,6 +56,9 @@ namespace Engine.Services
             _history.Push(move);
             var ply = _ply;
             _ply++;
+
+            AddMoveHistory(move.IsIrreversible);
+
             if (_ply > 0)
             {
                 if (_ply % 2 == 0)
@@ -199,8 +205,15 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsThreefoldRepetition(ulong board)
         {
+            if (_reversibleMovesHistory[_ply] < 8)
+            {
+                return false;
+            }
+
             int count = 1;
-            for (var i = _boardHistory.Count - 5; i > 0; i-=4)
+            int offset = _ply - _reversibleMovesHistory[_ply];
+
+            for (var i = _boardHistory.Count - 5; i > offset; i-=4)
             {
                 if (_boardHistory[i] != board)
                 {
@@ -215,6 +228,12 @@ namespace Engine.Services
             }
 
             return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsFiftyMoves()
+        {
+            return _reversibleMovesHistory[_ply] > 49;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -256,6 +275,26 @@ namespace Engine.Services
         }
 
         #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AddMoveHistory(bool isIrreversible)
+        {
+            if (isIrreversible)
+            {
+                _reversibleMovesHistory[_ply] = 0;
+            }
+            else
+            {
+                if (_ply > 0)
+                {
+                    _reversibleMovesHistory[_ply] = _reversibleMovesHistory[_ply - 1] + 1;
+                }
+                else
+                {
+                    _reversibleMovesHistory[_ply] = 1;
+                }
+            }
+        }
 
         #region Overrides of Object
 

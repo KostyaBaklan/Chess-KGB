@@ -174,7 +174,7 @@ namespace Engine.Strategies.PVS
             int value = short.MinValue;
             MoveBase bestMove = null;
 
-            var moves = GenerateMoves(alpha, beta, depth, pv);
+            var moves = GenerateMoves(alpha, depth, pv);
             if (moves == null) return alpha;
 
             if (CheckPosition(moves.Length, out var defaultValue)) return defaultValue;

@@ -37,6 +37,7 @@ namespace Engine.Models.Moves
         public bool IsPassed;
         public bool IsEnPassant;
         public bool CanReduce;
+        public bool IsIrreversible;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public abstract bool IsLegal(IBoard board);

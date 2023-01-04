@@ -413,8 +413,14 @@ namespace Kgb.ChessApp.Views
                             case GameResult.Pat:
                                 MessageBox.Show("Pat !!!");
                                 break;
+                            case GameResult.Draw:
+                                MessageBox.Show("Draw !!!");
+                                break;
                             case GameResult.ThreefoldRepetition:
                                 MessageBox.Show("Threefold Repetition !!!");
+                                break;
+                            case GameResult.FiftyMoves:
+                                MessageBox.Show("50 Moves !!!");
                                 break;
                             case GameResult.Mate:
                                 MessageBox.Show("Mate !!!");
