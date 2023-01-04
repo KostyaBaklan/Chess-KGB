@@ -234,7 +234,14 @@ namespace Engine.Strategies.Base
 
             if (Position.GetPhase() == Phase.Opening) return false;
 
-            return MoveHistory.IsDraw(Position.GetKey());
+            if (MoveHistory.IsThreefoldRepetition(Position.GetKey()))
+            {
+                return true;
+            }
+
+            if (Position.GetPhase() == Phase.Middle) return false;
+
+            return MoveHistory.IsFiftyMoves();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

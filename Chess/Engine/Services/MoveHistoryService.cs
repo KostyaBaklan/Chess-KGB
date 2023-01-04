@@ -205,8 +205,15 @@ namespace Engine.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsThreefoldRepetition(ulong board)
         {
+            if (_reversibleMovesHistory[_ply] < 8)
+            {
+                return false;
+            }
+
             int count = 1;
-            for (var i = _boardHistory.Count - 5; i > 0; i-=4)
+            int offset = _ply - _reversibleMovesHistory[_ply];
+
+            for (var i = _boardHistory.Count - 5; i > offset; i-=4)
             {
                 if (_boardHistory[i] != board)
                 {
@@ -227,12 +234,6 @@ namespace Engine.Services
         public bool IsFiftyMoves()
         {
             return _reversibleMovesHistory[_ply] > 49;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsDraw(ulong key)
-        {
-            return IsThreefoldRepetition(key) || IsFiftyMoves();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
